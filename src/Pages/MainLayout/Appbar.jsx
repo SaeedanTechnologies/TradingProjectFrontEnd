@@ -19,6 +19,8 @@ const Appbar = ({collapsed, setCollapsed}) => {
     style={{
       padding: 0,
       background: colorBgContainer,
+      borderBottom: "1px solid #f1f1f1",
+      zIndex: "9999"
     }}
     className="sticky top-0 flex items-center justify-between"
   >
@@ -28,10 +30,10 @@ const Appbar = ({collapsed, setCollapsed}) => {
           onClick={() => setCollapsed(!collapsed)}
           style={{
             fontSize: "16px",
-            width: 64,
-            height: 64,
+            width: 60,
+            height: 60,
             color: colorPrimary,
-            boxShadow: "none",
+            boxShadow:  "none",
             outline: "none",
             border: "none",
           }}

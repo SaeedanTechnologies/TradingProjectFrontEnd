@@ -1,26 +1,42 @@
-import React from 'react'
+import React from 'react';
 import { theme } from 'antd';
 
 import CoinCard from './CoinCard';
-import BITCOIN_CDN from '../../assets/images/Bitcoin.svg'
-import RIPPLE_CDN from '../../assets/images/ripple.svg'
-import ETHIRUM_CDN from '../../assets/images/ethrieum.svg'
+import { DashboardCardData } from '../../utils/constants';
+import CandleChart from '../../components/CandleChart';
+import CustomTable from '../../components/CustomTable';
 
-const index = () => {
+const Index = () => {
   const {
-    token: { colorBG, Gray2, colorPrimary },
+    token: { colorBG },
   } = theme.useToken();
-  return (
-    <div className='p-[12px]' style={{backgroundColor: colorBG}}>
-       <h1 className='text-2xl font-semibold'>Dashboard</h1>
-       <div className="grid gap-4 p-4 sm:grid-cols-1 md:grid-cols-3">
-       <CoinCard title={"Bitcoin"} subtitle={"BTS/UDS"} value={"2210"} subvalue={"+0.12 %"} img_url={BITCOIN_CDN}   />
-       <CoinCard title={"Bitcoin"} subtitle={"BTS/UDS"} value={"2210"} subvalue={"+0.12 %"} img_url={RIPPLE_CDN}  />
-       <CoinCard title={"Bitcoin"} subtitle={"BTS/UDS"} value={"2210"} subvalue={"+0.12 %"} img_url={ETHIRUM_CDN}  />
-       </div>
-       
-    </div>
-  )
-}
 
-export default index
+  return (
+    <div className='p-8' style={{ backgroundColor: colorBG }}>
+      <h1 className='text-2xl font-semibold py-12px'>Dashboard</h1>
+      <div className="grid gap-4 p-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 ">
+        {DashboardCardData.map((item) => (
+          <CoinCard
+            key={item.id}
+            title={item.title}
+            subtitle={item.subtitle}
+            value={item.value}
+            subvalue={item.subvalue}
+            img_url={item.img_url}
+            graph_url={item.graph_url}
+            subvalue_color={item.subvalue_color}
+          />
+        ))}
+      </div>
+      <div className='my-8'>
+        <h1 className='text-2xl font-semibold mb-8'>Reports</h1>
+        <CandleChart />
+      </div>
+      <div className='bg-white p-4 border rounded-lg'>
+        <CustomTable title={'Trading Accounts'} isHideColumns={true} />
+      </div>
+    </div>
+  );
+};
+
+export default Index;

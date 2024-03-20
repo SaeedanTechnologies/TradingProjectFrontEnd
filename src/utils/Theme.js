@@ -6,7 +6,7 @@ export const Customtheme = {
       },
     },
     colorPrimary: "#1CAC70", // green
-    colorBG: "#FAFFFD", // light green
+    colorBG: "#fff", // light green
     darkGray: "#838996",
     Gray2: "#9FA8C7",
     colorInfo: "#e19400",
@@ -18,5 +18,6 @@ export const Customtheme = {
     SecondrylblColor: "#747474",
     colorTransparentPrimary: "#E9FAF4", //transparent green
     colorGrayHeaders: "#494949",
+    TableHeaderColor: "#E3E3E3",  
   },
 };
