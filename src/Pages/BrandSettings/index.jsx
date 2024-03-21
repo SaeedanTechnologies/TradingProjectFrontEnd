@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { theme } from 'antd';
 import {PlusCircleOutlined} from '@ant-design/icons';
 
-import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
-import CustomModal from  '../../components/CustomModal'
-import BrandModal from './BrandModal';
+import CustomTable from '../../components/CustomTable';
+import CustomModal from '../../components/CustomModal';
+import BrandSettingsModal from './BrandSettingsModal';
 
 const columns = [
   {
@@ -63,11 +63,11 @@ const data = [
     address: 'London Park',
   },
 ];
-
-const BrandList = () => {
+const Index = () => {
   const {
     token: { colorBG, TableHeaderColor  },
   } = theme.useToken();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -83,21 +83,22 @@ const BrandList = () => {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
+
   return (
-    <div className='p-8' style={{backgroundColor: colorBG}}>
+    <div className='p-8' style={{ backgroundColor: colorBG }}>
       <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-        <h1 className='text-2xl font-semibold'>Brand List</h1>
-          <div>
-            <CustomButton 
-             Text='Add New Brand' 
-             style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
-             icon={<PlusCircleOutlined />}
-             onClickHandler={showModal}
-             />
-          </div>
+        <h1 className='text-2xl font-semibold'>Brand Settings</h1>
+        <div>
+          <CustomButton
+            Text='Add New Brand'
+            style={{ borderRadius: '8px', padding: '14px, 20px, 14px, 20px' }}
+            icon={<PlusCircleOutlined />}
+            onClickHandler={showModal}
+          />
+        </div>
       </div>
-       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
-       <CustomModal 
+      <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
+      <CustomModal 
         isModalOpen={isModalOpen}
         handleOk={handleOk}
         handleCancel={handleCancel} 
@@ -123,11 +124,11 @@ const BrandList = () => {
           </div>
         ]}
        >
-          <BrandModal />
+          <BrandSettingsModal />
           
        </CustomModal>
     </div>
   )
 }
 
-export default BrandList
+export default Index

@@ -44,9 +44,12 @@ const Sidebar = ({ collapsed }) => {
       label: 'Brands'
     },
     {
-      key: '5',
+      key: 'sub3',
       icon: <UserOutlined />,
-      children: [],
+      children: [
+        { key: '4', label: 'Trading Account' },
+        { key: '5', label: 'Single Trading Account' }
+      ],
       label: 'Trading Account'
     },
     {
@@ -87,23 +90,32 @@ const Sidebar = ({ collapsed }) => {
       case "2":
         navigate("/brand");
         break;
+      case "3":
+        navigate("/brand-settings");
+        break;
+      case "4":
+        navigate("/trading-accounts");
+        break;
+      case "5":
+        navigate("/single-trading-accounts");
+        break;
     }
   };
   return (
+    <div  style={{backgroundColor: sidebarColor}}>
     <Sider
-      className="h-screen"
       collapsible
       collapsed={collapsed}
       width={250}
       style={{
         overflow: 'auto',
-        height: '100vh',
         backgroundColor: sidebarColor,
         position: "fixed",
         left: 0,
         top: 0,
         bottom: 0,
         boxShadow: '0 0 2px 0 rgba(0,0,0,0.1)',
+        zIndex: '10',
       }}
       trigger={
         <>
@@ -112,7 +124,6 @@ const Sidebar = ({ collapsed }) => {
               <img alt="icon" src={LOGOUT_CDN} />
               {!collapsed && <span style={{ color: darkGray }}>Logout</span>}
             </div>
-
           </div>
         </>
       }
@@ -150,17 +161,19 @@ const Sidebar = ({ collapsed }) => {
             )
           ))}
         </Menu>
-        <div className="flex  items-center justify-between fixed gap-4 bottom-12 left-0 w-[250px] px-4 py-1 bg-white">
+        <div className="w-full fixed gap-4 bottom-12  left-0 ">
+        <div className="flex items-center justify-between w-[250px] px-4 py-1 bg-white">
           <div className={`flex gap-3 bg-white `} >
             <MoonFilled style={{ fontSize: `24px`, color: darkGray }} />
             {!collapsed && <span   style={{ color: darkGray }}>Dark Mode</span>}
           </div>
-          <Switch checkedChildren="ON" unCheckedChildren="OFF" />
+          {!collapsed &&  <Switch checkedChildren="ON" unCheckedChildren="OFF" />}
+        </div>
         </div>
       </div>
-
-
     </Sider>
+    </div>
+
   );
 };
 

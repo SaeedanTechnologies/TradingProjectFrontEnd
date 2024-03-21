@@ -20,7 +20,7 @@ const Appbar = ({collapsed, setCollapsed}) => {
       padding: 0,
       background: colorBgContainer,
       borderBottom: "1px solid #f1f1f1",
-      zIndex: "9999"
+      zIndex: "10"
     }}
     className="sticky top-0 flex items-center justify-between"
   >

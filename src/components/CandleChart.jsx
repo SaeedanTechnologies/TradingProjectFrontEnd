@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { render } from 'react-dom'
+import React from 'react'
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import CustomSelect from './CustomSelect'
@@ -118,32 +117,41 @@ const CandleChart = () => {
     //     return () => clearInterval(interval);
     //   }, []);
   return (
-    <div className="grid lg:grid-cols-4 gap-4 p-[8px] md:grid-cols-1">
-      <div className="lg:col-span-3 md:col-span-2 bg-white border rounded-lg  p-4">
-        <div className='flex items-center justify-between'>
-          <h1 className='text-lg font-bold p-2'>Account Growth</h1>
-          <div className='flex gap-2'>
-            <span className='text-lg font-semibold p-2'>Filter Options:</span>
-            <CustomSelect width={'150px'} />
-          </div>
+    <div className="grid w-full lg:grid-cols-4 gap-4 p-[8px] md:grid-cols-1">
+    <div className="lg:col-span-3 md:col-span-2 bg-white border rounded-lg p-4">
+      <div className='flex flex-col sm:flex-row items-center justify-between '>
+        <h1 className='text-lg font-bold p-2'>Account Growth</h1>
+        <div className='flex gap-2 items-center'>
+          <span className='text-lg font-semibold p-2'>Filter Options:</span>
+          <CustomSelect width={'150px'} />
         </div>
-        <HighchartsReact
-            highcharts={Highcharts}
-            options={BarChartConfig}
-        />
       </div>
-      <div className="lg:col-span-1 md:col-span-2 bg-white border rounded-lg p-4">
-        <h3 className='text-lg font-bold p-2'>Growth By Month</h3>
-        <div className='flex justify-end gap-2'>
-            <span className='text-sm font-medium p-2'>Filter Options:</span>
-            <CustomSelect width={'120px'} />
-        </div>
-       <HighchartsReact
+      <div className="w-full">
+        <HighchartsReact
           highcharts={Highcharts}
           options={BarChartConfig}
+          containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
         />
       </div>
     </div>
+    <div className="w-full flex-grow lg:col-span-1 md:col-span-2 bg-white border rounded-lg p-4">
+      <div className="flex flex-col justify-between w-full">
+        <h3 className='text-lg font-bold p-2'>Growth By Month</h3>
+        <div className='flex flex-row gap-1'>
+          <span className='text-sm font-medium p-2'>Filter Options:</span>
+          <CustomSelect width={'120px'} />
+        </div>
+      </div>
+      <div className="w-full">
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={BarChartConfig}
+          containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+        />
+      </div>
+    </div>
+  </div>
+  
   )
 }
 

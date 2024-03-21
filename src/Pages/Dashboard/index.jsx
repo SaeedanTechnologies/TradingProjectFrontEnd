@@ -1,20 +1,134 @@
-import React from 'react';
-import { theme } from 'antd';
+import React, { useState } from 'react';
+import { theme,Checkbox } from 'antd';
+import styled, {css} from "styled-components";
 
 import CoinCard from './CoinCard';
 import { DashboardCardData } from '../../utils/constants';
 import CandleChart from '../../components/CandleChart';
 import CustomTable from '../../components/CustomTable';
+import CustomDropdownBtn from '../../components/CustomDropdownBtn';
 
+const columns = [
+  {
+    title: 'Column 1',
+    dataIndex: 'address',
+    key: '1',
+  },
+  {
+    title: 'Column 2',
+    dataIndex: 'address',
+    key: '2',
+  },
+  {
+    title: 'Column 3',
+    dataIndex: 'address',
+    key: '3',
+  },
+  {
+    title: 'Column 4',
+    dataIndex: 'address',
+    key: '4',
+  },
+  {
+    title: 'Column 5',
+    dataIndex: 'address',
+    key: '5',
+  },
+  {
+    title: 'Column 6',
+    dataIndex: 'address',
+    key: '6',
+  },
+  {
+    title: 'Column 7',
+    dataIndex: 'address',
+    key: '7',
+  },
+  {
+    title: 'Column 8',
+    dataIndex: 'address',
+    key: '8',
+  },
+];
+const data = [
+  {
+    key: '1',
+    name: 'John Brown',
+    age: 32,
+    address: 'New York Park',
+  },
+  {
+    key: '2',
+    name: 'Jim Green',
+    age: 40,
+    address: 'London Park',
+  },
+];
+const defaultCheckedList = columns.map((item) => item.key);
+
+const VerticalCheckboxGroup = styled(Checkbox.Group)`
+  ${(props) =>
+    props.backgroundColor &&
+    css`
+      &  .ant-checkbox-group-item {
+        display: flex;
+        align-items: center;
+        height: 32px;
+        margin-right: 0;
+      }
+      ,
+      .ant-checkbox-checked .ant-checkbox-inner {
+        background-color: ${props.backgroundColor};
+        border-color: ${props.backgroundColor};
+      }
+    `}
+`;
 const Index = () => {
   const {
-    token: { colorBG },
+    token: { colorBG,colorPrimary, TableHeaderColor  },
   } = theme.useToken();
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
+  const handleMenuClick = (e) => {};
+
+  const newColumns = columns.map((item) => ({
+    ...item,
+    hidden: !checkedList.includes(item.key),
+  }));
+
+  const headerStyle = {
+    background: TableHeaderColor, // Set the background color of the header
+    color: 'black', // Set the text color of the header
+  };
+  const columnMenuProps = {
+    items: columns.map((column) => ({
+      key: column.key,
+      icon: (
+        <VerticalCheckboxGroup
+          value={checkedList}
+          options={[{ label: column.title, value: column.key }]} // Use the column title as label and key
+          onChange={(value) => {
+            const newCheckedList = [...checkedList];
+            if (value.includes(column.key)) {
+              newCheckedList.push(column.key);
+            } else {
+              const index = newCheckedList.indexOf(column.key);
+              if (index !== -1) {
+                newCheckedList.splice(index, 1);
+              }
+            }
+            setCheckedList(newCheckedList);
+          }}
+          backgroundColor={colorPrimary}
+        />
+      ),
+    })),
+    onClick: handleMenuClick,
+  }; 
   return (
-    <div className='p-8' style={{ backgroundColor: colorBG }}>
+    <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
       <h1 className='text-2xl font-semibold py-12px'>Dashboard</h1>
-      <div className="grid gap-4 p-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 ">
+      <div className="grid w-full gap-4  lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 ">
         {DashboardCardData.map((item) => (
           <CoinCard
             key={item.id}
@@ -33,7 +147,13 @@ const Index = () => {
         <CandleChart />
       </div>
       <div className='bg-white p-4 border rounded-lg'>
-        <CustomTable title={'Trading Accounts'} isHideColumns={true} />
+      <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
+        <h1 className='text-2xl font-semibold'>Trading Account</h1>
+          <div>
+            <CustomDropdownBtn Text='Manage Columns' menuProps={columnMenuProps} />
+          </div>
+      </div>
+        <CustomTable columns={newColumns} data={data} headerStyle={headerStyle} />
       </div>
     </div>
   );
