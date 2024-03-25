@@ -1,5 +1,5 @@
 import React from 'react'
-import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
+import {PlusCircleOutlined, EyeOutlined, DeleteOutlined} from '@ant-design/icons';
 import { Space, Tag, theme } from 'antd';
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
@@ -51,7 +51,7 @@ const Index = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-         <EditOutlined style={{fontSize:"24px", color: colorPrimary }} />
+          <Link to="/single-trading-accounts/details"><EyeOutlined style={{fontSize:"24px", color: colorPrimary }} /></Link>
          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
         </Space>
       ),
@@ -87,14 +87,14 @@ const Index = () => {
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
       <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-        <h1 className='text-2xl font-semibold'>Create New Order</h1>
-          <Link to='/trading-accounts/0'>
+        <h1 className='text-2xl font-semibold'>Trading Account</h1>
+        {/* <Link to='/trading-accounts/0'>
             <CustomButton
              Text='Add New Trading Account' 
              style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
              icon={<PlusCircleOutlined />}
              />
-          </Link>
+          </Link>*/}
       </div>
       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
    </div>

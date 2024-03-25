@@ -1,8 +1,9 @@
 import React from 'react'
 import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
+import HighchartsReact  from 'highcharts-react-official'
 import CustomSelect from './CustomSelect'
 import { BarChartConfig } from '../utils/constants'
+import CandleStickChart from './CandleStickChart'
 
 
 const CandleChart = () => {
@@ -127,11 +128,13 @@ const CandleChart = () => {
         </div>
       </div>
       <div className="w-full">
-        <HighchartsReact
+        <CandleStickChart/>
+        {/* <HighchartsReact
           highcharts={Highcharts}
           options={BarChartConfig}
           containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
-        />
+          
+        /> */}
       </div>
     </div>
     <div className="w-full flex-grow lg:col-span-1 md:col-span-2 bg-white border rounded-lg p-4">

@@ -201,3 +201,10 @@ export const AutocompleteDummyData =  [
   { title: 'The Godfather', id: 1972 },
   { title: 'The Godfather: Part II', id: 1974 }
 ]
+export const GetCurrentDate = () => {
+  var date = new Date();
+  return `${date.getFullYear()}-${((date.getMonth()) + 1) <= 9 ? '0' + ((date.getMonth()) + 1).toString() : (date.getMonth()) + 1}-${date.getDate() <= 9 ? '0' + (date.getDate()).toString() : date.getDate()}`
+}
+
+
+

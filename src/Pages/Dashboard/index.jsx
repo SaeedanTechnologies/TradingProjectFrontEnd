@@ -8,64 +8,6 @@ import CandleChart from '../../components/CandleChart';
 import CustomTable from '../../components/CustomTable';
 import CustomDropdownBtn from '../../components/CustomDropdownBtn';
 
-const columns = [
-  {
-    title: 'Column 1',
-    dataIndex: 'address',
-    key: '1',
-  },
-  {
-    title: 'Column 2',
-    dataIndex: 'address',
-    key: '2',
-  },
-  {
-    title: 'Column 3',
-    dataIndex: 'address',
-    key: '3',
-  },
-  {
-    title: 'Column 4',
-    dataIndex: 'address',
-    key: '4',
-  },
-  {
-    title: 'Column 5',
-    dataIndex: 'address',
-    key: '5',
-  },
-  {
-    title: 'Column 6',
-    dataIndex: 'address',
-    key: '6',
-  },
-  {
-    title: 'Column 7',
-    dataIndex: 'address',
-    key: '7',
-  },
-  {
-    title: 'Column 8',
-    dataIndex: 'address',
-    key: '8',
-  },
-];
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York Park',
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 40,
-    address: 'London Park',
-  },
-];
-const defaultCheckedList = columns.map((item) => item.key);
-
 const VerticalCheckboxGroup = styled(Checkbox.Group)`
   ${(props) =>
     props.backgroundColor &&
@@ -87,6 +29,60 @@ const Index = () => {
   const {
     token: { colorBG,colorPrimary, TableHeaderColor  },
   } = theme.useToken();
+  const columns = [
+    {
+      title: 'No',
+      dataIndex: 'key',
+      key: '1',
+    },
+    {
+      title: 'Currency',
+      dataIndex: 'name',
+      key: '2',
+    },
+    {
+      title: 'Leverage',
+      dataIndex: 'age',
+      key: '3',
+    },
+    {
+      title: 'Balance',
+      dataIndex: 'address',
+      key: '4',
+    },
+    {
+      title: 'Account Type',
+      dataIndex: 'type',
+      key: '5',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: '6',
+      render: (text) => <span className='p-2 rounded-full text-white' style={{backgroundColor: colorPrimary}}>{text}</span>,
+    },
+  ];
+  
+  const data = [
+    {
+      key: '1',
+      name: 'USD',
+      age: '50:1',
+      address: '$100,000',
+      type: 'Standard',
+      status: 'Active',
+    },
+    {
+      key: '2',
+      name: 'EUR',
+      age: '30:1',
+      address: '€80,000',
+      type: 'Premium',
+      status: 'Inactive',
+    },
+  ];
+  
+  const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
   const handleMenuClick = (e) => {};
