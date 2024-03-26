@@ -56,10 +56,16 @@ const Sidebar = ({ collapsed }) => {
       key: 'sub2',
       icon: <FileDoneOutlined />,
       children: [
-        { key: '6', label: 'Trading Account' },
-        { key: '7', label: 'Single Trading Account' }
+        { key: '6', label: 'Live Orders' },
+        { key: '7', label: 'Close Orders' }
       ],
       label: 'Trading Orders'
+    },
+    {
+      key: '8',
+      icon: <AntDesignOutlined />,
+      children: [],
+      label: 'Transaction Orders'
     },
     {
       key: '9',
@@ -99,6 +105,15 @@ const Sidebar = ({ collapsed }) => {
       case "5":
         navigate("/single-trading-accounts");
         break;
+      case "6":
+        navigate("/live-orders");
+        break;
+      case "7":
+        navigate("/close-orders");
+        break;
+        case "8":
+          navigate("/transaction-orders");
+          break;
     }
   };
   return (
