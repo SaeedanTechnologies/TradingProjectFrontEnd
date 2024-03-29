@@ -6,6 +6,7 @@ import CustomButton from '../../components/CustomButton'
 import CustomTable from '../../components/CustomTable';
 import CustomModal from '../../components/CustomModal';
 import BrandSettingsModal from './BrandSettingsModal';
+import { AddNewStyle, footerStyle, footerSubmit } from './style';
 
 const columns = [
   {
@@ -64,10 +65,7 @@ const data = [
   },
 ];
 const Index = () => {
-  const {
-    token: { colorBG, TableHeaderColor  },
-  } = theme.useToken();
-
+  const {token: { colorBG, TableHeaderColor  }} = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -80,8 +78,8 @@ const Index = () => {
     setIsModalOpen(false);
   };
   const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
+    background: TableHeaderColor,
+    color: 'black', 
   };
 
   return (
@@ -91,7 +89,7 @@ const Index = () => {
         <div>
           <CustomButton
             Text='Add New Brand'
-            style={{ borderRadius: '8px', padding: '14px, 20px, 14px, 20px' }}
+            style={AddNewStyle}
             icon={<PlusCircleOutlined />}
             onClickHandler={showModal}
           />
@@ -105,27 +103,16 @@ const Index = () => {
         title={''}
         width={800}
         footer={[
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'end',
-          }}>
+          <div style={footerStyle}>
             <CustomButton
               Text={'Submit'}
               onClickHandler={handleOk}
-            style={{
-                width: '180px',
-                height: '56px',
-                padding: '8px, 16px, 8px, 16px',
-                radius: '4px',
-                marginTop: '16px',
-            }}
+              style={footerSubmit}
             />
           </div>
         ]}
        >
           <BrandSettingsModal />
-          
        </CustomModal>
     </div>
   )

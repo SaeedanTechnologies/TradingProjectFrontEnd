@@ -1,15 +1,19 @@
 import { theme } from 'antd';
 import React, { useState } from 'react'
+import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import { AutocompleteDummyData } from '../../utils/constants';
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Trade = () => {
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
+  const navigate = useNavigate()
   const [SymbolList, setSymbolList] = useState(AutocompleteDummyData)
   const [SelectedSymbol, setSelectedSymbol] = useState(null)
 
@@ -30,7 +34,25 @@ const Trade = () => {
   const [SelectedLimitTypeListPO, setSelectedLimitTypeListPO] = useState(null)
 
   return (
-    <div className='p-8 border border-gray-300 rounded-lg flex' style={{ backgroundColor: colorBG }}>
+    <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
+        <div className='flex gap-3 justify-between'>
+     <div className='flex gap-3 w-full'>
+     <img 
+        src={ARROW_BACK_CDN} 
+        alt='back icon' 
+        className='cursor-pointer'
+        onClick={() => navigate(-1)}
+        />
+       
+        <h1 className='text-3xl font-bold'>Create New Order</h1>
+     </div>
+     <CustomTextField
+      label={'Search'}
+      varient={'outlined'}
+      sx={{width: '300px'}}
+      />
+     </div>
+    <div className='flex'>
       <div className="flex-1 mr-2 ">
         <div className="mb-4 grid grid-cols-1 gap-4">
           <CustomAutocomplete
@@ -126,6 +148,7 @@ const Trade = () => {
         <div className="mb-4">Chart Section</div>
         {/* Your chart content */}
       </div>
+    </div>
     </div>
 
   )

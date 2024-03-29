@@ -7,7 +7,6 @@ const CustomPhoneNo = () => {
   const handleChange = (newValue) => {
     setValue(newValue)
   }
-
   return <MuiTelInput
     value={value}
     defaultCountry="PK"

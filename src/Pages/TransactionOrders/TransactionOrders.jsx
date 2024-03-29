@@ -202,10 +202,6 @@ const TransactionOrders = () => {
       </div>
     </div>
       }
-     
-
-
-
       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
     </div>
   )

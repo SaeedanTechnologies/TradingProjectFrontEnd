@@ -10,6 +10,7 @@ import BrandDD from './BrandDD';
 import { BarChartConfig } from '../../utils/constants';
 
 import FILTER_CDN from '../../assets/images/filter-white.svg';
+import { ChartStyle, FilterBtnStyle } from './style';
 
 
 const Index = () => {
@@ -60,7 +61,7 @@ const filterOption = (input, option) =>
     ]}
   />
   <Input placeholder="Search for an entry" />
-  </div>
+      </div>
       </div>
       <div className='my-8'>
         <CandleChart />
@@ -70,7 +71,7 @@ const filterOption = (input, option) =>
        <CustomButton
           Text={'Filters'}
           icon={<img src={FILTER_CDN} alt='icon' />}
-          style={{ height: '48px', borderRadius: '8px' }}
+          style={FilterBtnStyle}
         />
       </div>
       <div className='flex justify-between gap-4'>
@@ -86,7 +87,7 @@ const filterOption = (input, option) =>
         <HighchartsReact
           highcharts={Highcharts}
           options={BarChartConfig}
-          containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+          containerProps={{ style: ChartStyle }}
         />
       </div>
       </div>
@@ -102,7 +103,7 @@ const filterOption = (input, option) =>
         <HighchartsReact
           highcharts={Highcharts}
           options={BarChartConfig}
-          containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+          containerProps={{ style: ChartStyle }}
         />
       </div>
       </div>

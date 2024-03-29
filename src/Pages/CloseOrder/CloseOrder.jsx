@@ -1,12 +1,11 @@
-import { Space, theme } from 'antd';
 import React from 'react'
-import CustomTable from '../../components/CustomTable';
+import { Space, theme } from 'antd';
 import { DeleteOutlined} from '@ant-design/icons';
 
+import CustomTable from '../../components/CustomTable';
+
 const CloseOrder = () => {
-  const {
-    token: { colorBG,colorPrimary, TableHeaderColor  },
-  } = theme.useToken();
+  const {token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
   const columns = [
     {
       title: 'Symbol',
@@ -65,7 +64,6 @@ const CloseOrder = () => {
       ),
     },
   ];
-  
   const data = [
     {
       key: 'audkdi',

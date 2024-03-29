@@ -7,9 +7,7 @@ import CustomCheckbox from '../../components/CustomCheckbox';
 import CustomButton from '../../components/CustomButton';
 
 const Account = () => {
-  const {
-    token: { colorBG, TableHeaderColor, colorPrimary  },
-  } = theme.useToken();
+  const { token: { colorBG,   }} = theme.useToken();
   const [GroupList, setGroupList] = useState([
     {  id: 1,title: 'rea.848.USDT' },
     {  id: 2,title: 'rea.849.USDT' },
@@ -25,67 +23,119 @@ const Account = () => {
     {  id: 4,title: '1: 500' }
   ])
   const [SelectedLaverage, setSelectedLaverage] = useState(null)
+  const ComponentMap = {
+    CustomTextField: CustomTextField,
+    CustomAutocomplete: CustomAutocomplete,
+    CustomPasswordField: CustomPasswordField,
+  };
+  const Controls = [
+    {
+      id:1,
+      control:'CustomAutocomplete',
+      name:'Group', 
+      varient: 'standard', 
+      label:'Group',
+      options: GroupList,
+      getOptionLabel:(option) => option.title ? option.title : "",
+      onChange: (e,value) =>{
+        if(value){
+            setSelectedGroup(value)
+        }
+        else{
+            setSelectedGroup(null)
+        } 
+      }
+    },
+    {
+      id: 2,
+      control:'CustomAutocomplete',
+      name:'Laverage', 
+      varient: 'standard', 
+      label:'Laverage',
+      options: LeverageList,
+      getOptionLabel:(option) => option.title ? option.title : "",
+      onChange: (e,value) =>{
+        if(value){
+            setSelectedLaverage(value)
+        }
+        else{
+            setSelectedLaverage(null)
+        } 
+      }
+    }, 
+    {
+    id: 3,
+    control:'CustomTextField',
+    label:'Bank Account',
+    varient:'standard',
+    }, 
+    {
+      id: 4,
+      control:'CustomPasswordField',
+      label:'Change Password',
+      varient:'standard',
+    },
 
-
+  ]
+const ChkBoxesControl = [
+  {
+    id:5,
+    control:'CustomCheckbox',
+    label:'Enable This Account',
+  },
+  {
+    id:6,
+    control:'CustomCheckbox',
+    label:'Enable Password Change',
+  },
+  {
+    id:7,
+    control:'CustomCheckbox',
+    label:'Show Change Password',
+  },
+  {
+    id:8,
+    control:'CustomCheckbox',
+    label:'Enable Investor Trading',
+  },
+  {
+    id:9,
+    control:'CustomCheckbox',
+    label:'Change Password at Next Login',
+  },
+]
   return (
     <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
-        <CustomAutocomplete
-            name={'Group'} 
-            varient={'standard'} 
-            label={'Group'}
-            options={GroupList}
-            getOptionLabel={(option) => option.title ? option.title : ""}
-            onChange={(e,value) =>{
-                if(value){
-                    setSelectedGroup(value)
-                }
-                else{
-                    setSelectedGroup(null)
-                } 
-            }} 
-            />
-            <CustomAutocomplete
-            name={'Laverage'} 
-            varient={'standard'} 
-            label={'Laverage'}
-            options={LeverageList}
-            getOptionLabel={(option) => option.title ? option.title : ""}
-            onChange={(e,value) =>{
-                if(value){
-                    setSelectedLaverage(value)
-                }
-                else{
-                    setSelectedLaverage(null)
-                } 
-            }} 
-            />
-            <CustomTextField
-                label={'Bank Account'}
-                varient={'standard'} 
-            />
-            <CustomPasswordField
-                label={'Change Password'}
-                varient={'standard'} 
-            />
+          {
+            Controls.map(item=>{
+            const ComponentToRender = ComponentMap[item.control]
+            return (
+              <ComponentToRender
+              key={item.id}
+              name={item.name} 
+              varient={item.varient} 
+              label={item.label}
+              options={item.options}
+              getOptionLabel={(option)=> item.getOptionLabel(option)}
+              onChange={(e,value) => item.onChange(e,value)} 
+              />
+              )
+            })
+          }
             <div className='bg-white shadow-md py-6 px-4'>
-              <CustomCheckbox label={'Enable This Account'} />
-              <CustomCheckbox label={'Enable Password Change'} />
-              <CustomCheckbox label={'Show Change Password'} />
-              <CustomCheckbox label={'Enable Investor Trading'} />
-              <CustomCheckbox label={'Change Password at Next Login'} />
-              
+              {ChkBoxesControl.map(item=><CustomCheckbox key={item.id} label={item.label} /> )}
             </div>
             <div className='flex justify-end items-end'>
-            <CustomButton
-              Text={'Save Changes'}
-              style={{
-              width: '180px',
-              height: '50px',
-              marginTop: '50px',
-              borderRadius: '8px',
-              }}
-            />
+                <CustomButton
+                  Text={'Save Changes'}
+                  style={{
+                  width: '180px',
+                  height: '50px',
+                  marginTop: '50px',
+                  borderRadius: '8px',
+                  }}
+                />
             </div>
             
         </div>

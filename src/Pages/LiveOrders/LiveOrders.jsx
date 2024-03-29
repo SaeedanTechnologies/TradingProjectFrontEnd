@@ -1,13 +1,10 @@
-import { Space, theme } from 'antd';
 import React from 'react'
-import CustomTable from '../../components/CustomTable';
-import {EditOutlined, CloseOutlined, DeleteOutlined} from '@ant-design/icons';
-import { Link } from 'react-router-dom'
+import { Space, theme } from 'antd';
+import {DeleteOutlined} from '@ant-design/icons';
 
+import CustomTable from '../../components/CustomTable';
 const LiveOrders = () => {
-  const {
-    token: { colorBG,colorPrimary, TableHeaderColor  },
-  } = theme.useToken();
+  const { token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
   const columns = [
     {
       title: 'Symbol',
@@ -95,8 +92,8 @@ const LiveOrders = () => {
     // Add more data objects as needed
   ];
   const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
+    background: TableHeaderColor,
+    color: 'black',
   };
   return (
     <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
@@ -105,5 +102,4 @@ const LiveOrders = () => {
     </div>
   )
 }
-
 export default LiveOrders

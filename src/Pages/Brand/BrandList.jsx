@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { theme } from 'antd';
-import {PlusCircleOutlined} from '@ant-design/icons';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
-import CustomModal from  '../../components/CustomModal'
+import CustomModal from '../../components/CustomModal'
 import BrandModal from './BrandModal';
+import { AddnewStyle, footerStyle, submitStyle } from './style';
 
 const columns = [
   {
@@ -65,9 +66,7 @@ const data = [
 ];
 
 const BrandList = () => {
-  const {
-    token: { colorBG, TableHeaderColor  },
-  } = theme.useToken();
+  const { token: { colorBG, TableHeaderColor } } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
@@ -84,50 +83,38 @@ const BrandList = () => {
     color: 'black', // Set the text color of the header
   };
   return (
-    <div className='p-8' style={{backgroundColor: colorBG}}>
+    <div className='p-8' style={{ backgroundColor: colorBG }}>
       <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
         <h1 className='text-2xl font-semibold'>Brand List</h1>
-          <div>
-            <CustomButton 
-             Text='Add New Brand' 
-             style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
-             icon={<PlusCircleOutlined />}
-             onClickHandler={showModal}
-             />
-          </div>
+        <div>
+          <CustomButton
+            Text='Add New Brand'
+            style={AddnewStyle}
+            icon={<PlusCircleOutlined />}
+            onClickHandler={showModal}
+          />
+        </div>
       </div>
-       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
-       <CustomModal 
+      <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
+      <CustomModal
         isModalOpen={isModalOpen}
         handleOk={handleOk}
-        handleCancel={handleCancel} 
+        handleCancel={handleCancel}
         title={''}
         width={800}
         footer={[
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'end',
-          }}>
+          <div style={footerStyle}>
             <CustomButton
               Text={'Submit'}
               onClickHandler={handleOk}
-            style={{
-                width: '180px',
-                height: '56px',
-                padding: '8px, 16px, 8px, 16px',
-                radius: '4px',
-                marginTop: '16px',
-            }}
+              style={submitStyle}
             />
           </div>
         ]}
-       >
-          <BrandModal />
-          
-       </CustomModal>
+      >
+        <BrandModal />
+      </CustomModal>
     </div>
   )
 }
-
 export default BrandList

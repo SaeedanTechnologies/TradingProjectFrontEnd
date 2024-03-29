@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import React from 'react'
 
-const CustomTextField = ({label, varient, multiline, rows, type, value, className}) => {
+const CustomTextField = ({label, varient, multiline, rows, type, value, className, sx}) => {
   return (
     <TextField 
       type={type}
@@ -12,6 +12,7 @@ const CustomTextField = ({label, varient, multiline, rows, type, value, classNam
       rows={rows}
       value={value}
       className={className}
+      sx={sx}
       fullWidth
       
       />

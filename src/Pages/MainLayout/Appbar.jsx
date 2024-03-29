@@ -5,39 +5,25 @@ import {
   MenuFoldOutlined,
   MoonFilled
 } from '@ant-design/icons';
+
 import PROFILE_CDN from '../../assets/images/profile.png'
 import DOWNARR_CDN from '../../assets/images/down-arrow.svg'
+import { colaspedBtnStyle, headerStyle } from './style';
 
 
 const { Header } = Layout;
 const Appbar = ({collapsed, setCollapsed}) => {
-  const {
-    token: { colorPrimary, colorBgContainer, colorTransparentPrimary },
-  } = theme.useToken();
+  const {token: { colorPrimary, colorTransparentPrimary, colorBgContainer}} = theme.useToken();
   return (
     <Header
-    style={{
-      padding: 0,
-      background: colorBgContainer,
-      borderBottom: "1px solid #f1f1f1",
-      zIndex: "10"
-    }}
+    style={{ background: colorBgContainer, ...headerStyle}}
     className="sticky top-0 flex items-center justify-between"
   >
      <div>
         <Button
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={() => setCollapsed(!collapsed)}
-          style={{
-            fontSize: "16px",
-            width: 60,
-            height: 60,
-            color: colorPrimary,
-            boxShadow:  "none",
-            outline: "none",
-            border: "none",
-          }}
-          
+          style={{  color: colorPrimary,...colaspedBtnStyle}}
         />
       </div>
       <div className='flex gap-4 px-6'>

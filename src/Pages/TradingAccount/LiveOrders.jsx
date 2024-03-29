@@ -62,7 +62,7 @@ const LiveOrders = () => {
       key: '9',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-          <EditOutlined style={{fontSize:"24px", color: colorPrimary }}/>
+            <Link to="/single-trading-accounts/details/live-order"><EditOutlined style={{fontSize:"24px", color: colorPrimary }}/></Link>
           <Link to="/single-trading-accounts/details">
             <CloseOutlined style={{fontSize:"24px", color: colorPrimary }} /></Link>
          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
@@ -98,12 +98,11 @@ const LiveOrders = () => {
     },
     // Add more data objects as needed
   ];
-  
-  
   const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
+    background: TableHeaderColor,
+    color: 'black',
   };
+  
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />

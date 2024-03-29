@@ -2,9 +2,7 @@ import React from 'react';
 import { theme } from 'antd';
 
 const CoinCard = ({ title, subtitle, value, subvalue, img_url, graph_url, subvalue_color }) => {
-  const {
-    token: { colorBG, Gray2, colorPrimary, colorTransparentPrimary },
-  } = theme.useToken();
+  const { token: {  Gray2, colorTransparentPrimary } } = theme.useToken();
   
   return (
     <div className='w-full p-4 flex-grow bg-white flex flex-col sm:flex-row items-center justify-between rounded-2xl border'>

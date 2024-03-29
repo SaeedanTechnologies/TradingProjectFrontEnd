@@ -4,8 +4,9 @@ import { Space, Tag, theme } from 'antd';
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 import { Link } from 'react-router-dom';
+import CustomTextField from '../../components/CustomTextField';
 
-const Index = () => {
+const Index = ({title}) => {
   const {
     token: { colorBG, TableHeaderColor, colorPrimary  },
   } = theme.useToken();
@@ -87,7 +88,12 @@ const Index = () => {
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
       <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-        <h1 className='text-2xl font-semibold'>Trading Account</h1>
+        <h1 className='text-2xl font-semibold'>{title}</h1>
+        <CustomTextField
+          label='Search'
+          sx={{width: '300px'}}
+        
+        />
         {/* <Link to='/trading-accounts/0'>
             <CustomButton
              Text='Add New Trading Account' 

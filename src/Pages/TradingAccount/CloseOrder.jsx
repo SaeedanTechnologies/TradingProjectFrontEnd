@@ -1,13 +1,10 @@
-import { Space, theme } from 'antd';
 import React from 'react'
+import { Space, theme } from 'antd';
+import { DeleteOutlined} from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
-import {EditOutlined, CloseOutlined, DeleteOutlined} from '@ant-design/icons';
-import { Link } from 'react-router-dom';
 
 const CloseOrder = () => {
-  const {
-    token: { colorBG, TableHeaderColor, colorPrimary  },
-  } = theme.useToken();
+  const {token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const columns = [
     {
       title: 'Time',
@@ -115,8 +112,8 @@ const CloseOrder = () => {
   ];
   
   const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
+    background: TableHeaderColor, 
+    color: 'black', 
   };
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>

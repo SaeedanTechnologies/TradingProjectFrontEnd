@@ -21,7 +21,7 @@ const items = [
   },
   {
     key: '2',
-    label: 'Trade',
+    label: 'Symbol',
     children: <Trade />,
   },
   {

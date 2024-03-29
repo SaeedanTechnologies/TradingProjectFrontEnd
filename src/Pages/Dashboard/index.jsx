@@ -26,9 +26,7 @@ const VerticalCheckboxGroup = styled(Checkbox.Group)`
     `}
 `;
 const Index = () => {
-  const {
-    token: { colorBG,colorPrimary, TableHeaderColor  },
-  } = theme.useToken();
+  const {token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
   const columns = [
     {
       title: 'No',
