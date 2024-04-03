@@ -29,6 +29,10 @@ import DataFeed from '../Pages/Symbols/DataFeed';
 import TicketCharts from '../Pages/Symbols/TicketCharts'
 import MinChart from '../Pages/Symbols/MinChart'
 import Settings from '../Pages/Settings'
+import Firewall from '../Pages/Settings/Firewall'
+import MarginCallsLevel from '../Pages/Settings/MarginCallsLevel'
+import ChangePassword from '../Pages/Settings/ChangePassword'
+import TradingViewChart from '../Pages/Brand/TradingViewChart';
 
 export const router = createBrowserRouter([
   
@@ -65,7 +69,10 @@ export const router = createBrowserRouter([
       { path: "/ticket-charts", element: <TicketCharts /> },
       { path: "/min-charts", element: <MinChart /> },
       { path: "/settings", element: <Settings /> },
-      
+      { path: "/firewall", element: <Firewall /> },
+      { path: "/margin-levels", element: <MarginCallsLevel /> },
+      { path: "/change-password", element: <ChangePassword /> },
+      { path: "/Test", element: <TradingViewChart /> },
     ],
   },
 ]);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { theme } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -7,6 +7,7 @@ import CustomButton from '../../components/CustomButton'
 import CustomModal from '../../components/CustomModal'
 import BrandModal from './BrandModal';
 import { AddnewStyle, footerStyle, submitStyle } from './style';
+import { Brands_List } from '../../utils/_APICalls';
 
 const columns = [
   {
@@ -68,6 +69,16 @@ const data = [
 const BrandList = () => {
   const { token: { colorBG, TableHeaderColor } } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [BrandsList, setBrandsList] = useState([])
+
+  const fetchBrands = async () => {
+    const mData = await Brands_List()
+    debugger
+  }
+
+  useEffect(() => {
+    fetchBrands()
+  }, [])
 
   const showModal = () => {
     setIsModalOpen(true);

@@ -14,7 +14,7 @@ const SettingsMenu = () => (
       dataSource={data}
       renderItem={(item) => (
         <List.Item className='text-xl font-semibold cursor-pointer'> 
-          <Link to={item.path}> <span>{item.title} </span>  </Link> 
+          <Link to={item.path} > <span className='hover:text-green-600'>{item.title} </span>  </Link> 
           <Link to={item.path}>  <RightOutlined /> </Link>
         </List.Item>
       )}
