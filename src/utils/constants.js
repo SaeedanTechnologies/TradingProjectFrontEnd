@@ -4,6 +4,11 @@ import ETHIRUM_CDN from '../assets/images/ethrieum.svg'
 import BITCOINGRAPH_CDN from '../assets/images/bitcoin-graph.svg'
 import RIPPLEGRAPH_CDN from '../assets/images/ripple_graph.svg'
 import ETHIRUMGRAPH_CDN from '../assets/images/ethrium_graph.svg'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+export const notifySuccess = (msg) => toast.success(msg);
+export const notifyError = (msg) => toast.error(msg);
 
 export const DashboardCardData = [
 { 

@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export const _API = async (url, method, data, token='4|Z4bR6Gyy1V8vbIs6FT7dh29uFL8arV4IwLQhVKxZ1ca5464f') => { 
-  debugger 
+export const _API = async (url, method, data, token) => { 
+   
   try {
     let headers = {};
     // Check if the data is FormData or a regular object
@@ -33,7 +33,6 @@ export const _API = async (url, method, data, token='4|Z4bR6Gyy1V8vbIs6FT7dh29uF
     }
     return response;
   } catch (error) {
-    console.error(error);
-    throw new Error(error);
+    return error.response
   }
 };

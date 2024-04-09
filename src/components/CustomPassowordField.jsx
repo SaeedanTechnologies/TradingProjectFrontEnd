@@ -4,7 +4,7 @@ import {EyeInvisibleOutlined, EyeOutlined} from '@ant-design/icons';
 
 
 
-const CustomPassowordField = ({label}) => {
+const CustomPassowordField = ({label, onChange}) => {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -13,11 +13,12 @@ const CustomPassowordField = ({label}) => {
     event.preventDefault();
   };
   return (
-    <FormControl  variant="standard">
+    <FormControl  variant={"standard"}>
     <InputLabel htmlFor="standard-adornment-password">{label}</InputLabel>
     <Input
       id="standard-adornment-password"
       type={showPassword ? 'text' : 'password'}
+      onChange={onChange}
       endAdornment={
         <InputAdornment position="end">
           <IconButton

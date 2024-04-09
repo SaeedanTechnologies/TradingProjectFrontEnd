@@ -33,14 +33,24 @@ import Firewall from '../Pages/Settings/Firewall'
 import MarginCallsLevel from '../Pages/Settings/MarginCallsLevel'
 import ChangePassword from '../Pages/Settings/ChangePassword'
 import TradingViewChart from '../Pages/Brand/TradingViewChart';
+import AuthLayout from '../Pages/Auth/AuthLayout';
+import SignIn from '../Pages/Auth/SignIn';
 
 export const router = createBrowserRouter([
-  
+  {
+    path: "/",
+    element: <AuthLayout />,
+    children: [
+      { path: "sign-in", element: <SignIn /> },
+      { path: "/", element: <Navigate to="sign-in" replace /> }
+    ],
+  },
+
   {
     path: "/",
     element: <RootLayout />,
     children: [
-      { path: "/", element: <Dashboard /> },
+      { path: "/dashboard", element: <Dashboard /> },
       { path: "/dashboard-reports", element: <Reports /> },
       { path: "/brand", element: <BrandList /> },
       { path: "/brand-settings", element: <BrandSettings /> },

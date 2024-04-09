@@ -7,9 +7,9 @@ import { Customtheme } from "./utils/Theme";
 
 function App() {
   return (
-    <ConfigProvider theme={Customtheme}>
-     <RouterProvider router={router} />
-    </ConfigProvider>
+      <ConfigProvider theme={Customtheme}>
+      <RouterProvider router={router} />
+      </ConfigProvider>
   )
 }
 

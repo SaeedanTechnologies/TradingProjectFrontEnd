@@ -38,7 +38,7 @@ const Sidebar = ({ collapsed }) => {
       icon: <DingdingOutlined />,
       children: [
         { key: '2', label: 'Brand List' },
-        { key: '3', label: 'Brand Settings' }
+        //{ key: '3', label: 'Brand Settings' }
       ],
       label: 'Brands'
     },
