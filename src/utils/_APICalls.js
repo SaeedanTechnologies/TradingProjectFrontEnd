@@ -37,3 +37,20 @@ export const DeleteBrand = async(BrandID, token)=>{
   return res
 
 }
+
+export const Trading_Accounts_List = async(token) =>{
+  const mBrands = await _API(`${apiUrl}/admin/trading_accounts`,'get',[],token)
+   return mBrands
+}
+
+export const Save_Trading_Account = async(TradingAccountData, token)=>{
+  const res = await _API(`${apiUrl}/admin/trading_accounts`,'post',TradingAccountData, token)
+  return res 
+
+}
+
+export const Delete_Trading_Account = async(TradingID, token)=>{
+  const res = await _API(`${apiUrl}/admin/trading_accounts/${TradingID}`,'delete',[],token)
+  return res
+
+}
