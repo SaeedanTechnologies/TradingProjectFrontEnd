@@ -115,7 +115,7 @@ const TransactionOrderEntry = () => {
         <h1 className='text-2xl font-semibold'>Transaction Order</h1>
       </div>
       <div className='bg-white border rounded-lg mt-6 p-4'>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           {
             Control.map(val=> {
               const ComponentToRender = ComponentMap[val.control]
@@ -133,7 +133,7 @@ const TransactionOrderEntry = () => {
           }
             
         </div>
-        <div class="grid grid-cols-1 gap-8 mt-8">
+        <div className="grid grid-cols-1 gap-8 mt-8">
             <CustomTextField 
               label={"Comments"}
               varient={"outlined"}

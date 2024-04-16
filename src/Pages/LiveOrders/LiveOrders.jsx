@@ -1,10 +1,12 @@
 import React from 'react'
 import { Space, theme } from 'antd';
 import {DeleteOutlined} from '@ant-design/icons';
-
 import CustomTable from '../../components/CustomTable';
+
+
 const LiveOrders = () => {
   const { token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
+
   const columns = [
     {
       title: 'Symbol',

@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { Space, theme } from 'antd';
 import { DeleteOutlined} from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
@@ -115,6 +115,11 @@ const CloseOrder = () => {
     background: TableHeaderColor, 
     color: 'black', 
   };
+
+   useEffect(()=>{
+    console.log('in close order by default')
+  },[])
+
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
       <CustomTable

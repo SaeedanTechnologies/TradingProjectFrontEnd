@@ -1,13 +1,22 @@
 import { Space, theme } from 'antd';
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
+
 import CustomTable from '../../components/CustomTable';
 import {EditOutlined, CloseOutlined, DeleteOutlined} from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { useSelector } from 'react-redux';
+ 
 
 const LiveOrders = () => {
+  const token = useSelector(({user})=> user?.user?.token )
   const {
     token: { colorBG, TableHeaderColor, colorPrimary  },
   } = theme.useToken();
+
+  const [tradeOrder,setTradeOrder] = useState([])
+    const { tradeId } = useParams();
+    console.log('trade ID IN PARAMS',tradeId)
 
   const columns = [
     {
@@ -102,6 +111,41 @@ const LiveOrders = () => {
     background: TableHeaderColor,
     color: 'black',
   };
+
+  
+
+  const fetchTradeOrder = async () => {
+    const mData = await Get_Trade_Order(tradeId,'market',token)
+    const {data:{message, payload, success}} = mData
+    if(success){
+      console.log('trade order data ======',payload)
+      // const tradingOrder = payload?.data?.map((item)=>({
+      // id:item.id,
+      // loginId: item.login_id,
+      // trading_group_id: item.trading_group_id,
+      // country: item.country,
+      // phone: item.phone,
+      // email:item.email,
+      // leverage: item.leverage,
+      // balance: item.balance,
+      // credit: item.credit,
+      // equity: item.equity,
+      // margin_level_percentage: item.margin_level_percentage,
+      // profit:item.profit,
+      // swap: item.swap,
+      // currency: item.currency,
+      // registration_time: item.registration_time,
+      // last_access_time: item.last_access_time === null ? 'null': item.last_access_time ,
+      // last_access_address_IP: item.last_access_address_IP === null ? 'null': item.last_access_address_IP,
+    
+      // }))
+      // setTradeOrder(tradingAccounts)
+    }
+  }
+
+  useEffect(()=>{
+    fetchTradeOrder()
+  },[])
   
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>

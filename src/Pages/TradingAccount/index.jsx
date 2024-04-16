@@ -5,7 +5,7 @@ import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 import { Link } from 'react-router-dom';
 import CustomTextField from '../../components/CustomTextField';
-import { Trading_Accounts_List,Delete_Trading_Account } from '../../utils/_APICalls';
+import { Trading_Accounts_List,Delete_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomModal from '../../components/CustomModal';
 import { notifySuccess, notifyError } from '../../utils/constants';
 import { useSelector } from 'react-redux';
@@ -111,7 +111,7 @@ const Index = ({title}) => {
       key: '9',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-          <Link to="/single-trading-accounts/details"><EyeOutlined style={{fontSize:"24px", color: colorPrimary }} /></Link>
+          <Link to={`/single-trading-accounts/details/live-order/${record.id}`}><EyeOutlined style={{fontSize:"24px", color: colorPrimary }} /></Link>
          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> DeleteHandler(record.id)} />
       
         </Space>
@@ -131,7 +131,6 @@ const Index = ({title}) => {
     const {data:{message, payload, success}} = mData
     setIsLoading(false)
     if(success){
-      console.log('trading accounts list===',payload?.data)
       const tradingAccounts = payload?.data?.map((item)=>({
       id:item.id,
       loginId: item.login_id,
@@ -169,8 +168,7 @@ const Index = ({title}) => {
     setIsModalOpen(false);
   };
 
-   const DeleteHandler = async (id)=>{
-    console.log('in delete hander ',id)
+      const DeleteHandler = async (id)=>{
       setIsLoading(true)
       const res = await Delete_Trading_Account(id, token)
       const {data:{success, message, payload}} = res
@@ -196,13 +194,12 @@ const Index = ({title}) => {
           sx={{width: '300px'}}
         
         />
-        
-           <CustomButton
-            Text='Add New Trading Account'
-            style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
-            icon={<PlusCircleOutlined />}
-            onClickHandler={()=>showModal(0)}
-          />
+          {/* <CustomButton
+             Text='Add New Trading Account'
+             style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
+             icon={<PlusCircleOutlined />}
+             onClickHandler={()=>showModal(0)}
+          />*/}
       </div>
       <CustomTable columns={renderColumns} data={tradingAccountsList} headerStyle={headerStyle} />
        <CustomModal

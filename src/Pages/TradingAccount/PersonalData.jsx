@@ -1,5 +1,5 @@
 import { theme } from 'antd';
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { GetCurrentDate } from '../../utils/constants';
 import CustomAvatar from '../../components/CustomAvatar';
 import CustomButton from '../../components/CustomButton';
@@ -45,6 +45,11 @@ const PersonalData = () => {
     CustomAutocomplete: CustomAutocomplete,
     CustomPhoneNo: CustomPhoneNo,
   };
+
+    useEffect(()=>{
+    console.log('in personal data by default')
+  },[])
+
   return (
     <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
     <div className='flex flex-col gap-3 justify-center items-center'>

@@ -20,3 +20,11 @@ export const tradingAccountValidationSchema = Yup.object().shape({
   LastAccessIP: Yup.string().required('Last Access IP is required'),
   CreditAccountGroup: Yup.object().nullable(true).required('Credit Account Group is required'),
 });
+
+export const TradeValidationSchema = Yup.object().shape({
+  order_type: Yup.string().required('Order Type is required'),
+  type:Yup.string().required('Type is required'),
+  volume: Yup.string().required('Volume is required'),
+  comment: Yup.string().required('Comment is required'),
+   
+  });

@@ -1,39 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import { footerStyle, submitStyle } from './style';
 import CustomButton from '../../components/CustomButton';
-import * as Yup from 'yup';
-import {tradingAccountValidationSchema } from '../../utils/validations'
-import { useSelector } from 'react-redux';
-import { GetSingleBrand, Save_Trading_Account, UpdateBrand } from '../../utils/_APICalls';
+import {  Save_Trading_Account } from '../../utils/_TradingAPICalls';
 import { notifyError, notifySuccess } from '../../utils/constants';
 import { ToastContainer } from 'react-toastify';
-import { AutocompleteDummyData,TradingAutocompleteDummyData } from '../../utils/constants';
+import { TradingAutocompleteDummyData,BrandIdAutocompleteDummyData } from '../../utils/constants';
+import CustomNotification from '../../components/CustomNotification';
 import { Spin } from 'antd';
 import CustomTextField from '../../components/CustomTextField';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import CustomPhoneNo from '../../components/CustomPhoneNo';
+import { MuiTelInput } from 'mui-tel-input'
+import { useSelector } from 'react-redux';
 
 
 const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) => {
   const token = useSelector(({user})=> user?.user?.token )
-  const [GroupList, setGroupList] = useState(TradingAutocompleteDummyData)
-  const [SelectedGroup, setSelectedGroup] = useState(null)
-  const [CountryList, setCountryList] = useState(TradingAutocompleteDummyData)
-  const [SelectedCountry, setSelectedCountry] = useState(null)
-  const [CreditList, setCreditList] = useState(TradingAutocompleteDummyData)
-  const [SelectedCredit, setSelectedCredit] = useState(null)
-  const [MarginLevel, setMarginLevel] = useState(TradingAutocompleteDummyData)
-  const [SelectedMarginLevel, setSelectedMarginLevel] = useState(null)
-  const [CurencyList, setCurencyList] = useState(TradingAutocompleteDummyData)
-  const [SelectedCurrency, setSelectedCurrency] = useState(null)
-  const [CreditAccountGroup, setCreditAccountGroup] = useState(TradingAutocompleteDummyData)
-  const [SelectedCreditAccountGroup, setSelectedCreditAccountGroup] = useState(null)
+  
 
   const initialValues= {
-    user_id:1,
-    trading_group_id:1,
+    user_id:"",
+    trading_group_id:"",
     country:"pakistan",
-    phone:123123,
+    phone:"",
     email:"",
     leverage:"",
     balance:"",
@@ -43,16 +32,13 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
     profit:"",
     swap:"",
     currency:"",
-    brand_id:0,
+    brand_id:"",
     status:"active"
   }
 
   
   const [tradingAccount,setTradingAccount] = useState(initialValues) 
 
-
-  const [disabledDomain, setDisabledDomain] = useState(false);
-  const [marginCall, setMarginCall] = useState('');
   const [errors, setErrors] = useState({}); // State to hold validation errors
   const [isLoading, setIsLoading] = useState(false)
 
@@ -60,15 +46,12 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
 
 
   const Control = [
-     {id: 1, control:'CustomTextField',  label:'Login ID', varient: 'standard',value:tradingAccount.user_id, onChange:(e,value) =>{
-          if(value){
-               setTradingAccount(prevData => ({
+     {id: 1, control:'CustomTextField',  label:'User Login ID', varient: 'standard',value:tradingAccount.user_id, onChange:(e) =>{
+        setTradingAccount(prevData => ({
                     ...prevData,
-                    user_id: value
-                }));
-          }
-          
-          }},
+                    user_id: e.target.value
+        }));
+      }},
      {
         id: 2, 
         control:'CustomAutocomplete',
@@ -82,7 +65,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
            if(value){
                setTradingAccount(prevData => ({
                     ...prevData,
-                    trading_group_id: value
+                    trading_group_id: value.value
                 }));
           } 
           }   
@@ -94,45 +77,37 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
         label:'Country', 
         varient: 'standard',
         value:tradingAccount.country,
-        onChange:(e,value) =>{
-          if(value){
+        onChange:(e) =>{
+   
                setTradingAccount(prevData => ({
                     ...prevData,
-                    trading_group_id: value
+                    country: e.target.value
                 }));
-          } 
           }   
       },
-      {
-        id: 4, 
-        control:'CustomPhoneNo',
-        value:tradingAccount.phone,
-         onChange:(e,value) =>{
-          if(value){
+      
+      {id: 5, control:'CustomTextField',  label:'Email', varient: 'standard',  value:tradingAccount.email, onChange:(e) =>{
                setTradingAccount(prevData => ({
                     ...prevData,
-                    phone: value
+                    email: e.target.value
                 }));
-          } 
-          } 
-      }, 
-      {id: 5, control:'CustomTextField',  label:'Email', varient: 'standard',  value:tradingAccount.email, onChange:(e,value) =>{
-          if(value){
+           
+          }   
+        },
+      {id: 6, control:'CustomTextField',  label:'Leverage', varient: 'standard',value:tradingAccount.leverage,onChange:(e) =>{
+          
                setTradingAccount(prevData => ({
                     ...prevData,
-                    email: value
-                }));
-          } 
-          }   },
-      {id: 6, control:'CustomTextField',  label:'Leverage', varient: 'standard',value:tradingAccount.leverage,onChange:(e,value) =>{
-          if(value){
-               setTradingAccount(prevData => ({
-                    ...prevData,
-                    leverage: value
+                    leverage: e.target.value
                 }))
-          } 
-          }   },  },
-      {id: 7, control:'CustomTextField',  label:'Balance', varient: 'standard',value:tradingAccount.balance  },
+          }
+      },
+      {id: 7, control:'CustomTextField',  label:'Balance', varient: 'standard',value:tradingAccount.balance,onChange:(e) =>{
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    balance: e.target.value
+                }))
+          }  },
       {
         id: 8, 
         control:'CustomAutocomplete',
@@ -144,14 +119,21 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
         getOptionLabel:(option) => option.label ? option.value : "",
         onChange:(e,value) =>{
           if(value){
-              setSelectedCredit(value)
-          }
-          else{
-              setSelectedCredit(null)
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    credit: value.value
+                }))
           } 
-          }   
+          } 
+             
       },
-      {id: 9, control:'CustomTextField',  label:'Equity', varient: 'standard',value:tradingAccount.equity   },
+      {id: 9, control:'CustomTextField',  label:'Equity', varient: 'standard',value:tradingAccount.equity,
+      onChange:(e) =>{
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    equity: e.target.value
+                }))
+          }    },
       {
         id: 10, 
         control:'CustomAutocomplete',
@@ -162,16 +144,27 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
         value:tradingAccount.margin_level_percentage,
         getOptionLabel:(option) => option.label ? option.value : "",
         onChange:(e,value) =>{
-          if(value){
-              setSelectedMarginLevel(value)
+         if(value){
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    margin_level_percentage: value.value
+                }))
+          }  
           }
-          else{
-              setSelectedMarginLevel(null)
-          } 
-          }   
+
       },
-      {id: 11, control:'CustomTextField',  label:'Profit', varient: 'standard', value:tradingAccount.profit,  },
-      {id: 12, control:'CustomTextField',  label:'Swap', varient: 'standard',value:tradingAccount.swap  },
+      {id: 11, control:'CustomTextField',  label:'Profit', varient: 'standard', value:tradingAccount.profit,onChange:(e) =>{
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    profit: e.target.value
+                }))
+          }  },
+      {id: 12, control:'CustomTextField',  label:'Swap', varient: 'standard',value:tradingAccount.swap,onChange:(e) =>{
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    swap: e.target.value
+                }))
+          }  },
       {
         id: 13, 
         control:'CustomAutocomplete',
@@ -182,30 +175,29 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
         value:tradingAccount.currency,
         getOptionLabel:(option) => option.label ? option.value : "",
         onChange:(e,value) =>{
-          if(value){
-              setSelectedCurrency(value)
-          }
-          else{
-              setSelectedCurrency(null)
+         if(value){
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    currency: value.value
+                }))
+          }  
           } 
-          }   
       },
-      {id: 14, control:'CustomTextField',  label:'Last Access Time', varient: 'standard'  },
       {
-        id: 15, 
+        id: 14, 
         control:'CustomAutocomplete',
         name:'BrandId',   
         label:'BrandId', 
         varient: 'standard',
-        options:TradingAutocompleteDummyData,
+        options:BrandIdAutocompleteDummyData,
         value:tradingAccount.brand_id,
         getOptionLabel:(option) => option.label ? option.value : "",
         onChange:(e,value) =>{
           if(value){
-              setSelectedCurrency(value)
-          }
-          else{
-              setSelectedCurrency(null)
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    brand_id: value.value
+                }))
           } 
           }   
       },
@@ -218,23 +210,8 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
     CustomPhoneNo: CustomPhoneNo,
   };
 
-  const handleInputChange = (fieldName, value) => {
-    setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
-    switch (fieldName) {
-      case 'name':
-        
-        break;
-      case 'domain':
-       
-        break;
-      case 'marginCall':
-        
-        break;
-      default:
-        break;
-    }
-  };
-  
+
+  console.log('=====tradingAccount======',tradingAccount)
 
   const handleSubmit = async () => {
     try {
@@ -243,21 +220,19 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
      const {data: {message, payload, success}} = res
      setIsLoading(false)
         if(success){
+          console.log('success message',message)
+          setTradingAccount(prevData=>({...prevData,... initialValues}))
           notifySuccess(message)
           setIsModalOpen(false)
           fetchTradingAccounts()
-          setTradingAccount(initialValues)
+        
         }else{
-          notifyError(message) 
-          setIsLoading(false)
+          notifyError(payload.trading_group_id[0]) 
         }      
      
     }catch (err) {
-      const validationErrors = {};
-      err.inner.forEach(error => {
-        validationErrors[error.path] = error.message;
-      });
-      setErrors(validationErrors);
+     
+       notifyError(err) 
     }
   };
 
@@ -267,7 +242,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
   return (
     <Spin spinning={isLoading} size="large">
     <div className='flex flex-col gap-6'>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
        { Control.map(val=>{
             const ComponentToRender = ComponentMap[val.control]
             return (
@@ -285,6 +260,17 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
               )
             })
           }
+        <MuiTelInput 
+          value={tradingAccount.phone} 
+          onChange={(newValue) => 
+            setTradingAccount(prevData => ({
+              ...prevData,
+              phone: newValue
+            }))
+          }  
+          variant="standard"
+          defaultCountry="PK" 
+/>
 
       <div style={footerStyle}>
         <CustomButton
@@ -293,8 +279,9 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
           onClickHandler={handleSubmit}
         />
       </div>
-      <ToastContainer />
+     
         </div>
+         <ToastContainer />
     </div>
     </Spin>
   );
