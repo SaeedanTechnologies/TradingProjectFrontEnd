@@ -1,18 +1,25 @@
-import React, { useState } from 'react'
-import { Space, theme } from 'antd';
+import React, { useEffect, useState } from 'react'
+import { Space, Spin, theme } from 'antd';
 import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
 
 import CustomTable from '../../../components/CustomTable';
 import CustomButton from '../../../components/CustomButton';
 import { AddnewStyle } from '../../Brand/style';
 import CustomTextField from '../../../components/CustomTextField';
+import { Symbol_Group_List, DeleteSymbolsGroup } from '../../../utils/_SymbolGroupAPI';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { notifyError, notifySuccess } from '../../../utils/constants';
+import Swal from 'sweetalert2';
 
 const Index = () => {
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary  },
   } = theme.useToken();
+  const token = useSelector(({user})=> user?.user?.token )
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
+  const [SymbolList, setSymbolList] = useState([])
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
@@ -20,47 +27,47 @@ const Index = () => {
   const columns = [
     {
       title: 'Name',
-      dataIndex: 'Name',
+      dataIndex: 'name',
       key: '1',
     },
     {
       title: 'Laverage',
-      dataIndex: 'Laverage',
+      dataIndex: 'leverage',
       key: '2',
     },
     {
       title: 'Swap',
-      dataIndex: 'Swap',
+      dataIndex: 'swap',
       key: '3',
     },
     {
       title: 'Lot Size',
-      dataIndex: 'LotSize',
+      dataIndex: 'lot_size',
       key: '4',
     },
     {
       title: 'Lot Steps',
-      dataIndex: 'LotSteps',
+      dataIndex: 'lot_step',
       key: '5',
     },
     {
       title: 'Minimum Value',
-      dataIndex: 'minval',
+      dataIndex: 'vol_min',
       key: '6',
     },
     {
       title: 'Maximum Value',
-      dataIndex: 'MaxValue',
+      dataIndex: 'vol_max',
       key: '7',
     },
     {
       title: 'Symbol Group TI',
-      dataIndex: 'SGTI',
+      dataIndex: 'trading_interval',
       key: '8',
     },
     {
       title: 'Symbols',
-      dataIndex: 'Symbols',
+      render: (text)=> <Link to={'#'} className='text-sm font-semibold cursor-pointer' style={{color: colorPrimary }}>View Details</Link>,
       key: '9',
     },
     {
@@ -68,41 +75,64 @@ const Index = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-         <Link to={'/symbol-groups/0'}><EditOutlined style={{fontSize:"24px", color: colorPrimary }}  /></Link> 
-           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
+         <Link to={`/symbol-groups/${record.id}`}><EditOutlined style={{fontSize:"24px", color: colorPrimary }}  /></Link> 
+           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> DeleteHandler(record.id)} />
         </Space>
       ),
     },
   ];
- const data = [
-  {
-    key: '1',
-    Name: 'Sample Name 1',
-    Laverage: 100,
-    Swap: 10,
-    LotSize: 1,
-    LotSteps: 0.1,
-    minval: 0,
-    MaxValue: 1000,
-    SGTI: 'Sample Group TI 1',
-    Symbols: 'Sample Symbol 1',
-  },
-  {
-    key: '2',
-    Name: 'Sample Name 2',
-    Laverage: 200,
-    Swap: 20,
-    LotSize: 2,
-    LotSteps: 0.2,
-    minval: 10,
-    MaxValue: 2000,
-    SGTI: 'Sample Group TI 2',
-    Symbols: 'Sample Symbol 2',
-  },
-  // Add more data objects as needed
-];
+
+const FetchData = async () =>{
+    setIsLoading(true)
+    const res = await Symbol_Group_List(token)
+  const {data:{message, payload, success}} = res
+    setIsLoading(false)
+    if(success){
+      setSymbolList(payload.data)
+    }
+}
+const DeleteHandler = async (id)=>{
+  setIsLoading(true)
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#1CAC70",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  }).then(async(result) => {
+    if (result.isConfirmed) {
+      const res = await DeleteSymbolsGroup(id, token)
+      const {data:{success, message, payload}} = res
+      setIsLoading(false)
+      if(success){
+        Swal.fire({
+          title: "Deleted!",
+          text: message,
+          icon: "success"
+        });
+        FetchData()
+      }else{
+        Swal.fire({
+          title: "Opps!",
+          text: {message},
+          icon: "error"
+        });
+      }
+     
+    }
+  });
+ 
+  setIsLoading(false)
+ 
+}
+useEffect(() => {
+  FetchData()
+}, [])
 
   return (
+    <Spin spinning={isLoading} size="large">
     <div className='p-8' style={{ backgroundColor: colorBG }}>
     <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
       <h1 className='text-2xl font-semibold'>Symbol Group</h1>
@@ -117,8 +147,9 @@ const Index = () => {
        
       </div>
     </div>
-    <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
+    <CustomTable columns={columns} data={SymbolList} headerStyle={headerStyle} />
   </div>
+  </Spin>
   )
 }
 

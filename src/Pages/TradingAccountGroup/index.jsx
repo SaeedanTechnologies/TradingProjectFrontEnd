@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Space, theme } from 'antd';
 import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
 
@@ -9,13 +9,20 @@ import CustomTable from '../../components/CustomTable';
 import { Link } from 'react-router-dom';
 import CustomModal from '../../components/CustomModal';
 import TradingAccountModal from '../TradingAccountGroup/TradingAccountModal';
+import { Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
+import { useSelector } from 'react-redux';
+
 
 const Index = () => {
+  const token = useSelector(({user})=> user?.user?.token )
   const { token: { colorBG, TableHeaderColor,colorPrimary } } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [TradingAccounGroupList, setTradingAccountGroupList] = useState([])
 
   const showModal = () => {
     setIsModalOpen(true);
+    
   };
   const handleOk = () => {
     setIsModalOpen(false);
@@ -23,6 +30,19 @@ const Index = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const fetchData = async()=>{
+    setIsLoading(true)
+    const res = await Trading_Account_Group_List(token)
+    const {data: {message, payload, success}} = res
+    setIsLoading(false)
+    if(success){
+      setTradingAccountGroupList(payload.data)
+    }
+  }
+  useEffect(()=>{
+    fetchData()
+  },[])
+  
   const headerStyle = {
     background: TableHeaderColor,
     color: 'black', 
@@ -30,7 +50,7 @@ const Index = () => {
   const columns = [
     {
       title: 'Group Name',
-      dataIndex: 'GroupName',
+      dataIndex: 'name',
       key: '1',
     },
     {
@@ -52,12 +72,12 @@ const Index = () => {
     },
     {
       title: 'Mass Laverage',
-      dataIndex: 'ML',
+      dataIndex: 'mass_leverage',
       key: '5',
     },
     {
       title: 'Mass Swap',
-      dataIndex: 'MS',
+      dataIndex: 'mass_swap',
       key: '6',
     },
     {
@@ -71,27 +91,7 @@ const Index = () => {
       ),
     },
   ];
-  const data = [
-    {
-      key: '1',
-      GroupName: 'Group A',
-      SymbolGroup: 'Symbols 1',
-      MBS: 'Yes',
-      MDW: 'No',
-      ML: 'Yes',
-      MS: 'No',
-    },
-    {
-      key: '2',
-      GroupName: 'Group B',
-      SymbolGroup: 'Symbols 2',
-      MBS: 'No',
-      MDW: 'Yes',
-      ML: 'No',
-      MS: 'Yes',
-    },
-    // Add more data objects as needed
-  ];
+ 
   
   return (
     <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -104,7 +104,7 @@ const Index = () => {
             onClickHandler={showModal}
           />
       </div>
-      <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
+      <CustomTable columns={columns} data={TradingAccounGroupList} headerStyle={headerStyle} />
       <CustomModal
         isModalOpen={isModalOpen}
         handleOk={handleOk}
@@ -127,7 +127,8 @@ const Index = () => {
           </div>
         ]}
       >
-       <TradingAccountModal />
+       <TradingAccountModal 
+       />
       </CustomModal>
     </div>
   )

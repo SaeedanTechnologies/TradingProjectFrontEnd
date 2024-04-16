@@ -20,37 +20,37 @@ const Index = () => {
   const columns = [
     {
       title: 'Name',
-      dataIndex: 'Name',
+      dataIndex: 'name',
       key: '1',
     },
     {
       title: 'Laverage',
-      dataIndex: 'Laverage',
+      dataIndex: 'leverage',
       key: '2',
     },
     {
       title: 'Swap',
-      dataIndex: 'Swap',
+      dataIndex: 'swap',
       key: '3',
     },
     {
       title: 'Lot Size',
-      dataIndex: 'LotSize',
+      dataIndex: 'lot_size',
       key: '4',
     },
     {
       title: 'Lot Steps',
-      dataIndex: 'LotSteps',
+      dataIndex: 'lot_step',
       key: '5',
     },
     {
       title: 'Minimum Value',
-      dataIndex: 'minval',
+      dataIndex: 'vol_min',
       key: '6',
     },
     {
       title: 'Maximum Value',
-      dataIndex: 'MaxValue',
+      dataIndex: 'vol_max',
       key: '7',
     },
     {
