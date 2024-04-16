@@ -11,36 +11,36 @@ export const notifySuccess = (msg) => toast.success(msg);
 export const notifyError = (msg) => toast.error(msg);
 
 export const DashboardCardData = [
-{ 
-  id:1, 
-  title:"Bitcoin", 
-  subtitle:"BTS/UDS", 
-  value:"2210", 
-  subvalue:"+0.12 %", 
-  img_url:BITCOIN_CDN,
-  graph_url: BITCOINGRAPH_CDN,
-  subvalue_color: "#1CAC70"
-}, 
-{
-  id:2, 
-  title:"Ripple", 
-  subtitle:"XRP/UDS", 
-  value:"2210", 
-  subvalue:"+0.12 %", 
-  img_url:RIPPLE_CDN,
-  graph_url: RIPPLEGRAPH_CDN,
-  subvalue_color: "#8C0032"
-},
-{
-  id:3, 
-  title:"Etherium", 
-  subtitle:"ETS/UDS", 
-  value:"2210", 
-  subvalue:"+0.12 %", 
-  img_url:ETHIRUM_CDN,
-  graph_url: ETHIRUMGRAPH_CDN,
-  subvalue_color: "#04BFDA"
-},
+  {
+    id: 1,
+    title: "Bitcoin",
+    subtitle: "BTS/UDS",
+    value: "2210",
+    subvalue: "+0.12 %",
+    img_url: BITCOIN_CDN,
+    graph_url: BITCOINGRAPH_CDN,
+    subvalue_color: "#1CAC70"
+  },
+  {
+    id: 2,
+    title: "Ripple",
+    subtitle: "XRP/UDS",
+    value: "2210",
+    subvalue: "+0.12 %",
+    img_url: RIPPLE_CDN,
+    graph_url: RIPPLEGRAPH_CDN,
+    subvalue_color: "#8C0032"
+  },
+  {
+    id: 3,
+    title: "Etherium",
+    subtitle: "ETS/UDS",
+    value: "2210",
+    subvalue: "+0.12 %",
+    img_url: ETHIRUM_CDN,
+    graph_url: ETHIRUMGRAPH_CDN,
+    subvalue_color: "#04BFDA"
+  },
 
 
 ]
@@ -84,25 +84,25 @@ export const GrowthChartFilter = [
   },
 ]
 
-export const BarChartConfig =  {
+export const BarChartConfig = {
   chart: {
-      type: 'column',
+    type: 'column',
   },
-  responsive: {  
-    rules: [{  
-      condition: {  
-        maxWidth: 500  
-      },  
-      chartOptions: {  
-        legend: {  
-          enabled: false  
-        }  
-      }  
-    }]  
+  responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+      },
+      chartOptions: {
+        legend: {
+          enabled: false
+        }
+      }
+    }]
   },
   title: {
-      text: '',
-      align: 'left'
+    text: '',
+    align: 'left'
   },
   // subtitle: {
   //     text:
@@ -111,36 +111,36 @@ export const BarChartConfig =  {
   //     align: 'left'
   // },
   xAxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-      crosshair: true,
-      accessibility: {
-          description: 'Countries'
-      }
+    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    crosshair: true,
+    accessibility: {
+      description: 'Countries'
+    }
   },
   yAxis: {
-      min: 0,
-      title: {
-          text: '1000 metric tons (MT)'
-      }
+    min: 0,
+    title: {
+      text: '1000 metric tons (MT)'
+    }
   },
   tooltip: {
-      valueSuffix: ' (1000 MT)'
+    valueSuffix: ' (1000 MT)'
   },
   plotOptions: {
-      column: {
-          pointPadding: 0.2,
-          borderWidth: 0
-      }
+    column: {
+      pointPadding: 0.2,
+      borderWidth: 0
+    }
   },
   series: [
-      {
-          name: 'Jan',
-          data: [406292, 260000, 107000, 68300, 27500, 14500]
-      },
-      {
-          name: 'Feb',
-          data: [51086, 136000, 5500, 141000, 107180, 77000]
-      }
+    {
+      name: 'Jan',
+      data: [406292, 260000, 107000, 68300, 27500, 14500]
+    },
+    {
+      name: 'Feb',
+      data: [51086, 136000, 5500, 141000, 107180, 77000]
+    }
   ]
 }
 
@@ -201,11 +201,18 @@ export const data = [
   },
 ];
 
-export const AutocompleteDummyData =  [
+export const AutocompleteDummyData = [
   { title: 'The Shawshank Redemption', id: 1994 },
   { title: 'The Godfather', id: 1972 },
   { title: 'The Godfather: Part II', id: 1974 }
 ]
+
+export const SymbolDummy = [
+  { title: 'The Shawshank Redemption', id: 1994 },
+  { title: 'The Godfather', id: 1972 },
+  { title: 'The Godfather: Part II', id: 1974 }
+]
+
 export const GetCurrentDate = () => {
   var date = new Date();
   return `${date.getFullYear()}-${((date.getMonth()) + 1) <= 9 ? '0' + ((date.getMonth()) + 1).toString() : (date.getMonth()) + 1}-${date.getDate() <= 9 ? '0' + (date.getDate()).toString() : date.getDate()}`
