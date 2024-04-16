@@ -9,13 +9,13 @@ import { notifyError, notifySuccess } from '../../utils/constants';
 import { ToastContainer } from 'react-toastify';
 import { Spin } from 'antd';
 
-const BrandModal = ({setIsModalOpen, fetchBrands, BrandID}) => {
-  const token = useSelector(({user})=> user?.user?.token )
+const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
+  const token = useSelector(({ user }) => user?.user?.token)
   const [name, setName] = useState('');
   const [domain, setDomain] = useState('');
   const [disabledDomain, setDisabledDomain] = useState(false);
   const [marginCall, setMarginCall] = useState('');
-  const [errors, setErrors] = useState({}); // State to hold validation errors
+  const [errors, setErrors] = useState({}); 
   const [isLoading, setIsLoading] = useState(false)
 
   const validationSchema = Yup.object().shape({
@@ -45,7 +45,7 @@ const BrandModal = ({setIsModalOpen, fetchBrands, BrandID}) => {
         break;
     }
   };
-  const clearFields = ()=>{
+  const clearFields = () => {
     setName('')
     setDomain('')
     setMarginCall('')
@@ -60,39 +60,39 @@ const BrandModal = ({setIsModalOpen, fetchBrands, BrandID}) => {
       }, { abortEarly: false });
 
       setErrors({});
-    const BrandData = {
-      name:name, 
-      domain:domain,
-      margin_call:marginCall
-    }
-    if(BrandID === 0){
-      setIsLoading(true)
-      const res = await SaveBrands(BrandData, token)
-      const {data: {message, payload, success}} = res
-      setIsLoading(false)
-        if(success){
+      const BrandData = {
+        name: name,
+        domain: domain,
+        margin_call: marginCall
+      }
+      if (BrandID === 0) {
+        setIsLoading(true)
+        const res = await SaveBrands(BrandData, token)
+        const { data: { message, payload, success } } = res
+        setIsLoading(false)
+        if (success) {
           notifySuccess(message)
           setIsModalOpen(false)
           fetchBrands()
           clearFields()
-        }else{
-          notifyError(message) 
+        } else {
+          notifyError(message)
         }
-    }else{
-      setIsLoading(true)
-      const res = await UpdateBrand(BrandID, BrandData, token)
-      const {data: {message, payload, success}} = res
-      setIsLoading(false)
-      if(success){
-        notifySuccess(message)
-        setIsModalOpen(false)
-        fetchBrands()
-        clearFields()
-      }else{
-        notifyError(message) 
+      } else {
+        setIsLoading(true)
+        const res = await UpdateBrand(BrandID, BrandData, token)
+        const { data: { message, payload, success } } = res
+        setIsLoading(false)
+        if (success) {
+          notifySuccess(message)
+          setIsModalOpen(false)
+          fetchBrands()
+          clearFields()
+        } else {
+          notifyError(message)
+        }
       }
-    }
-    
+
     } catch (err) {
       const validationErrors = {};
       err.inner.forEach(error => {
@@ -102,70 +102,70 @@ const BrandModal = ({setIsModalOpen, fetchBrands, BrandID}) => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     clearFields()
-      if(BrandID !== 0){ // update
-        setDisabledDomain(true)
-        fetchDataWRTID()
-      }else{
-        setDisabledDomain(false)
-      }
+    if (BrandID !== 0) { // update
+      setDisabledDomain(true)
+      fetchDataWRTID()
+    } else {
+      setDisabledDomain(false)
+    }
   }, [BrandID])
 
-  const fetchDataWRTID = async()=>{
+  const fetchDataWRTID = async () => {
     setIsLoading(true)
     const res = await GetSingleBrand(BrandID, token)
-    const {data:{payload, message, success}} = res
+    const { data: { payload, message, success } } = res
     setIsLoading(false)
-    if(success){
+    if (success) {
       setName(payload.name)
       setDomain(payload.domain)
       setMarginCall(payload.margin_call)
-    }else{
+    } else {
       notifyError(message)
     }
   }
 
   return (
     <Spin spinning={isLoading} size="large">
-    <div className='flex flex-col gap-6'>
-      <CustomTextField
-        label="Name"
-        varient="standard"
-        type="text"
-        value={name}
-        onChange={e => handleInputChange('name', e.target.value)}
-      />
-      {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
-
-      <CustomTextField
-        label="Domain"
-        varient="standard"
-        type="text"
-        disabled={disabledDomain}
-        value={domain}
-        onChange={e => handleInputChange('domain', e.target.value)}
-      />
-      {errors.domain && <span style={{ color: 'red' }}>{errors.domain}</span>}
-
-      <CustomTextField
-        label="Margin Call"
-        varient="standard"
-        type="number"
-        value={marginCall}
-        onChange={e => handleInputChange('marginCall', e.target.value)}
-      />
-      {errors.marginCall && <span style={{ color: 'red' }}>{errors.marginCall}</span>}
-
-      <div style={footerStyle}>
-        <CustomButton
-          Text={'Submit'}
-          style={submitStyle}
-          onClickHandler={handleSubmit}
+      <div className='flex flex-col gap-6'>
+        <CustomTextField
+          label="Name"
+          varient="standard"
+          type="text"
+          value={name}
+          onChange={e => handleInputChange('name', e.target.value)}
         />
+        {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
+
+        <CustomTextField
+          label="Domain"
+          varient="standard"
+          type="text"
+          disabled={disabledDomain}
+          value={domain}
+          onChange={e => handleInputChange('domain', e.target.value)}
+        />
+        {errors.domain && <span style={{ color: 'red' }}>{errors.domain}</span>}
+
+        <CustomTextField
+          label="Margin Call"
+          varient="standard"
+          type="number"
+          value={marginCall}
+          onChange={e => handleInputChange('marginCall', e.target.value)}
+        />
+        {errors.marginCall && <span style={{ color: 'red' }}>{errors.marginCall}</span>}
+
+        <div style={footerStyle}>
+          <CustomButton
+            Text={'Submit'}
+            style={submitStyle}
+            onClickHandler={handleSubmit}
+          />
+        </div>
+        <ToastContainer />
       </div>
-      <ToastContainer />
-    </div>
     </Spin>
   );
 };
