@@ -1,59 +1,79 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomTextField from '../../components/CustomTextField';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
+import { Symbol_Group_List } from '../../utils/_SymbolGroupAPI';
+import { useSelector } from 'react-redux';
+import { Spin } from 'antd';
 
 const TradingAccountModal = () => {
-  const [GroupList, setGroupList] = useState([
-    { id: 1, title: 'rea.848.USDT' },
-    { id: 2, title: 'rea.849.USDT' },
-    { id: 3, title: 'rea.850.USDT' },
-    { id: 4, title: 'rea.851.USDT' }
-  ]);
+  const token = useSelector(({user})=> user?.user?.token )
+  const [GroupList, setGroupList] = useState([]);
   const [SelectedGroup, setSelectedGroup] = useState(null);
-  const Controls = [
-    { id: 1, control: 'CustomTextField', label: 'Group Name', varient: 'standard' },
-    {
-      id: 2,
-      control: 'CustomAutocomplete',
-      name: 'SymbolGroup',
-      varient: 'standard',
-      label: 'Symbol Group',
-      options: GroupList,
-      getOptionLabel: (option) => option.title ? option.title : "",
-      onChange: (e, value) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [name, setName] = useState('');
+  const [massLeverage, setMassLeverage] = useState('')
+  const [massSwap, setMassSwap] = useState('')
+
+  useEffect(()=>{
+    getSymbolGroups()
+  },[])
+  const getSymbolGroups = async()=>{
+    setIsLoading(true)
+    const res = await Symbol_Group_List(token)
+    const {data:{success, message, payload}} = res
+    setIsLoading(false)
+    if(success){
+      setGroupList(payload.data)
+    }
+  }
+  return (
+    <Spin spinning={isLoading} size="large">
+    <div className='flex flex-col gap-6'>
+      <div>
+      <CustomTextField
+       name='name'
+       varient='standard'
+       label='Group Name'
+      />
+      <span style={{color: 'red'}}>Required</span>
+      </div>
+      <div>
+      <CustomAutocomplete 
+       name='SymbolGroup'
+       varient='standard'
+       label='Symbol Group'
+       options={GroupList}
+       getOptionLabel={(option) => option.name ? option.name : ""}
+       onChange={(e, value) => {
         if (value) {
           setSelectedGroup(value);
         } else {
           setSelectedGroup(null);
         }
-      }
-    },
-    { id: 3, control: 'CustomTextField', label: 'Mass Laverage', varient: 'standard' },
-    { id: 4, control: 'CustomTextField', label: 'Mass Swap', varient: 'standard' }
-  ];
-  const ComponentMap = {
-    CustomTextField: CustomTextField,
-    CustomAutocomplete: CustomAutocomplete,
-  };
-  return (
-    <div className='flex flex-col gap-6'>
-      {
-        Controls.map(item => {
-          const ComponentToRender = ComponentMap[item.control];
-          return (
-            <ComponentToRender
-              key={item.id}
-              name={item.name}
-              varient={item.varient}
-              label={item.label}
-              options={item.options}
-              getOptionLabel={(option) => item.getOptionLabel(option)}
-              onChange={(e, value) => item.onChange(e, value)}
-            />
-          )
-        })
-      }
+      }}
+      
+      />
+      <span style={{color: 'red'}}>Required</span>
+      </div>
+      <div>
+      <CustomTextField
+       name='name'
+       varient='standard'
+       label='Mass Leverage'
+      />
+      <span style={{color: 'red'}}>Required</span>
+      </div>
+       <div>
+       <CustomTextField
+       name='name'
+       varient='standard'
+       label='Mass Swap'
+      />
+       <span style={{color: 'red'}}>Required</span>
+       </div>
+      
     </div>
+    </Spin>
   );
 };
 
