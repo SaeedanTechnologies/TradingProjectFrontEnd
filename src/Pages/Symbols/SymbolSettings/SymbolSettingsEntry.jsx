@@ -239,20 +239,24 @@ const SymbolSettingsEntry = () => {
     }
   };
 
-
   return (
     <Spin spinning={isLoading} size="large">
-      <div className='p-8' style={{ backgroundColor: colorBG }}>
-        <div className='flex gap-3'>
-          <img
-            src={ARROW_BACK_CDN}
-            alt='back icon'
-            className='cursor-pointer'
-            onClick={() => navigate(-1)}
-          />
-          <h1 className='text-2xl font-semibold'>Symbol Group</h1>
-        </div>
-        <div className='border rounded-lg p-4'>
+  
+
+    
+    <div className='p-8' style={{ backgroundColor: colorBG }}>
+      <div className='flex gap-3'>
+        <img
+          src={ARROW_BACK_CDN}
+          alt='back icon'
+          className='cursor-pointer'
+          onClick={() => navigate(-1)}
+        />
+        <h1 className='text-2xl font-semibold'>Symbol Group</h1>
+      </div>
+      <div className='border rounded-lg p-4'>
+
+
 
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-8'>
             <div>
