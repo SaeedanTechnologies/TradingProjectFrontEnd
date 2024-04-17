@@ -7,6 +7,7 @@ const CustomAutocomplete = ({ name, id, defaultValue, options, getOptionLabel, o
     <Autocomplete
       name={name}
       id={id}
+      variant= {variant}
       defaultValue={defaultValue}
       options={options}
       getOptionLabel={getOptionLabel}

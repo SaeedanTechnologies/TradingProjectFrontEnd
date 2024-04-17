@@ -208,9 +208,9 @@ export const AutocompleteDummyData = [
 ]
 
 export const SymbolAutocompleteDummyData =  [
-  { label: 'ETH/USD', value:'ETH/USD'  },
-  { label: 'Bitcoin Euro', value:'Bitcoin Euro' },
-  { label: 'BTC/USD', value:'	BTC/USD' }
+  { label: 'The Godfather', value:'The Godfather'  },
+  { label: 'The Godfather: Part II', value:'The Godfather: Part II' },
+
 ]
 
 export const TradingAutocompleteDummyData=[
@@ -235,17 +235,17 @@ export const TradeOrderTypes =[
 ]
 
 export const PendingOrderTypes =[
-      { label:'Buy Limit', value: 1, },
-      { label:'Sell Limit', value: 2, },
-      { label:'Buy Stop', value: 3, },
-      { label:'Sell Stop', value: 5, },
-      { label:'Buy Sell Limit', value: 6, },
-      { label:'Sell Stop Limit', value: 7, },
+      { label:'Buy Limit', value:'Buy Limit'},
+      { label:'Sell Limit', value:'Sell Limit'},
+      { label:'Buy Stop', value:'Buy Stop' },
+      { label:'Sell Stop', value:'Sell Stop' },
+      { label:'Buy Sell Limit', value:'Buy Sell Limit' },
+      { label:'Sell Stop Limit', value:'Sell Stop Limit' },
 ]
 
 export const MarketOrderTypes =[
-   { label:'Buy', value: 1  },
-    { label:'Sell', value: 2  },
+   { label:'Buy', value:'Buy'},
+    { label:'Sell', value:'Sell'},
 ]
 
 export const GetCurrentDate = () => {

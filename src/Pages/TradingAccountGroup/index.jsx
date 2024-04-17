@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Space, theme } from 'antd';
+import { Space,Spin, Tag, theme } from 'antd';
 import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
-
-
 import CustomButton from '../../components/CustomButton';
 import { AddnewStyle, footerStyle, submitStyle } from '../Brand/style';
 import CustomTable from '../../components/CustomTable';
@@ -94,43 +92,45 @@ const Index = () => {
  
   
   return (
-    <div className='p-8' style={{ backgroundColor: colorBG }}>
-      <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-         <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
-         <CustomButton
-            Text='Add Trading Group'
-            style={{height:'48px' ,...AddnewStyle}}
-            icon={<PlusCircleOutlined />}
-            onClickHandler={showModal}
-          />
+    <Spin spinning={isLoading} size="large">
+      <div className='p-8' style={{ backgroundColor: colorBG }}>
+        <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
+          <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
+          <CustomButton
+              Text='Add Trading Group'
+              style={{height:'48px' ,...AddnewStyle}}
+              icon={<PlusCircleOutlined />}
+              onClickHandler={showModal}
+            />
+        </div>
+        <CustomTable columns={columns} data={TradingAccounGroupList} headerStyle={headerStyle} />
+        <CustomModal
+          isModalOpen={isModalOpen}
+          handleOk={handleOk}
+          handleCancel={handleCancel}
+          title={''}
+          width={800}
+          footer={[
+            <div className='flex items-center justify-end gap-4'>
+              <CustomButton
+                Text={'Cancle'}
+                onClickHandler={handleOk}
+                style={{backgroundColor:'#C5C5C5',borderColor:'#C5C5C5', color:'#fff'  ,...submitStyle}}
+              />
+              <CustomButton
+                Text={'Submit'}
+                onClickHandler={handleOk}
+                style={submitStyle}
+              />
+            
+            </div>
+          ]}
+        >
+        <TradingAccountModal 
+        />
+        </CustomModal>
       </div>
-      <CustomTable columns={columns} data={TradingAccounGroupList} headerStyle={headerStyle} />
-      <CustomModal
-        isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        title={''}
-        width={800}
-        footer={[
-          <div className='flex items-center justify-end gap-4'>
-             <CustomButton
-              Text={'Cancle'}
-              onClickHandler={handleOk}
-              style={{backgroundColor:'#C5C5C5',borderColor:'#C5C5C5', color:'#fff'  ,...submitStyle}}
-            />
-            <CustomButton
-              Text={'Submit'}
-              onClickHandler={handleOk}
-              style={submitStyle}
-            />
-           
-          </div>
-        ]}
-      >
-       <TradingAccountModal 
-       />
-      </CustomModal>
-    </div>
+    </Spin>
   )
 }
 

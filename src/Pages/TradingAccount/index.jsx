@@ -1,15 +1,17 @@
 import React,{useState,useEffect} from 'react'
 import {PlusCircleOutlined, EyeOutlined , DeleteOutlined} from '@ant-design/icons';
-import { Space, Tag, theme } from 'antd';
+import { Space,Spin, Tag, theme } from 'antd';
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CustomTextField from '../../components/CustomTextField';
 import { Trading_Accounts_List,Delete_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomModal from '../../components/CustomModal';
 import { notifySuccess, notifyError } from '../../utils/constants';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import TradingModal from './TradingModal'
+import { setAccountID } from '../../store/TradeSlice';
+
 
 const Index = ({title}) => {
 
@@ -21,6 +23,9 @@ const Index = ({title}) => {
   const {
     token: { colorBG, TableHeaderColor, colorPrimary  },
   } = theme.useToken();
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   
 
   const renderColumns=[
@@ -111,7 +116,7 @@ const Index = ({title}) => {
       key: '9',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-          <Link to={`/single-trading-accounts/details/live-order/${record.id}`}><EyeOutlined style={{fontSize:"24px", color: colorPrimary }} /></Link>
+        <EyeOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> setTradeId(record.id)} />
          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> DeleteHandler(record.id)} />
       
         </Space>
@@ -123,6 +128,12 @@ const Index = ({title}) => {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
+
+  const setTradeId = (id)=>{
+    dispatch(setAccountID(id))
+    navigate('/single-trading-accounts/details/live-order')
+    
+  }
 
 
   const fetchTradingAccounts = async () => {
@@ -186,37 +197,39 @@ const Index = ({title}) => {
   }, [])
 
   return (
-    <div className='p-8' style={{backgroundColor: colorBG}}>
-      <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-        <h1 className='text-2xl font-semibold'>{title}</h1>
-        <CustomTextField
-          label='Search'
-          sx={{width: '300px'}}
-        
-        />
-          {/* <CustomButton
-             Text='Add New Trading Account'
-             style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
-             icon={<PlusCircleOutlined />}
-             onClickHandler={()=>showModal(0)}
-          />*/}
+    <Spin spinning={isLoading} size="large">
+      <div className='p-8' style={{backgroundColor: colorBG}}>
+          <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
+            <h1 className='text-2xl font-semibold'>{title}</h1>
+            <CustomTextField
+              label='Search'
+              sx={{width: '300px'}}
+            
+            />
+              {/* <CustomButton
+                Text='Add New Trading Account'
+                style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
+                icon={<PlusCircleOutlined />}
+                onClickHandler={()=>showModal(0)}
+              />*/}
+          </div>
+          <CustomTable columns={renderColumns} data={tradingAccountsList} headerStyle={headerStyle} />
+          <CustomModal
+            isModalOpen={isModalOpen}
+            handleOk={handleOk}
+            handleCancel={handleCancel}
+            title={''}
+            width={800}
+          footer={null}
+          >
+            <TradingModal 
+              setIsModalOpen={setIsModalOpen}
+              fetchTradingAccounts={fetchTradingAccounts}
+              BrandID={tradingID}
+              />
+          </CustomModal>
       </div>
-      <CustomTable columns={renderColumns} data={tradingAccountsList} headerStyle={headerStyle} />
-       <CustomModal
-        isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        title={''}
-        width={800}
-       footer={null}
-      >
-        <TradingModal 
-          setIsModalOpen={setIsModalOpen}
-          fetchTradingAccounts={fetchTradingAccounts}
-          BrandID={tradingID}
-          />
-      </CustomModal>
-   </div>
+   </Spin>
   )
 }
 
