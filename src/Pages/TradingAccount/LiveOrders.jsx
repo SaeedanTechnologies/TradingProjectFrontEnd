@@ -3,7 +3,7 @@ import React, { useState,useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
 import {EditOutlined, CloseOutlined, DeleteOutlined} from '@ant-design/icons';
-import { Link, useParams } from 'react-router-dom';
+import { Link,  } from 'react-router-dom';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
  
@@ -15,8 +15,7 @@ const LiveOrders = () => {
   } = theme.useToken();
 
   const [tradeOrder,setTradeOrder] = useState([])
-    const { tradeId } = useParams();
-    console.log('trade ID IN PARAMS',tradeId)
+    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
   const columns = [
     {
@@ -72,7 +71,7 @@ const LiveOrders = () => {
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
             <Link to="/single-trading-accounts/details/live-order"><EditOutlined style={{fontSize:"24px", color: colorPrimary }}/></Link>
-          <Link to="/single-trading-accounts/details">
+           <Link to="/single-trading-accounts/details">
             <CloseOutlined style={{fontSize:"24px", color: colorPrimary }} /></Link>
          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
         </Space>
@@ -115,7 +114,7 @@ const LiveOrders = () => {
   
 
   const fetchTradeOrder = async () => {
-    const mData = await Get_Trade_Order(tradeId,'market',token)
+    const mData = await Get_Trade_Order(trading_account_id,'market',token)
     const {data:{message, payload, success}} = mData
     if(success){
       console.log('trade order data ======',payload)

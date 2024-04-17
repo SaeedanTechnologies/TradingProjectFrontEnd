@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
       { path: "/trading-group/mass-deposit/:id/:massid", element: <MDWEntry /> },
       { path: "/single-trading-accounts", element: <SingleTradingAccount /> },
       { path: "/single-trading-accounts/details",element:<TradingAccountDetails/>,children:[
-            {path:"live-order/:tradeId", element: <LiveOrders />},
+            {path:"live-order", element: <LiveOrders />},
             {path:"symbol", element: <Trade />},
             {path:"close-order", element: <CloseOrder />},
             {path:"personal-data", element: <PersonalData />},

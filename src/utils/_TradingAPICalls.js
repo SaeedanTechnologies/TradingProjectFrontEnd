@@ -22,3 +22,8 @@ export const Get_Trade_Order = async(trading_account_id,OrderType, token)=>{
   const res = await _API(`${apiUrl}/admin/trade_orders/?trading_account_id=${trading_account_id}&order_type=${OrderType}`,'get',[],token)
   return res
 }
+
+export const Post_Trade_Order = async(TradeOrderData, token)=>{
+  const res = await _API(`${apiUrl}/admin/trade_orders`,'post',TradeOrderData,token)
+  return res
+}

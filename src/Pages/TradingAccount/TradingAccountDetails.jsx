@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { Tabs, theme } from 'antd';
 import LiveOrders from './LiveOrders';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate,useLocation,useParams } from 'react-router-dom';
 
 
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
@@ -19,6 +19,7 @@ const TradingAccountDetails = () => {
   } = theme.useToken();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const {tradeId} = useParams();
 const { TabPane } = Tabs;
 
   const [activeTab, setActiveTab] = useState('1');
@@ -29,13 +30,13 @@ const { TabPane } = Tabs;
     key: '1',
     label: 'Live Orders',
     children: <LiveOrders />,
-    path: "/single-trading-accounts/details/"
+    path: '/single-trading-accounts/details/live-order'
   },
   {
     key: '2',
     label: 'Symbol',
     children: <Trade />,
-    path: "/single-trading-accounts/details/symbol"
+    path: '/single-trading-accounts/details/symbol'
   },
   {
     key: '3',
