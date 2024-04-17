@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
-import { AutocompleteDummyData, SymbolDummy } from '../../../utils/constants';
+import { AutocompleteDummyData, SymbolAutocompleteDummyData } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { SymbolSettingPost, Symbol_Group_List } from '../../../utils/_SymbolSettingAPICalls';
 import { useSelector } from 'react-redux';
