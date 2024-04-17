@@ -1,37 +1,53 @@
 import { theme } from 'antd';
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
-import { AutocompleteDummyData } from '../../utils/constants';
+import { SymbolAutocompleteDummyData,TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
 import { Link, useNavigate } from 'react-router-dom';
+import { TradeValidationSchema } from '../../utils/validations';
 
 const Trade = () => {
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
-  const navigate = useNavigate()
-  const [SymbolList, setSymbolList] = useState(AutocompleteDummyData)
-  const [SelectedSymbol, setSelectedSymbol] = useState(null)
+  const navigate = useNavigate();
+  const [SymbolList, setSymbolList] = useState(SymbolAutocompleteDummyData);
+  const [SelectedSymbol, setSelectedSymbol] = useState(null);
+  const [order_type, setOrder_type] = useState({});
+  const [type,setType] = useState('');
+  const [volume,setVolume] = useState('');
+  const [comment,setComment] = useState('');
+  const [errors, setErrors] = useState({});
 
-  const [TypeList, setTypeList] = useState([
-    { id: 1, title: 'Pending Order' },
-    { id: 2, title: 'Market Order' },
-  ])
-  const [SelectedType, setSelectedType] = useState(null)
+ 
+  //  useEffect(()=>{
+  //   console.log('in trade by default')
+  // },[])
 
-  const [LimitTypeListPO, setLimitTypeListPO] = useState([
-    { id: 1, title: 'Buy Limit' },
-    { id: 2, title: 'Sell Limit' },
-    { id: 3, title: 'Buy Stop' },
-    { id: 5, title: 'Sell Stop' },
-    { id: 6, title: 'Buy Sell Limit' },
-    { id: 7, title: 'Sell Stop Limit' },
-  ])
-  const [SelectedLimitTypeListPO, setSelectedLimitTypeListPO] = useState(null)
+   const handleInputChange = (fieldName, value) => {
+    setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
+    switch (fieldName) {
+      case 'order_type':
+        setOrder_type(value);
+        break;
+      case 'type':
+        setType(value);
+        break;
+      case 'volume':
+        setVolume(value);
+        break;
+          case 'comment':
+        setComment(value);
+        break;
+      default:
+        break;
+    }
+  };
+
 
   return (
     <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
@@ -60,10 +76,10 @@ const Trade = () => {
             varient={'standard'}
             label={'Symbol'}
             options={SymbolList}
-            getOptionLabel={(option) => option.title ? option.title : ""}
+            getOptionLabel={(option) => option.label ? option.label : ""}
             onChange={(e, value) => {
               if (value) {
-                setSelectedSymbol(value)
+                setSelectedSymbol(value.value)
               }
               else {
                 setSelectedSymbol(null)
@@ -74,15 +90,14 @@ const Trade = () => {
             name={'Type'}
             varient={'standard'}
             label={'Type'}
-            options={TypeList}
-            getOptionLabel={(option) => option.title ? option.title : ""}
+            options={TradeOrderTypes}
+            getOptionLabel={(option) => option.label ? option.label : ""}
             onChange={(e, value) => {
+              console.log('order type value',value)
               if (value) {
-                setSelectedType(value)
+                setOrder_type(value.value)
               }
-              else {
-                setSelectedType(null)
-              }
+              
             }}
           />
         </div>
@@ -91,18 +106,15 @@ const Trade = () => {
             name={'Type'}
             varient={'standard'}
             label={'Type'}
-            options={LimitTypeListPO}
-            getOptionLabel={(option) => option.title ? option.title : ""}
+            options={order_type === 'pending' ? PendingOrderTypes :  MarketOrderTypes}
+            getOptionLabel={(option) => option.label ? option.label : ""}
             onChange={(e, value) => {
               if (value) {
-                setLimitTypeListPO(value)
-              }
-              else {
-                setLimitTypeListPO(null)
+                setType(value.value)
               }
             }}
           />
-          <CustomTextField label={'Volumn'} varient={'standard'} />
+          <CustomTextField label={'Volume'} varient={'standard'} value={volume}  onChange={(e)=>setVolume(e.target.value)} />
         </div>
         <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

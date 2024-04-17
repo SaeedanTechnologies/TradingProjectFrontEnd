@@ -1,5 +1,5 @@
 import { Space, Tag, theme } from 'antd';
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import {DeleteOutlined} from '@ant-design/icons';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import CustomMUISelect from '../../components/CustomMUISelect';
@@ -70,6 +70,11 @@ const TransactionOrder = () => {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
+
+
+      useEffect(()=>{
+    console.log('in transaction order by default')
+  },[])
   return (
     <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">

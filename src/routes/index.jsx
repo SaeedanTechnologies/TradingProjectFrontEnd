@@ -35,6 +35,9 @@ import ChangePassword from '../Pages/Settings/ChangePassword'
 import TradingViewChart from '../Pages/Brand/TradingViewChart';
 import AuthLayout from '../Pages/Auth/AuthLayout';
 import SignIn from '../Pages/Auth/SignIn';
+import PersonalData from '../Pages/TradingAccount/PersonalData';
+import Account from '../Pages/TradingAccount/Account';
+import TransactionOrder from '../Pages/TradingAccount/TransactionOrder'
 
 export const router = createBrowserRouter([
   {
@@ -63,8 +66,14 @@ export const router = createBrowserRouter([
       { path: "/trading-group/mass-deposit/:id", element: <MassDipositWidthdraw /> },
       { path: "/trading-group/mass-deposit/:id/:massid", element: <MDWEntry /> },
       { path: "/single-trading-accounts", element: <SingleTradingAccount /> },
-      { path: "/single-trading-accounts/details", element: <TradingAccountDetails /> },
-      { path: "/single-trading-accounts/details/live-order", element: <LiveOrderEntry /> },
+      { path: "/single-trading-accounts/details",element:<TradingAccountDetails/>,children:[
+            {path:"live-order/:tradeId", element: <LiveOrders />},
+            {path:"symbol", element: <Trade />},
+            {path:"close-order", element: <CloseOrder />},
+            {path:"personal-data", element: <PersonalData />},
+            {path:"account-security", element: <Account />},
+            {path:"transaction-order", element: <TransactionOrder />},
+          ]},
       { path: "/live-orders", element: <LiveOrders /> },
       { path: "/close-orders", element: <CloseOrder /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },

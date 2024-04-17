@@ -1,20 +1,17 @@
 import React from 'react'
 import { MuiTelInput } from 'mui-tel-input'
 
-const CustomPhoneNo = () => {
-  const [value, setValue] = React.useState('')
-
-  const handleChange = (newValue) => {
-    setValue(newValue)
-  }
+const CustomPhoneNo = ({value,onChange,...props}) => {
+ 
   return <MuiTelInput
     value={value}
     defaultCountry="PK"
-    onChange={handleChange}
+    onChange={onChange}
     variant= 'standard'
     style={{
     marginTop: '15px',
     }}
+    {...props}
     />
 }
 export default CustomPhoneNo

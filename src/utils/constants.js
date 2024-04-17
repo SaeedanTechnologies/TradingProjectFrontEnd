@@ -207,10 +207,45 @@ export const AutocompleteDummyData = [
   { title: 'The Godfather: Part II', id: 1974 }
 ]
 
-export const SymbolDummy = [
-  { title: 'The Shawshank Redemption', id: 1994 },
-  { title: 'The Godfather', id: 1972 },
-  { title: 'The Godfather: Part II', id: 1974 }
+export const SymbolAutocompleteDummyData =  [
+  { label: 'ETH/USD', value:'ETH/USD'  },
+  { label: 'Bitcoin Euro', value:'Bitcoin Euro' },
+  { label: 'BTC/USD', value:'	BTC/USD' }
+]
+
+export const TradingAutocompleteDummyData=[
+  { label:1 ,value:"1" },
+  { label:2, value:"2" },
+  { label:3, value:"3"}
+  
+]
+
+export const BrandIdAutocompleteDummyData=[
+  { label:6 ,value:"6" },
+  { label:7, value:"7" },
+  { label:8, value:"8"}
+  
+]
+
+export const TradeOrderTypes =[
+  
+    { label: 'Pending Order', value:"pending"},
+    { label: 'Market Order', value: "market"},
+              
+]
+
+export const PendingOrderTypes =[
+      { label:'Buy Limit', value: 1, },
+      { label:'Sell Limit', value: 2, },
+      { label:'Buy Stop', value: 3, },
+      { label:'Sell Stop', value: 5, },
+      { label:'Buy Sell Limit', value: 6, },
+      { label:'Sell Stop Limit', value: 7, },
+]
+
+export const MarketOrderTypes =[
+   { label:'Buy', value: 1  },
+    { label:'Sell', value: 2  },
 ]
 
 export const GetCurrentDate = () => {

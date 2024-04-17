@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import { theme } from 'antd';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import CustomTextField from '../../components/CustomTextField';
@@ -104,6 +104,11 @@ const ChkBoxesControl = [
     label:'Change Password at Next Login',
   },
 ]
+
+      useEffect(()=>{
+    console.log('in account & security by default')
+  },[])
+
   return (
     <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
