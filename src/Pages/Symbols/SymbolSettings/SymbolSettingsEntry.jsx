@@ -107,9 +107,8 @@ const SymbolSettingsEntry = () => {
     }
   };
 
-
-
   return (
+    
     <div className='p-8' style={{ backgroundColor: colorBG }}>
       <div className='flex gap-3'>
         <img

@@ -8,7 +8,6 @@ import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import CustomButton from '../../../components/CustomButton';
 import {SaveSymbolGroups, SelectSymbolWRTID, UpdateSymbolGroups} from '../../../utils/_SymbolGroupAPI';
-import { notifyError, notifySuccess } from '../../../utils/constants';
 import { useSelector } from 'react-redux';
 
 const SymbolGroupData =  [

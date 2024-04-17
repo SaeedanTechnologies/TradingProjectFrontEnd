@@ -28,5 +28,4 @@ export const SelectSymbolWRTID = async(id,token) =>{
 export const DeleteSymbolsGroup = async(id, token)=>{
   const res = await _API(`${apiUrl}/admin/symbel_group/${id}`,'delete',[],token)
   return res
-
 }
