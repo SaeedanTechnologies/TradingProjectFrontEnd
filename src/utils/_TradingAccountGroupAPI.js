@@ -24,3 +24,8 @@ export const DeleteTradingAccountGroup = async(id, token)=>{
   const res = await _API(`${apiUrl}/admin/trading_account_groups/${id}`,'delete',[],token)
   return res
 }
+
+export const getAllTradingAccountsNotInGroup = async(token) =>{
+  const res = await _API(`${apiUrl}/admin/getAllTradingAccountsNotInGroup`,'get',[],token)
+   return res
+}

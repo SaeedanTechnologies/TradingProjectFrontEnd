@@ -3,7 +3,7 @@ import React from 'react'
 
 import FEED_CDN from '../../../assets/images/feed.svg'
 
-const FeedCard = () => {
+const FeedCard = ({id, feedName, feedServer}) => {
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
@@ -14,8 +14,8 @@ const FeedCard = () => {
       </div>
       <div className='flex flex-col gap-3 items-center justify-center'>
       <img src={FEED_CDN} alt='icon'  />
-      <h1 className='text-xl font-bold text-center'>FIX4 via MT4 RAW Feed</h1>
-      <span className='text-lg font-semibold text-gray-400'>0 ticks, 0 blocks</span>
+      <h1 className='text-xl font-bold text-center'>{feedName}</h1>
+      <span className='text-lg font-semibold text-gray-400'>{feedServer}</span>
       </div>
     
 

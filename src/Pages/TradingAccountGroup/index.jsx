@@ -1,3 +1,5 @@
+// ya list h
+
 import React, { useEffect, useState } from 'react'
 
 import { Space,Spin, Tag, theme } from 'antd';
@@ -21,12 +23,26 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [TradingAccounGroupList, setTradingAccountGroupList] = useState([])
+  const [selectedAccountData, setSelectedAccountData] = useState([])
+
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
 
   const showModal = (id = null) => {
     setTradingGroupID(id)
     setIsModalOpen(true);
     
   };
+  const showAccountModal = (trading_accounts)=>{
+    setIsAccountModalOpen(true)
+    if(trading_accounts.length > 0){
+      setSelectedAccountData(trading_accounts)
+    }else{
+      setSelectedAccountData([]);
+    }
+  }
+  const hideAccountModal = () =>{
+    setIsAccountModalOpen(false)
+  }
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -94,11 +110,11 @@ const DeleteHandler = async (id)=>{
     },
     {
       title: 'Symbol Group',
-      dataIndex: 'symbel_group',
+      dataIndex: 'symbel_groups',
       key: '2',
-      render: (_, { symbel_group }) => (
+      render: (_, { symbel_groups }) => (
         <>
-          {symbel_group?.map((tag) => {
+          {symbel_groups?.map((tag) => {
             return (
               <Tag color={'green'} key={tag.id}>
                 {tag.name.toUpperCase()}
@@ -131,6 +147,18 @@ const DeleteHandler = async (id)=>{
       key: '6',
     },
     {
+      title: 'Trading Accounts',
+      dataIndex: 'trading_accounts',
+      key: '7',
+      render: (text, record)=>{
+        const { trading_accounts} = record
+        return (
+          <span className='cursor-pointer' style={{color: colorPrimary, fontWeight:'600'}} onClick={()=>showAccountModal(trading_accounts)}>View Accounts</span>
+        )
+      } 
+      
+    },
+    {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
@@ -153,7 +181,7 @@ const DeleteHandler = async (id)=>{
               Text='Add Trading Group'
               style={{height:'48px' ,...AddnewStyle}}
               icon={<PlusCircleOutlined />}
-              onClickHandler={showModal}
+              onClickHandler={()=>showModal(0)}
             />
         </div>
         <CustomTable columns={columns} data={TradingAccounGroupList} headerStyle={headerStyle} />
@@ -171,6 +199,25 @@ const DeleteHandler = async (id)=>{
           fetchData={fetchData}
           TradingGroupID={TradingGroupID}
         />
+        </CustomModal>
+        <CustomModal
+          isModalOpen={isAccountModalOpen}
+          title={'Selected Accounts'}
+          handleOk={handleOk}
+          handleCancel={hideAccountModal}
+          footer={[]}
+          width={400}
+
+        >
+          {selectedAccountData.length > 0 ? selectedAccountData?.map((tag) => {
+            return (
+              <Tag color={'green'} key={tag.id}>
+                {tag?.login_id}
+              </Tag>
+            );
+          })
+        : 'Thers no selected account'
+        }
         </CustomModal>
       </div>
     </Spin>
