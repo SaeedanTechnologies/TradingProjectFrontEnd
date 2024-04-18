@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, theme } from "antd";
+import CustomLoader from '../components/CustomLoader'
 
-const CustomButton = ({ className, style, Text, onClickHandler, icon, disabled, backgroundColor, borderColor }) => {
+const CustomButton = ({ className, style, Text, onClickHandler, icon, disabled, backgroundColor, borderColor, loading }) => {
   const {
     token: { colorPrimary },
   } = theme.useToken();
@@ -22,7 +23,8 @@ const CustomButton = ({ className, style, Text, onClickHandler, icon, disabled, 
       disabled={disabled}
     >
       {" "}
-      {icon && icon} {Text}
+      {loading ? <CustomLoader color='white' /> : (icon ? <>{icon} {Text}</> : Text)}
+      {/* {icon && icon} {Text} */}
     </Button>
   );
 };

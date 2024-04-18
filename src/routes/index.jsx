@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter,  Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import RootLayout from '../Pages/MainLayout/RootLayout';
 import Dashboard from '../Pages/Dashboard';
 import BrandList from '../Pages/Brand/BrandList';
@@ -57,7 +57,7 @@ export const router = createBrowserRouter([
       { path: "/dashboard-reports", element: <Reports /> },
       { path: "/brand", element: <BrandList /> },
       { path: "/brand-settings", element: <BrandSettings /> },
-      { path: "/trading-accounts", element: <TradingAccount title="Trading Account List" /> },
+      { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },
       { path: "/trading-accounts/:id", element: <TradingAccountEntry /> },
       { path: "/trading-group", element: <TradingAccountGroup /> },
       { path: "/trading-group/:id", element: <TradingGroupEntry /> },
@@ -66,20 +66,22 @@ export const router = createBrowserRouter([
       { path: "/trading-group/mass-deposit/:id", element: <MassDipositWidthdraw /> },
       { path: "/trading-group/mass-deposit/:id/:massid", element: <MDWEntry /> },
       { path: "/single-trading-accounts", element: <SingleTradingAccount /> },
-      { path: "/single-trading-accounts/details",element:<TradingAccountDetails/>,children:[
-            {path:"live-order", element: <LiveOrders />},
-            {path:"symbol", element: <Trade />},
-            {path:"close-order", element: <CloseOrder />},
-            {path:"personal-data", element: <PersonalData />},
-            {path:"account-security", element: <Account />},
-            {path:"transaction-order", element: <TransactionOrder />},
-          ]},
+      {
+        path: "/single-trading-accounts/details", element: <TradingAccountDetails />, children: [
+          { path: "live-order", element: <LiveOrders /> },
+          { path: "symbol", element: <Trade /> },
+          { path: "close-order", element: <CloseOrder /> },
+          { path: "personal-data", element: <PersonalData /> },
+          { path: "account-security", element: <Account /> },
+          { path: "transaction-order", element: <TransactionOrder /> },
+        ]
+      },
       { path: "/live-orders", element: <LiveOrders /> },
       { path: "/close-orders", element: <CloseOrder /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },
       { path: "/transaction-orders/:id", element: <TransactionOrderEntry /> },
-      { path: "/active-accounts", element: <ActiveTradingAccount title="Active Trading Account List" /> },
-      { path: "/margin-calls", element: <TradingAccount title="Margin Call Trading Account List" /> },
+      { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },
+      { path: "/margin-calls", element: <TradingAccount direction={3} title="Margin Call Trading Account List" /> },
       { path: "/symbol-groups", element: <SymbolGroup /> },
       { path: "/symbol-groups/:id", element: <SymbolGroupEntry /> },
       { path: "/symbol-settings", element: <SymbolSettings /> },
