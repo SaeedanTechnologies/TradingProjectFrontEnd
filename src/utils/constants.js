@@ -186,6 +186,8 @@ export const columns = [
     key: '8',
   },
 ];
+
+
 export const data = [
   {
     key: '1',
@@ -207,51 +209,48 @@ export const AutocompleteDummyData = [
   { title: 'The Godfather: Part II', id: 1974 }
 ]
 
-export const SymbolAutocompleteDummyData =  [
-  { label: 'The Godfather', value:'The Godfather'  },
-  { label: 'The Godfather: Part II', value:'The Godfather: Part II' },
+export const SymbolAutocompleteDummyData = [
+  { label: 'The Godfather', value: 'The Godfather' },
+  { label: 'The Godfather: Part II', value: 'The Godfather: Part II' },
 
 ]
 
-export const TradingAutocompleteDummyData=[
-  { label:1 ,value:"1" },
-  { label:2, value:"2" },
-  { label:3, value:"3"}
-  
+export const TradingAutocompleteDummyData = [
+  { label: 1, value: "1" },
+  { label: 2, value: "2" },
+  { label: 3, value: "3" }
+
 ]
 
-export const BrandIdAutocompleteDummyData=[
-  { label:6 ,value:"6" },
-  { label:7, value:"7" },
-  { label:8, value:"8"}
-  
+export const BrandIdAutocompleteDummyData = [
+  { label: 6, value: "6" },
+  { label: 7, value: "7" },
+  { label: 8, value: "8" }
+
 ]
 
-export const TradeOrderTypes =[
-  
-    { label: 'Pending Order', value:"pending"},
-    { label: 'Market Order', value: "market"},
-              
+export const TradeOrderTypes = [
+
+  { label: 'Pending Order', value: "pending" },
+  { label: 'Market Order', value: "market" },
+
 ]
 
-export const PendingOrderTypes =[
-      { label:'Buy Limit', value:'Buy Limit'},
-      { label:'Sell Limit', value:'Sell Limit'},
-      { label:'Buy Stop', value:'Buy Stop' },
-      { label:'Sell Stop', value:'Sell Stop' },
-      { label:'Buy Sell Limit', value:'Buy Sell Limit' },
-      { label:'Sell Stop Limit', value:'Sell Stop Limit' },
+export const PendingOrderTypes = [
+  { label: 'Buy Limit', value: 'Buy Limit' },
+  { label: 'Sell Limit', value: 'Sell Limit' },
+  { label: 'Buy Stop', value: 'Buy Stop' },
+  { label: 'Sell Stop', value: 'Sell Stop' },
+  { label: 'Buy Sell Limit', value: 'Buy Sell Limit' },
+  { label: 'Sell Stop Limit', value: 'Sell Stop Limit' },
 ]
 
-export const MarketOrderTypes =[
-   { label:'Buy', value:'Buy'},
-    { label:'Sell', value:'Sell'},
+export const MarketOrderTypes = [
+  { label: 'Buy', value: 'Buy' },
+  { label: 'Sell', value: 'Sell' },
 ]
 
 export const GetCurrentDate = () => {
   var date = new Date();
   return `${date.getFullYear()}-${((date.getMonth()) + 1) <= 9 ? '0' + ((date.getMonth()) + 1).toString() : (date.getMonth()) + 1}-${date.getDate() <= 9 ? '0' + (date.getDate()).toString() : date.getDate()}`
 }
-
-
-
