@@ -17,44 +17,47 @@ const SignIn = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const notifySuccess = (msg) => toast.success(msg);
   const notifyError = (msg) => toast.error(msg);
-  const navigate= useNavigate()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false)
 
-  
-  const SignIn_Handler = async ()=>{
-       const loginData = {email:Email, password:Password}
-       const res = await dispatch(loginUser(loginData))
-       const {payload} = res
-       if(payload[2]){
-          notifySuccess(payload[1])
-          navigate('/dashboard')
-      }else{
-        notifyError(payload[1])
-      }
+  const SignIn_Handler = async () => {
+    const loginData = { email: Email, password: Password }
+    setIsLoading(true)
+    const res = await dispatch(loginUser(loginData))
+    setIsLoading(false)
+    const { payload } = res
+    if (payload[2]) {
+      notifySuccess(payload[1])
+      navigate('/dashboard')
+    } else {
+      notifyError(payload[1])
+    }
   }
   return (
     <div className='flex flex-col gap-4 p-8'>
       <h1 className='text-[30px] font-bold text-center'>Sign In</h1>
       <CustomTextField
-        label={'Email'} 
+        label={'Email'}
         varient={'standard'}
-        sx={{width:'360px', marginTop: '10px'}}
-        onChange={(e)=> setEmail(e.target.value)}
-        
-        />
-      <CustomPassowordField 
-       label={'Password'} 
-       sx={{marginTop: '10px'}} 
-       onChange={(e)=> setPassword(e.target.value)}
-       />
+        sx={{ width: '360px', marginTop: '10px' }}
+        onChange={(e) => setEmail(e.target.value)}
+
+      />
+      <CustomPassowordField
+        label={'Password'}
+        sx={{ marginTop: '10px' }}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       <span className='text-right text-sm font-semibold cursor-pointer'>Forget Password</span>
-      <CustomButton 
-        Text={'Sign In'} 
-        style={{padding:'24px', fontSize:'20px', fontWeight: 'bold', borderRadius: '6px' }}
+      <CustomButton
+        Text={'Sign In'}
+        loading={isLoading}
+        style={{ padding: '24px', fontSize: '20px', fontWeight: 'bold', borderRadius: '6px' }}
         onClickHandler={SignIn_Handler}
-        />
+      />
       <span className='text-center text-sm'>Don't have an account?
-       <strong className='cursor-pointer'>Sign up</strong>
+        <strong className='cursor-pointer'>Sign up</strong>
       </span>
       <ToastContainer />
     </div>

@@ -123,35 +123,54 @@ const SymbolSettingsEntry = () => {
       console.error('Error fetching symbol groups:', error);
     }
   }
+
   const fetchSymbolSettingsWRTID = async () => {
     if (id !== 0) {
-      setIsLoading(true)
-      const res = await SelectSymbolSettingsWRTID(id, token)
-      const { data: { message, payload, success } } = res
-      setIsLoading(false)
-      if (success) {
-        const selectedGroup = SymbolList.find(x => x.id === payload.name)
-        setSelectedSymbol(selectedGroup)
-        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
-        setSelectedEnable(selectedEnab)
-        setLeverage(parseFloat(payload.leverage))
-        setLotSize(payload.lot_size);
-        setLotSteps(payload.lot_step);
-        setVolMin(payload.vol_min);
-        setVolMax(payload.vol_max);
-        setSwap(payload.swap);
-        setCommission(payload.commission);
+      setIsLoading(true);
+      try {
+        const res = await SelectSymbolSettingsWRTID(id, token);
+        const { data: { message, payload, success } } = res;
+
+        if (success) {
+
+          const selectedGroupItem = groupList.find(item => item.title === payload.name);
+          if (selectedGroupItem) {
+            setSelectedGroup(selectedGroupItem);
+          } else {
+            console.log('someThing someThing ')
+            // setSelectedGroup(null);
+          }
+          setSelectedSymbol(payload);
+          const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
+          setSelectedEnable(selectedEnab);
+          setLeverage(parseFloat(payload.leverage));
+          setLotSize(payload.lot_size);
+          setLotSteps(payload.lot_step);
+          setVolMin(payload.vol_min);
+          setVolMax(payload.vol_max);
+          setSwap(payload.swap);
+          setCommission(payload.commission);
+        } else {
+          console.error('Failed to fetch symbol settings:', message);
+        }
+      } catch (error) {
+        console.error('Error fetching symbol settings:', error);
+      } finally {
+        setIsLoading(false);
       }
-
     }
-
-  }
+  };
   useEffect(() => {
     if (parseInt(id) !== 0) {
-      fetchSymbolSettingsWRTID()
-
+      fetchSymbolSettingsWRTID();
+    } else {
+      // If id is 0, reset selectedGroup
+      setSelectedGroup(null);
     }
-  }, [id])
+  }, [id]);
+
+
+
   const fetchSymbolGroups = async () => {
     try {
       const res = await Symbol_Group_List(token);
@@ -241,20 +260,20 @@ const SymbolSettingsEntry = () => {
 
   return (
     <Spin spinning={isLoading} size="large">
-  
 
-    
-    <div className='p-8' style={{ backgroundColor: colorBG }}>
-      <div className='flex gap-3'>
-        <img
-          src={ARROW_BACK_CDN}
-          alt='back icon'
-          className='cursor-pointer'
-          onClick={() => navigate(-1)}
-        />
-        <h1 className='text-2xl font-semibold'>Symbol Group</h1>
-      </div>
-      <div className='border rounded-lg p-4'>
+
+
+      <div className='p-8' style={{ backgroundColor: colorBG }}>
+        <div className='flex gap-3'>
+          <img
+            src={ARROW_BACK_CDN}
+            alt='back icon'
+            className='cursor-pointer'
+            onClick={() => navigate(-1)}
+          />
+          <h1 className='text-2xl font-semibold'>Symbol Group</h1>
+        </div>
+        <div className='border rounded-lg p-4'>
 
 
 
@@ -273,10 +292,13 @@ const SymbolSettingsEntry = () => {
                     setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "" }))
                   } else {
                     setSelectedSymbol(null);
-                    setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "Symbol Group is Requried" }))
+                    setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "Symbol Group is Required" }))
                   }
                 }}
+                // Add this line to set the initial value when editing
+                defaultValue={SelectedSymbol}
               />
+
 
 
               {errors.SymbolGroup && <span style={{ color: 'red' }}>{errors.SymbolGroup}</span>}
@@ -300,6 +322,7 @@ const SymbolSettingsEntry = () => {
                   }
 
                 }}
+                defaultValue={selectedGroup}
               />
               {errors.symbel_group_id && <span style={{ color: 'red' }}>{errors.symbel_group_id}</span>}
             </div>
