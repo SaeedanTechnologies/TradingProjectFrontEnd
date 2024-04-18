@@ -163,54 +163,16 @@ const DeleteHandler = async (id)=>{
           handleCancel={handleCancel}
           title={''}
           width={800}
-          footer={[
-            <div className='flex items-center justify-end gap-4'>
-              <CustomButton
-                Text={'Cancle'}
-                onClickHandler={handleOk}
-                style={{backgroundColor:'#C5C5C5',borderColor:'#C5C5C5', color:'#fff'  ,...submitStyle}}
-              />
-              <CustomButton
-                Text={'Submit'}
-                onClickHandler={handleOk}
-                style={submitStyle}
-              />
-            
-            </div>
-          ]}
+          footer={[]}
         >
         <TradingAccountModal 
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          fetchData={fetchData}
+          TradingGroupID={TradingGroupID}
         />
         </CustomModal>
       </div>
-
-    <div className='p-8' style={{ backgroundColor: colorBG }}>
-      <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-         <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
-         <CustomButton
-            Text='Add Trading Group'
-            style={{height:'48px' ,...AddnewStyle}}
-            icon={<PlusCircleOutlined />}
-            onClickHandler={()=>showModal(0)}
-          />
-      </div>
-      <CustomTable columns={columns} data={TradingAccounGroupList} headerStyle={headerStyle} />
-      <CustomModal
-        isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        title={''}
-        width={800}
-        footer={[]}
-      >
-       <TradingAccountModal 
-        setIsModalOpen={setIsModalOpen}
-        fetchData={fetchData}
-        TradingGroupID={TradingGroupID}
-       />
-      </CustomModal>
-    </div>
-
     </Spin>
   )
 }

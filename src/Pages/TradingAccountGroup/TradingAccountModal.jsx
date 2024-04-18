@@ -11,7 +11,7 @@ import { submitStyle } from '../Brand/style';
 import { DeleteTradingAccountGroup, SaveTradingAccountGroups, SelectTradingAccountGroupWRTID, UpdateTradingAccountGroups } from '../../utils/_TradingAccountGroupAPI';
 
 
-const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
+const TradingAccountModal = ({isModalOpen, setIsModalOpen, fetchData, TradingGroupID }) => {
   const token = useSelector(({ user }) => user?.user?.token)
   const [GroupList, setGroupList] = useState([]);
   const [SelectedGroup, setSelectedGroup] = useState(null);
@@ -51,11 +51,10 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
   }
   useEffect(() => {
     clearFields()
-    getSymbolGroups()
     if(TradingGroupID !== 0){
       fetchDataWRTID()
     }
-  }, [TradingGroupID])
+  }, [])
   const fetchDataWRTID = async () => {
     setIsLoading(true)
     const res = await SelectTradingAccountGroupWRTID(TradingGroupID, token)
@@ -80,6 +79,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
     setIsLoading(false)
     if (success) {
       setGroupList(payload.data)
+      return payload.data
     }
   }
   const handleSumbit = async () => {
