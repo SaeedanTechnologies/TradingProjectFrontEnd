@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { theme,Checkbox } from 'antd';
-import styled, {css} from "styled-components";
+import { theme, Checkbox } from 'antd';
+import styled, { css } from "styled-components";
 
 import CoinCard from './CoinCard';
 import { DashboardCardData } from '../../utils/constants';
@@ -26,7 +26,7 @@ const VerticalCheckboxGroup = styled(Checkbox.Group)`
     `}
 `;
 const Index = () => {
-  const {token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
+  const { token: { colorBG, colorPrimary, TableHeaderColor } } = theme.useToken();
   const columns = [
     {
       title: 'No',
@@ -57,10 +57,10 @@ const Index = () => {
       title: 'Status',
       dataIndex: 'status',
       key: '6',
-      render: (text) => <span className='p-2 rounded-full text-white' style={{backgroundColor: colorPrimary}}>{text}</span>,
+      render: (text) => <span className='p-2 rounded-full text-white' style={{ backgroundColor: colorPrimary }}>{text}</span>,
     },
   ];
-  
+
   const data = [
     {
       key: '1',
@@ -79,11 +79,11 @@ const Index = () => {
       status: 'Inactive',
     },
   ];
-  
+
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
-  const handleMenuClick = (e) => {};
+  const handleMenuClick = (e) => { };
 
   const newColumns = columns.map((item) => ({
     ...item,
@@ -118,7 +118,7 @@ const Index = () => {
       ),
     })),
     onClick: handleMenuClick,
-  }; 
+  };
   return (
     <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
       <h1 className='text-2xl font-semibold py-12px'>Dashboard</h1>
@@ -141,12 +141,12 @@ const Index = () => {
         <CandleChart />
       </div>
       <div className='bg-white p-4 border rounded-lg'>
-      <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-        <h1 className='text-2xl font-semibold'>Trading Account</h1>
+        <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
+          <h1 className='text-2xl font-semibold'>Trading Account</h1>
           <div>
             <CustomDropdownBtn Text='Manage Columns' menuProps={columnMenuProps} />
           </div>
-      </div>
+        </div>
         <CustomTable columns={newColumns} data={data} headerStyle={headerStyle} />
       </div>
     </div>

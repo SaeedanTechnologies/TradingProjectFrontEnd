@@ -93,7 +93,7 @@ const Sidebar = ({ collapsed }) => {
     setSelectedKey(key);
     switch (key) {
       case "1":
-        navigate("/");
+        navigate("/dashboard");
         break;
       case "2":
         navigate("/brand");
@@ -104,7 +104,7 @@ const Sidebar = ({ collapsed }) => {
       case "4":
         navigate("/trading-accounts");
         break;
-        case "5":
+      case "5":
         navigate("/trading-group");
         break;
       case "6":
@@ -148,7 +148,7 @@ const Sidebar = ({ collapsed }) => {
         collapsible
         collapsed={collapsed}
         width={250}
-        style={{ backgroundColor: sidebarColor,...siderStyle}}
+        style={{ backgroundColor: sidebarColor, ...siderStyle }}
         trigger={
           <>
             <div style={{ backgroundColor: sidebarColor }}>

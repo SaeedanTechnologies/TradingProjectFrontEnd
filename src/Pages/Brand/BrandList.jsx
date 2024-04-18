@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Space, Spin, theme } from 'antd';
-import { DeleteOutlined,EditOutlined, PlusCircleOutlined} from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
@@ -13,7 +13,7 @@ import { Brands_List, DeleteBrand } from '../../utils/_APICalls';
 import { useSelector } from 'react-redux';
 
 const BrandList = () => {
-  const token = useSelector(({user})=> user?.user?.token )
+  const token = useSelector(({ user }) => user?.user?.token)
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [BrandsList, setBrandsList] = useState([])
@@ -23,9 +23,9 @@ const BrandList = () => {
   const fetchBrands = async () => {
     setIsLoading(true)
     const mData = await Brands_List(token)
-    const {data:{message, payload, success}} = mData
+    const { data: { message, payload, success } } = mData
     setIsLoading(false)
-    if(success){
+    if (success) {
       setBrandsList(payload.data)
     }
   }
@@ -70,62 +70,67 @@ const BrandList = () => {
       key: '4',
     },
     {
+      title: 'Margin Calls',
+      dataIndex: 'margin_call',
+      key: '4',
+    },
+    {
       title: 'Actions',
       dataIndex: 'type',
       key: '9',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-         <EditOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> showModal(record.id)} />
-         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> DeleteHandler(record.id)} />
-      
+          <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
+          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
+
         </Space>
       ),
     },
-    
+
   ];
-  const DeleteHandler = async (id)=>{
-      setIsLoading(true)
-      const res = await DeleteBrand(id, token)
-      const {data:{success, message, payload}} = res
-      setIsLoading(false)
-      if(success){
-        notifySuccess(message)
-        fetchBrands()
-      }else{
-        notifyError(message)
-      }
+  const DeleteHandler = async (id) => {
+    setIsLoading(true)
+    const res = await DeleteBrand(id, token)
+    const { data: { success, message, payload } } = res
+    setIsLoading(false)
+    if (success) {
+      notifySuccess(message)
+      fetchBrands()
+    } else {
+      notifyError(message)
+    }
   }
   return (
     <Spin spinning={isLoading} size="large">
-    <div className='p-8' style={{ backgroundColor: colorBG }}>
-      <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-        <h1 className='text-2xl font-semibold'>Brand List</h1>
-        <div>
-          <CustomButton
-            Text='Add New Brand'
-            style={AddnewStyle}
-            icon={<PlusCircleOutlined />}
-            onClickHandler={()=>showModal(0)}
-          />
+      <div className='p-8' style={{ backgroundColor: colorBG }}>
+        <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
+          <h1 className='text-2xl font-semibold'>Brand List</h1>
+          <div>
+            <CustomButton
+              Text='Add New Brand'
+              style={AddnewStyle}
+              icon={<PlusCircleOutlined />}
+              onClickHandler={() => showModal(0)}
+            />
+          </div>
         </div>
-      </div>
-      <CustomTable columns={columns} data={BrandsList} headerStyle={headerStyle} />
-      <CustomModal
-        isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        title={''}
-        width={800}
-       footer={null}
-      >
-        <BrandModal 
-          setIsModalOpen={setIsModalOpen}
-          fetchBrands={fetchBrands}
-          BrandID={BrandID}
+        <CustomTable columns={columns} data={BrandsList} headerStyle={headerStyle} />
+        <CustomModal
+          isModalOpen={isModalOpen}
+          handleOk={handleOk}
+          handleCancel={handleCancel}
+          title={''}
+          width={800}
+          footer={null}
+        >
+          <BrandModal
+            setIsModalOpen={setIsModalOpen}
+            fetchBrands={fetchBrands}
+            BrandID={BrandID}
           />
-      </CustomModal>
-    </div>
-     <ToastContainer />
+        </CustomModal>
+      </div>
+      <ToastContainer />
     </Spin>
   )
 }

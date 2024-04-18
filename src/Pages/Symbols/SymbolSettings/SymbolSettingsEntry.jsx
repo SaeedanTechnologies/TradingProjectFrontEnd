@@ -9,6 +9,7 @@ import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import { AutocompleteDummyData } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
+import { GetCryptoData } from '../../../utils/_ExchangeAPI'
 import { useSelector } from 'react-redux';
 
 const FeedData = [
@@ -30,7 +31,7 @@ const SymbolSettingsEntry = () => {
     { id: 2, title: 'No' },
   ])
   const [Selectedenable, setSelectedEnable] = useState(null)
-  const [groupList, setGroupList] = useState(AutocompleteDummyData)
+  const [groupList, setGroupList] = useState([])
   const [errors, setErrors] = useState({});
   const [SymbolList, setSymbolList] = useState([])
   const [fetchData, setFetchData] = useState([])
@@ -123,54 +124,35 @@ const SymbolSettingsEntry = () => {
       console.error('Error fetching symbol groups:', error);
     }
   }
-
   const fetchSymbolSettingsWRTID = async () => {
     if (id !== 0) {
-      setIsLoading(true);
-      try {
-        const res = await SelectSymbolSettingsWRTID(id, token);
-        const { data: { message, payload, success } } = res;
-
-        if (success) {
-
-          const selectedGroupItem = groupList.find(item => item.title === payload.name);
-          if (selectedGroupItem) {
-            setSelectedGroup(selectedGroupItem);
-          } else {
-            console.log('someThing someThing ')
-            // setSelectedGroup(null);
-          }
-          setSelectedSymbol(payload);
-          const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
-          setSelectedEnable(selectedEnab);
-          setLeverage(parseFloat(payload.leverage));
-          setLotSize(payload.lot_size);
-          setLotSteps(payload.lot_step);
-          setVolMin(payload.vol_min);
-          setVolMax(payload.vol_max);
-          setSwap(payload.swap);
-          setCommission(payload.commission);
-        } else {
-          console.error('Failed to fetch symbol settings:', message);
-        }
-      } catch (error) {
-        console.error('Error fetching symbol settings:', error);
-      } finally {
-        setIsLoading(false);
+      setIsLoading(true)
+      const res = await SelectSymbolSettingsWRTID(id, token)
+      const { data: { message, payload, success } } = res
+      setIsLoading(false)
+      if (success) {
+        const selectedGroup = SymbolList.find(x => x.id === payload.name)
+        setSelectedSymbol(selectedGroup)
+        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
+        setSelectedEnable(selectedEnab)
+        setLeverage(parseFloat(payload.leverage))
+        setLotSize(payload.lot_size);
+        setLotSteps(payload.lot_step);
+        setVolMin(payload.vol_min);
+        setVolMax(payload.vol_max);
+        setSwap(payload.swap);
+        setCommission(payload.commission);
       }
+
     }
-  };
+
+  }
   useEffect(() => {
     if (parseInt(id) !== 0) {
-      fetchSymbolSettingsWRTID();
-    } else {
-      // If id is 0, reset selectedGroup
-      setSelectedGroup(null);
+      fetchSymbolSettingsWRTID()
+
     }
-  }, [id]);
-
-
-
+  }, [id])
   const fetchSymbolGroups = async () => {
     try {
       const res = await Symbol_Group_List(token);
@@ -204,7 +186,7 @@ const SymbolSettingsEntry = () => {
 
       setErrors({});
       const SymbolGroupData = {
-        name: selectedGroup.title,
+        name: selectedGroup.symbol,
         symbel_group_id: SelectedSymbol.id,
         speed_max: 'abc',
         lot_size: lotSize,
@@ -258,6 +240,29 @@ const SymbolSettingsEntry = () => {
     }
   };
 
+  const fetchExchangeData = async (direction) => {
+    if (direction === 'crypto') {
+      const res = await GetCryptoData()
+      debugger
+      setGroupList(res?.data?.symbols)
+    }
+
+
+  }
+  const GetSymbolData = async (direction) => {
+    if (direction === 'binance') {
+      const { filters } = selectedGroup
+      const stepSize = filters.find(filter => filter.filterType === 'LOT_SIZE').stepSize;
+      setLotSize(stepSize)
+      const volMinium = filters.find(filter => filter.filterType === 'NOTIONAL').minNotional;
+      setVolMin(volMinium)
+      const volMaximum = filters.find(filter => filter.filterType === 'NOTIONAL').maxNotional;
+      setVolMax(volMaximum)
+
+    }
+
+  }
+
   return (
     <Spin spinning={isLoading} size="large">
 
@@ -275,8 +280,6 @@ const SymbolSettingsEntry = () => {
         </div>
         <div className='border rounded-lg p-4'>
 
-
-
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-8'>
             <div>
               <CustomAutocomplete
@@ -289,16 +292,14 @@ const SymbolSettingsEntry = () => {
                 onChange={(event, value) => {
                   if (value) {
                     setSelectedSymbol(value);
+                    fetchExchangeData(value.name)
                     setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "" }))
                   } else {
                     setSelectedSymbol(null);
-                    setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "Symbol Group is Required" }))
+                    setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "Symbol Group is Requried" }))
                   }
                 }}
-                // Add this line to set the initial value when editing
-                defaultValue={SelectedSymbol}
               />
-
 
 
               {errors.SymbolGroup && <span style={{ color: 'red' }}>{errors.SymbolGroup}</span>}
@@ -310,7 +311,7 @@ const SymbolSettingsEntry = () => {
                 label="Symbol Name"
                 variant="standard"
                 options={groupList}
-                getOptionLabel={(option) => option.title ? option.title : ""}
+                getOptionLabel={(option) => option.symbol ? option.symbol : ""}
                 value={selectedGroup}
                 onChange={(event, value) => {
                   if (value) {
@@ -322,7 +323,6 @@ const SymbolSettingsEntry = () => {
                   }
 
                 }}
-                defaultValue={selectedGroup}
               />
               {errors.symbel_group_id && <span style={{ color: 'red' }}>{errors.symbel_group_id}</span>}
             </div>
@@ -338,6 +338,7 @@ const SymbolSettingsEntry = () => {
                 onChange={(event, value) => {
                   if (value) {
                     setFeedName(value);
+                    GetSymbolData(value.name)
                     setErrors(prevErrors => ({ ...prevErrors, feed_name: "" }))
                   } else {
                     setFeedName(null);

@@ -30,10 +30,25 @@ export const SelectSymbolSettingsWRTID = async (id, token) => {
     const res = await _API(`${apiUrl}/admin/symbel_setting/${id}`, 'get', [], token)
     return res
 }
+
 export const UpdateSymbolSettings = async (SymbolSettingsID, SymbolSettingsData, token) => {
     const queryParams = new URLSearchParams(SymbolSettingsData).toString();
     const url = `${apiUrl}/admin/symbel_setting/${SymbolSettingsID}?${queryParams}`;
     const res = await _API(url, 'put', null, token);
     return res
+}
 
+export const Trading_Active_Group = async (token, status) => {
+    const res = await _API(`${apiUrl}/admin/trading_accounts?status=${status}`, 'get', [], token)
+    return res
+}
+
+export const Trading_Margin_Calls = async (token, status) => {
+    const res = await _API(`${apiUrl}/admin/trading_accounts?status=${status}`, 'get', [], token)
+    return res
+}
+
+export const Trading_Transaction_Order = async (token) => {
+    const res = await _API(`${apiUrl}/admin/transaction_order`, 'get', [], token)
+    return res
 }

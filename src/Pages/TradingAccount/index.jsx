@@ -11,6 +11,7 @@ import { notifySuccess, notifyError } from '../../utils/constants';
 import { useSelector, useDispatch } from 'react-redux';
 import TradingModal from './TradingModal'
 import { setAccountID } from '../../store/TradeSlice';
+import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 
 
 const Index = ({ title, direction }) => {
@@ -143,6 +144,7 @@ const Index = ({ title, direction }) => {
     setIsLoading(false)
     if (success) {
       const tradingAccounts = payload?.data?.map((item) => ({
+
         id: item.id,
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
@@ -191,6 +193,76 @@ const Index = ({ title, direction }) => {
       notifyError(message)
     }
   }
+  const [activeGroup, setActiveGroup] = useState([])
+
+  const fetchActiveGroups = async () => {
+    try {
+      setIsLoading(true)
+      const res = await Trading_Active_Group(token, 'active');
+      const { data: { message, success, payload } } = res
+      const tradingAccounts = payload?.data?.map((item) => ({
+
+        id: item.id,
+        loginId: item.login_id,
+        trading_group_id: item.trading_group_id,
+        country: item.country,
+        phone: item.phone,
+        email: item.email,
+        leverage: item.leverage,
+        balance: item.balance,
+        credit: item.credit,
+        equity: item.equity,
+        margin_level_percentage: item.margin_level_percentage,
+        profit: item.profit,
+        swap: item.swap,
+        currency: item.currency,
+        registration_time: item.registration_time,
+        last_access_time: item.last_access_time === null ? 'null' : item.last_access_time,
+        last_access_address_IP: item.last_access_address_IP === null ? 'null' : item.last_access_address_IP,
+
+      }))
+      setIsLoading(false)
+      setActiveGroup(tradingAccounts);
+
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  };
+
+  const [marginCall, setMarginCall] = useState([])
+  const fetchMarginCalls = async () => {
+    try {
+      setIsLoading(true)
+      const res = await Trading_Margin_Calls(token, 'margin_call');
+      const { data: { message, success, payload } } = res
+      const tradingAccounts = payload?.data?.map((item) => ({
+
+        id: item.id,
+        loginId: item.login_id,
+        trading_group_id: item.trading_group_id,
+        country: item.country,
+        phone: item.phone,
+        email: item.email,
+        leverage: item.leverage,
+        balance: item.balance,
+        credit: item.credit,
+        equity: item.equity,
+        margin_level_percentage: item.margin_level_percentage,
+        profit: item.profit,
+        swap: item.swap,
+        currency: item.currency,
+        registration_time: item.registration_time,
+        last_access_time: item.last_access_time === null ? 'null' : item.last_access_time,
+        last_access_address_IP: item.last_access_address_IP === null ? 'null' : item.last_access_address_IP,
+
+      }))
+      setIsLoading(false)
+      setMarginCall(tradingAccounts);
+
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  };
 
   useEffect(() => {
     debugger
@@ -198,10 +270,10 @@ const Index = ({ title, direction }) => {
       fetchTradingAccounts()
 
     } else if (direction === 2) { // Active Account Group
-
+      fetchActiveGroups()
 
     } else { // margin calls
-
+      fetchMarginCalls()
 
     }
 
@@ -224,7 +296,16 @@ const Index = ({ title, direction }) => {
                 onClickHandler={()=>showModal(0)}
               />*/}
         </div>
-        <CustomTable columns={renderColumns} data={tradingAccountsList} headerStyle={headerStyle} />
+        {direction === 1 && (
+          <CustomTable columns={renderColumns} data={tradingAccountsList} headerStyle={headerStyle} />
+        )}
+        {direction === 2 && (
+          <CustomTable columns={renderColumns} data={activeGroup} headerStyle={headerStyle} />
+        )}
+        {direction === 3 && (
+          <CustomTable columns={renderColumns} data={marginCall} headerStyle={headerStyle} />
+        )}
+
         <CustomModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}
