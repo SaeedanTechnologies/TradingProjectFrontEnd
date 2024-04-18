@@ -186,7 +186,7 @@ const SymbolGroupEntry = () => {
         <div>
         <CustomAutocomplete
          name='SymbolGroup'
-         varient= 'standard'
+         variant= 'standard'
          label='Symbol Group Name'
          options={SymbolList}
          getOptionLabel= {(option) => option.title ? option.title : ""}

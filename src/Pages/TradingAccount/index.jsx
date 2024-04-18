@@ -265,7 +265,6 @@ const Index = ({ title, direction }) => {
   };
 
   useEffect(() => {
-    debugger
     if (direction === 1) { // trading account list
       fetchTradingAccounts()
 

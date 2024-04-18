@@ -30,3 +30,5 @@ export const TradeValidationSchema = Yup.object().shape({
   takeProfit:Yup.string().required('TakeProfit is required.'),
   stopLoss: Yup.string().required('Stop Loss is required.'),
   });
+
+   

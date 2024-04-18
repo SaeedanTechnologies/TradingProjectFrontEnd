@@ -72,7 +72,6 @@ const Trade = () => {
   }; 
 
    const clearFields = () =>{
-    console.log('cleafields function');
       setSymbol(null);
       setOrder_type(null);
       setType(null);
@@ -129,12 +128,6 @@ const Trade = () => {
       setErrors(validationErrors);
     }
   }
-
-
-  console.log('symbol',symbol);
-    console.log('order_type',order_type);
-
-
 
   return (
      <Spin spinning={isLoading} size="large">
