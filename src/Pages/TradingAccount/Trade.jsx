@@ -13,6 +13,8 @@ import { notifySuccess, notifyError } from '../../utils/constants';
 import { numberInputStyle } from './style';
 import { useSelector } from 'react-redux';
 import { Post_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Autocomplete,TextField } from '@mui/material';
+import TradeChart from './TradeChart';
 
 
 
@@ -70,6 +72,7 @@ const Trade = () => {
   }; 
 
    const clearFields = () =>{
+    console.log('cleafields function');
       setSymbol(null);
       setOrder_type(null);
       setType(null);
@@ -86,7 +89,6 @@ const Trade = () => {
       await TradeValidationSchema.validate({
             symbol,
             order_type,
-            type,
             volume,
             comment,
             price,
@@ -129,8 +131,9 @@ const Trade = () => {
   }
 
 
+  console.log('symbol',symbol);
+    console.log('order_type',order_type);
 
- console.log('type value',type)
 
 
   return (
@@ -157,43 +160,52 @@ const Trade = () => {
         <div className="flex-1 mr-2 ">
           <div className="mb-4 grid grid-cols-1 gap-4">
             <div>
-              <CustomAutocomplete
-              name={'Symbol'}
+             
+            <Autocomplete
+              name="Symbol"
+              id="Symbol"
               variant={'standard'}
-              label={'Symbol'}
               options={SymbolAutocompleteDummyData}
-              getOptionLabel={(option) => option.label ? option.label : ""}
-              onChange={(e, value) => {
-                if (value) {
+              getOptionLabel={(option) => option.label ? option.label : ""} 
+              value={symbol}
+              onChange={(e,value) =>{
+              if(value)
+                {
                    setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
-                  setSymbol(value)
+                   setSymbol(value)
                 }
-                else {
-                  setSymbol(null)
-                }
-              }}
-            />
+                else
+                  setSymbol(null)                                                        
+                }}
+                 renderInput={(params) => 
+                <TextField {...params} name="Symbol" label="Symbol"  variant="standard" />
+                  }
+                />
               {errors.symbol && <span style={{ color: 'red' }}>{errors.symbol}</span>}
             </div>
             
             <div>
-              <CustomAutocomplete
+              <Autocomplete
                 name={'Type'}
                 variant={'standard'}
                 label={'Type'}
                 options={TradeOrderTypes}
                 value={order_type}
                 getOptionLabel={(option) => option.label ? option.label : ""}
-                onChange={(e, value) => {
-                  if (value) {
-                    setOrder_type(value)
-                    setErrors(prevErrors => ({ ...prevErrors, order_type: "" }))
-                  }else{
-                    setOrder_type(null)
-                  }
+                onChange={(e,value) =>{
+                if(value)
+                  {
                   
-                }}
-              />
+                      setOrder_type(value)
+                      setErrors(prevErrors => ({ ...prevErrors, order_type: "" }))
+                  }
+                  else
+                    setOrder_type(null)                                                        
+                  }}
+                  renderInput={(params) => 
+                  <TextField {...params} name="Type" label="Type"  variant="standard" />
+                    }
+                />
                 {errors.order_type && <span style={{ color: 'red' }}>{errors.order_type}</span>}
               </div>
           </div>
@@ -201,23 +213,26 @@ const Trade = () => {
           <div className={`mb-4 grid ${order_type?.value === 'pending' ? 'grid-cols-1 md:grid-cols-2'  :'grid-cols-1'}  gap-4`}>
             <div>
               {order_type?.value === 'pending' &&
-              <CustomAutocomplete
-              name={'Type'}
-              variant={'standard'}
-              label={'Type'}
-              options={ PendingOrderTypes}
-              getOptionLabel={(option) => option.label ? option.label : ""}
-              value={type}
-              onChange={(e, value) => {
-                if (value) {
-                  setType(value)
-                  setErrors(prevErrors => ({ ...prevErrors, type: "" }))
-                } else {
-                  setType(null)
-                }
-              }}
-            />} 
-             {errors.type && <span style={{ color: 'red' }}>{errors.type}</span>}
+               <Autocomplete
+                name={'Type'}
+                variant={'standard'}
+                label={'Type'}
+                options={PendingOrderTypes}
+                value={type}
+                getOptionLabel={(option) => option.label ? option.label : ""}
+                onChange={(e,value) =>{
+                if(value)
+                  {
+                    setType(value)
+                  }
+                  else
+                    setType(null)                                                        
+                  }}
+                  renderInput={(params) => 
+                  <TextField {...params} name="Type" label="Type"  variant="standard" />
+                    }
+                />
+              } 
             </div>
              
           
