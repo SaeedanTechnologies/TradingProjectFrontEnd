@@ -1,30 +1,37 @@
-import React,{useEffect} from 'react'
-import { Space, theme } from 'antd';
+import React,{useState,useEffect} from 'react'
+import { Space, theme,Spin } from 'antd';
 import { DeleteOutlined} from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
+import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { useSelector } from 'react-redux';
+import moment from 'moment';
+
 
 const CloseOrder = () => {
+  const token = useSelector(({user})=> user?.user?.token )
   const {token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
+  const [isLoading,setIsLoading] = useState(false)
+    const [closeOrders,setCloseOrders] = useState([])
+    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
   const columns = [
     {
-      title: 'Time',
-      dataIndex: 'time',
+      title: 'Open Time',
+      dataIndex: 'open_time',
       key: '1',
     },
     {
-      title: 'Ticket',
-      dataIndex: 'ticket',
+      title: 'Order No',
+      dataIndex: 'order_no',
       key: '2',
     },
     {
       title: 'Type',
       dataIndex: 'type',
       key: '3',
-      render: (text)=> <span style={{color:colorPrimary}}>{text}</span>
     },
     {
-      title: 'Volumn',
-      dataIndex: 'Volumn',
+      title: 'Volume',
+      dataIndex: 'volume',
       key: '4',
     },
     {
@@ -33,44 +40,49 @@ const CloseOrder = () => {
       key: '5',
     },
     {
-      title: 'Price',
-      dataIndex: 'Price',
+      title: 'Open Price',
+      dataIndex: 'open_price',
       key: '6',
     },
     {
       title: 'SL',
-      dataIndex: 'SL',
+      dataIndex: 'stopLoss',
       key: '7',
     },
     {
       title: 'TP',
-      dataIndex: 'Time',
+      dataIndex: 'takeProfit',
       key: '8',
     },
     {
-      title: 'Price',
-      dataIndex: 'Price',
+      title: 'Close Time',
+      dataIndex: 'close_time',
       key: '9',
     },
     {
-      title: 'Reason',
-      dataIndex: 'Reason',
+      title: 'Close Price',
+      dataIndex: 'close_price',
       key: '10',
     },
     {
-      title: 'Swap',
-      dataIndex: 'Swap',
+      title: 'Reason',
+      dataIndex: 'reason',
       key: '11',
     },
     {
-      title: 'Profit',
-      dataIndex: 'Profit',
+      title: 'Swap',
+      dataIndex: 'swap',
       key: '12',
     },
     {
+      title: 'Profit',
+      dataIndex: 'profit',
+      key: '13',
+    },
+    {
       title: 'Actions',
-      dataIndex: 'type',
-      key: '9',
+      dataIndex: 'actions',
+      key: '14',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
@@ -116,18 +128,55 @@ const CloseOrder = () => {
     color: 'black', 
   };
 
-   useEffect(()=>{
-    console.log('in close order by default')
+ 
+
+
+    const fetchCloseOrder = async () => {
+
+      setIsLoading(true)
+      const params ={trading_account_id,OrderTypes:['market','pending'],token}
+      const mData = await Get_Trade_Order(params)
+      const {data:{message, payload, success}} = mData
+      
+      const orders = payload?.data?.map((order)=>({
+        id:order.id,
+        open_time:moment(order.open_time).format('L'),
+        order_no:order.id,
+        type:order.type,
+        volume:order.volume,
+        symbol:order.symbol,
+        open_price:order.open_price,
+        stopLoss:order.stopLoss,
+        takeProfit:order.takeProfit,
+        close_time: order.close_time? moment(order.close_time).format('L'):'...',
+        close_price:order.close_price ? order.close_price :'...',
+        reason:order.reason ? order.reason : '...' ,
+        swap:order.swap ? order.swap : '...',
+        profit:order.profit ? order.profit :'...'
+
+
+      }))
+       setIsLoading(false)
+      if(success){
+      
+      setCloseOrders(orders)
+    }
+    
+  }
+  useEffect(()=>{
+    fetchCloseOrder()
   },[])
 
   return (
-    <div className='p-8' style={{backgroundColor: colorBG}}>
-      <CustomTable
-        columns={columns} 
-        data={data} 
-        headerStyle={headerStyle} 
-      />
-    </div>
+    <Spin spinning={isLoading} size="large">
+      <div className='p-8' style={{backgroundColor: colorBG}}>
+        <CustomTable
+          columns={columns} 
+          data={closeOrders} 
+          headerStyle={headerStyle} 
+        />
+      </div>
+    </Spin>
   )
 }
 

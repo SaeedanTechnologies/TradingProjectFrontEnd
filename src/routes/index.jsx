@@ -37,7 +37,8 @@ import AuthLayout from '../Pages/Auth/AuthLayout';
 import SignIn from '../Pages/Auth/SignIn';
 import PersonalData from '../Pages/TradingAccount/PersonalData';
 import Account from '../Pages/TradingAccount/Account';
-import TransactionOrder from '../Pages/TradingAccount/TransactionOrder'
+import TransactionOrder from '../Pages/TradingAccount/TransactionOrder';
+import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder'
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +77,7 @@ export const router = createBrowserRouter([
           { path: "transaction-order", element: <TransactionOrder /> },
         ]
       },
+      { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
       { path: "/live-orders", element: <LiveOrders /> },
       { path: "/close-orders", element: <CloseOrder /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },

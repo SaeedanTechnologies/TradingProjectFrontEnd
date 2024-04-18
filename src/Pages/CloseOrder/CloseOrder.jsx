@@ -1,105 +1,166 @@
-import React from 'react'
-import { Space, theme } from 'antd';
+import React,{useState,useEffect} from 'react'
+import { Space, theme,Spin } from 'antd';
 import { DeleteOutlined} from '@ant-design/icons';
-
+import { useSelector } from 'react-redux';
 import CustomTable from '../../components/CustomTable';
+import moment from 'moment';
+import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
+
 
 const CloseOrder = () => {
-  const {token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
-  const columns = [
+    const token = useSelector(({user})=> user?.user?.token )
+    const { token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
+   const [isLoading,setIsLoading] = useState(false)
+   const [closeOrders,setCloseOrders] = useState([])
+
+    const columns = [
+  
+    {
+      title: 'LoginID',
+      dataIndex: 'loginId',
+      key: 'loginId',
+    },
+     {
+      title: 'OrderID',
+      dataIndex: 'orderId',
+      key: 'orderId',
+    },
+    
     {
       title: 'Symbol',
-      dataIndex: 'key',
-      key: '1',
+      dataIndex: 'symbol',
+      key: 'symbol',
     },
     {
-      title: 'Time',
-      dataIndex: 'name',
-      key: '2',
+      title: 'Open Time',
+      dataIndex: 'open_time',
+      key: 'open_time',
+    },
+    {
+      title: 'Closed Time',
+      dataIndex: 'close_time',
+      key: 'close_time',
     },
     {
       title: 'Type',
-      dataIndex: 'age',
-      key: '3',
-      render: (text)=> <span style={{color:colorPrimary}}>{text}</span>
+      dataIndex: 'type',
+      key: 'type',
     },
     {
-      title: 'Volumn',
-      dataIndex: 'address',
-      key: '4',
+      title: 'Volume',
+      dataIndex: 'volume',
+      key: 'volume',
     },
-    {
+    { 
       title: 'Price',
-      dataIndex: 'type',
-      key: '5',
+      dataIndex: 'price',
+      key: 'price'
     },
     {
-      title: 'SL',
-      dataIndex: 'type',
-      key: '6',
+      title: 'Stop Lose',
+      dataIndex: 'stopLoss',
+      key: 'stopLoss',
     },
     {
-      title: 'TP',
-      dataIndex: 'type',
-      key: '7',
+      title: 'Take Profit',
+      dataIndex: 'takeProfit',
+      key: 'takeProfit',
     },
     {
-      title: 'Price',
-      dataIndex: 'type',
-      key: '8',
+      title: 'Open Price',
+      dataIndex: 'open_price',
+      key: 'open_price',
+    },
+    {
+      title: 'Closed Price',
+      dataIndex: 'close_price',
+      key: 'close_price',
+    },
+     
+     {
+      title: 'Reason',
+      dataIndex: 'reason',
+      key: 'reason',
+    },
+   {
+      title: 'Swap',
+      dataIndex: 'swap',
+      key: 'swap',
     },
     {
       title: 'Profit',
-      dataIndex: 'type',
-      key: '9',
+      dataIndex: 'profit',
+      key: 'profit',
+    },
+    {
+      title: 'Comment',
+      dataIndex: 'comment',
+      key: 'comment',
     },
     {
       title: 'Actions',
-      dataIndex: 'type',
-      key: '9',
+      dataIndex: 'actions',
+      key: 'actions',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
+            
          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
         </Space>
       ),
     },
   ];
-  const data = [
-    {
-      key: 'audkdi',
-      name: '9:30',
-      age: 'Buy',
-      address: '1000',
-      type: '125.50',
-      sl: '124.50',
-      tp: '127.50',
-      price: '130.50',
-      profit: '5%',
-      actions: 'Edit/Delete',
-    },
-    {
-      key: 'audkdi',
-      name: '10:00',
-      age: 'Sell',
-      address: '500',
-      type: '127.00',
-      sl: '128.00',
-      tp: '124.00',
-      price: '120.00',
-      profit: '-3%',
-      actions: 'Edit/Delete',
-    },
-    // Add more data objects as needed
-  ];
+
+
+  
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
+   const fetchCloseOrders = async () => {
+
+      setIsLoading(true)
+      const params ={OrderTypes:['close'],token}
+      const mData = await Get_Trade_Order(params)
+      const {data:{message, payload, success}} = mData
+      const allLiveOrders = payload?.data?.map((order)=>({
+        id:order.id,
+        loginId:order.trading_account_id,
+        orderId:order.id,
+        symbol:order.symbol,
+        open_time:moment(order.open_time).format('L'),
+        close_time: order.close_time ? moment(order.close_time).format('L') : '...',
+        type:order.type,
+        volume:order.volume,
+        price:order.price,
+        stopLoss:order.stopLoss,
+        takeProfit:order.takeProfit,
+        open_price:order.open_price,
+        close_price:order.close_price ? close_price : '...',
+        reason:order.reason ? order.reason :'...',
+        swap:order.swap ? order.swap : '...',
+        profit:order.profit ? order.profit :'...',
+        comment:order.comment
+
+      }))
+       setIsLoading(false)
+      if(success){
+      
+      setCloseOrders(allLiveOrders)
+    }
+    
+  }
+  useEffect(()=>{
+    fetchCloseOrders()
+  },[])
+
+
   return (
-    <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
-       <h1 className='text-2xl font-bold'>Close Orders</h1> 
-       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
-    </div>
+     <Spin spinning={isLoading} size="large">
+      <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
+        <h1 className='text-2xl font-bold'>Close Orders</h1> 
+        <CustomTable columns={columns} data={closeOrders} headerStyle={headerStyle} />
+      </div>
+    </Spin>
   )
 }
 
