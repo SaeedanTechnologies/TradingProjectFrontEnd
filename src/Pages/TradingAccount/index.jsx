@@ -160,8 +160,8 @@ const Index = ({ title, direction }) => {
         swap: item.swap,
         currency: item.currency,
         registration_time: item.registration_time,
-        last_access_time: item.last_access_time === null ? 'null' : item.last_access_time,
-        last_access_address_IP: item.last_access_address_IP === null ? 'null' : item.last_access_address_IP,
+        last_access_time: item.last_access_time ? item.last_access_time : '...',
+        last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
 
       }))
       setTradingAccountsList(tradingAccounts)
