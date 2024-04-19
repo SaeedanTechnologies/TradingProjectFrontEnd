@@ -14,6 +14,8 @@ import TradingAccountModal from '../TradingAccountGroup/TradingAccountModal';
 import { DeleteTradingAccountGroup, Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+
 
 
 const Index = () => {
@@ -59,6 +61,7 @@ const Index = () => {
     }
   }
   useEffect(()=>{
+    
     fetchData()
   },[])
  
@@ -164,7 +167,7 @@ const DeleteHandler = async (id)=>{
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
            <EditOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=>showModal(record.id)} />
-           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> DeleteHandler(record.id)} />
+           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> CustomDeleteDeleteHandler(record.id, token,DeleteTradingAccountGroup, setIsLoading )} />
         </Space>
       ),
     },

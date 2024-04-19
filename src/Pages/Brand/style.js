@@ -5,6 +5,13 @@ export const AddnewStyle = {
   width: '180px',
 
 }
+export const AddnewSettingsStyle = { 
+  borderRadius: '8px', 
+  padding: '14px, 20px, 14px, 20px',
+  height: '48px',
+  width: '220px',
+
+}
 
 export const footerStyle = {
   display: 'flex',

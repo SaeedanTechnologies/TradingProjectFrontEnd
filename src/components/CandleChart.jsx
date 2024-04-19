@@ -1,6 +1,8 @@
 import React from 'react'
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
+import Highcharts from 'highcharts/highstock';
+import HighchartsReact from 'highcharts-react-official';
+import { DatePicker, Space } from 'antd';
+import moment from 'moment';
 import CustomSelect from './CustomSelect'
 import { BarChartConfig } from '../utils/constants'
 import CandleStickChart from './CandleStickChart'
@@ -12,14 +14,19 @@ const AreaChartConfig = {
     type: 'area'
   },
   title: {
-    text: 'Area Chart'
+    text: ''
   },
   xAxis: {
     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   },
   yAxis: {
     title: {
-      text: 'Y-axis Title'
+      text: ''
+    },
+    labels: {
+      formatter: function () {
+        return '$' + this.value;
+      }
     }
   },
   series: [{
@@ -27,6 +34,67 @@ const AreaChartConfig = {
     data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
   }]
 };
+
+const options = {
+  chart: {
+    type: 'candlestick'
+  },
+  title: {
+    text: ''
+  },
+  yAxis: {
+    opposite: false,
+    title: {
+      text: ''
+    },
+    labels: {
+      formatter: function () {
+        return '$' + this.value;
+      }
+    }
+  },
+  xAxis: {
+    type: 'datetime',
+    opposite: false,
+    labels: {
+      align: 'left',
+      step: 1,
+      formatter: function () {
+        const date = new Date(this.value);
+        const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+      }
+    }
+  },
+  plotOptions: {
+    candlestick: {
+      color: 'pink',
+      lineColor: 'red',
+      upColor: '#FF7F7F',
+      upLineColor: 'green'
+    }
+  },
+  rangeSelector: {
+    inputDateFormat: '',
+    buttons: [],
+    selected: 0
+  },
+  series: [{
+    type: 'candlestick',
+    name: 'USD to EUR',
+    data: [
+      [1546300800000, 100, 120, 80, 115],
+      [1546387200000, 115, 125, 105, 120],
+      [1546473600000, 120, 130, 110, 125],
+      [1546560000000, 125, 135, 115, 130],
+    ],
+  }]
+};
+
+
+const { RangePicker } = DatePicker;
+
+const dateFormat = 'YYYY-MM-DD';
 
 const CandleChart = () => {
   // const [chartOptions, setChartOptions] = useState({
@@ -145,13 +213,34 @@ const CandleChart = () => {
         <div className="lg:col-span-3 md:col-span-2 bg-white border rounded-lg p-4">
           <div className='flex flex-col sm:flex-row items-center justify-between '>
             <h1 className='text-lg font-bold p-2'>Account Growth</h1>
+
             <div className='flex gap-2 items-center'>
-              <span className='text-lg font-semibold p-2'>Filter Options:</span>
-              <CustomSelect width={'150px'} />
+              <div>
+                <span className='text-lg font-semibold p-2'>Date Range:</span>
+                <Space direction="vertical" size={12} style={{ width: '200px' }}>
+                  <RangePicker
+
+                    defaultValue={[moment('2019-09-03', dateFormat), moment('2019-11-22', dateFormat)]}
+                    disabled={[false, true]}
+                  />
+                </Space>
+              </div>
+              <div>
+                <span className='text-lg font-semibold p-2'>Filter Options:</span>
+                <CustomSelect width={'150px'} />
+              </div>
+
             </div>
+
           </div>
           <div className="w-full">
-            <CandleStickChart />
+            {/* <CandleStickChart /> */}
+            <HighchartsReact
+              highcharts={Highcharts}
+              constructorType={'stockChart'}
+              options={options}
+            />
+
             {/* <HighchartsReact
           highcharts={Highcharts}
           options={BarChartConfig}
@@ -162,10 +251,18 @@ const CandleChart = () => {
         </div>
         <div className="w-full flex-grow lg:col-span-1 md:col-span-2 bg-white border rounded-lg p-4">
           <div className="flex flex-col justify-between w-full">
-            <h3 className='text-lg font-bold p-2'>Growth By Month</h3>
+            <h3 className='text-lg font-bold p-2'>Deposit</h3>
             <div className='flex flex-row gap-1'>
-              <span className='text-sm font-medium p-2'>Filter Options:</span>
-              <CustomSelect width={'120px'} />
+              <div>
+                <span className='text-lg font-semibold p-2'>Date Range:</span>
+                <Space direction="vertical" size={12} style={{ width: '100px' }}>
+                  <RangePicker
+
+                    defaultValue={[moment('2019-09-03', dateFormat), moment('2019-11-22', dateFormat)]}
+                    disabled={[false, true]}
+                  />
+                </Space>
+              </div>
             </div>
           </div>
           <div className="w-full">
@@ -178,8 +275,8 @@ const CandleChart = () => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 className='text-2xl font-semibold mt-4'>Reports</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0px' }}>
+        <h1 className='text-2xl font-semibold mt-4'>Trading Orders</h1>
         <CustomButton
           Text={'Filters'}
           icon={<img src={FILTER_CDN} alt='icon' />}
@@ -191,11 +288,22 @@ const CandleChart = () => {
         <div className="lg:col-span-2 md:col-span-2 bg-white border rounded-lg p-4">
           <div className='flex flex-col sm:flex-row items-center justify-between '>
             <h1 className='text-lg font-bold p-2'>Trading Order By Numbers</h1>
+
             <div className='flex gap-2 items-center'>
-              <span className='text-lg font-semibold p-2'>Filter Options:</span>
-              <CustomSelect width={'150px'} />
+              <div>
+                <span className='text-lg font-semibold p-2'>Date Range:</span>
+                <Space direction="vertical" size={12} style={{ width: '100px' }}>
+                  <RangePicker
+
+                    defaultValue={[moment('2019-09-03', dateFormat), moment('2019-11-22', dateFormat)]}
+                    disabled={[false, true]}
+                  />
+                </Space>
+              </div>
             </div>
+
           </div>
+
           <div className="w-full">
             <HighchartsReact
               highcharts={Highcharts}
@@ -211,12 +319,22 @@ const CandleChart = () => {
           </div>
         </div>
         <div className="w-full flex-grow lg:col-span-2 md:col-span-2 bg-white border rounded-lg p-4">
-          <div className="flex flex-col justify-between w-full">
-            <h3 className='text-lg font-bold p-2'>Trading Volume By Lots</h3>
-            <div className='flex flex-row gap-1'>
-              <span className='text-sm font-medium p-2'>Filter Options:</span>
-              <CustomSelect width={'120px'} />
+          <div className='flex flex-col sm:flex-row items-center justify-between '>
+            <h1 className='text-lg font-bold p-2'>Trading Volume By Lots</h1>
+
+            <div className='flex gap-2 items-center'>
+              <div>
+                <span className='text-lg font-semibold p-2'>Date Range:</span>
+                <Space direction="vertical" size={12} style={{ width: '100px' }}>
+                  <RangePicker
+
+                    defaultValue={[moment('2019-09-03', dateFormat), moment('2019-11-22', dateFormat)]}
+                    disabled={[false, true]}
+                  />
+                </Space>
+              </div>
             </div>
+
           </div>
           <div className="w-full">
             <HighchartsReact

@@ -11,9 +11,10 @@ import { ToastContainer } from 'react-toastify';
 import { AddnewStyle, footerStyle, submitStyle } from './style';
 import { Brands_List, DeleteBrand } from '../../utils/_APICalls';
 import { useSelector } from 'react-redux';
-import { Stack,Typography } from '@mui/material';
-import Swal from 'sweetalert2';
 
+import { Stack,Typography } from '@mui/material';
+
+import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -102,53 +103,13 @@ const BrandList = () => {
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
           <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
+          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token,DeleteBrand, setIsLoading )} />
 
         </Space>
       ),
     },
 
   ];
- 
-
-const DeleteHandler = async (id)=>{
-  setIsLoading(true)
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#1CAC70",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  }).then(async(result) => {
-    if (result.isConfirmed) {
-      const res = await DeleteBrand(id, token)
-      const {data:{success, message, payload}} = res
-      setIsLoading(false)
-      if(success){
-        Swal.fire({
-          title: "Deleted!",
-          text: message,
-          icon: "success"
-        });
-        fetchBrands()
-      }else{
-        Swal.fire({
-          title: "Opps!",
-          text: {message},
-          icon: "error"
-        });
-      }
-     
-    }
-  });
- 
-  setIsLoading(false)
- 
-}
-
-
 
   return (
     <Spin spinning={isLoading} size="large">
