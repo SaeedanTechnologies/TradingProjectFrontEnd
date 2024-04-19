@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import TradingModal from './TradingModal'
 import { setAccountID } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
+import Swal from 'sweetalert2';
 
 
 const Index = ({ title, direction }) => {
@@ -181,18 +182,43 @@ const Index = ({ title, direction }) => {
     setIsModalOpen(false);
   };
 
-  const DeleteHandler = async (id) => {
-    setIsLoading(true)
-    const res = await Delete_Trading_Account(id, token)
-    const { data: { success, message, payload } } = res
-    setIsLoading(false)
-    if (success) {
-      notifySuccess(message)
-      fetchTradingAccounts()
-    } else {
-      notifyError(message)
-    }
-  }
+    const DeleteHandler = async (id)=>{
+      setIsLoading(true)
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#1CAC70",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(async(result) => {
+        if (result.isConfirmed) {
+          const res = await Delete_Trading_Account(id, token)
+          const {data:{success, message, payload}} = res
+          setIsLoading(false)
+          if(success){
+            Swal.fire({
+              title: "Deleted!",
+              text: message,
+              icon: "success"
+            });
+            fetchTradingAccounts()
+          }else{
+            Swal.fire({
+              title: "Opps!",
+              text: {message},
+              icon: "error"
+            });
+          }
+        
+        }
+      });
+    
+  setIsLoading(false)
+ 
+}
+
   const [activeGroup, setActiveGroup] = useState([])
 
   const fetchActiveGroups = async () => {

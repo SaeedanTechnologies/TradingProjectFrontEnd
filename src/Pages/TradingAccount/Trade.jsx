@@ -15,11 +15,12 @@ import { useSelector } from 'react-redux';
 import { Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete,TextField } from '@mui/material';
 import TradeChart from './TradeChart';
+import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 
 
 
 
-const Trade = () => {
+const Trade = ({fetchLiveOrder}) => {
     const token = useSelector(({user})=> user?.user?.token )
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
@@ -28,6 +29,7 @@ const Trade = () => {
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
   const [isLoading,setIsLoading] = useState(false)
+  const [symbolsList,setSymbolsList] = useState([])
   const [symbol,setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(null);
   const [type,setType] = useState(null);
@@ -97,7 +99,7 @@ const Trade = () => {
 
       setErrors({});
       const SymbolData = {
-        symbol:symbol.value,
+        symbol:symbol.feed_fetch_name,
         order_type:order_type.value,
         type: typeReceive? typeReceive: type.value,
         volume,
@@ -115,9 +117,17 @@ const Trade = () => {
       setIsLoading(true)
        const res = await Post_Trade_Order(SymbolData, token)
        const {data: {message, payload, success}} = res
-       setIsLoading(false)
+       if(success)
+    {
+      setIsLoading(false)
        alert(message)
+       fetchLiveOrder()
        clearFields()  
+    }   
+    else{
+      setIsLoading(false)
+      alert(err.message);
+    }    
     
     }catch(err){
       notifyError(err.message);
@@ -128,6 +138,25 @@ const Trade = () => {
       setErrors(validationErrors);
     }
   }
+
+const fetchSymbolSettings = async () => {
+    try {
+      setIsLoading(true)
+      const res = await All_Setting_Data(token);
+      const { data: { message, success, payload } } = res
+      setSymbolsList(payload.data)
+      
+      setIsLoading(false)
+      setActiveGroup(tradingAccounts);
+
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  };
+
+  useEffect(()=>{
+   fetchSymbolSettings()
+  },[])
 
   return (
      <Spin spinning={isLoading} size="large">
@@ -158,8 +187,8 @@ const Trade = () => {
               name="Symbol"
               id="Symbol"
               variant={'standard'}
-              options={SymbolAutocompleteDummyData}
-              getOptionLabel={(option) => option.label ? option.label : ""} 
+              options={symbolsList}
+              getOptionLabel={(option) => option?.name ? option?.name : ""} 
               value={symbol}
               onChange={(e,value) =>{
               if(value)
@@ -171,7 +200,7 @@ const Trade = () => {
                   setSymbol(null)                                                        
                 }}
                  renderInput={(params) => 
-                <TextField {...params} name="Symbol" label="Symbol"  variant="standard" />
+                <TextField {...params} name="Symbol" label="Select Symbol"  variant="standard" />
                   }
                 />
               {errors.symbol && <span style={{ color: 'red' }}>{errors.symbol}</span>}
@@ -196,7 +225,7 @@ const Trade = () => {
                     setOrder_type(null)                                                        
                   }}
                   renderInput={(params) => 
-                  <TextField {...params} name="Type" label="Type"  variant="standard" />
+                  <TextField {...params} name="Type" label="Select Type"  variant="standard" />
                     }
                 />
                 {errors.order_type && <span style={{ color: 'red' }}>{errors.order_type}</span>}
@@ -222,7 +251,7 @@ const Trade = () => {
                     setType(null)                                                        
                   }}
                   renderInput={(params) => 
-                  <TextField {...params} name="Type" label="Type"  variant="standard" />
+                  <TextField {...params} name="Type" label="Select Type"  variant="standard" />
                     }
                 />
               } 

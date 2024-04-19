@@ -245,6 +245,8 @@ export const PendingOrderTypes = [
   { label: 'Sell Stop Limit', value: 'Sell Stop Limit' },
 ]
 
+
+
 export const MarketOrderTypes = [
   { label: 'Buy', value: 'Buy' },
   { label: 'Sell', value: 'Sell' },

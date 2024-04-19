@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Space, Spin, theme } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusCircleOutlined, EyeOutlined,EyeInvisibleOutlined} from '@ant-design/icons';
 
 import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
@@ -11,6 +11,9 @@ import { ToastContainer } from 'react-toastify';
 import { AddnewStyle, footerStyle, submitStyle } from './style';
 import { Brands_List, DeleteBrand } from '../../utils/_APICalls';
 import { useSelector } from 'react-redux';
+
+import { Stack,Typography } from '@mui/material';
+
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const BrandList = () => {
@@ -20,6 +23,7 @@ const BrandList = () => {
   const [BrandsList, setBrandsList] = useState([])
   const [BrandID, setBrandID] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
+  const [showKey,setShowKey] = useState(false)
 
   const fetchBrands = async () => {
     setIsLoading(true)
@@ -44,6 +48,11 @@ const BrandList = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const toggleKey=()=>{
+    setShowKey(!showKey)
+  }
+
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
@@ -69,6 +78,18 @@ const BrandList = () => {
       title: 'Authorization Key',
       dataIndex: 'public_key',
       key: '4',
+       render: (_, record) => (
+        <Stack direction="row" justifyContent={'space-between'}>
+          <Typography sx={{fontWeight: showKey? 400 : 700,fontSize:showKey ? "14px": "22px"}}>{showKey ? record.public_key: '................'}</Typography>
+
+          <Space size="middle" className='cursor-pointer'>
+            { showKey ?
+            <EyeInvisibleOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={toggleKey} />:
+            <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={toggleKey} />
+            }
+            </Space>
+        </Stack>
+      ),
     },
     {
       title: 'Margin Calls',
@@ -89,18 +110,7 @@ const BrandList = () => {
     },
 
   ];
-  const DeleteHandler = async (id) => {
-    setIsLoading(true)
-    const res = await DeleteBrand(id, token)
-    const { data: { success, message, payload } } = res
-    setIsLoading(false)
-    if (success) {
-      notifySuccess(message)
-      fetchBrands()
-    } else {
-      notifyError(message)
-    }
-  }
+
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -123,6 +133,7 @@ const BrandList = () => {
           title={''}
           width={800}
           footer={null}
+          
         >
           <BrandModal
             setIsModalOpen={setIsModalOpen}
