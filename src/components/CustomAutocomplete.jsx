@@ -2,7 +2,7 @@ import React from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
-const CustomAutocomplete = ({ name, id, defaultValue,options, getOptionLabel,getOptionSelected, onChange, variant, label, multiple }) => {
+const CustomAutocomplete = ({ name, id, defaultValue,options, getOptionLabel,getOptionSelected, onChange, variant, label, multiple, disabled, value }) => {
   return (
     <Autocomplete
       multiple={multiple}
@@ -10,7 +10,9 @@ const CustomAutocomplete = ({ name, id, defaultValue,options, getOptionLabel,get
       id={id}
       variant= {variant}
       defaultValue={defaultValue && defaultValue}
+      disabled = {disabled}
       options={options}
+      value={value}
       getOptionLabel={getOptionLabel}
       getOptionSelected={getOptionSelected}
       onChange={onChange}

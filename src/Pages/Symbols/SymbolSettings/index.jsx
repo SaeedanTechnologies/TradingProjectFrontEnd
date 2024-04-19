@@ -1,15 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { Space, theme, Spin } from 'antd';
+import { Space, theme, Spin, Checkbox } from 'antd';
 import { PlusCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import CustomTable from '../../../components/CustomTable';
 import CustomButton from '../../../components/CustomButton';
-import { AddnewStyle } from '../../Brand/style';
+import { AddnewSettingsStyle, AddnewStyle } from '../../Brand/style';
 import CustomTextField from '../../../components/CustomTextField';
 import { Link, useNavigate } from 'react-router-dom';
 import { All_Setting_Data, DeleteSymbolSetting } from '../../../utils/_SymbolSettingAPICalls';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import CustomDropdownBtn from '../../../components/CustomDropdownBtn';
+import styled, { css } from "styled-components";
+
+
+const VerticalCheckboxGroup = styled(Checkbox.Group)`
+  ${(props) =>
+    props.backgroundColor &&
+    css`
+      &  .ant-checkbox-group-item {
+        display: flex;
+        align-items: center;
+        height: 32px;
+        margin-right: 0;
+      }
+      ,
+      .ant-checkbox-checked .ant-checkbox-inner {
+        background-color: ${props.backgroundColor};
+        border-color: ${props.backgroundColor};
+      }
+    `}
+`;
 
 const Index = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -24,22 +45,6 @@ const Index = () => {
 
   const [allSetting, setAllSetting] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const fetchAllSetting = async () => {
-
-    try {
-      setIsLoading(true)
-      const res = await All_Setting_Data(token);
-      const { data: { message, success, payload } } = res
-      setIsLoading(false)
-      setAllSetting(payload.data);
-    } catch (error) {
-      console.error('Error fetching symbol groups:', error);
-    }
-  }
-  useEffect(() => {
-    fetchAllSetting()
-  }, [])
-
   const columns = [
     {
       title: 'Name',
@@ -93,6 +98,25 @@ const Index = () => {
       ),
     },
   ];
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const fetchAllSetting = async () => {
+
+    try {
+      setIsLoading(true)
+      const res = await All_Setting_Data(token);
+      const { data: { message, success, payload } } = res
+      setIsLoading(false)
+      setAllSetting(payload.data);
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  }
+  useEffect(() => {
+    fetchAllSetting()
+  }, [])
+
+
   const DeleteHandler = async (id) => {
     setIsLoading(true)
     Swal.fire({
@@ -129,7 +153,38 @@ const Index = () => {
     setIsLoading(false)
 
   }
+ 
+  const newColumns = columns.map((item) => ({
+    ...item,
+    hidden: !checkedList.includes(item.key),
+  }));
+  const handleMenuClick = (e) => { };
 
+  const columnMenuProps = {
+    items: columns.map((column) => ({
+      key: column.key,
+      icon: (
+        <VerticalCheckboxGroup
+          value={checkedList}
+          options={[{ label: column.title, value: column.key }]} // Use the column title as label and key
+          onChange={(value) => {
+            const newCheckedList = [...checkedList];
+            if (value.includes(column.key)) {
+              newCheckedList.push(column.key);
+            } else {
+              const index = newCheckedList.indexOf(column.key);
+              if (index !== -1) {
+                newCheckedList.splice(index, 1);
+              }
+            }
+            setCheckedList(newCheckedList);
+          }}
+          backgroundColor={colorPrimary}
+        />
+      ),
+    })),
+    onClick: handleMenuClick,
+  };
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -138,15 +193,16 @@ const Index = () => {
           <div className='flex items-center gap-4'>
             <CustomTextField label={'Search'} varient={'outlined'} sx={{ height: '48px' }} />
             <CustomButton
-              Text='Add Symbol'
-              style={AddnewStyle}
+              Text='Add New Symbol Settings'
+              style={AddnewSettingsStyle}
               icon={<PlusCircleOutlined />}
               onClickHandler={() => navigate('/symbol-settings/0')}
             />
 
           </div>
         </div>
-        <CustomTable columns={columns} data={allSetting} headerStyle={headerStyle} />
+        <CustomDropdownBtn Text='Manage Columns' menuProps={columnMenuProps} />
+        <CustomTable columns={newColumns} data={allSetting} headerStyle={headerStyle} />
       </div>
     </Spin>
   )

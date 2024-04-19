@@ -6,10 +6,10 @@ import * as Yup from 'yup';
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
-import { AutocompleteDummyData } from '../../../utils/constants';
+import { AutocompleteDummyData, LeverageList } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
-import { GetCryptoData } from '../../../utils/_ExchangeAPI'
+import { GetAskBidData, GetCryptoData } from '../../../utils/_ExchangeAPI'
 import { useSelector } from 'react-redux';
 
 const FeedData = [
@@ -26,19 +26,19 @@ const SymbolSettingsEntry = () => {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary },
   } = theme.useToken();
   const navigate = useNavigate()
-  const [EnabledList, setEnabledList] = useState([
-    { id: 1, title: 'Yes' },
-    { id: 2, title: 'No' },
-  ])
-  const [Selectedenable, setSelectedEnable] = useState(null)
-  const [groupList, setGroupList] = useState([])
+ 
+  const [feedNameFetchList, setFeedNameFetchList] = useState([])
+  const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
+
+  const [symbolName, setSymbolName] = useState('')
+  const [SelectedLeverage, setSelectedLeverage] = useState(null)
   const [errors, setErrors] = useState({});
   const [SymbolList, setSymbolList] = useState([])
-  const [fetchData, setFetchData] = useState([])
+  const [FeedNameList, setFeedNameList] = useState([])
+  const [selectedFeedName, setSelectedFeedName] = useState(null)
   const [SelectedSymbol, setSelectedSymbol] = useState(null)
   const [feedValues, setFeedValues] = useState(FeedData)
   const [selectedGroup, setSelectedGroup] = useState([]);
-  const [feedName, setFeedName] = useState('')
   const [feedNameFetch, setFeedNameFetch] = useState('')
   const [leverage, setLeverage] = useState('')
   const [swap, setSwap] = useState('')
@@ -47,14 +47,21 @@ const SymbolSettingsEntry = () => {
   const [volMin, setVolMin] = useState('')
   const [volMax, setVolMax] = useState('')
   const [commission, setCommission] = useState('')
+  const [EnabledList] = useState([
+    { id: 1, title: 'Yes' },
+    { id: 2, title: 'No' },
+  ])
+  const [Selectedenable, setSelectedEnable] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [askValue, setAskValue] = useState('')
+  const [bidValue, setBidValue] = useState('')
 
   const validationSchema = Yup.object().shape({
-    SymbolGroup: Yup.object().required('Symbol Group is required'),
-    symbel_group_id: Yup.object().required('Symbol Group Name is required'),
+    SymbolGroup: Yup.array().required('Symbol Group is required'),
+    symbolName: Yup.string().required('Symbol Group Name is required'),
     feed_name: Yup.object().required('Symbol Feed Name is required'),
-    feed_name_fetch: Yup.string().required('Symbol Feed Name Fetch is required'),
-    leverage: Yup.string().required('Symbol Laverage is required'),
+    feed_name_fetch: Yup.object().required('Symbol Feed Name Fetch is required'),
+    Leverage: Yup.object().required('Leverage is required'),
     swap: Yup.string().required('Symbol Swap is required'),
     lotSize: Yup.string().required('Lot Size is required'),
     lotSteps: Yup.string().required('Lot Steps is required'),
@@ -66,15 +73,14 @@ const SymbolSettingsEntry = () => {
 
   const clearFields = () => {
     setSelectedEnable(null);
-    setGroupList(AutocompleteDummyData);
     setErrors({});
     setSymbolList([]);
     setSelectedSymbol(null);
     setFeedValues(FeedData);
     setSelectedGroup([]);
-    setFeedName('');
-    setFeedNameFetch('');
-    setLeverage('');
+    setSelectedFeedName('');
+    setSelectedFeedNameFetch(null)
+    setSelectedLeverage(null);
     setSwap('');
     setLotSize('');
     setLotSteps('');
@@ -86,11 +92,8 @@ const SymbolSettingsEntry = () => {
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
-      case 'feed_name_fetch':
-        setFeedNameFetch(value);
-        break;
-      case 'leverage':
-        setLeverage(value);
+      case 'symbolName':
+        setSymbolName(value);
         break;
       case 'swap':
         setSwap(value);
@@ -119,20 +122,37 @@ const SymbolSettingsEntry = () => {
     try {
       const res = await Feed_Data_List(token);
       const { data: { message, success, payload } } = res
-      setFetchData(payload.data);
+      setFeedNameList(payload.data);
+      if (parseInt(id) !== 0) {
+        fetchSymbolSettingsWRTID(SymbolList,payload.data)
+  
+      }
+      
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
   }
-  const fetchSymbolSettingsWRTID = async () => {
+  const fetchSymbolSettingsWRTID = async (SymbList, feedlist) => {
     if (id !== 0) {
       setIsLoading(true)
       const res = await SelectSymbolSettingsWRTID(id, token)
       const { data: { message, payload, success } } = res
       setIsLoading(false)
       if (success) {
-        const selectedGroup = SymbolList.find(x => x.id === payload.name)
+        setSymbolName(payload.name)
+        const selectedGroup = SymbList.find(x => x.id === payload.symbel_group_id)
         setSelectedSymbol(selectedGroup)
+        const SelectedFeedNameOption = feedlist.find(x=> x.name === payload.feed_name)
+        if (payload.feed_name === 'binance') {
+          const res = await GetCryptoData()
+          const mData = res?.data?.symbols
+          setFeedNameFetchList(mData)
+          const selectedSymb = mData.find(x=> x.symbol === payload.feed_fetch_name) 
+          setSelectedFeedNameFetch(selectedSymb)
+        }
+        const selectedLeverageOpt = LeverageList.find(x=> x.title === payload.leverage)
+        setSelectedLeverage(selectedLeverageOpt)
+        setSelectedFeedName(SelectedFeedNameOption)
         const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
         setSelectedEnable(selectedEnab)
         setLeverage(parseFloat(payload.leverage))
@@ -145,19 +165,16 @@ const SymbolSettingsEntry = () => {
       }
 
     }
-
   }
-  useEffect(() => {
-    if (parseInt(id) !== 0) {
-      fetchSymbolSettingsWRTID()
 
-    }
-  }, [id])
   const fetchSymbolGroups = async () => {
     try {
       const res = await Symbol_Group_List(token);
       const { data: { message, success, payload } } = res
       setSymbolList(payload.data);
+      if (parseInt(id) !== 0) {
+        fetchSymbolSettingsWRTID(payload.data)
+      }
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
@@ -165,16 +182,18 @@ const SymbolSettingsEntry = () => {
   useEffect(() => {
     fetchSymbolGroups();
     fetchFeedData();
-  }, []);
-
+    if (parseInt(id) !== 0) {
+      fetchSymbolSettingsWRTID()
+    }
+  }, [id]);
   const handleSubmit = async () => {
     try {
       await validationSchema.validate({
         SymbolGroup: selectedGroup,
-        symbel_group_id: SelectedSymbol,
-        feed_name: feedName,
-        feed_name_fetch: feedNameFetch,
-        leverage: leverage,
+        symbolName: symbolName,
+        feed_name: selectedFeedName,
+        feed_name_fetch: selectedFeedNameFetch,
+        Leverage : SelectedLeverage,
         swap: swap,
         lotSize: lotSize,
         lotSteps: lotSteps,
@@ -186,16 +205,17 @@ const SymbolSettingsEntry = () => {
 
       setErrors({});
       const SymbolGroupData = {
-        name: selectedGroup.symbol,
+        name: symbolName,
         symbel_group_id: SelectedSymbol.id,
+        feed_fetch_name: selectedFeedNameFetch.symbol,
         speed_max: 'abc',
         lot_size: lotSize,
         lot_step: lotSteps,
         commission: commission,
         enabled: Selectedenable.title = 'Yes' ? 1 : 0,
-        leverage: leverage,
-        feed_name: feedName ? feedName.name : '',
-        feed_server: feedName ? feedName.feed_server : '',
+        leverage: SelectedLeverage.value,
+        feed_name: selectedFeedName ? selectedFeedName.name : '',
+        feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
         swap: swap,
         vol_min: volMin,
         vol_max: volMax
@@ -239,18 +259,12 @@ const SymbolSettingsEntry = () => {
       setErrors(validationErrors);
     }
   };
-
-  const fetchExchangeData = async (direction) => {
-    if (direction === 'crypto') {
-      const res = await GetCryptoData()
-      debugger
-      setGroupList(res?.data?.symbols)
-    }
-
-
-  }
   const GetSymbolData = async (direction) => {
     if (direction === 'binance') {
+      const res = await GetCryptoData()
+      const mData = res?.data?.symbols
+      setFeedNameFetchList(mData)
+      {/*
       const { filters } = selectedGroup
       const stepSize = filters.find(filter => filter.filterType === 'LOT_SIZE').stepSize;
       setLotSize(stepSize)
@@ -258,25 +272,29 @@ const SymbolSettingsEntry = () => {
       setVolMin(volMinium)
       const volMaximum = filters.find(filter => filter.filterType === 'NOTIONAL').maxNotional;
       setVolMax(volMaximum)
+      */}
 
     }
 
   }
+  const GetAskBid = async (symbol)=>{
+     const res = await GetAskBidData(symbol)
+     const {data: {askPrice, bidPrice}} = res
+     setAskValue(askPrice)
+     setBidValue(bidPrice)
+  }
 
   return (
     <Spin spinning={isLoading} size="large">
-
-
-
       <div className='p-8' style={{ backgroundColor: colorBG }}>
-        <div className='flex gap-3'>
+        <div className='flex gap-3 items-center'>
           <img
             src={ARROW_BACK_CDN}
             alt='back icon'
             className='cursor-pointer'
             onClick={() => navigate(-1)}
           />
-          <h1 className='text-2xl font-semibold'>Symbol Group</h1>
+          <h1 className='text-2xl font-semibold'>{parseInt(id) === 0 ? 'Add Symbol Setting' : 'Edit Symbol Setting'}</h1>
         </div>
         <div className='border rounded-lg p-4'>
 
@@ -284,7 +302,7 @@ const SymbolSettingsEntry = () => {
             <div>
               <CustomAutocomplete
                 name="SymbolGroup"
-                label="Symbol Group"
+                label="Select Group"
                 variant="standard"
                 options={SymbolList}
                 value={SelectedSymbol}
@@ -292,7 +310,6 @@ const SymbolSettingsEntry = () => {
                 onChange={(event, value) => {
                   if (value) {
                     setSelectedSymbol(value);
-                    fetchExchangeData(value.name)
                     setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "" }))
                   } else {
                     setSelectedSymbol(null);
@@ -305,7 +322,16 @@ const SymbolSettingsEntry = () => {
               {errors.SymbolGroup && <span style={{ color: 'red' }}>{errors.SymbolGroup}</span>}
             </div>
             <div>
-              <CustomAutocomplete
+            <CustomTextField
+                key={4}
+                name={"symbolName"}
+                label="Name"
+                varient="standard"
+                value={symbolName}
+                onChange={(e) => handleInputChange("symbolName", e.target.value)}
+              />
+              {errors.symbolName && <span style={{ color: 'red' }}>{errors.symbolName}</span>}
+             {/* <CustomAutocomplete
                 key={2}
                 name="name"
                 label="Symbol Name"
@@ -324,24 +350,24 @@ const SymbolSettingsEntry = () => {
 
                 }}
               />
-              {errors.symbel_group_id && <span style={{ color: 'red' }}>{errors.symbel_group_id}</span>}
+              {errors.symbel_group_id && <span style={{ color: 'red' }}>{errors.symbel_group_id}</span>}*/}
             </div>
             <div>
               <CustomAutocomplete
                 key={3}
                 name={'feed_name'}
-                label="Symbol Feed Name"
+                label="Select Feed Name"
                 variant="standard"
-                options={fetchData}
-                value={feedName}
+                options={FeedNameList}
+                value={selectedFeedName}
                 getOptionLabel={(option) => option.name ? option.name : ""}
                 onChange={(event, value) => {
                   if (value) {
-                    setFeedName(value);
+                    setSelectedFeedName(value);
                     GetSymbolData(value.name)
                     setErrors(prevErrors => ({ ...prevErrors, feed_name: "" }))
                   } else {
-                    setFeedName(null);
+                    setSelectedFeedName(null);
                   }
 
                 }}
@@ -354,32 +380,52 @@ const SymbolSettingsEntry = () => {
 
             <div>
 
-              <CustomTextField
-                key={4}
-                name={"feed_name_fetch"}
-                label="Symbol Feed Name Fetch"
-                varient="standard"
-                onChange={(e) => handleInputChange("feed_name_fetch", e.target.value)}
+            <CustomAutocomplete
+                key={3}
+                name={'feed_name_fetch'}
+                label="Select Symbols"
+                variant="standard"
+                options={feedNameFetchList}
+                value={selectedFeedNameFetch}
+                getOptionLabel={(option) => option.symbol ? option.symbol : ""}
+                onChange={(event, value) => {
+                  if (value) {
+                    setSelectedFeedNameFetch(value);
+                    GetAskBid(value.symbol)
+                  } else {
+                    setSelectedFeedNameFetch(null);
+                  }
+
+                }}
+
               />
               {errors.feed_name_fetch && <span style={{ color: 'red' }}>{errors.feed_name_fetch}</span>}
             </div>
             <div>
-              <CustomTextField
-                key={5}
-                name="leverage"
-                label="Symbol Laverage"
-                type={'number'}
-                value={leverage}
-                varient="standard"
-                onChange={(e) => handleInputChange("leverage", e.target.value)}
-              />
-              {errors.leverage && <span style={{ color: 'red' }}>{errors.leverage}</span>}
+            <CustomAutocomplete
+                name='Leverage'
+                variant='standard'
+                label='Select Leverage'
+                options={LeverageList}
+                getOptionLabel={(option) => option.title ? option.title : ""}
+                value={ SelectedLeverage} 
+                onChange={(e, value) => {
+                  if (value) {
+                    setSelectedLeverage(value);
+                    setErrors(prevErrors => ({ ...prevErrors, Leverage: '' }));
+                  } else {
+                    setSelectedLeverage(null);
+                    setErrors(prevErrors => ({ ...prevErrors, Leverage: 'Leverage is Requried' }));
+                  }
+                }}
+          />
+              {errors.Leverage && <span style={{ color: 'red' }}>{errors.Leverage}</span>}
             </div>
             <div>
               <CustomTextField
                 name={'swap'}
                 key={6}
-                label="Symbol Swap"
+                label="Swap"
                 type={'number'}
                 value={swap}
                 varient="standard"
@@ -417,7 +463,7 @@ const SymbolSettingsEntry = () => {
               <CustomTextField
                 name={'volMin'}
                 key={9}
-                label="Value Minimum"
+                label="Vol Minimum"
                 value={volMin}
                 type={'number'}
                 varient="standard"
@@ -429,7 +475,7 @@ const SymbolSettingsEntry = () => {
               <CustomTextField
                 name={'volMax'}
                 key={10}
-                label="Value Maximum"
+                label="Vol Maximum"
                 value={volMax}
                 type={'number'}
                 varient="standard"
@@ -465,7 +511,7 @@ const SymbolSettingsEntry = () => {
               />
               {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
             </div>
-
+           {askValue > 0 &&  <span className='text-sm text-green-500 font-semibold'>Ask Price is {askValue  } and Bid Price is {bidValue}</span>} 
 
           </div>
           <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
@@ -483,7 +529,7 @@ const SymbolSettingsEntry = () => {
               onClick={() => navigate(-1)}
             />
             <CustomButton
-              Text='Update'
+              Text={parseInt(id) === 0 ? 'Submit' : 'Update' }
               style={{
                 padding: '16px',
                 height: '48px',

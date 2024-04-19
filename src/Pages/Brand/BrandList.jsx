@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import { AddnewStyle, footerStyle, submitStyle } from './style';
 import { Brands_List, DeleteBrand } from '../../utils/_APICalls';
 import { useSelector } from 'react-redux';
+import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -81,7 +82,7 @@ const BrandList = () => {
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
           <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
+          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token,DeleteBrand, setIsLoading )} />
 
         </Space>
       ),

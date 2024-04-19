@@ -22,6 +22,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
   const [AccountList, setAccountList] = useState([]);
   const [SelectedAccountList, setSelectedAccountList] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false)
   const [name, setName] = useState('');
   const [massLeverage, setMassLeverage] = useState('')
   const [massSwap, setMassSwap] = useState('')
@@ -30,7 +31,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     SymbolGroup: Yup.array().required('Group is required'),
-    Account: Yup.array().required('Account is required'),
+    // Account: Yup.array().required('Account is required'),
     massLeverage: Yup.string().required('Mass Leverage is required'),
     massSwap: Yup.string().required('Mass Swap is required')
   });
@@ -54,9 +55,10 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
     setName('')
     setMassLeverage('')
     setMassSwap('')
-  
+    setSelectedGroup(null)
     setSelectedAccountList(null)
     setErrors({})
+    setIsDisabled(false)
   }
   useEffect(() => {
     clearFields()
@@ -67,7 +69,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
     setIsLoading(true)
     const res = await SelectTradingAccountGroupWRTID(TradingGroupID, token)
     const { data: { payload, message, success } } = res
-    setIsLoading(false)
+    setIsDisabled(true)
     if (success) {
       setName(payload.name)
       setMassLeverage(payload.mass_leverage)
@@ -76,9 +78,11 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
         return payload.symbel_groups.some(symbol => symbol.pivot.symbel_group_id === option.id);
       });
       setSelectedGroup(selectedOptions);
+      setIsLoading(false)
     } else {
       notifyError(message)
     }
+    setIsLoading(false)
   }
   const getSymbolGroups = async () => {
     setIsLoading(true)
@@ -109,7 +113,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
         name,
         massLeverage,
         massSwap, 
-        Account: SelectedAccountList
+       // Account: SelectedAccountList
       }, { abortEarly: false });
       setErrors({})
       const TradingGroupData = {
@@ -117,7 +121,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
         mass_leverage: massLeverage,
         mass_swap: massSwap,
         symbel_group_ids: SelectedGroup.map(item => item.id),
-        trading_account_ids: SelectedAccountList.map(item => item.id)
+        trading_account_ids: SelectedAccountList ? SelectedAccountList.map(item => item.id) : []
       }
       if (TradingGroupID === 0) { // save
         setIsLoading(true)
@@ -170,52 +174,28 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
           />
           {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
         </div>
+        <div> 
         <Autocomplete
           multiple
           limitTags={2}
-          id="SymbolGroup"
-          name='SymbolGroup'
+          id="symbolGroup"
           options={GroupList}
-          getOptionLabel={(option) => option.name}
-          defaultValue={[{
-            created_at: "2024-04-16T11:57:21.000000Z",
-            id: 5,
-            leverage: "1",
-            lot_size: "10.2",
-            lot_step: "0.4",
-            name: "crypto",
-            swap: "1.4",
-            trading_interval: "11.2",
-            updated_at: "2024-04-16T11:57:21.000000Z",
-            vol_max: "1.6",
-            vol_min: "1.2"
-          }]}
+          getOptionLabel={(option) => option.name ? option.name : '' }
+          value={SelectedGroup ??  []}
+          onChange={(e, value) => {
+            if (value) {
+              setSelectedGroup(value);
+              setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: '' }));
+            } else {
+              setSelectedGroup(null);
+              setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: 'Symbol Group is requried' }));
+            }
+          }}
           renderInput={(params) => (
-            <TextField {...params} label="limitTags" placeholder="Favorites" variant='standard' />
+            <TextField {...params} label="Symbol Group" placeholder="Symbol Group" variant="standard" />
           )}
-
           fullWidth
-    />
-        <div> 
-          <CustomAutocomplete
-             multiple={true}
-            name='SymbolGroup'
-            variant='standard'
-            label='Symbol Group'
-            options={GroupList}
-            getOptionLabel={(option) => option.name ? option.name : ""}
-            getOptionSelected={(option, value) => option.id === value.id}
-            defaultValue={[GroupList[0]]} 
-            onChange={(e, value) => {
-              if (value) {
-                setSelectedGroup(value);
-                setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: '' }));
-              } else {
-                setSelectedGroup(null);
-                setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: 'Symbol Group is requried' }));
-              }
-            }}
-          />
+        />
           {errors.SymbolGroup && <span style={{ color: 'red' }}>{errors.SymbolGroup}</span>}
         </div>
         <div>
@@ -247,19 +227,18 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
             variant='standard'
             label='Select Accounts'
             options={AccountList}
+            disabled = {isDisabled}
             getOptionLabel={(option) => option.login_id ? option.login_id : ""}
             value={ SelectedAccountList} 
             onChange={(e, value) => {
               if (value) {
                 setSelectedAccountList(value);
-                setErrors(prevErrors => ({ ...prevErrors, Account: '' }));
               } else {
                 setSelectedAccountList(null);
-                setErrors(prevErrors => ({ ...prevErrors, Account: 'Symbol Group is requried' }));
               }
             }}
           />
-          {errors.Account && <span style={{ color: 'red' }}>{errors.Account}</span>}
+         
         </div>
       </div>
       <div className='flex items-center justify-end gap-4'>
