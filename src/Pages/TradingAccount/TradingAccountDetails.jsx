@@ -10,10 +10,13 @@ import CloseOrder from './CloseOrder';
 import PersonalData from './PersonalData'; 
 import Account from './Account';
 import TransactionOrder from './TransactionOrder';
-
+import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { useSelector } from 'react-redux';
+import moment from 'moment';
 
 
 const TradingAccountDetails = () => {
+   const token = useSelector(({user})=> user?.user?.token )
   const {
     token: { colorBG, TableHeaderColor, colorPrimary  },
   } = theme.useToken();
@@ -23,19 +26,54 @@ const TradingAccountDetails = () => {
 const { TabPane } = Tabs;
 
   const [activeTab, setActiveTab] = useState('1');
+   const [tradeOrder,setTradeOrder] = useState([])
+   const [isLoading, setIsLoading] = useState(false)
+     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+
+
+const fetchLiveOrder = async () => {
+
+      setIsLoading(true)
+      const params ={trading_account_id,OrderTypes:['market','pending'],token}
+      const mData = await Get_Trade_Order(params)
+      const {data:{message, payload, success}} = mData
+      const liveOrders = payload?.data?.map((order)=>({
+        id:order.id,
+        symbol: order.symbol,
+        time:moment(order.created_at).format('L'),
+        type:order.type,
+        volume:order.volume,
+        stopLoss:order.stopLoss,
+        takeProfit:order.takeProfit,
+        price:order.price,
+        profit:order.profit ? order.profit : '...',
+        open_price:order.open_price,
+        // close_price:order.close_price ? order.close_price: order.open_price,
+        // open_time:order.open_time,
+        // close_time:order.close_time ? order.close_time : new Date().toISOString
+       
+      }))
+       setIsLoading(false)
+      if(success){
+      
+      setTradeOrder(liveOrders)
+    }
+    
+  }
+  
  
 
   const items = [
   {
     key: '1',
     label: 'Live Orders',
-    children: <LiveOrders />,
+    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder} />,
     path: '/single-trading-accounts/details/live-order'
   },
   {
     key: '2',
-    label: 'Symbol',
-    children: <Trade />,
+    label: 'Trade',
+    children: <Trade fetchLiveOrder = {fetchLiveOrder} />,
     path: '/single-trading-accounts/details/symbol'
   },
   {

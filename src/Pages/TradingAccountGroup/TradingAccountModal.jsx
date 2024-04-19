@@ -176,7 +176,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
           id="SymbolGroup"
           name='SymbolGroup'
           options={GroupList}
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(option) => option?.name}
           defaultValue={[{
             created_at: "2024-04-16T11:57:21.000000Z",
             id: 5,
@@ -203,8 +203,8 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
             variant='standard'
             label='Symbol Group'
             options={GroupList}
-            getOptionLabel={(option) => option.name ? option.name : ""}
-            getOptionSelected={(option, value) => option.id === value.id}
+            getOptionLabel={(option) => option?.name ? option?.name : ""}
+            getOptionSelected={(option, value) => option?.id === value.id}
             defaultValue={[GroupList[0]]} 
             onChange={(e, value) => {
               if (value) {
@@ -247,7 +247,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
             variant='standard'
             label='Select Accounts'
             options={AccountList}
-            getOptionLabel={(option) => option.login_id ? option.login_id : ""}
+            getOptionLabel={(option) => option?.login_id ? option?.login_id : ""}
             value={ SelectedAccountList} 
             onChange={(e, value) => {
               if (value) {
@@ -268,7 +268,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
           style={{ backgroundColor: '#C5C5C5', borderColor: '#C5C5C5', color: '#fff', ...submitStyle }}
         />
         <CustomButton
-          Text={'Submit'}
+          Text={TradingGroupID === 0 ? 'Submit' : 'Update'}
           style={submitStyle}
           onClickHandler={handleSumbit}
         />

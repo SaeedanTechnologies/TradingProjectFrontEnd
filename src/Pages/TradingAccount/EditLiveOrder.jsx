@@ -8,10 +8,11 @@ import CustomButton from '../../components/CustomButton';
 import { SaveSymbolGroups } from '../../utils/_SymbolGroupAPI';
 import { numberInputStyle } from './style';
 import CustomCheckbox from '../../components/CustomCheckbox';
-import { PendingOrderTypes,MarketOrderTypes, SymbolAutocompleteDummyData } from '../../utils/constants';
-import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
+import { PendingOrderTypes,MarketOrderTypes, SymbolAutocompleteDummyData,TradeOrderTypes } from '../../utils/constants';
+import { Get_Single_Trade_Order, Put_Trade_Order } from '../../utils/_TradingAPICalls';
 import { TradeValidationSchema } from '../../utils/validations';
 import { Autocomplete,TextField } from '@mui/material';
+
 
 
 
@@ -40,8 +41,13 @@ const EditLiveOrder = () => {
   const [takeProfit,setTakeProfit] = useState('');
   const [stopLoss,setStopLoss] = useState('');
   const [profit,setProfit] = useState('');
-const [open_price,setOpen_price] = useState('')
+  const [open_price,setOpen_price] = useState('')
+  const [comment,setComment] = useState('')
+  const [price,setPrice] = useState('')
   //
+
+
+  
 
 
 
@@ -77,36 +83,38 @@ const [open_price,setOpen_price] = useState('')
     setTakeProfit('')
     setStopLoss('')
     setProfit('')
+    setComment('');
+    setPrice('')
 
     
 
   }
   const handleSubmit = async()=> {
+     setIsLoading(true)
     try{
+     
       await TradeValidationSchema.validate({
-        
+        order_type,
+        comment,
         symbol,
         volume,
         takeProfit,
         stopLoss,
+        price
       }, { abortEarly: false });
 
       setErrors({});
-      const liveOrderData = {
-        symbol ,
-        type,
-        volume,
-        takeProfit,
-        stopLoss,
-        profit
-         }
-      setIsLoading(true)
-       const res = await SaveSymbolGroups(liveOrderData, token)
+   
+      const paramsString = `symbol=${symbol.value}&type=${type.value}&volume=${volume}&takeProfit=${takeProfit}&stopLoss=${stopLoss}&profit=${profit}&open_price=${open_price}`;
+       const res = await Put_Trade_Order(orderId,paramsString, token)
+
        const {data: {message, payload, success}} = res
-       setIsLoading(false)
+      
+      
        if(success){
+        //  clearFields()
         alert(message)
-        clearFields()
+       
     }
       
     
@@ -117,6 +125,7 @@ const [open_price,setOpen_price] = useState('')
       });
       setErrors(validationErrors);
     }
+     setIsLoading(false)
   }
 
 const fetchSingleTradeOrder= async()=>{
@@ -129,15 +138,18 @@ const fetchSingleTradeOrder= async()=>{
       if(success){
         const selectedSymbol =  SymbolList.find(x=> x.value === payload.symbol)
         const selectedOrderType  = payload.order_type === 'pending' ?  PendingOrderTypes:MarketOrderTypes;
+        const orderType = TradeOrderTypes.find(x=>x.value === payload.order_type)
         const selectedType = selectedOrderType.find(x=> x.value === payload.type)
         setSymbol(selectedSymbol)
         setType(selectedType)
-        setOrder_type(payload.order_type)
+        setOrder_type(orderType)
         setVolume(payload.volume)
         setOpen_price(payload.open_price)
         setProfit(payload.profit)
         setStopLoss(payload.stopLoss)
         setTakeProfit(payload.takeProfit)
+        setComment(payload.comment);
+        setPrice(payload.price)
       
       }
 
@@ -240,7 +252,9 @@ const fetchSingleTradeOrder= async()=>{
                     color: 'black',
                     fontWeight: 'bold',
                     borderRadius: 8
-                  }} Text={'Update'} />
+                  }} Text={'Update'}
+                
+                  />
                   <CustomCheckbox />
                   <label className='mt-2'>Auto</label>
                 </div>

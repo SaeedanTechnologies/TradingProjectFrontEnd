@@ -12,6 +12,16 @@ export const Save_Trading_Account = async(TradingAccountData, token)=>{
   return res 
 }
 
+export const Put_Trading_Account = async(id,paramsString, token)=>{
+  const res = await _API(`${apiUrl}/admin/trading_accounts/${id}?${paramsString}`,'put',[], token)
+  return res 
+}
+
+export const  Get_Single_Trading_Account = async(id,paramsString, token)=>{
+  const res = await _API(`${apiUrl}/admin/trading_accounts/${id}`,'get',[], token)
+  return res 
+}
+
 export const Delete_Trading_Account = async(TradingID, token)=>{
   const res = await _API(`${apiUrl}/admin/trading_accounts/${TradingID}`,'delete',[],token)
   return res
@@ -41,5 +51,15 @@ export const Get_Single_Trade_Order = async(id,token)=>{
 
 export const Post_Trade_Order = async(TradeOrderData, token)=>{
   const res = await _API(`${apiUrl}/admin/trade_orders`,'post',TradeOrderData,token)
+  return res
+}
+
+export const Put_Trade_Order = async(id, paramsString, token)=>{
+  const res = await _API(`${apiUrl}/admin/trade_orders/${id}?${paramsString}`,'put',[],token)
+  return res
+}
+
+export const Delete_Trade_Order = async(id,token)=>{
+   const res = await _API(`${apiUrl}/admin/trade_orders/${id}`,'delete',[],token)
   return res
 }

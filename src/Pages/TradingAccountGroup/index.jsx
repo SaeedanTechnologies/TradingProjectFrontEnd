@@ -178,7 +178,7 @@ const DeleteHandler = async (id)=>{
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
           <CustomButton
-              Text='Add Trading Group'
+              Text='Add New Trading Group'
               style={{height:'48px' ,...AddnewStyle}}
               icon={<PlusCircleOutlined />}
               onClickHandler={()=>showModal(0)}

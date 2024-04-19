@@ -2,9 +2,11 @@ import React,{useState,useEffect} from 'react'
 import { Space, theme,Spin } from 'antd';
 import { DeleteOutlined} from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
-import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
+import Swal from 'sweetalert2';
+import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
+
 
 
 const CloseOrder = () => {
@@ -85,43 +87,13 @@ const CloseOrder = () => {
       key: '14',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
+         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=>DeleteHandler(record.id)} />
         </Space>
       ),
     },
   ];
   
-  const data = [
-    {
-      key: '1',
-      time: '9:30',
-      ticket: 'audkdi',
-      type: 'Buy',
-      Volumn: '1000',
-      symbol: '125.50',
-      Price: '130.50',
-      SL: '124.50',
-      TP: '127.50',
-      Reason: '...',
-      Swap: '...',
-      Profit: '5%',
-    },
-    {
-      key: '2',
-      time: '10:00',
-      ticket: 'audkdi',
-      type: 'Sell',
-      Volumn: '500',
-      symbol: '127.00',
-      Price: '120.00',
-      SL: '128.00',
-      TP: '124.00',
-      Reason: '...',
-      Swap: '...',
-      Profit: '-3%',
-    },
-    // Add more data objects as needed
-  ];
+  
   
   const headerStyle = {
     background: TableHeaderColor, 
@@ -134,7 +106,7 @@ const CloseOrder = () => {
     const fetchCloseOrder = async () => {
 
       setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['market','pending'],token}
+      const params ={trading_account_id,OrderTypes:['close'],token}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
       
@@ -163,6 +135,45 @@ const CloseOrder = () => {
     }
     
   }
+
+
+  const DeleteHandler = async (id)=>{
+  setIsLoading(true)
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#1CAC70",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  }).then(async(result) => {
+    if (result.isConfirmed) {
+      const res = await Delete_Trade_Order(id, token)
+      const {data:{success, message, payload}} = res
+      setIsLoading(false)
+      if(success){
+        Swal.fire({
+          title: "Deleted!",
+          text: message,
+          icon: "success"
+        });
+        fetchCloseOrder()
+      }else{
+        Swal.fire({
+          title: "Opps!",
+          text: {message},
+          icon: "error"
+        });
+      }
+     
+    }
+  });
+ 
+  setIsLoading(false)
+ 
+}
+
   useEffect(()=>{
     fetchCloseOrder()
   },[])

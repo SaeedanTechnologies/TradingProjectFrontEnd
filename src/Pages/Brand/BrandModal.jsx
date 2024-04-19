@@ -129,6 +129,10 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
   return (
     <Spin spinning={isLoading} size="large">
       <div className='flex flex-col gap-6'>
+
+        {/* <Typography></Typography> */}
+
+
         <CustomTextField
           label="Name"
           varient="standard"
@@ -156,14 +160,20 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
           onChange={e => handleInputChange('marginCall', e.target.value)}
         />
         {errors.marginCall && <span style={{ color: 'red' }}>{errors.marginCall}</span>}
-
+       
         <div style={footerStyle}>
           <CustomButton
-            Text={'Submit'}
+            Text={ BrandID === 0 ? 'Submit' :'Update'}
             style={submitStyle}
             onClickHandler={handleSubmit}
           />
+          
         </div>
+
+        
+          
+     
+
         <ToastContainer />
       </div>
     </Spin>
