@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { theme, Checkbox } from 'antd';
+import { theme, Checkbox, } from 'antd';
 import styled, { css } from "styled-components";
 
 import CoinCard from './CoinCard';
@@ -7,7 +7,8 @@ import { DashboardCardData } from '../../utils/constants';
 import CandleChart from '../../components/CandleChart';
 import CustomTable from '../../components/CustomTable';
 import CustomDropdownBtn from '../../components/CustomDropdownBtn';
-
+import CustomTextField from '../../components/CustomTextField';
+import { SearchOutlined } from '@ant-design/icons';
 const VerticalCheckboxGroup = styled(Checkbox.Group)`
   ${(props) =>
     props.backgroundColor &&
@@ -121,8 +122,8 @@ const Index = () => {
   };
   return (
     <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
-      <h1 className='text-2xl font-semibold py-12px'>Dashboard</h1>
-      <div className="grid w-full gap-4  lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 ">
+      {/* <h1 className='text-2xl font-semibold py-12px'>Dashboard</h1> */}
+      {/* <div className="grid w-full gap-4  lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 ">
         {DashboardCardData.map((item) => (
           <CoinCard
             key={item.id}
@@ -135,12 +136,20 @@ const Index = () => {
             subvalue_color={item.subvalue_color}
           />
         ))}
+      </div> */}
+      <div className='my-8 flex justify-between items-center' >
+        <div>
+          <h1 className='text-2xl font-semibold mb-8'>Reports</h1>
+        </div>
+        <div>
+          <CustomTextField label={<>
+            <SearchOutlined />
+            &nbsp;Search for an entry
+          </>} />
+        </div>
       </div>
-      <div className='my-8'>
-        <h1 className='text-2xl font-semibold mb-8'>Reports</h1>
-        <CandleChart />
-      </div>
-      <div className='bg-white p-4 border rounded-lg'>
+      <CandleChart />
+      {/* <div className='bg-white p-4 border rounded-lg'>
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>Trading Account</h1>
           <div>
@@ -148,8 +157,8 @@ const Index = () => {
           </div>
         </div>
         <CustomTable columns={newColumns} data={data} headerStyle={headerStyle} />
-      </div>
-    </div>
+      </div> */}
+    </div >
   );
 };
 

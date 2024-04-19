@@ -120,7 +120,7 @@ export const BarChartConfig = {
   yAxis: {
     min: 0,
     title: {
-      text: '1000 metric tons (MT)'
+      text: ''
     }
   },
   tooltip: {
