@@ -6,17 +6,12 @@ import * as Yup from 'yup';
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
+import {LeverageList} from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import {SaveSymbolGroups, SelectSymbolWRTID, UpdateSymbolGroups} from '../../../utils/_SymbolGroupAPI';
 import { useSelector } from 'react-redux';
 
-const SymbolGroupData =  [
-  { title: 'Stock', id: 'stock' },
-  { title: 'Futures', id: 'futures' },
-  { title: 'Forex', id: 'forex' }, 
-  { title: 'Crypto', id: 'crypto' },
-  { title: 'NFT', id: 'nft' }
-]
+
 const SymbolGroupEntry = () => {
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary  },
@@ -24,9 +19,9 @@ const SymbolGroupEntry = () => {
   const token = useSelector(({user})=> user?.user?.token )
   const {id} = useParams()
   const navigate = useNavigate()
-  const [SymbolList] = useState(SymbolGroupData)
-  const [SelectedSymbol, setSelectedSymbol] = useState(null)
-  const [Leverage, setLeverage] = useState('')
+
+  const [symbolGroupName, setSymbolGroupName] = useState('')
+  const [SelectedLeverage, setSelectedLeverage] = useState(null)
   const [Swap, setSwap] = useState('')
   const [LotSize, setLotSize] = useState('')
   const [LotStep, setLotStep] = useState('')
@@ -37,8 +32,8 @@ const SymbolGroupEntry = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const validationSchema = Yup.object().shape({
-      SymbolGroup: Yup.object().required('Symbol Group is required'),
-      Leverage: Yup.string().required('Leverage is required'),
+      symbolGroupName: Yup.string().required('Name is required'),
+      Leverage: Yup.object().required('Leverage is required'),
       Swap: Yup.string().required('Swap is required'),
       LotSize: Yup.string().required('Lot Size is required'),
       LotStep: Yup.string().required('Lot Step is required'),
@@ -49,8 +44,8 @@ const SymbolGroupEntry = () => {
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
-      case 'Leverage':
-        setLeverage(value);
+      case 'symbolGroupName':
+        setSymbolGroupName(value);
         break;
       case 'Swap':
         setSwap(value);
@@ -75,8 +70,8 @@ const SymbolGroupEntry = () => {
     }
   };
   const clearFields = () =>{
-    setSelectedSymbol(null);
-    setLeverage('')
+    setSymbolGroupName('');
+    setSelectedLeverage(null)
     setSwap('');
     setLotSize('');
     setLotStep('');
@@ -87,8 +82,8 @@ const SymbolGroupEntry = () => {
   const handleSubmit = async()=> {
     try{
       await validationSchema.validate({
-        SymbolGroup: SelectedSymbol,
-        Leverage,
+        symbolGroupName,
+        Leverage : SelectedLeverage,
         Swap,
         LotSize,
         LotStep,
@@ -99,8 +94,8 @@ const SymbolGroupEntry = () => {
 
       setErrors({});
       const SymbolGroupData = {
-        name : SelectedSymbol.id,
-        leverage: Leverage,
+        name : symbolGroupName,
+        leverage: SelectedLeverage.value,
         lot_size: LotSize,
         lot_step: LotStep,
         vol_min: VolMin,
@@ -155,9 +150,9 @@ const SymbolGroupEntry = () => {
       const {data: {message, payload, success}} = res
       setIsLoading(false)
       if(success){
-        const selectedGroup =  SymbolList.find(x=> x.id === payload.name)
-        setSelectedSymbol(selectedGroup)
-        setLeverage(payload.leverage)
+        const selectedOption = LeverageList.find(x=> x.title === payload.leverage)
+        setSelectedLeverage(selectedOption)
+        setSymbolGroupName(payload.name)
         setLotSize(payload.lot_size);
         setLotStep(payload.lot_step);
         setVolMin(payload.vol_min);
@@ -172,46 +167,47 @@ const SymbolGroupEntry = () => {
   return (
     <Spin spinning={isLoading} size="large">
     <div className='p-8' style={{ backgroundColor: colorBG }}>
-     <div className='flex gap-3'>
+     <div className='flex gap-3 items-center'>
      <img 
         src={ARROW_BACK_CDN} 
         alt='back icon' 
         className='cursor-pointer'
         onClick={()=> navigate(-1)}
         />
-      <h1 className='text-2xl font-semibold'>Symbol Group</h1>
+      <h1 className='text-2xl font-semibold'>{parseInt(id) === 0 ? 'Add Symbol Group' : 'Edit Symbol Group'}</h1>
     </div>
     <div className='border rounded-lg p-4'>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-8'>
         <div>
-        <CustomAutocomplete
-         name='SymbolGroup'
-         variant= 'standard'
-         label='Symbol Group Name'
-         options={SymbolList}
-         getOptionLabel= {(option) => option.title ? option.title : ""}
-         value={SelectedSymbol}
-         onChange={(e, value) => {
-          if (value) {
-            setSelectedSymbol(value)
-            setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: '' }));
-          }
-          else {
-            setSelectedSymbol(null)
-          }
-        }}
+    
+         <CustomTextField
+          name='symbolGroupName'
+          varient='standard'
+          label='Name'
+          type={'text'}
+          value={symbolGroupName}
+          onChange={e => handleInputChange('symbolGroupName', e.target.value)}
         />
-         {errors.SymbolGroup && <span style={{ color: 'red' }}>{errors.SymbolGroup}</span>}
+         {errors.symbolGroupName && <span style={{ color: 'red' }}>{errors.symbolGroupName}</span>}
          </div>
         <div>
-        <CustomTextField
-          name='Leverage'
-          varient='standard'
-          label='Symbol Group Laverage'
-          type={'number'}
-          value={Leverage}
-          onChange={e => handleInputChange('Leverage', e.target.value)}
-        />
+        <CustomAutocomplete
+            name='Leverage'
+            variant='standard'
+            label='Select Leverage'
+            options={LeverageList}
+            getOptionLabel={(option) => option.title ? option.title : ""}
+            value={ SelectedLeverage} 
+            onChange={(e, value) => {
+              if (value) {
+                setSelectedLeverage(value);
+                setErrors(prevErrors => ({ ...prevErrors, Leverage: '' }));
+              } else {
+                setSelectedLeverage(null);
+                setErrors(prevErrors => ({ ...prevErrors, Leverage: 'Leverage is Requried' }));
+              }
+            }}
+          />
          {errors.Leverage && <span style={{ color: 'red' }}>{errors.Leverage}</span>}
          </div>
          <div>
@@ -219,7 +215,7 @@ const SymbolGroupEntry = () => {
           name='Swap'
           type={'number'}
           varient='standard'
-          label='Symbol Group Swap'
+          label='Swap'
           value={Swap}
           onChange={e => handleInputChange('Swap', e.target.value)}
         />
@@ -297,7 +293,7 @@ const SymbolGroupEntry = () => {
             onClickHandler={()=> navigate(-1)}
           />
           <CustomButton
-            Text='Update'
+            Text={parseInt(id) === 0 ? 'Submit' : 'Update' }
             style={{
               padding: '16px',
               height: '48px',

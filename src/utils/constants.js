@@ -254,3 +254,19 @@ export const GetCurrentDate = () => {
   var date = new Date();
   return `${date.getFullYear()}-${((date.getMonth()) + 1) <= 9 ? '0' + ((date.getMonth()) + 1).toString() : (date.getMonth()) + 1}-${date.getDate() <= 9 ? '0' + (date.getDate()).toString() : date.getDate()}`
 }
+
+export const LeverageList = [
+  { value: '100', title: '1:1' },
+  { value: '50', title: '2:1' },
+  { value: '33', title: '3:1' },
+  { value: '25', title: '4:1' },
+  { value: '20', title: '5:1' },
+  { value: '10', title: '10:1' },
+  { value: '5', title: '20:1' },
+  { value: '3.33', title: '30:1' },
+  { value: '2', title: '50:1' },
+  { value: '1', title: '100:1' },
+  { value: '0.25', title: '400:1' },
+  { value: '0.10', title: '1000:1' },
+
+]

@@ -139,7 +139,7 @@ useEffect(() => {
       <div className='flex items-center gap-4'>
        <CustomTextField label={'Search'} varient={'outlined'} sx={{height:'48px'}} />
         <CustomButton
-          Text='Add Symbol'
+          Text='Add Symbol Group'
           style={AddnewStyle}
           icon={<PlusCircleOutlined />}
           onClickHandler={()=> navigate('/symbol-groups/0')}
