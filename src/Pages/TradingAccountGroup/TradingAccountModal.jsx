@@ -181,7 +181,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
           id="symbolGroup"
           options={GroupList}
           getOptionLabel={(option) => option.name ? option.name : '' }
-          value={SelectedGroup ??  []}
+          value={SelectedGroup ?  SelectedGroup : []}
           onChange={(e, value) => {
             if (value) {
               setSelectedGroup(value);
@@ -229,7 +229,7 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
             options={AccountList}
             disabled = {isDisabled}
             getOptionLabel={(option) => option.login_id ? option.login_id : ""}
-            value={ SelectedAccountList} 
+            value={ SelectedAccountList ?  SelectedAccountList : []} 
             onChange={(e, value) => {
               if (value) {
                 setSelectedAccountList(value);
