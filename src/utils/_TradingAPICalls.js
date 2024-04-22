@@ -17,7 +17,8 @@ export const Put_Trading_Account = async(id,paramsString, token)=>{
   return res 
 }
 
-export const  Get_Single_Trading_Account = async(id,paramsString, token)=>{
+export const  Get_Single_Trading_Account = async(id, token)=>{
+  
   const res = await _API(`${apiUrl}/admin/trading_accounts/${id}`,'get',[], token)
   return res 
 }

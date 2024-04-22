@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux';
 import { Link  } from 'react-router-dom';
 import {EditOutlined, CloseOutlined, DeleteOutlined} from '@ant-design/icons';
 import moment from 'moment';
-import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const LiveOrders = () => {
     const token = useSelector(({user})=> user?.user?.token )
@@ -88,8 +89,7 @@ const LiveOrders = () => {
       key: 'actions',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-            
-         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
+            <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchLiveOrder)} />
         </Space>
       ),
     },
@@ -131,6 +131,9 @@ const LiveOrders = () => {
     }
     
   }
+
+ 
+
   useEffect(()=>{
     fetchLiveOrder()
   },[])

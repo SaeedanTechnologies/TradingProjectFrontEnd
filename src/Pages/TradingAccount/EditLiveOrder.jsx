@@ -12,6 +12,8 @@ import { PendingOrderTypes,MarketOrderTypes, SymbolAutocompleteDummyData,TradeOr
 import { Get_Single_Trade_Order, Put_Trade_Order } from '../../utils/_TradingAPICalls';
 import { TradeValidationSchema } from '../../utils/validations';
 import { Autocomplete,TextField } from '@mui/material';
+import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
+import CustomNotification from '../../components/CustomNotification';
 
 
 
@@ -22,11 +24,11 @@ const EditLiveOrder = () => {
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary,colorTransparentPrimary  },
   } = theme.useToken();
- 
+
+
   const token = useSelector(({user})=> user?.user?.token )
   const {orderId} = useParams()
   const navigate = useNavigate()
-  const [SymbolList] = useState(SymbolAutocompleteDummyData)
 
 
 
@@ -34,6 +36,7 @@ const EditLiveOrder = () => {
   const [isLoading, setIsLoading] = useState(false)
 
 // 
+  const [symbolsList,setSymbolsList] = useState([])
   const [symbol,setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(null);
   const [type,setType] = useState(null);
@@ -41,15 +44,58 @@ const EditLiveOrder = () => {
   const [takeProfit,setTakeProfit] = useState('');
   const [stopLoss,setStopLoss] = useState('');
   const [profit,setProfit] = useState('');
-  const [open_price,setOpen_price] = useState('')
   const [comment,setComment] = useState('')
   const [price,setPrice] = useState('')
   //
 
 
-  
+ const fetchSingleTradeOrder= async(symboList)=>{
+    if(orderId !== 0){
+      setIsLoading(true)
+      const res = await Get_Single_Trade_Order(orderId, token)
+      const {data: {message, payload, success}} = res
+
+      setIsLoading(false)
+      if(success){
+        
+        const selectedSymbol =  symboList?.find(x=> x?.feed_fetch_name === payload.symbol)
+        const selectedOrderType  = payload.order_type === 'pending' ?  PendingOrderTypes:MarketOrderTypes;
+        const orderType = TradeOrderTypes.find(x=>x.value === payload.order_type)
+        const selectedType = selectedOrderType.find(x=> x.value === payload.type)
+        setSymbol(selectedSymbol)
+        setType(selectedType)
+        setOrder_type(orderType)
+        setVolume(payload.volume)
+        setProfit(payload.profit)
+        setStopLoss(payload.stopLoss)
+        setTakeProfit(payload.takeProfit)
+        setComment(payload.comment);
+        setPrice(payload.price)
+      
+      }
+
+    }
+   
+  } 
 
 
+const fetchSymbolSettings = async () => {
+    try {
+      setIsLoading(true)
+      const res = await All_Setting_Data(token);
+      const { data: { message, success, payload } } = res
+      setSymbolsList(payload.data)
+      if(orderId !== 0){
+        await fetchSingleTradeOrder(payload.data)
+        }
+      setIsLoading(false)
+
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  };
+
+ 
 
 
   const handleInputChange = (fieldName, value) => {
@@ -68,8 +114,9 @@ const EditLiveOrder = () => {
       case 'profit':
         setProfit(value);
         break;
-      case 'open_price':
-        setOpen_price(value);
+    
+        case 'price':
+        setPrice(value);
         break;
       default:
         break;
@@ -105,7 +152,7 @@ const EditLiveOrder = () => {
 
       setErrors({});
    
-      const paramsString = `symbol=${symbol.value}&type=${type.value}&volume=${volume}&takeProfit=${takeProfit}&stopLoss=${stopLoss}&profit=${profit}&open_price=${open_price}`;
+      const paramsString = `symbol=${symbol.feed_fetch_name}&type=${type.value}&volume=${volume}&takeProfit=${takeProfit}&stopLoss=${stopLoss}&profit=${profit}&price=${price}`;
        const res = await Put_Trade_Order(orderId,paramsString, token)
 
        const {data: {message, payload, success}} = res
@@ -113,8 +160,12 @@ const EditLiveOrder = () => {
       
        if(success){
         //  clearFields()
-        alert(message)
+         CustomNotification({ type:"success", title:"Transaction Order", description:message, key:1 })
+          setIsLoading(false)
        
+    }
+    else{
+       CustomNotification({ type:"error", title:"Transaction Order", description:message, key:1 })
     }
       
     
@@ -124,44 +175,20 @@ const EditLiveOrder = () => {
         validationErrors[error.path] = error.message;
       });
       setErrors(validationErrors);
+      
     }
+    CustomNotification({ type:"error", title:"Transaction Order", description:err.message, key:1 })
      setIsLoading(false)
   }
 
-const fetchSingleTradeOrder= async()=>{
-    if(orderId !== 0){
-      setIsLoading(true)
-      const res = await Get_Single_Trade_Order(orderId, token)
-      const {data: {message, payload, success}} = res
 
-      setIsLoading(false)
-      if(success){
-        const selectedSymbol =  SymbolList.find(x=> x.value === payload.symbol)
-        const selectedOrderType  = payload.order_type === 'pending' ?  PendingOrderTypes:MarketOrderTypes;
-        const orderType = TradeOrderTypes.find(x=>x.value === payload.order_type)
-        const selectedType = selectedOrderType.find(x=> x.value === payload.type)
-        setSymbol(selectedSymbol)
-        setType(selectedType)
-        setOrder_type(orderType)
-        setVolume(payload.volume)
-        setOpen_price(payload.open_price)
-        setProfit(payload.profit)
-        setStopLoss(payload.stopLoss)
-        setTakeProfit(payload.takeProfit)
-        setComment(payload.comment);
-        setPrice(payload.price)
-      
-      }
 
-    }
-   
-  }
+ 
+
 
   useEffect(()=>{
-      if(parseInt(orderId) !== 0){ // update case
-        fetchSingleTradeOrder()
-      }
-  },[orderId])
+    fetchSymbolSettings()     
+  },[])
 
   
   return (
@@ -183,8 +210,8 @@ const fetchSingleTradeOrder= async()=>{
               name="Symbol"
               id="Symbol"
               variant={'standard'}
-              options={SymbolAutocompleteDummyData}
-              getOptionLabel={(option) => option.label ? option.label : ""} 
+              options={symbolsList}
+              getOptionLabel={(option) => option?.name ? option?.name : ""} 
               value={symbol}
               onChange={(e,value) =>{
               if(value)
@@ -241,9 +268,9 @@ const fetchSingleTradeOrder= async()=>{
           <div className="mb-4 grid grid-cols-1 gap-4">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div className="flex-1">
-                  <CustomTextField label={'Price'}  type="number" value={open_price} sx={numberInputStyle}
-                      varient={'standard'}  onChange={e => handleInputChange('open_price', e.target.value)}/>
-                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
+                  <CustomTextField label={'Price'}  type="number" value={price} sx={numberInputStyle}
+                      varient={'standard'}  onChange={e => handleInputChange('price', e.target.value)}/>
+                       {errors.price && <span style={{ color: 'red' }}>{errors.price}</span>}
                 </div>
                 <div className="flex flex-1 flex-row  gap-2 border-b">
                   <CustomButton style={{

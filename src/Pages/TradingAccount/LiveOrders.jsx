@@ -8,17 +8,18 @@ import { Delete_Trade_Order, Get_Trade_Order,Put_Trade_Order } from '../../utils
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
+import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+
 
  
 
-const LiveOrders = ({fetchLiveOrder,tradeOrder}) => {
+const LiveOrders = ({fetchLiveOrder,tradeOrder,isLoading,setIsLoading}) => {
   const token = useSelector(({user})=> user?.user?.token )
   const location = useLocation()
   const {pathname} = location
   const {
     token: { colorBG, TableHeaderColor, colorPrimary  },
   } = theme.useToken();
-   const [isLoading,setIsLoading] = useState(false)
 
     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
@@ -72,7 +73,7 @@ const LiveOrders = ({fetchLiveOrder,tradeOrder}) => {
         <Space size="middle" className='cursor-pointer'>
            <Link to={`/single-trading-accounts/details/live-order/${record.id}`}><EditOutlined style={{fontSize:"24px", color: colorPrimary }}/></Link>
            <CloseOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=>CancelLiveOrder(record.id)} />
-           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=>DeleteHandler(record.id)} />
+           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }}  onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchLiveOrder)} />
         </Space>
       ),
     },
@@ -118,42 +119,7 @@ const LiveOrders = ({fetchLiveOrder,tradeOrder}) => {
     
 //   }
 
-  const DeleteHandler = async (id)=>{
-  setIsLoading(true)
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#1CAC70",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  }).then(async(result) => {
-    if (result.isConfirmed) {
-      const res = await Delete_Trade_Order(id, token)
-      const {data:{success, message, payload}} = res
-      setIsLoading(false)
-      if(success){
-        Swal.fire({
-          title: "Deleted!",
-          text: message,
-          icon: "success"
-        });
-        fetchLiveOrder()
-      }else{
-        Swal.fire({
-          title: "Opps!",
-          text: {message},
-          icon: "error"
-        });
-      }
-     
-    }
-  });
- 
-  setIsLoading(false)
- 
-}
+
 
 
 const CancelLiveOrder = async(id)=>{
@@ -169,7 +135,8 @@ const CancelLiveOrder = async(id)=>{
   }).then(async(result) => {
     if (result.isConfirmed) {
 
-      const paramsString = 'order_type=close';
+      const close_time = new Date().toISOString;
+      const paramsString = `order_type=close&close_time=${close_time}`;
        const res = await Put_Trade_Order(id,paramsString, token) 
 
        const {data: {message, payload, success}} = res
