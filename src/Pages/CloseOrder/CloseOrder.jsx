@@ -4,7 +4,8 @@ import { DeleteOutlined} from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import CustomTable from '../../components/CustomTable';
 import moment from 'moment';
-import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 
 const CloseOrder = () => {
@@ -12,6 +13,42 @@ const CloseOrder = () => {
     const { token: { colorBG,colorPrimary, TableHeaderColor  } } = theme.useToken();
    const [isLoading,setIsLoading] = useState(false)
    const [closeOrders,setCloseOrders] = useState([])
+
+
+
+     const fetchCloseOrders = async () => {
+
+      setIsLoading(true)
+      const params ={OrderTypes:['close'],token}
+      const mData = await Get_Trade_Order(params)
+      const {data:{message, payload, success}} = mData
+      const allLiveOrders = payload?.data?.map((order)=>({
+        id:order.id,
+        loginId:order.trading_account_id,
+        orderId:order.id,
+        symbol:order.symbol,
+        open_time:moment(order.open_time).format('L'),
+        close_time: order.close_time ? moment(order.close_time).format('L') : '...',
+        type:order.type,
+        volume:order.volume,
+        price:order.price,
+        stopLoss:order.stopLoss,
+        takeProfit:order.takeProfit,
+        open_price:order.open_price,
+        close_price:order.close_price ? close_price : '...',
+        reason:order.reason ? order.reason :'...',
+        swap:order.swap ? order.swap : '...',
+        profit:order.profit ? order.profit :'...',
+        comment:order.comment
+
+      }))
+       setIsLoading(false)
+      if(success){
+      
+      setCloseOrders(allLiveOrders)
+    }
+    
+  }
 
     const columns = [
   
@@ -104,7 +141,7 @@ const CloseOrder = () => {
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
             
-         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
+         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchCloseOrders)} />
         </Space>
       ),
     },
@@ -116,39 +153,7 @@ const CloseOrder = () => {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
-   const fetchCloseOrders = async () => {
-
-      setIsLoading(true)
-      const params ={OrderTypes:['close'],token}
-      const mData = await Get_Trade_Order(params)
-      const {data:{message, payload, success}} = mData
-      const allLiveOrders = payload?.data?.map((order)=>({
-        id:order.id,
-        loginId:order.trading_account_id,
-        orderId:order.id,
-        symbol:order.symbol,
-        open_time:moment(order.open_time).format('L'),
-        close_time: order.close_time ? moment(order.close_time).format('L') : '...',
-        type:order.type,
-        volume:order.volume,
-        price:order.price,
-        stopLoss:order.stopLoss,
-        takeProfit:order.takeProfit,
-        open_price:order.open_price,
-        close_price:order.close_price ? close_price : '...',
-        reason:order.reason ? order.reason :'...',
-        swap:order.swap ? order.swap : '...',
-        profit:order.profit ? order.profit :'...',
-        comment:order.comment
-
-      }))
-       setIsLoading(false)
-      if(success){
-      
-      setCloseOrders(allLiveOrders)
-    }
-    
-  }
+ 
   useEffect(()=>{
     fetchCloseOrders()
   },[])

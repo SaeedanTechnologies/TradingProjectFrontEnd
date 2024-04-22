@@ -16,6 +16,7 @@ import { Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete,TextField } from '@mui/material';
 import TradeChart from './TradeChart';
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
+import CustomNotification from '../../components/CustomNotification';
 
 
 
@@ -120,17 +121,20 @@ const Trade = ({fetchLiveOrder}) => {
        if(success)
     {
       setIsLoading(false)
-       alert(message)
+       CustomNotification({ type:"success", title:"Transaction Order", description:message, key:1 })
+         
        fetchLiveOrder()
        clearFields()  
     }   
     else{
       setIsLoading(false)
-      alert(err.message);
+        CustomNotification({ type:"error", title:"Transaction Order", description:message, key:1 })
+     
     }    
     
     }catch(err){
-      notifyError(err.message);
+      CustomNotification({ type:"error", title:"Transaction Order", description:err.message, key:1 })
+
       const validationErrors = {};
       err.inner.forEach(error => {
         validationErrors[error.path] = error.message;
