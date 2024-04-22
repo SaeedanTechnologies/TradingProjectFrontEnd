@@ -15,13 +15,14 @@ const Account = () => {
     {  id: 4,title: 'rea.851.USDT' }
   ])
   const [SelectedGroup, setSelectedGroup] = useState(null)
-
   const [LeverageList, setLeverageList] = useState([
     {  id: 1,title: '1: 200' },
     {  id: 2,title: '1: 300' },
     {  id: 3,title: '1: 400' },
     {  id: 4,title: '1: 500' }
   ])
+  const [leverage,setLeverage] = useState('')
+  const [password,setPassword] = useState('')
   const [SelectedLaverage, setSelectedLaverage] = useState(null)
   const ComponentMap = {
     CustomTextField: CustomTextField,
@@ -143,6 +144,78 @@ const ChkBoxesControl = [
                 />
             </div>
             
+        </div>
+        <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
+
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
+            
+
+              <div>
+              <CustomTextField
+                name='Name'
+                type={'text'}
+                varient='standard'
+                label='Name'
+                value={name}
+                onChange={e => handleInputChange('name', e.target.value)}
+              />
+              </div>
+              <div>
+              <CustomTextField
+                name='date'
+                type={'date'}
+                varient='standard'
+                label='Registered Date'
+                value={registration_time}
+                onChange={e => handleInputChange('registration_time', e.target.value)}
+              
+              />
+              </div>
+              <div>
+              <CustomTextField
+                name='email'
+                type={'text'}
+                varient='standard'
+                label='Email'
+                value={email}
+                onChange={e => handleInputChange('email', e.target.value)}
+                sx={numberInputStyle}
+              />
+              </div>
+              <div>
+                <CustomTextField
+                name='Phone'
+                type={'number'}
+                varient='standard'
+                label='Phone'
+                value={phone}
+                onChange={e => handleInputChange('phone', e.target.value)}
+                sx={numberInputStyle}
+              />
+              </div>
+
+              <div>
+              <CustomTextField
+                name='Country'
+                type={'text'}
+                varient='standard'
+                label='Country'
+                value={country}
+                onChange={e => handleInputChange('country', e.target.value)}
+                sx={numberInputStyle}
+              />
+              </div>
+
+                
+          </div>
+          <div className='flex justify-end'>
+          <CustomButton
+                    Text={'Save Changes'}
+                    style={PDataSaveBtnStyle}
+                    onClickHandler={handleSubmit}
+                  />
+          </div> */}
+   
         </div>
     </div>
   )

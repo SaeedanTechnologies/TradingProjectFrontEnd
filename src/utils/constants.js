@@ -248,8 +248,8 @@ export const PendingOrderTypes = [
 
 
 export const MarketOrderTypes = [
-  { label: 'Buy', value: 'Buy' },
-  { label: 'Sell', value: 'Sell' },
+  { label: 'buy', value: 'buy' },
+  { label: 'sell', value: 'sell' },
 ]
 
 export const GetCurrentDate = () => {

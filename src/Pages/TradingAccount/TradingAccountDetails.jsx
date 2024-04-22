@@ -48,9 +48,8 @@ const fetchLiveOrder = async () => {
         price:order.price,
         profit:order.profit ? order.profit : '...',
         open_price:order.open_price,
-        // close_price:order.close_price ? order.close_price: order.open_price,
-        // open_time:order.open_time,
-        // close_time:order.close_time ? order.close_time : new Date().toISOString
+        close_price:order.close_price ? order.close_price: order.open_price,
+        open_time:order.open_time,
        
       }))
        setIsLoading(false)
@@ -61,13 +60,16 @@ const fetchLiveOrder = async () => {
     
   }
   
+  const setLoading=(loadingState)=>{
+    setIsLoading(loadingState)
+  }
  
 
   const items = [
   {
     key: '1',
     label: 'Live Orders',
-    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder} />,
+    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder}  isLoading={isLoading} setIsLoading={setIsLoading}/>,
     path: '/single-trading-accounts/details/live-order'
   },
   {

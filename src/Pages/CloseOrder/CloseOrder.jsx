@@ -4,9 +4,11 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import CustomTable from '../../components/CustomTable';
 import moment from 'moment';
-import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
+
+import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
-import { deleteOrder } from '../../utils/_TradeOrderAPI.js'
+
+
 
 const CloseOrder = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -55,7 +57,12 @@ const CloseOrder = () => {
     fetchCloseOrders()
   }, [])
 
-  const columns = [
+ 
+
+
+
+    const columns = [
+  
 
     {
       title: 'LoginID',
@@ -145,12 +152,28 @@ const CloseOrder = () => {
       key: 'actions',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, deleteOrder, setIsLoading, fetchCloseOrders)} />
+
+            
+         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchCloseOrders)} />
+
         </Space>
 
       ),
     },
   ];
+
+
+
+  
+  const headerStyle = {
+    background: TableHeaderColor, // Set the background color of the header
+    color: 'black', // Set the text color of the header
+  };
+ 
+  useEffect(()=>{
+    fetchCloseOrders()
+  },[])
+
 
 
   return (

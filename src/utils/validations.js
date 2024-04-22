@@ -42,4 +42,8 @@ export const TradeValidationSchema = Yup.object().shape({
   stopLoss: Yup.string().required('Stop Loss is required.'),
   });
 
-   
+   export const TransactionOrderValidationSchema = Yup.object().shape({
+        trading_account_id: Yup.string().required(' Trading Account id  is required.'),
+        method: Yup.object().required(' Select Order method is required.'),
+        amount: Yup.string().required('Order Amount is required.'),
+   })

@@ -1,6 +1,8 @@
 import Swal from "sweetalert2";
 
-export const CustomDeleteDeleteHandler = async (id, token, _API, setIsLoading, fetchData) => {
+
+export const CustomDeleteDeleteHandler = async (id, token, _API,setIsLoading,fetchData)=>{
+
   setIsLoading(true)
   Swal.fire({
     title: "Are you sure?",
