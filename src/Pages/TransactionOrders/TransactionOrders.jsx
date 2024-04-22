@@ -108,7 +108,6 @@ const TransactionOrders = () => {
     setIsLoading(true)
 
     const res = await Trading_Transaction_Order(token)
-    debugger
     const { data: { message, payload, success } } = res
     console.log(res)
     setIsLoading(false)
