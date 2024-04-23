@@ -38,7 +38,8 @@ import SignIn from '../Pages/Auth/SignIn';
 import PersonalData from '../Pages/TradingAccount/PersonalData';
 import Account from '../Pages/TradingAccount/Account';
 import TransactionOrder from '../Pages/TradingAccount/TransactionOrder';
-import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder'
+import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder';
+import NewFeedData from '../Pages/Symbols/DataFeed/NewFeedData'
 
 export const router = createBrowserRouter([
   {
@@ -89,6 +90,7 @@ export const router = createBrowserRouter([
       { path: "/symbol-settings", element: <SymbolSettings /> },
       { path: "/symbol-settings/:id", element: <SymbolSettingsEntry /> },
       { path: "/data-feed", element: <DataFeed /> },
+      { path: "/new-feed", element: <NewFeedData /> },
       { path: "/ticket-charts", element: <TicketCharts /> },
       { path: "/min-charts", element: <MinChart /> },
       { path: "/settings", element: <Settings /> },

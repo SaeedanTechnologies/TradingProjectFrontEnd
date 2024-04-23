@@ -39,8 +39,8 @@ const Index = () => {
   } = theme.useToken();
   const navigate = useNavigate()
   const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
+    background: TableHeaderColor,
+    color: 'black',
   };
 
   const [allSetting, setAllSetting] = useState([])
@@ -153,7 +153,7 @@ const Index = () => {
     setIsLoading(false)
 
   }
- 
+
   const newColumns = columns.map((item) => ({
     ...item,
     hidden: !checkedList.includes(item.key),
@@ -166,7 +166,7 @@ const Index = () => {
       icon: (
         <VerticalCheckboxGroup
           value={checkedList}
-          options={[{ label: column.title, value: column.key }]} // Use the column title as label and key
+          options={[{ label: column.title, value: column.key }]}
           onChange={(value) => {
             const newCheckedList = [...checkedList];
             if (value.includes(column.key)) {
