@@ -97,7 +97,7 @@ export const router = createBrowserRouter([
       { path: "/firewall", element: <Firewall /> },
       { path: "/margin-levels", element: <MarginCallsLevel /> },
       { path: "/change-password", element: <ChangePassword /> },
-      { path: "/Test", element: <TradingViewChart /> },
+      { path: "/Chart", element: <TradingViewChart  /> },
     ],
   },
 ]);

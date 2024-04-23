@@ -6,12 +6,14 @@ import CustomTable from '../../../components/CustomTable';
 import CustomButton from '../../../components/CustomButton';
 import { AddnewSettingsStyle, AddnewStyle } from '../../Brand/style';
 import CustomTextField from '../../../components/CustomTextField';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, json, useNavigate } from 'react-router-dom';
 import { All_Setting_Data, DeleteSymbolSetting } from '../../../utils/_SymbolSettingAPICalls';
 import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import CustomDropdownBtn from '../../../components/CustomDropdownBtn';
 import styled, { css } from "styled-components";
+import  "../../DnDTable/index.css";
+
 
 
 const VerticalCheckboxGroup = styled(Checkbox.Group)`
@@ -45,46 +47,51 @@ const Index = () => {
 
   const [allSetting, setAllSetting] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+
   const columns = [
     {
-      title: 'Name',
+      
+      title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '1',
     },
     {
-      title: 'Laverage',
+      title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '2',
     },
     {
-      title: 'Swap',
+      title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '3',
     },
     {
-      title: 'Lot Size',
+      title:<span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
       key: '4',
     },
     {
-      title: 'Lot Steps',
+      title:<span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
       key: '5',
     },
     {
-      title: 'Minimum Value',
+      title:<span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
       key: '6',
     },
     {
-      title: 'Maximum Value',
+      title:<span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
       key: '7',
     },
     {
-      title: 'Commission',
+      title:<span className="dragHandler">Commision</span>,
       dataIndex: 'commission',
-      key: '7',
+      key: '8',
     },
 
     {
@@ -100,22 +107,25 @@ const Index = () => {
   ];
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
-  const fetchAllSetting = async () => {
+  const [newColumns , setNewColumns] = useState(columns)
+  const fetchAllSetting = async (page) => {
 
     try {
       setIsLoading(true)
-      const res = await All_Setting_Data(token);
+      const res = await All_Setting_Data(token, page);
       const { data: { message, success, payload } } = res
       setIsLoading(false)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
       setAllSetting(payload.data);
+      setTotalRecords(payload.total)
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
   }
   useEffect(() => {
-    fetchAllSetting()
+    fetchAllSetting(CurrentPage)
   }, [])
-
 
   const DeleteHandler = async (id) => {
     setIsLoading(true)
@@ -138,7 +148,7 @@ const Index = () => {
             text: message,
             icon: "success"
           });
-          fetchAllSetting()
+          fetchAllSetting(CurrentPage)
         } else {
           Swal.fire({
             title: "Opps!",
@@ -153,14 +163,18 @@ const Index = () => {
     setIsLoading(false)
 
   }
+  const onPageChange = (page) =>{
+    fetchAllSetting(page)
+  }
+  useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
 
-  const newColumns = columns.map((item) => ({
-    ...item,
-    hidden: !checkedList.includes(item.key),
-  }));
   const handleMenuClick = (e) => { };
 
   const columnMenuProps = {
+    
     items: columns.map((column) => ({
       key: column.key,
       icon: (
@@ -198,11 +212,22 @@ const Index = () => {
               icon={<PlusCircleOutlined />}
               onClickHandler={() => navigate('/symbol-settings/0')}
             />
-
           </div>
         </div>
-        <CustomDropdownBtn Text='Manage Columns' menuProps={columnMenuProps} />
-        <CustomTable columns={newColumns} data={allSetting} headerStyle={headerStyle} />
+        <div className="flex flex-col gap-4">
+      <div className="self-end mt-4 mb-4">
+       <CustomDropdownBtn Text='Manage Columns' menuProps={columnMenuProps} />
+     </div>
+     </div>
+        <CustomTable
+          direction="symbol-settings" 
+          columns={newColumns}
+          data={allSetting} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+        />
       </div>
     </Spin>
   )
