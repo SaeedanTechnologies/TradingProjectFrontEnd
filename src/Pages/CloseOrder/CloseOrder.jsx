@@ -57,12 +57,12 @@ const CloseOrder = () => {
     fetchCloseOrders()
   }, [])
 
- 
 
 
 
-    const columns = [
-  
+
+  const columns = [
+
 
     {
       title: 'LoginID',
@@ -153,8 +153,8 @@ const CloseOrder = () => {
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
 
-            
-         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchCloseOrders)} />
+
+          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order, setIsLoading, fetchCloseOrders)} />
 
         </Space>
 
@@ -163,16 +163,9 @@ const CloseOrder = () => {
   ];
 
 
-
-  
-  const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
-  };
- 
-  useEffect(()=>{
+  useEffect(() => {
     fetchCloseOrders()
-  },[])
+  }, [])
 
 
 
