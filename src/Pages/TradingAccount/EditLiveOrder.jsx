@@ -14,6 +14,7 @@ import { TradeValidationSchema } from '../../utils/validations';
 import { Autocomplete,TextField } from '@mui/material';
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
+import moment from 'moment'
 
 
 
@@ -45,7 +46,7 @@ const EditLiveOrder = () => {
   const [stopLoss,setStopLoss] = useState('');
   const [profit,setProfit] = useState('');
   const [comment,setComment] = useState('')
-  const [price,setPrice] = useState('')
+  const [open_price,setOpen_price] = useState('')
   //
 
 
@@ -70,7 +71,7 @@ const EditLiveOrder = () => {
         setStopLoss(payload.stopLoss)
         setTakeProfit(payload.takeProfit)
         setComment(payload.comment);
-        setPrice(payload.price)
+        setOpen_price(payload.open_price)
       
       }
 
@@ -115,8 +116,8 @@ const fetchSymbolSettings = async () => {
         setProfit(value);
         break;
     
-        case 'price':
-        setPrice(value);
+        case 'open_price':
+        setOpen_price(value);
         break;
       default:
         break;
@@ -131,7 +132,7 @@ const fetchSymbolSettings = async () => {
     setStopLoss('')
     setProfit('')
     setComment('');
-    setPrice('')
+    setOpen_price('')
 
     
 
@@ -142,18 +143,28 @@ const fetchSymbolSettings = async () => {
      
       await TradeValidationSchema.validate({
         order_type,
-        comment,
         symbol,
         volume,
         takeProfit,
         stopLoss,
-        price
+        open_price
       }, { abortEarly: false });
 
       setErrors({});
    
-      const paramsString = `symbol=${symbol.feed_fetch_name}&type=${type.value}&volume=${volume}&takeProfit=${takeProfit}&stopLoss=${stopLoss}&profit=${profit}&price=${price}`;
-       const res = await Put_Trade_Order(orderId,paramsString, token)
+      
+
+         const closeOrderData ={
+        symbol: symbol.feed_fetch_name,
+        type: type.value,
+        volume,
+        takeProfit,
+        stopLoss,
+        profit,
+        open_price,
+      }
+
+      const res = await Put_Trade_Order(orderId,closeOrderData, token)
 
        const {data: {message, payload, success}} = res
       
@@ -268,9 +279,9 @@ const fetchSymbolSettings = async () => {
           <div className="mb-4 grid grid-cols-1 gap-4">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div className="flex-1">
-                  <CustomTextField label={'Price'}  type="number" value={price} sx={numberInputStyle}
-                      varient={'standard'}  onChange={e => handleInputChange('price', e.target.value)}/>
-                       {errors.price && <span style={{ color: 'red' }}>{errors.price}</span>}
+                  <CustomTextField label={'Open Price'}  type="number" value={open_price} sx={numberInputStyle}
+                      varient={'standard'}  onChange={e => handleInputChange('open_price', e.target.value)}/>
+                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
                 </div>
                 <div className="flex flex-1 flex-row  gap-2 border-b">
                   <CustomButton style={{

@@ -31,15 +31,14 @@ const CloseOrder = () => {
       loginId: order.trading_account_id,
       orderId: order.id,
       symbol: order.symbol,
-      open_time: moment(order.open_time).format('L'),
-      close_time: order.close_time ? moment(order.close_time).format('L') : '...',
+      open_time:  moment(order.open_time).format('MM/DD/YYYY HH:mm'),
+      close_time: moment(order.close_time).format('MM/DD/YYYY HH:mm') ,
       type: order.type,
       volume: order.volume,
-      price: order.price,
+      open_price: order.open_price,
+      close_price: order.close_price,
       stopLoss: order.stopLoss,
       takeProfit: order.takeProfit,
-      open_price: order.open_price,
-      close_price: order.close_price ? close_price : '...',
       reason: order.reason ? order.reason : '...',
       swap: order.swap ? order.swap : '...',
       profit: order.profit ? order.profit : '...',
@@ -100,11 +99,7 @@ const CloseOrder = () => {
       dataIndex: 'volume',
       key: 'volume',
     },
-    {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price'
-    },
+    
     {
       title: 'Stop Lose',
       dataIndex: 'stopLoss',

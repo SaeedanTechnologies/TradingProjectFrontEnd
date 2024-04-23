@@ -22,8 +22,10 @@ const BrandList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [BrandsList, setBrandsList] = useState([])
   const [BrandID, setBrandID] = useState(null);
+  const [visibleBrandId,setVisibleBrandId] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [showKey,setShowKey] = useState(false)
+  
 
   const fetchBrands = async () => {
     setIsLoading(true)
@@ -49,8 +51,11 @@ const BrandList = () => {
     setIsModalOpen(false);
   };
 
-  const toggleKey=()=>{
+  const toggleKey=(id)=>{
+   
+    setVisibleBrandId(id)
     setShowKey(!showKey)
+   
   }
 
   const headerStyle = {
@@ -80,12 +85,12 @@ const BrandList = () => {
       key: '4',
        render: (_, record) => (
         <Stack direction="row" justifyContent={'space-between'}>
-          <Typography sx={{fontWeight: showKey? 400 : 700,fontSize:showKey ? "14px": "22px"}}>{showKey ? record.public_key: '................'}</Typography>
+          <Typography sx={{fontWeight: showKey? 400 : 700,fontSize:showKey ? "14px": "22px"}}>{visibleBrandId === record.id  ? record.public_key: '................'}</Typography>
 
           <Space size="middle" className='cursor-pointer'>
-            { showKey ?
-            <EyeInvisibleOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={toggleKey} />:
-            <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={toggleKey} />
+            { visibleBrandId === record.id  ?
+            <EyeInvisibleOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={()=>toggleKey(record)} />:
+            <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={()=>toggleKey(record.id)} />
             }
             </Space>
         </Stack>

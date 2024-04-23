@@ -17,6 +17,7 @@ import moment from 'moment';
 
 const TradingAccountDetails = () => {
    const token = useSelector(({user})=> user?.user?.token )
+   
   const {
     token: { colorBG, TableHeaderColor, colorPrimary  },
   } = theme.useToken();
@@ -37,32 +38,15 @@ const fetchLiveOrder = async () => {
       const params ={trading_account_id,OrderTypes:['market','pending'],token}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
-      const liveOrders = payload?.data?.map((order)=>({
-        id:order.id,
-        symbol: order.symbol,
-        time:moment(order.created_at).format('L'),
-        type:order.type,
-        volume:order.volume,
-        stopLoss:order.stopLoss,
-        takeProfit:order.takeProfit,
-        price:order.price,
-        profit:order.profit ? order.profit : '...',
-        open_price:order.open_price,
-        close_price:order.close_price ? order.close_price: order.open_price,
-        open_time:order.open_time,
-       
-      }))
+      
        setIsLoading(false)
       if(success){
       
-      setTradeOrder(liveOrders)
+      setTradeOrder( payload?.data)
     }
     
   }
   
-  const setLoading=(loadingState)=>{
-    setIsLoading(loadingState)
-  }
  
 
   const items = [

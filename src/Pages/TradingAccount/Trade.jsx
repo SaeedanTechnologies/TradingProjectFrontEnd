@@ -2,14 +2,12 @@ import { Spin, theme } from 'antd';
 import React, { useState,useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import CustomAutocomplete from '../../components/CustomAutocomplete';
-import { SymbolAutocompleteDummyData,TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
+import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { TradeValidationSchema } from '../../utils/validations';
-import { notifySuccess, notifyError } from '../../utils/constants';
 import { numberInputStyle } from './style';
 import { useSelector } from 'react-redux';
 import { Post_Trade_Order } from '../../utils/_TradingAPICalls';
@@ -17,6 +15,7 @@ import { Autocomplete,TextField } from '@mui/material';
 import TradeChart from './TradeChart';
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
+import useBinanceBidAsk from '../../websockets/useBinanceBidAsk'
 
 
 
@@ -29,20 +28,21 @@ const Trade = ({fetchLiveOrder}) => {
   const navigate = useNavigate();
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
+
   const [isLoading,setIsLoading] = useState(false)
   const [symbolsList,setSymbolsList] = useState([])
   const [symbol,setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(null);
   const [type,setType] = useState(null);
   const [volume,setVolume] = useState('');
-  const [price,setPrice] = useState('');
+  const [open_price,setOpen_price] = useState('');
   const [comment,setComment] = useState('');
   const [takeProfit,setTakeProfit] = useState('');
   const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
   const [errors, setErrors] = useState({});
 
- 
+    //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
 
    const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
@@ -59,8 +59,8 @@ const Trade = ({fetchLiveOrder}) => {
           case 'comment':
         setComment(value);
         break;
-        case 'price':
-        setPrice(value);
+        case 'open_price':
+        setOpen_price(value);
         break;
         case 'takeProfit':
         setTakeProfit(value);
@@ -79,7 +79,7 @@ const Trade = ({fetchLiveOrder}) => {
       setOrder_type(null);
       setType(null);
       setVolume('');
-      setPrice('');
+      setOpen_price('');
       setComment('');
       setTakeProfit('');
       setStopLoss('');
@@ -92,8 +92,7 @@ const Trade = ({fetchLiveOrder}) => {
             symbol,
             order_type,
             volume,
-            comment,
-            price,
+            open_price,
             takeProfit,
             stopLoss,
         }, { abortEarly: false });
@@ -105,13 +104,13 @@ const Trade = ({fetchLiveOrder}) => {
         type: typeReceive? typeReceive: type.value,
         volume,
         comment,
-        price,
         takeProfit,
         stopLoss,
         stop_limit_price,
         trading_account_id,
+        open_price,
         open_time: new Date().toISOString(),
-        open_price: price
+        
         
       }
       
@@ -147,11 +146,11 @@ const fetchSymbolSettings = async () => {
     try {
       setIsLoading(true)
       const res = await All_Setting_Data(token);
+      // debugger;
       const { data: { message, success, payload } } = res
       setSymbolsList(payload.data)
       
       setIsLoading(false)
-      setActiveGroup(tradingAccounts);
 
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
@@ -162,8 +161,16 @@ const fetchSymbolSettings = async () => {
    fetchSymbolSettings()
   },[])
 
+   function onUpdateBidPrice (bidPrice){
+    setOpen_price(bidPrice);
+  };
+
+
+
+
   return (
      <Spin spinning={isLoading} size="large">
+    
       <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
           <div className='flex gap-3 justify-between'>
       <div className='flex gap-3 w-full'>
@@ -273,9 +280,9 @@ const fetchSymbolSettings = async () => {
             <div className="mb-4 grid grid-cols-1 gap-4">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div className="flex-1">
-                  <CustomTextField label={'Price'} value={price} type="number" sx={numberInputStyle}
-                      varient={'standard'}  onChange={e => handleInputChange('price', e.target.value)}/>
-                       {errors.price && <span style={{ color: 'red' }}>{errors.price}</span>}
+                  <CustomTextField label={'Open Price'} value={open_price} type="number" sx={numberInputStyle}
+                      varient={'standard'}  onChange={e => handleInputChange('open_price', e.target.value)}/>
+                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
                 </div>
                 <div className="flex flex-1 flex-row  gap-2 border-b">
                   <CustomButton style={{
@@ -335,7 +342,10 @@ const fetchSymbolSettings = async () => {
             }
         </div> 
         <div className="flex-1 ml-2 ">
-          <div className="mb-4">Chart Section</div>
+          <div className="mb-4">
+
+              {/* <BinanceBidAsk symbol={"BTCUSD"}/> */}
+          </div>
           {/* Your chart content */}
         </div>
       </div>
