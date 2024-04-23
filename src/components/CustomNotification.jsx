@@ -8,6 +8,7 @@ const CustomNotification = ({ type, title, description, key }) => {
     description: <div dangerouslySetInnerHTML={{ __html: description }} />,
     top: 65,
     key
+    
   });
 };
 

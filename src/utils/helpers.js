@@ -1,6 +1,8 @@
 import Swal from "sweetalert2";
 
-export const CustomDeleteDeleteHandler = async (id, token, _API,setIsLoading)=>{
+
+export const CustomDeleteDeleteHandler = async (id, token, _API,setIsLoading,fetchData)=>{
+
   setIsLoading(true)
   Swal.fire({
     title: "Are you sure?",
@@ -10,31 +12,31 @@ export const CustomDeleteDeleteHandler = async (id, token, _API,setIsLoading)=>{
     confirmButtonColor: "#1CAC70",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!"
-  }).then(async(result) => {
+  }).then(async (result) => {
     if (result.isConfirmed) {
       const res = await _API(id, token)
-      const {data:{success, message, payload}} = res
+      const { data: { success, message, payload } } = res
       setIsLoading(false)
-      if(success){
+      if (success) {
         Swal.fire({
           title: "Deleted!",
           text: message,
           icon: "success"
         });
         fetchData()
-      }else{
+      } else {
         Swal.fire({
           title: "Opps!",
           text: "Somthing went wrong from server side",
           icon: "error"
         });
       }
-     
+
     }
   });
- 
+
   setIsLoading(false)
- 
+
 }
 
 

@@ -26,6 +26,7 @@ const SymbolGroupEntry = () => {
   const [LotSize, setLotSize] = useState('')
   const [LotStep, setLotStep] = useState('')
   const [VolMin, setVolMin] = useState('')
+  
   const [VolMax, setVolMax] = useState('')
   const [TradingInterval, setTradingInterval] = useState('')
   const [errors, setErrors] = useState({});

@@ -27,7 +27,7 @@ const SymbolSettingsEntry = () => {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary },
   } = theme.useToken();
   const navigate = useNavigate()
- 
+
   const [feedNameFetchList, setFeedNameFetchList] = useState([])
   const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
 
@@ -125,10 +125,9 @@ const SymbolSettingsEntry = () => {
       const { data: { message, success, payload } } = res
       setFeedNameList(payload.data);
       if (parseInt(id) !== 0) {
-        fetchSymbolSettingsWRTID(SymbolList,payload.data)
-  
+        fetchSymbolSettingsWRTID(SymbolList, payload.data)
       }
-      
+
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
@@ -143,7 +142,7 @@ const SymbolSettingsEntry = () => {
         setSymbolName(payload.name)
         const selectedGroup = SymbList.find(x => x.id === payload.symbel_group_id)
         setSelectedSymbol(selectedGroup)
-        const SelectedFeedNameOption = feedlist.find(x=> x.name === payload.feed_name)
+        const SelectedFeedNameOption = feedlist.find(x => x.name === payload.feed_name)
         if (payload.feed_name === 'binance') {
           const res = await GetCryptoData()
           const mData = res?.data?.symbols
@@ -152,9 +151,10 @@ const SymbolSettingsEntry = () => {
           });
           setFeedNameFetchList(updatedData)
           const selectedSymb = mData.find(x=> x.symbol === payload.feed_fetch_name) 
+
           setSelectedFeedNameFetch(selectedSymb)
         }
-        const selectedLeverageOpt = LeverageList.find(x=> x.title === payload.leverage)
+        const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
         setSelectedLeverage(selectedLeverageOpt)
         setSelectedFeedName(SelectedFeedNameOption)
         const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
@@ -198,7 +198,7 @@ const SymbolSettingsEntry = () => {
         symbolName: symbolName,
         feed_name: selectedFeedName,
         feed_name_fetch: selectedFeedNameFetch,
-        Leverage : SelectedLeverage,
+        Leverage: SelectedLeverage,
         swap: swap,
         lotSize: lotSize,
         lotSteps: lotSteps,
@@ -305,11 +305,11 @@ const SymbolSettingsEntry = () => {
     }
 
   }
-  const GetAskBid = async (symbol)=>{
-     const res = await GetAskBidData(symbol)
-     const {data: {askPrice, bidPrice}} = res
-     setAskValue(askPrice)
-     setBidValue(bidPrice)
+  const GetAskBid = async (symbol) => {
+    const res = await GetAskBidData(symbol)
+    const { data: { askPrice, bidPrice } } = res
+    setAskValue(askPrice)
+    setBidValue(bidPrice)
   }
 
   return (
@@ -355,7 +355,7 @@ const SymbolSettingsEntry = () => {
               {errors.SymbolGroup && <span style={{ color: 'red' }}>{errors.SymbolGroup}</span>}
             </div>
             <div>
-            <CustomTextField
+              <CustomTextField
                 key={4}
                 name={"symbolName"}
                 label="Name"
@@ -365,7 +365,7 @@ const SymbolSettingsEntry = () => {
                 onChange={(e) => handleInputChange("symbolName", e.target.value)}
               />
               {errors.symbolName && <span style={{ color: 'red' }}>{errors.symbolName}</span>}
-             {/* <CustomAutocomplete
+              {/* <CustomAutocomplete
                 key={2}
                 name="name"
                 label="Symbol Name"
@@ -415,7 +415,7 @@ const SymbolSettingsEntry = () => {
 
             <div>
 
-            <CustomAutocomplete
+              <CustomAutocomplete
                 key={3}
                 name={'feed_name_fetch'}
                 label="Select Symbols"
@@ -438,14 +438,14 @@ const SymbolSettingsEntry = () => {
               {errors.feed_name_fetch && <span style={{ color: 'red' }}>{errors.feed_name_fetch}</span>}
             </div>
             <div>
-            <CustomAutocomplete
+              <CustomAutocomplete
                 name='Leverage'
                 variant='standard'
                 label='Select Leverage'
                 disabled={isDisabled}
                 options={LeverageList}
                 getOptionLabel={(option) => option.title ? option.title : ""}
-                value={ SelectedLeverage} 
+                value={SelectedLeverage}
                 onChange={(e, value) => {
                   if (value) {
                     setSelectedLeverage(value);
@@ -455,7 +455,7 @@ const SymbolSettingsEntry = () => {
                     setErrors(prevErrors => ({ ...prevErrors, Leverage: 'Leverage is Requried' }));
                   }
                 }}
-          />
+              />
               {errors.Leverage && <span style={{ color: 'red' }}>{errors.Leverage}</span>}
             </div>
             <div>
@@ -556,6 +556,7 @@ const SymbolSettingsEntry = () => {
             </div>
            {askValue > 0 &&  <span className='text-sm text-green-500 font-semibold'>Ask Price is {askValue} and Bid Price is {bidValue}</span>} 
 
+
           </div>
           <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
             <CustomButton
@@ -573,6 +574,7 @@ const SymbolSettingsEntry = () => {
             />
             <CustomButton
               Text={isDisabled  ? 'Edit' : parseInt(id) === 0 ? 'Submit' : 'Update' }
+
               style={{
                 padding: '16px',
                 height: '48px',

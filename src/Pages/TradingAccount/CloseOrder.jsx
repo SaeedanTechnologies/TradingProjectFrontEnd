@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
-
+import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 
 const CloseOrder = () => {
@@ -15,6 +15,44 @@ const CloseOrder = () => {
   const [isLoading,setIsLoading] = useState(false)
     const [closeOrders,setCloseOrders] = useState([])
     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+
+
+
+    const fetchCloseOrder = async () => {
+
+      setIsLoading(true)
+      const params ={trading_account_id,OrderTypes:['close'],token}
+      const mData = await Get_Trade_Order(params)
+      const {data:{message, payload, success}} = mData
+      
+      const orders = payload?.data?.map((order)=>({
+        id:order.id,
+        open_time: moment(order.open_time).format('MM/DD/YYYY HH:mm') ,
+        order_no:order.id,
+        type:order.type,
+        volume:order.volume,
+        symbol:order.symbol,
+        open_price:order.open_price,
+        stopLoss:order.stopLoss,
+        takeProfit:order.takeProfit,
+        close_time: moment(order.close_time).format('MM/DD/YYYY HH:mm') ,
+        close_price:order.close_price,
+        reason:order.reason ? order.reason : '...' ,
+        swap:order.swap ? order.swap : '...',
+        profit:order.profit ? order.profit :'...'
+
+
+      }))
+       setIsLoading(false)
+      if(success){
+      
+      setCloseOrders(orders)
+    }
+    
+  }
+
+
+
   const columns = [
     {
       title: 'Open Time',
@@ -87,7 +125,7 @@ const CloseOrder = () => {
       key: '14',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-         <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=>DeleteHandler(record.id)} />
+          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }}  onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchCloseOrder)} /> 
         </Space>
       ),
     },
@@ -103,76 +141,9 @@ const CloseOrder = () => {
  
 
 
-    const fetchCloseOrder = async () => {
-
-      setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['close'],token}
-      const mData = await Get_Trade_Order(params)
-      const {data:{message, payload, success}} = mData
-      
-      const orders = payload?.data?.map((order)=>({
-        id:order.id,
-        open_time:moment(order.open_time).format('L'),
-        order_no:order.id,
-        type:order.type,
-        volume:order.volume,
-        symbol:order.symbol,
-        open_price:order.open_price,
-        stopLoss:order.stopLoss,
-        takeProfit:order.takeProfit,
-        close_time: order.close_time? moment(order.close_time).format('L'):'...',
-        close_price:order.close_price ? order.close_price :'...',
-        reason:order.reason ? order.reason : '...' ,
-        swap:order.swap ? order.swap : '...',
-        profit:order.profit ? order.profit :'...'
 
 
-      }))
-       setIsLoading(false)
-      if(success){
-      
-      setCloseOrders(orders)
-    }
-    
-  }
 
-
-  const DeleteHandler = async (id)=>{
-  setIsLoading(true)
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#1CAC70",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  }).then(async(result) => {
-    if (result.isConfirmed) {
-      const res = await Delete_Trade_Order(id, token)
-      const {data:{success, message, payload}} = res
-      setIsLoading(false)
-      if(success){
-        Swal.fire({
-          title: "Deleted!",
-          text: message,
-          icon: "success"
-        });
-        fetchCloseOrder()
-      }else{
-        Swal.fire({
-          title: "Opps!",
-          text: {message},
-          icon: "error"
-        });
-      }
-     
-    }
-  });
- 
-  setIsLoading(false)
- 
-}
 
   useEffect(()=>{
     fetchCloseOrder()

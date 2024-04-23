@@ -25,8 +25,7 @@ export const TradeValidationSchema = Yup.object().shape({
   symbol:Yup.object().required('Symbol is required.'),
   order_type: Yup.object().required('Order Type is required.'),
   volume: Yup.string().required('Volume is required.'),
-  comment: Yup.string().required('Comment is required.'),
-  price:Yup.string().required('Price is required.'),
+  open_price:Yup.string().required('Open Price is required.'),
   takeProfit:Yup.string().required('TakeProfit is required.'),
   stopLoss: Yup.string().required('Stop Loss is required.'),
   });
@@ -42,4 +41,8 @@ export const TradeValidationSchema = Yup.object().shape({
   stopLoss: Yup.string().required('Stop Loss is required.'),
   });
 
-   
+   export const TransactionOrderValidationSchema = Yup.object().shape({
+        trading_account_id: Yup.string().required(' Trading Account id  is required.'),
+        method: Yup.object().required(' Select Order method is required.'),
+        amount: Yup.string().required('Order Amount is required.'),
+   })
