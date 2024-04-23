@@ -9,8 +9,9 @@ import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import { AutocompleteDummyData, LeverageList } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
-import { GetAskBidData, GetCryptoData } from '../../../utils/_ExchangeAPI'
+import { GetAskBidData, GetCryptoData, GetFasciData } from '../../../utils/_ExchangeAPI'
 import { useSelector } from 'react-redux';
+import CustomNotification from '../../../components/CustomNotification';
 
 const FeedData = [
   { feed_name: "First", server: 'First server' },
@@ -39,7 +40,6 @@ const SymbolSettingsEntry = () => {
   const [SelectedSymbol, setSelectedSymbol] = useState(null)
   const [feedValues, setFeedValues] = useState(FeedData)
   const [selectedGroup, setSelectedGroup] = useState([]);
-  const [feedNameFetch, setFeedNameFetch] = useState('')
   const [leverage, setLeverage] = useState('')
   const [swap, setSwap] = useState('')
   const [lotSize, setLotSize] = useState('')
@@ -55,6 +55,7 @@ const SymbolSettingsEntry = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [askValue, setAskValue] = useState('')
   const [bidValue, setBidValue] = useState('')
+  const [isDisabled, setIsDisabled] = useState(false)
 
   const validationSchema = Yup.object().shape({
     SymbolGroup: Yup.array().required('Symbol Group is required'),
@@ -146,7 +147,10 @@ const SymbolSettingsEntry = () => {
         if (payload.feed_name === 'binance') {
           const res = await GetCryptoData()
           const mData = res?.data?.symbols
-          setFeedNameFetchList(mData)
+          const updatedData = mData.map((item) => {
+            return { ...item, id: item.symbol };
+          });
+          setFeedNameFetchList(updatedData)
           const selectedSymb = mData.find(x=> x.symbol === payload.feed_fetch_name) 
           setSelectedFeedNameFetch(selectedSymb)
         }
@@ -183,6 +187,7 @@ const SymbolSettingsEntry = () => {
     fetchSymbolGroups();
     fetchFeedData();
     if (parseInt(id) !== 0) {
+      setIsDisabled(true)
       fetchSymbolSettingsWRTID()
     }
   }, [id]);
@@ -207,14 +212,14 @@ const SymbolSettingsEntry = () => {
       const SymbolGroupData = {
         name: symbolName,
         symbel_group_id: SelectedSymbol.id,
-        feed_fetch_name: selectedFeedNameFetch.symbol,
+        feed_fetch_name: selectedFeedNameFetch.id,
         speed_max: 'abc',
         lot_size: lotSize,
         lot_step: lotSteps,
         commission: commission,
         enabled: Selectedenable.title = 'Yes' ? 1 : 0,
         leverage: SelectedLeverage.value,
-        feed_name: selectedFeedName ? selectedFeedName.name : '',
+        feed_name: selectedFeedName ? selectedFeedName.module : '',
         feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
         swap: swap,
         vol_min: volMin,
@@ -232,7 +237,23 @@ const SymbolSettingsEntry = () => {
           navigate('/symbol-settings')
         } else {
           setIsLoading(false)
-          alert(message);
+          if(payload){
+            const {feed_fetch_name} = payload
+            Selectedenable.title = 'Yes' ? 'Yes' : 'No',
+            CustomNotification({
+              type: 'error',
+              title: message, 
+              description: feed_fetch_name[0], 
+              key: 1
+            })
+          }else{
+            CustomNotification({
+              type: 'Opsss...',
+              title: message, 
+              description: message, 
+              key: 2
+            })
+          }
         }
 
       } else {
@@ -259,11 +280,14 @@ const SymbolSettingsEntry = () => {
       setErrors(validationErrors);
     }
   };
-  const GetSymbolData = async (direction) => {
+  const GetSymbolData = async (direction, access_key) => {
     if (direction === 'binance') {
       const res = await GetCryptoData()
       const mData = res?.data?.symbols
-      setFeedNameFetchList(mData)
+      const updatedData = mData.map((item) => {
+        return { ...item, id: item.symbol };
+      });
+      setFeedNameFetchList(updatedData)
       {/*
       const { filters } = selectedGroup
       const stepSize = filters.find(filter => filter.filterType === 'LOT_SIZE').stepSize;
@@ -274,6 +298,10 @@ const SymbolSettingsEntry = () => {
       setVolMax(volMaximum)
       */}
 
+    }else if(direction === 'fcsapi'){
+      const res = await GetFasciData(access_key)
+      const mData = res?.data?.response
+      setFeedNameFetchList(mData)
     }
 
   }
@@ -294,7 +322,11 @@ const SymbolSettingsEntry = () => {
             className='cursor-pointer'
             onClick={() => navigate(-1)}
           />
+          {
+          isDisabled  ? <h1 className='text-2xl font-semibold'>Preview Symbol Setting</h1> :
           <h1 className='text-2xl font-semibold'>{parseInt(id) === 0 ? 'Add Symbol Setting' : 'Edit Symbol Setting'}</h1>
+          }
+          
         </div>
         <div className='border rounded-lg p-4'>
 
@@ -306,6 +338,7 @@ const SymbolSettingsEntry = () => {
                 variant="standard"
                 options={SymbolList}
                 value={SelectedSymbol}
+                disabled={isDisabled}
                 getOptionLabel={(option) => option.name ? option.name : ""}
                 onChange={(event, value) => {
                   if (value) {
@@ -328,6 +361,7 @@ const SymbolSettingsEntry = () => {
                 label="Name"
                 varient="standard"
                 value={symbolName}
+                disabled={isDisabled}
                 onChange={(e) => handleInputChange("symbolName", e.target.value)}
               />
               {errors.symbolName && <span style={{ color: 'red' }}>{errors.symbolName}</span>}
@@ -358,13 +392,14 @@ const SymbolSettingsEntry = () => {
                 name={'feed_name'}
                 label="Select Feed Name"
                 variant="standard"
+                disabled={isDisabled}
                 options={FeedNameList}
                 value={selectedFeedName}
                 getOptionLabel={(option) => option.name ? option.name : ""}
                 onChange={(event, value) => {
                   if (value) {
                     setSelectedFeedName(value);
-                    GetSymbolData(value.name)
+                    GetSymbolData(value.module, value.feed_login)
                     setErrors(prevErrors => ({ ...prevErrors, feed_name: "" }))
                   } else {
                     setSelectedFeedName(null);
@@ -385,6 +420,7 @@ const SymbolSettingsEntry = () => {
                 name={'feed_name_fetch'}
                 label="Select Symbols"
                 variant="standard"
+                disabled={isDisabled}
                 options={feedNameFetchList}
                 value={selectedFeedNameFetch}
                 getOptionLabel={(option) => option.symbol ? option.symbol : ""}
@@ -406,6 +442,7 @@ const SymbolSettingsEntry = () => {
                 name='Leverage'
                 variant='standard'
                 label='Select Leverage'
+                disabled={isDisabled}
                 options={LeverageList}
                 getOptionLabel={(option) => option.title ? option.title : ""}
                 value={ SelectedLeverage} 
@@ -426,6 +463,7 @@ const SymbolSettingsEntry = () => {
                 name={'swap'}
                 key={6}
                 label="Swap"
+                disabled={isDisabled}
                 type={'number'}
                 value={swap}
                 varient="standard"
@@ -440,6 +478,7 @@ const SymbolSettingsEntry = () => {
                 key={7}
                 label="Lot Size"
                 type={'number'}
+                disabled={isDisabled}
                 value={lotSize}
                 varient="standard"
                 onChange={(e) => handleInputChange("lotSize", e.target.value)}
@@ -451,6 +490,7 @@ const SymbolSettingsEntry = () => {
                 name={'lotSteps'}
                 key={8}
                 label="Lot Steps"
+                disabled={isDisabled}
                 value={lotSteps}
                 type={'number'}
                 varient="standard"
@@ -464,6 +504,7 @@ const SymbolSettingsEntry = () => {
                 name={'volMin'}
                 key={9}
                 label="Vol Minimum"
+                disabled={isDisabled}
                 value={volMin}
                 type={'number'}
                 varient="standard"
@@ -476,6 +517,7 @@ const SymbolSettingsEntry = () => {
                 name={'volMax'}
                 key={10}
                 label="Vol Maximum"
+                disabled={isDisabled}
                 value={volMax}
                 type={'number'}
                 varient="standard"
@@ -488,6 +530,7 @@ const SymbolSettingsEntry = () => {
               <CustomTextField
                 name={'commission'}
                 label="Commision"
+                disabled={isDisabled}
                 value={commission}
                 type={'number'}
                 varient="standard"
@@ -497,9 +540,9 @@ const SymbolSettingsEntry = () => {
             </div>
             <div>
               <CustomAutocomplete
-
                 label="Enabled"
                 variant="standard"
+                disabled={isDisabled}
                 options={EnabledList}
                 value={Selectedenable}
                 getOptionLabel={(option) => option.title ? option.title : ""}
@@ -511,7 +554,7 @@ const SymbolSettingsEntry = () => {
               />
               {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
             </div>
-           {askValue > 0 &&  <span className='text-sm text-green-500 font-semibold'>Ask Price is {askValue  } and Bid Price is {bidValue}</span>} 
+           {askValue > 0 &&  <span className='text-sm text-green-500 font-semibold'>Ask Price is {askValue} and Bid Price is {bidValue}</span>} 
 
           </div>
           <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
@@ -526,10 +569,10 @@ const SymbolSettingsEntry = () => {
                 borderColor: '#c5c5c5',
                 color: '#fff'
               }}
-              onClick={() => navigate(-1)}
+              onClickHandler={() => navigate(-1)}
             />
             <CustomButton
-              Text={parseInt(id) === 0 ? 'Submit' : 'Update' }
+              Text={isDisabled  ? 'Edit' : parseInt(id) === 0 ? 'Submit' : 'Update' }
               style={{
                 padding: '16px',
                 height: '48px',
@@ -537,7 +580,13 @@ const SymbolSettingsEntry = () => {
                 borderRadius: '8px',
                 zIndex: '100'
               }}
-              onClickHandler={handleSubmit}
+              onClickHandler={()=>{
+               if(isDisabled){
+                  setIsDisabled(false)
+              }else{
+                handleSubmit()
+              }
+              }}
             />
           </div>
         </div>
