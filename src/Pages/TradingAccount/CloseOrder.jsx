@@ -27,7 +27,7 @@ const CloseOrder = () => {
       
       const orders = payload?.data?.map((order)=>({
         id:order.id,
-        open_time:moment(order.open_time).format('L'),
+        open_time: moment(order.open_time).format('MM/DD/YYYY HH:mm') ,
         order_no:order.id,
         type:order.type,
         volume:order.volume,
@@ -35,8 +35,8 @@ const CloseOrder = () => {
         open_price:order.open_price,
         stopLoss:order.stopLoss,
         takeProfit:order.takeProfit,
-        close_time: order.close_time? moment(order.close_time).format('L'):'...',
-        close_price:order.close_price ? order.close_price :'...',
+        close_time: moment(order.close_time).format('MM/DD/YYYY HH:mm') ,
+        close_price:order.close_price,
         reason:order.reason ? order.reason : '...' ,
         swap:order.swap ? order.swap : '...',
         profit:order.profit ? order.profit :'...'

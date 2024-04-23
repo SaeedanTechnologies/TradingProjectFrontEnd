@@ -1,17 +1,14 @@
 import { Space, theme, Spin } from 'antd';
-import React, { useState, useEffect } from 'react'
+import React, {  useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
 import { EditOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link, useLocation, } from 'react-router-dom';
-import { Delete_Trade_Order, Get_Trade_Order, Put_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Delete_Trade_Order,  Put_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
-
-
-
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -21,7 +18,6 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => 
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
 
-  const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
 
   const columns = [
     {
@@ -33,6 +29,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => 
       title: 'Time',
       dataIndex: 'time',
       key: 'time',
+      render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm')}</span>
     },
     {
       title: 'Type',
@@ -56,9 +53,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => 
       key: 'takeProfit',
     },
     {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      title: 'Open Price',
+      dataIndex: 'open_price',
+      key: 'open_price',
     },
     {
       title: 'Profit',
@@ -85,44 +82,15 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => 
     color: 'black',
   };
 
-  //  const fetchTradeOrder = async () => {
-
-  //       setIsLoading(true)
-  //       const params ={trading_account_id,OrderTypes:['market','pending'],token}
-  //       const mData = await Get_Trade_Order(params)
-  //       const {data:{message, payload, success}} = mData
-  //       const liveOrders = payload?.data?.map((order)=>({
-  //         id:order.id,
-  //         symbol: order.symbol,
-  //         time:moment(order.created_at).format('L'),
-  //         type:order.type,
-  //         volume:order.volume,
-  //         stopLoss:order.stopLoss,
-  //         takeProfit:order.takeProfit,
-  //         price:order.price,
-  //         profit:order.profit ? order.profit : '...',
-  //         open_price:order.open_price,
-  //         close_price:order.close_price ? order.close_price: order.open_price,
-  //         open_time:order.open_time,
-  //         close_time:order.close_time ? order.close_time : new Date().toISOString()
-
-
-
-
-
-  //       }))
-  //        setIsLoading(false)
-  //       if(success){
-
-  //       setTradeOrder(liveOrders)
-  //     }
-
-  //   }
 
 
 
 
   const CancelLiveOrder = async (id) => {
+
+   const requiredOrder = tradeOrder.find((order)=>order.id === id)
+
+
     setIsLoading(true)
     Swal.fire({
       title: "Are you sure?",
@@ -135,10 +103,25 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => 
     }).then(async (result) => {
       if (result.isConfirmed) {
 
-        const close_time = new Date().toISOString;
-        const paramsString = `order_type = close & close_time=${close_time}`;
-        const res = await Put_Trade_Order(id, paramsString, token)
 
+        const currentDateISO = new Date().toISOString();
+        const currentDate = new Date(currentDateISO);
+        const formattedDate = moment(currentDate).format('MM/DD/YYYY HH:mm');
+   
+    const closeOrderData = {
+        order_type : 'close',
+        close_time: formattedDate,
+        close_price : requiredOrder.open_price
+      }
+
+
+
+        // const close_time = new Date().toISOString;
+        // const paramsString = `order_type=close&close_time=${close_time}&close_price=${requiredOrder.open_price}`;
+        // const res = await Put_Trade_Order(id, paramsString, token)
+
+        
+        const res = await Put_Trade_Order(id,closeOrderData, token)
         const { data: { message, payload, success } } = res
 
         setIsLoading(false)

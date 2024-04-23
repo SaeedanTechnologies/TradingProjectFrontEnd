@@ -55,9 +55,17 @@ export const Post_Trade_Order = async(TradeOrderData, token)=>{
   return res
 }
 
-export const Put_Trade_Order = async(id, paramsString, token)=>{
-  const res = await _API(`${apiUrl}/admin/trade_orders/${id}?${paramsString}`,'put',[],token)
+// export const Put_Trade_Order = async(id, paramsString, token)=>{
+//   const res = await _API(`${apiUrl}/admin/trade_orders/${id}?${paramsString}`,'put',[],token)
+//   return res
+// }
+
+ export const Put_Trade_Order = async (id, orderData, token) => {
+  const queryParams = new URLSearchParams(orderData).toString();
+  const url = `${apiUrl}/admin/trade_orders/${id}?${queryParams}`;
+  const res = await _API(url, 'put', null, token);
   return res
+
 }
 
 export const Delete_Trade_Order = async(id,token)=>{
