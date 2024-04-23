@@ -90,7 +90,7 @@ export const router = createBrowserRouter([
       { path: "/symbol-settings", element: <SymbolSettings /> },
       { path: "/symbol-settings/:id", element: <SymbolSettingsEntry /> },
       { path: "/data-feed", element: <DataFeed /> },
-      { path: "/new-feed", element: <NewFeedData /> },
+      { path: "/data-feed/:id", element: <NewFeedData /> },
       { path: "/ticket-charts", element: <TicketCharts /> },
       { path: "/min-charts", element: <MinChart /> },
       { path: "/settings", element: <Settings /> },

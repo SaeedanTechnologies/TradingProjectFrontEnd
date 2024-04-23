@@ -11,7 +11,8 @@ import CustomButton from '../../../components/CustomButton';
 import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
 import { GetAskBidData, GetCryptoData } from '../../../utils/_ExchangeAPI'
 import { useSelector } from 'react-redux';
-import { getFeedServer } from '../../../utils/_DataFeedAPI'
+import { SelectFeedDataById, UpdateDataFeed, feedDataPost, getFeedServer } from '../../../utils/_DataFeedAPI'
+import CustomNotification from '../../../components/CustomNotification';
 
 
 const NewFeedDaata = () => {
@@ -24,27 +25,16 @@ const NewFeedDaata = () => {
 
     const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
 
+
     const [name, setName] = useState('')
     const [feed_name, setFeedName] = useState([])
     const [feed_login, setFeedLogin] = useState([])
+    const [fields, setFields] = useState([])
+    const [password, setPassword] = useState('')
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false)
-    const [SelectedSymbol, setSelectedSymbol] = useState(null)
-    const validationSchema = Yup.object().shape({
-        name: Yup.array().required('Name is required'),
-        feed_name: Yup.string().required('Feed Name is required'),
-        feed_login: Yup.string().required('Feed Login is required'),
-        password: Yup.string().required('password is required'),
+    const [selectedFeed, setSelectedFeed] = useState(null)
 
-    });
-
-    const clearFields = () => {
-        setName('');
-        setFeedName([]);
-        feed_login('')
-        password('')
-
-    };
 
     const handleInputChange = (fieldName, value) => {
         setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
@@ -78,122 +68,117 @@ const NewFeedDaata = () => {
             setFeedName(payload)
         }
     }
+
+    const fetchFeedDataWRTID = async () => {
+        try {
+            setIsLoading(true)
+            const res = await SelectFeedDataById(id, token)
+            const { data: { success, message, payload } } = res
+            setIsLoading(false)
+            if (success) {
+                setName(payload.name)
+                if (payload.feed_login !== null) {
+                    const currentField = [
+                        {
+                            feed_login: payload.feed_login
+                        }
+                    ]
+                    debugger
+                    setFields(currentField)
+                }
+
+            } else {
+                CustomNotification({
+                    type: 'error',
+                    title: 'Oppssss....',
+                    description: message,
+                    key: 3
+                });
+            }
+        } catch (err) {
+            alert(err.message)
+        }
+
+    }
+
     useEffect(() => {
         fetchServerData()
+        if (parseInt(id) !== 0) {
+            fetchFeedDataWRTID()
+
+        }
     }, [])
-    // const fetchFeedData = async () => {
-    //     try {
-    //         const res = await Feed_Data_List(token);
-    //         const { data: { message, success, payload } } = res
-    //         setFeedNameList(payload.data);
-    //         if (parseInt(id) !== 0) {
-    //             fetchSymbolSettingsWRTID(SymbolList, payload.data)
+    const handleSubmit = async () => {
+        try {
+            const allFeedData = {
+                name: name,
+                module: selectedFeed && selectedFeed.module ? selectedFeed.module : null,
+                feed_server: selectedFeed && selectedFeed.feed_server ? selectedFeed.feed_server : null,
+            };
+            if (parseInt(id) === 0) {
+                if (!feed_login) {
+                    setErrors(prevErrors => ({ ...prevErrors, feed_login: 'Feed login is required' }));
+                    return;
+                }
+                if (feed_login.length > 0) {
+                    allFeedData.feed_login = feed_login;
+                }
+                if (password) {
+                    allFeedData.password = password;
+                }
+                setIsLoading(true);
 
-    //         }
+                const res = await feedDataPost(allFeedData, token);
+                const { data: { message, success, } } = res;
+                setIsLoading(false);
+                if (success) {
+                    clearFields();
+                    navigate('/data-feed')
+                    CustomNotification({
+                        type: 'success',
+                        title: 'Success',
+                        description: message,
+                        key: 1
+                    });
+                } else {
+                    CustomNotification({
+                        type: 'error',
+                        title: 'Oppssss....',
+                        description: message,
+                        key: 2
+                    });
+                }
+            } else {
+                setIsLoading(true)
+                // debugger
+                const res = await UpdateDataFeed(id, allFeedData, token);
 
-    //     } catch (error) {
-    //         console.error('Error fetching symbol groups:', error);
-    //     }
-    // }
-    // const fetchSymbolSettingsWRTID = async (SymbList, feedlist) => {
-    //     if (id !== 0) {
-    //         setIsLoading(true)
-    //         const res = await SelectSymbolSettingsWRTID(id, token)
-    //         const { data: { message, payload, success } } = res
-    //         setIsLoading(false)
-    //         if (success) {
-    //             setSymbolName(payload.name)
-    //             const selectedGroup = SymbList.find(x => x.id === payload.symbel_group_id)
-    //             setSelectedSymbol(selectedGroup)
-    //             const SelectedFeedNameOption = feedlist.find(x => x.name === payload.feed_name)
-    //             if (payload.feed_name === 'binance') {
-    //                 const res = await GetCryptoData()
-    //                 const mData = res?.data?.symbols
-    //                 setFeedNameFetchList(mData)
-    //                 const selectedSymb = mData.find(x => x.symbol === payload.feed_fetch_name)
-    //                 setSelectedFeedNameFetch(selectedSymb)
-    //             }
-    //             const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
-    //             setSelectedLeverage(selectedLeverageOpt)
-    //             setSelectedFeedName(SelectedFeedNameOption)
-    //             const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
-    //             setSelectedEnable(selectedEnab)
-    //             setLeverage(parseFloat(payload.leverage))
-    //             setLotSize(payload.lot_size);
-    //             setLotSteps(payload.lot_step);
-    //             setVolMin(payload.vol_min);
-    //             setVolMax(payload.vol_max);
-    //             setSwap(payload.swap);
-    //             setCommission(payload.commission);
-    //         }
+                const { data: { message, success, payload } } = res;
+                setIsLoading(false)
+                if (success) {
+                    clearFields();
+                    navigate('/data-feed')
+                } else {
+                    setIsLoading(false)
+                    alert(message);
+                }
+            }
 
-    //     }
-    // }
+        } catch (err) {
+            const validationErrors = {};
+            err.inner?.forEach(error => {
+                validationErrors[error.path] = error.message;
+            });
+            setErrors(validationErrors);
+        }
+    };
 
-    // const handleSubmit = async () => {
-    //     try {
-    //         await validationSchema.validate({
-    //             name: name,
-    //             feed_name: selectedFeedName,
-
-    //         }, { abortEarly: false });
-
-    //         setErrors({});
-    //         const SymbolGroupData = {
-    //             name: symbolName,
-    //             symbel_group_id: SelectedSymbol.id,
-    //             feed_fetch_name: selectedFeedNameFetch.symbol,
-    //             speed_max: 'abc',
-    //             lot_size: lotSize,
-    //             lot_step: lotSteps,
-    //             commission: commission,
-    //             enabled: Selectedenable.title = 'Yes' ? 1 : 0,
-    //             leverage: SelectedLeverage.value,
-    //             feed_name: selectedFeedName ? selectedFeedName.name : '',
-    //             feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
-    //             swap: swap,
-    //             vol_min: volMin,
-    //             vol_max: volMax
-
-    //         };
-    //         if (parseInt(id) === 0) {
-    //             setIsLoading(true)
-    //             const res = await SymbolSettingPost(SymbolGroupData, token);
-
-    //             const { data: { message, success, payload } } = res;
-    //             setIsLoading(false)
-    //             if (success) {
-    //                 clearFields();
-    //                 navigate('/symbol-settings')
-    //             } else {
-    //                 setIsLoading(false)
-    //                 alert(message);
-    //             }
-
-    //         } else {
-    //             setIsLoading(true)
-    //             const res = await UpdateSymbolSettings(id, SymbolGroupData, token);
-
-    //             const { data: { message, success, payload } } = res;
-    //             setIsLoading(false)
-    //             if (success) {
-    //                 clearFields();
-    //                 navigate('/symbol-settings')
-    //             } else {
-    //                 setIsLoading(false)
-    //                 alert(message);
-    //             }
-
-    //         }
-
-    //     } catch (err) {
-    //         const validationErrors = {};
-    //         err.inner?.forEach(error => {
-    //             validationErrors[error.path] = error.message;
-    //         });
-    //         setErrors(validationErrors);
-    //     }
-    // };
+    const clearFields = () => {
+        setName('');
+        setFeedName([]);
+        setFeedLogin('');
+        setPassword('');
+    };
 
     return (
         <Spin spinning={isLoading} size="large">``
@@ -221,49 +206,41 @@ const NewFeedDaata = () => {
                             />
                             {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
                         </div>
-                        <div>
 
+
+                        {parseInt(id) === 0 && (
                             <CustomAutocomplete
                                 name="FeedName"
                                 label="Select Feed Name"
                                 variant="standard"
                                 options={feed_name}
-                                value={SelectedSymbol}
+                                value={selectedFeed}
                                 getOptionLabel={(option) => option.name ? option.name : ""}
                                 onChange={(event, value) => {
                                     if (value) {
-                                        debugger
-                                        setSelectedSymbol(value);
-                                        setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "" }))
+                                        setSelectedFeed(value);
+                                        setFields(value.fields);
+                                        setErrors(prevErrors => ({ ...prevErrors, feed_name: "" }))
                                     } else {
-                                        setSelectedSymbol(null);
-                                        setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "Symbol Group is Requried" }))
+                                        setSelectedFeed(null);
+                                        setErrors(prevErrors => ({ ...prevErrors, feed_name: "Symbol Group is Requried" }))
                                     }
                                 }}
                             />
-                            {errors.feed_name && <span style={{ color: 'red' }}>{errors.feed_name}</span>}
-                        </div>
+                        )}
                         <div>
-                            <CustomTextField
-                                key={4}
-                                name={"feed_login"}
-                                label="Feed Login"
-                                varient="standard"
-                                value={name}
-                                onChange={(e) => handleInputChange("feed_login", e.target.value)}
-                            />
-                            {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
-                        </div>
-                        <div>
-                            <CustomTextField
-                                key={4}
-                                name={"password"}
-                                label="Password"
-                                varient="standard"
-                                value={name}
-                                onChange={(e) => handleInputChange("Password", e.target.value)}
-                            />
-                            {errors.Password && <span style={{ color: 'red' }}>{errors.Password}</span>}
+
+                            {fields && fields.map((item, index) => (
+                                <div key={index}>
+                                    <CustomTextField
+                                        name={item.name}
+                                        label={item.label}
+                                        varient="standard"
+                                        onChange={(e) => handleInputChange(item.name, e.target.value)}
+                                    />
+                                    {errors[item.name] && <span style={{ color: 'red' }}>{errors[item.name]}</span>}
+                                </div>
+                            ))}
                         </div>
 
                     </div>
@@ -282,6 +259,7 @@ const NewFeedDaata = () => {
                             onClick={() => navigate(-1)}
                         />
                         <CustomButton
+
                             Text={parseInt(id) === 0 ? 'Submit' : 'Update'}
                             style={{
                                 padding: '16px',
@@ -290,7 +268,8 @@ const NewFeedDaata = () => {
                                 borderRadius: '8px',
                                 zIndex: '100'
                             }}
-                        // onClickHandler={handleSubmit}
+                            onClickHandler={handleSubmit}
+                        // loading={isLoading}
                         />
                     </div>
                 </div>

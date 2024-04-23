@@ -33,7 +33,7 @@ const SymbolSettingsEntry = () => {
   const [symbolName, setSymbolName] = useState('')
   const [SelectedLeverage, setSelectedLeverage] = useState(null)
   const [errors, setErrors] = useState({});
-  onst[SymbolList, setSymbolList] = useState([])
+  const [SymbolList, setSymbolList] = useState([])
   const [FeedNameList, setFeedNameList] = useState([])
   const [selectedFeedName, setSelectedFeedName] = useState(null)
   const [SelectedSymbol, setSelectedSymbol] = useState(null)
@@ -125,7 +125,6 @@ const SymbolSettingsEntry = () => {
       setFeedNameList(payload.data);
       if (parseInt(id) !== 0) {
         fetchSymbolSettingsWRTID(SymbolList, payload.data)
-
       }
 
     } catch (error) {
