@@ -23,12 +23,29 @@ const Index = () => {
       const res = await GetDataFeeds(token)
       const { data: { payload, message, success } } = res
       setIsLoading(false)
-      debugger
+      // debugger
       if (success) {
         setDataFeedList(payload.data)
       }
     } catch (err) {
       alert(err.message)
+    }
+    if (parseInt(id) !== 0) {
+      fetchUpdatedData(DataFeedList, payload.data)
+    }
+  }
+  const fetchUpdatedData = async (DataFeedList, feedlist) => {
+    if (id !== 0) {
+      setIsLoading(true)
+      const res = await SelectSymbolSettingsWRTID(id, token)
+      const { data: { message, payload, success } } = res
+      setIsLoading(false)
+      if (success) {
+        (payload.name)
+
+        setCommission(payload.commission);
+      }
+
     }
   }
   useEffect(() => {
@@ -37,17 +54,17 @@ const Index = () => {
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
-        <div className='flex justify-between'>
+        <div className='flex justify-between mb-3'>
           <h1 className='text-2xl font-semibold'>Data Feed</h1>
           <CustomButton
             Text='Add New Data Feed'
             style={AddnewSettingsStyle}
             icon={<PlusCircleOutlined />}
-            onClickHandler={() => navigate('/new-feed')}
+            onClickHandler={() => navigate('/data-feed/0')}
           />
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-6'>
-          {DataFeedList.map(val => <FeedCard id={val.id} feedName={val.name} feedServer={val.feed_server} />)}
+          {DataFeedList.map(val => <FeedCard id={val.id} feedName={val.name} feedServer={val.feed_server} fetchData={fetchData} />)}
         </div>
       </div>
     </Spin>
