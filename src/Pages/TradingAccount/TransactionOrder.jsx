@@ -14,6 +14,8 @@ import { useSelector } from 'react-redux';
 import { TransactionOrderValidationSchema } from '../../utils/validations';
 import moment from 'moment'
 import CustomNotification from '../../components/CustomNotification';
+import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
+import { InputAdornment,IconButton, TextField } from '@mui/material';
 
 
 
@@ -27,11 +29,13 @@ const TransactionOrder = () => {
 const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )  
 const [transactionOrders,setTransactionOrders] = useState([]) 
 const [method,setMethod] = useState(null)
+const [currency,setCurrency] = useState('')
 const [amount,setAmount] = useState('')
 const [comment,setComment] = useState('')
 const [OperationsList, setOperationList] = useState([
   {"label": "balance", "value": "balance"},
-  {"label": "commissiontax", "value": "commissiontax"},
+  {"label": "commission", "value": "commission"},
+  {"label": "tax", "value": "tax"},
   {"label": "Credit", "value": "Credit"},
   {"label": "bonus", "value": "bonus"}
    ])
@@ -57,6 +61,11 @@ const [errors,setErrors] = useState({})
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
+    },
+    {
+      title: 'Currency',
+      dataIndex: 'currency',
+      key: 'currency',
     },
     {
       title: 'Amount',
@@ -143,7 +152,7 @@ const [errors,setErrors] = useState({})
         method:method.value,
         amount,
         comment,
-        currency:null,
+        currency,
         name:null,
         group:null,
         type,
@@ -176,10 +185,26 @@ const [errors,setErrors] = useState({})
     }
   }
 
-  
+  const fetchSingleTradeAccount= async()=>{
+    
+      setIsLoading(true)
+      const res = await Get_Single_Trading_Account(trading_account_id, token)
+      const {data: {message, payload, success}} = res
+      
+
+      setIsLoading(false)
+      if(success){
+        setCurrency(payload?.currency)
+        
+      }
+
+
+   
+  }
 
   useEffect(()=>{
    fetchTransactionOrder()
+   fetchSingleTradeAccount()
   },[])
 
    
@@ -208,9 +233,28 @@ const [errors,setErrors] = useState({})
               />
             {errors.method?.value && <span style={{ color: 'red' }}>{errors.method?.value}</span>}
           </div>
-        
+
+            
+
           <div>
-            <CustomTextField  label={'Amount'} varient={'standard'} type="number" sx={numberInputStyle} value={amount}  onChange={e => handleInputChange('amount', e.target.value)} />    
+              <span>{currency}</span>
+            <TextField  label={'Amount'} fullWidth variant={'standard'} type="number" sx={numberInputStyle} value={amount}  onChange={e => handleInputChange('amount', e.target.value)}  
+        //      startAdornment={
+        //     <InputAdornment position="start">
+              
+
+        //       <IconButton
+        //         aria-label="toggle password visibility"
+        //         onClick={handleClickShowPassword}
+        //         onMouseDown={handleMouseDownPassword}
+        //       >
+        //         {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+                
+        //       </IconButton>
+        //       </Stack>
+        //     </InputAdornment>
+        // }
+            />    
             {errors.amount && <span style={{ color: 'red' }}>{errors.amount}</span>}
           </div>  
 

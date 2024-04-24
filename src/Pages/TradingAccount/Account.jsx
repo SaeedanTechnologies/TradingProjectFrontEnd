@@ -1,223 +1,279 @@
 import React, {useState,useEffect} from 'react'
-import { theme } from 'antd';
+import { Spin, theme } from 'antd';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
-import CustomTextField from '../../components/CustomTextField';
 import CustomPasswordField from '../../components/CustomPassowordField';
 import CustomCheckbox from '../../components/CustomCheckbox';
 import CustomButton from '../../components/CustomButton';
+import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
+import { useSelector } from 'react-redux';
+import { LeverageList } from '../../utils/constants';
+import { Get_Single_Trading_Account,  Update_Trading_Account } from '../../utils/_TradingAPICalls';
+import CustomNotification from '../../components/CustomNotification';
+import ChangePasswordModal from './ChangePasswordModal';
+import CustomModal from '../../components/CustomModal';
+
+
+
+
+
 
 const Account = () => {
+    
+  const token = useSelector(({user})=> user?.user?.token )
+  const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
   const { token: { colorBG,   }} = theme.useToken();
-  const [GroupList, setGroupList] = useState([
-    {  id: 1,title: 'rea.848.USDT' },
-    {  id: 2,title: 'rea.849.USDT' },
-    {  id: 3,title: 'rea.850.USDT' },
-    {  id: 4,title: 'rea.851.USDT' }
-  ])
-  const [SelectedGroup, setSelectedGroup] = useState(null)
-  const [LeverageList, setLeverageList] = useState([
-    {  id: 1,title: '1: 200' },
-    {  id: 2,title: '1: 300' },
-    {  id: 3,title: '1: 400' },
-    {  id: 4,title: '1: 500' }
-  ])
-  const [leverage,setLeverage] = useState('')
-  const [password,setPassword] = useState('')
-  const [SelectedLaverage, setSelectedLaverage] = useState(null)
-  const ComponentMap = {
-    CustomTextField: CustomTextField,
-    CustomAutocomplete: CustomAutocomplete,
-    CustomPasswordField: CustomPasswordField,
-  };
-  const Controls = [
-    {
-      id:1,
-      control:'CustomAutocomplete',
-      name:'Group', 
-      varient: 'standard', 
-      label:'Group',
-      options: GroupList,
-      getOptionLabel:(option) => option.title ? option.title : "",
-      onChange: (e,value) =>{
-        if(value){
-            setSelectedGroup(value)
-        }
-        else{
-            setSelectedGroup(null)
-        } 
-      }
-    },
-    {
-      id: 2,
-      control:'CustomAutocomplete',
-      name:'Laverage', 
-      varient: 'standard', 
-      label:'Laverage',
-      options: LeverageList,
-      getOptionLabel:(option) => option.title ? option.title : "",
-      onChange: (e,value) =>{
-        if(value){
-            setSelectedLaverage(value)
-        }
-        else{
-            setSelectedLaverage(null)
-        } 
-      }
-    }, 
-    {
-    id: 3,
-    control:'CustomTextField',
-    label:'Bank Account',
-    varient:'standard',
-    }, 
-    {
-      id: 4,
-      control:'CustomPasswordField',
-      label:'Change Password',
-      varient:'standard',
-    },
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  //
+  const [tradingAccountGroupList,setTradingAccountGroupList] = useState([])
+  const [selectedTradingAccountGroup,setSelectedTradingAccountGroup] = useState(null)
+  const [selectedLeverage,setSelectedLeverage] = useState(null)
+  const [oldPassword,setOldPassword] =  useState('')
+  const [password,setPassword] =  useState('')
+  const [confirmPassword,setConfirmPassword] =  useState('')
+ 
+  const [enable,setEnable] = useState(0);
+  const [enable_password_change,setEnable_password_change] = useState(0);
+  const [enable_investor_trading,setEnable_investor_trading] = useState(0);
+  const [change_password_at_next_login,setChange_password_at_next_login] = useState(0)
+   const [isLoading,setIsLoading ] = useState(false)
 
-  ]
+
 const ChkBoxesControl = [
   {
     id:5,
     control:'CustomCheckbox',
     label:'Enable This Account',
+    value:enable,
+    key:'enable'
   },
   {
     id:6,
     control:'CustomCheckbox',
     label:'Enable Password Change',
+    value:enable_password_change,
+    key:'enable_password_change'
   },
+ 
   {
     id:7,
     control:'CustomCheckbox',
-    label:'Show Change Password',
+    label:'Enable Investor Trading',
+    value:enable_investor_trading,
+    key:'enable_investor_trading'
+
   },
   {
     id:8,
     control:'CustomCheckbox',
-    label:'Enable Investor Trading',
-  },
-  {
-    id:9,
-    control:'CustomCheckbox',
     label:'Change Password at Next Login',
+    value:change_password_at_next_login,
+    key:'change_password_at_next_login'
   },
 ]
 
-      useEffect(()=>{
-    console.log('in account & security by default')
+
+ const fetchTradingAccountGroups = async()=>{
+    setIsLoading(true)
+    const group_response = await ALL_Trading_Account_Group_List(token)
+    const {data: { payload, success}} = group_response
+    setIsLoading(false)
+    if(success){
+      setTradingAccountGroupList(payload)
+      if(parseInt(trading_account_id) !== 0){
+        fetchSingleAccount(payload)
+      }
+      
+    }
+
+  }
+
+ const fetchSingleAccount= async(GroupsList)=>{
+    setIsLoading(true)
+      const res = await Get_Single_Trading_Account(trading_account_id, token)
+      const {data: {message, payload, success}} = res
+      if(success){
+        
+        const selectedGroup =  GroupsList?.find(x=> x.id === payload.trading_group_id)
+        
+        const selectedLeverage = LeverageList.find(x=>x.title === payload.leverage) 
+        setSelectedTradingAccountGroup(selectedGroup)
+        setSelectedLeverage(selectedLeverage)
+        setPassword(payload.password)
+        payload.enable ? setEnable(true) : setEnable(false) ;
+        payload.enable_password_change ? setEnable_password_change(true) : setEnable_password_change(false);
+        payload.enable_investor_trading ? setEnable_investor_trading(true) : setEnable_investor_trading(false);
+        payload.change_password_at_next_login ? setChange_password_at_next_login( true ) : setChange_password_at_next_login( false) 
+        setIsLoading(false)
+      
+      
+
+    }
+   
+  } 
+
+  const handleInputChange = (fieldName, value) => {
+    switch (fieldName) {
+      case 'enable':
+       setEnable(value) 
+        break;
+        case 'enable_password_change':
+         setEnable_password_change(value)
+         break;
+        case 'enable_investor_trading':
+         setEnable_investor_trading(value) 
+        break;
+        case 'change_password_at_next_login':
+        setChange_password_at_next_login(value)
+        break;
+
+    }
+  };
+
+  const handleSubmit = async()=> {
+
+    try{
+        setIsLoading(true)
+       const tradingAccountData ={
+        trading_group_id: selectedTradingAccountGroup?.id,
+        leverage: selectedLeverage?.value,
+        password,
+        enable :  enable ? 1 : 0,
+        enable_password_change :  enable_password_change ? 1 : 0,
+        enable_investor_trading :  enable_investor_trading ? 1 : 0 ,
+        change_password_at_next_login : change_password_at_next_login ? 1 :0
+      }
+      
+      const res = await  Update_Trading_Account(trading_account_id, tradingAccountData, token)
+       const {data: {message, payload, success}} = res
+       if(success)
+    {
+      CustomNotification({ type:"success", title:"Security Account", description:message, key:1 })
+      setIsLoading(false)
+       fetchTradingAccountGroups()
+    }   
+    else{
+      CustomNotification({ type:"error", title:"Security Account", description:message, key:1 })
+
+      setIsLoading(false)
+    }    
+    
+    }catch(err){
+      CustomNotification({ type:"error", title:"Security Account", description:err.message, key:1 })
+    }
+  }
+
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+
+  useEffect(()=>{
+    fetchTradingAccountGroups()
+  
   },[])
+ 
 
   return (
-    <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
-          {
-            Controls.map(item=>{
-            const ComponentToRender = ComponentMap[item.control]
-            return (
-              <ComponentToRender
-              key={item.id}
-              name={item.name} 
-              varient={item.varient} 
-              label={item.label}
-              options={item.options}
-              getOptionLabel={(option)=> item.getOptionLabel(option)}
-              onChange={(e,value) => item.onChange(e,value)} 
-              />
-              )
-            })
-          }
-            <div className='bg-white shadow-md py-6 px-4'>
-              {ChkBoxesControl.map(item=><CustomCheckbox key={item.id} label={item.label} /> )}
-            </div>
-            <div className='flex justify-end items-end'>
-                <CustomButton
-                  Text={'Save Changes'}
-                  style={{
-                  width: '180px',
-                  height: '50px',
-                  marginTop: '50px',
-                  borderRadius: '8px',
-                  }}
-                />
-            </div>
-            
-        </div>
+      <Spin spinning={isLoading} size="large">
         <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
-
-          {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
-            
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
               <div>
-              <CustomTextField
-                name='Name'
-                type={'text'}
-                varient='standard'
-                label='Name'
-                value={name}
-                onChange={e => handleInputChange('name', e.target.value)}
-              />
-              </div>
-              <div>
-              <CustomTextField
-                name='date'
-                type={'date'}
-                varient='standard'
-                label='Registered Date'
-                value={registration_time}
-                onChange={e => handleInputChange('registration_time', e.target.value)}
-              
-              />
-              </div>
-              <div>
-              <CustomTextField
-                name='email'
-                type={'text'}
-                varient='standard'
-                label='Email'
-                value={email}
-                onChange={e => handleInputChange('email', e.target.value)}
-                sx={numberInputStyle}
-              />
-              </div>
-              <div>
-                <CustomTextField
-                name='Phone'
-                type={'number'}
-                varient='standard'
-                label='Phone'
-                value={phone}
-                onChange={e => handleInputChange('phone', e.target.value)}
-                sx={numberInputStyle}
-              />
+                 <CustomAutocomplete
+                      name="Group"
+                      label="Select Group"
+                      variant="standard"
+                      options={tradingAccountGroupList}
+                      value={selectedTradingAccountGroup}
+                      getOptionLabel={(option) => option.name ? option.name : ""}
+                      onChange={(event, value) => {
+                        if(value)
+                            {
+                              setSelectedTradingAccountGroup(value)
+                            }
+                          else
+                            setSelectedTradingAccountGroup(null)                                                        
+                            }}
+                    />   
               </div>
 
               <div>
-              <CustomTextField
-                name='Country'
-                type={'text'}
-                varient='standard'
-                label='Country'
-                value={country}
-                onChange={e => handleInputChange('country', e.target.value)}
-                sx={numberInputStyle}
-              />
+                 <CustomAutocomplete
+                      name="Leverage"
+                      label="Select Leverage"
+                      variant="standard"
+                      options={LeverageList}
+                      value={selectedLeverage}
+                      getOptionLabel={(option) => option.title ? option.title : ""}
+                      onChange={(event, value) => {
+                        if(value)
+                            {
+                              setSelectedLeverage(value)
+                            }
+                          else
+                            setSelectedLeverage(null)                                                        
+                            }}
+                    />   
               </div>
 
+                <div className='bg-white shadow-md py-6 px-4'>
+                  {ChkBoxesControl.map(item=><CustomCheckbox key={item.id} label={item.label}
+                  checked={item.value} onChange={(event)=> handleInputChange(item.key, event.target.checked)}
+                   /> )}
+                </div>
+
+                <CustomPasswordField
+                  name="password"
+                  label="Password"
+                  variant="standard"
+                  value={password}
+                  showClickable={true}
+                  showModal={showModal}
+                  readOnly={true}
+                  onChange={(event)=>setPassword(event.target.value)}
+                />  
+
+                <div className='flex justify-start items-center'>
+                    
+                    <CustomButton
+                      Text={'Change Password'}
+                      style={{
+                      width: '180px',
+                      height: '50px',
+                      marginTop: '50px',
+                      borderRadius: '8px',
+                      }}
+                      onClickHandler={handleSubmit}
+                    />
+
+                   <CustomModal
+                      isModalOpen={isModalOpen}
+                      handleOk={handleOk}
+                      handleCancel={handleCancel}
+                      title={''}
+                      width={800}
+                      footer={null}
+                      
+                    >
+                      <ChangePasswordModal
+                        setIsModalOpen={setIsModalOpen}
+                        password={password}
+                      
+                        />
+                    </CustomModal>
+                </div>
                 
-          </div>
-          <div className='flex justify-end'>
-          <CustomButton
-                    Text={'Save Changes'}
-                    style={PDataSaveBtnStyle}
-                    onClickHandler={handleSubmit}
-                  />
-          </div> */}
-   
+            </div>
+           
         </div>
-    </div>
+    </Spin>
   )
 }
 

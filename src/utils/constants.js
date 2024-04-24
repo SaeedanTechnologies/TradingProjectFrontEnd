@@ -272,3 +272,4 @@ export const LeverageList = [
   { value: '0.10', title: '1000:1' },
 
 ]
+
