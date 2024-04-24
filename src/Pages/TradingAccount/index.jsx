@@ -142,6 +142,7 @@ const Index = ({ title, direction }) => {
     setIsLoading(true)
     const mData = await Trading_Accounts_List(token)
     const { data: { message, payload, success } } = mData
+    debugger
     setIsLoading(false)
     if (success) {
       const tradingAccounts = payload?.data?.map((item) => ({
