@@ -5,6 +5,12 @@ export const Trading_Account_Group_List = async(token) =>{
   const res = await _API(`${apiUrl}/admin/trading_account_groups`,'get',[],token)
    return res
 }
+
+export const ALL_Trading_Account_Group_List = async(token) =>{
+  const res = await _API(`${apiUrl}/admin/getAllTradingGroupList`,'get',[],token)
+   return res
+}
+
 export const SaveTradingAccountGroups = async(TradingAccountGroupData, token)=>{
   const res = await _API(`${apiUrl}/admin/trading_account_groups`,'post',TradingAccountGroupData, token)
   return res 

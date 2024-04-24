@@ -16,7 +16,7 @@ export const Feed_Data_List = async (token) => {
 }
 
 
-export const All_Setting_Data = async (token, page) => {
+export const All_Setting_Data = async (token, page=1) => {
     const res = await _API(`${apiUrl}/admin/symbel_setting?page=${page}`, 'get', [], token)
     return res
 }

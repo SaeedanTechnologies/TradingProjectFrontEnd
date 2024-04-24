@@ -17,6 +17,13 @@ export const Put_Trading_Account = async(id,paramsString, token)=>{
   return res 
 }
 
+export const Update_Trading_Account = async(id, tradingAccountData, token)=>{
+  const queryParams = new URLSearchParams(tradingAccountData).toString();
+  const url = `${apiUrl}/admin/trading_accounts/${id}?${queryParams}`;
+  const res = await _API(url, 'put', null, token);
+  return res
+}
+
 export const  Get_Single_Trading_Account = async(id, token)=>{
   
   const res = await _API(`${apiUrl}/admin/trading_accounts/${id}`,'get',[], token)
