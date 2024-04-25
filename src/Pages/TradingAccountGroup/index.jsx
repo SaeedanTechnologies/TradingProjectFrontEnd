@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 
-import { Space,Spin, Tag, theme } from 'antd';
+import { Space, Spin, Tag, theme } from 'antd';
 
-import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
+import { PlusCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import CustomButton from '../../components/CustomButton';
 import { AddnewStyle, footerStyle, submitStyle } from '../Brand/style';
 import CustomTable from '../../components/CustomTable';
@@ -12,15 +12,16 @@ import { Link } from 'react-router-dom';
 import CustomModal from '../../components/CustomModal';
 import TradingAccountModal from '../TradingAccountGroup/TradingAccountModal';
 import { DeleteTradingAccountGroup, Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { setTradingGroupData } from '../../store/TradingGroupData';
 
 
 
 const Index = () => {
-  const token = useSelector(({user})=> user?.user?.token )
-  const { token: { colorBG, TableHeaderColor,colorPrimary } } = theme.useToken();
+  const token = useSelector(({ user }) => user?.user?.token)
+  const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const [TradingGroupID, setTradingGroupID] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,21 +29,26 @@ const Index = () => {
   const [selectedAccountData, setSelectedAccountData] = useState([])
 
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
+  const dispatch = useDispatch();
+
+  const handleMassDepositWithdrawClick = (id, name) => {
+    dispatch(setTradingGroupData({ id, name },));
+  };
 
   const showModal = (id = null) => {
     setTradingGroupID(id)
     setIsModalOpen(true);
-    
+
   };
-  const showAccountModal = (trading_accounts)=>{
+  const showAccountModal = (trading_accounts) => {
     setIsAccountModalOpen(true)
-    if(trading_accounts.length > 0){
+    if (trading_accounts.length > 0) {
       setSelectedAccountData(trading_accounts)
-    }else{
+    } else {
       setSelectedAccountData([]);
     }
   }
-  const hideAccountModal = () =>{
+  const hideAccountModal = () => {
     setIsAccountModalOpen(false)
   }
   const handleOk = () => {
@@ -51,59 +57,59 @@ const Index = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const fetchData = async()=>{
+  const fetchData = async () => {
     setIsLoading(true)
     const res = await Trading_Account_Group_List(token)
-    const {data: {message, payload, success}} = res
+    const { data: { message, payload, success } } = res
     setIsLoading(false)
-    if(success){
+    if (success) {
       setTradingAccountGroupList(payload.data)
     }
   }
-  useEffect(()=>{
-    
+  useEffect(() => {
+
     fetchData()
-  },[])
- 
-const DeleteHandler = async (id)=>{
-  setIsLoading(true)
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#1CAC70",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  }).then(async(result) => {
-    if (result.isConfirmed) {
-      const res = await DeleteTradingAccountGroup(id, token)
-      const {data:{success, message, payload}} = res
-      setIsLoading(false)
-      if(success){
-        Swal.fire({
-          title: "Deleted!",
-          text: message,
-          icon: "success"
-        });
-        fetchData()
-      }else{
-        Swal.fire({
-          title: "Opps!",
-          text: {message},
-          icon: "error"
-        });
+  }, [])
+
+  const DeleteHandler = async (id) => {
+    setIsLoading(true)
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1CAC70",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await DeleteTradingAccountGroup(id, token)
+        const { data: { success, message, payload } } = res
+        setIsLoading(false)
+        if (success) {
+          Swal.fire({
+            title: "Deleted!",
+            text: message,
+            icon: "success"
+          });
+          fetchData()
+        } else {
+          Swal.fire({
+            title: "Opps!",
+            text: { message },
+            icon: "error"
+          });
+        }
+
       }
-     
-    }
-  });
- 
-  setIsLoading(false)
- 
-}
+    });
+
+    setIsLoading(false)
+
+  }
   const headerStyle = {
     background: TableHeaderColor,
-    color: 'black', 
+    color: 'black',
   };
   const columns = [
     {
@@ -131,14 +137,23 @@ const DeleteHandler = async (id)=>{
       title: 'Mass Buy/Sell Trading Order',
       dataIndex: 'MBS',
       key: '3',
-      render: (text)=> <Link to={'/trading-group/mb-to/0'} style={{color: colorPrimary, fontWeight:'600'}}>View Details</Link>
+      render: (text) => <Link to={'/trading-group/mb-to/0'} style={{ color: colorPrimary, fontWeight: '600' }}>View Details</Link>
     },
     {
       title: 'Mass deposit/widthdraw',
       dataIndex: 'MDW',
       key: '4',
-      render: (text)=> <Link to={'/trading-group/mass-deposit/0'}  style={{color: colorPrimary, fontWeight:'600'}}>View Details</Link>
+      render: (_, record) => (
+        <Link
+          to={`/trading-group/mass-deposit/${record.id}`}
+          style={{ color: colorPrimary, fontWeight: '600' }}
+          onClick={() => handleMassDepositWithdrawClick(record.id, record.name)}
+        >
+          View Details
+        </Link>
+      ),
     },
+
     {
       title: 'Mass Laverage',
       dataIndex: 'mass_leverage',
@@ -153,27 +168,27 @@ const DeleteHandler = async (id)=>{
       title: 'Trading Accounts',
       dataIndex: 'trading_accounts',
       key: '7',
-      render: (text, record)=>{
-        const { trading_accounts} = record
+      render: (text, record) => {
+        const { trading_accounts } = record
         return (
-          <span className='cursor-pointer' style={{color: colorPrimary, fontWeight:'600'}} onClick={()=>showAccountModal(trading_accounts)}>View Accounts</span>
+          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => showAccountModal(trading_accounts)}>View Accounts</span>
         )
-      } 
-      
+      }
+
     },
     {
       title: 'Action',
       key: 'action',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-           <EditOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=>showModal(record.id)} />
-           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> CustomDeleteDeleteHandler(record.id, token,DeleteTradingAccountGroup, setIsLoading )} />
+          <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
+          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, DeleteTradingAccountGroup, setIsLoading)} />
         </Space>
       ),
     },
   ];
- 
-  
+
+
   return (
     <Spin spinning={isLoading} size="large">
 
@@ -181,11 +196,11 @@ const DeleteHandler = async (id)=>{
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
           <CustomButton
-              Text='Add New Trading Group'
-              style={{height:'48px' ,...AddnewStyle}}
-              icon={<PlusCircleOutlined />}
-              onClickHandler={()=>showModal(0)}
-            />
+            Text='Add New Trading Group'
+            style={{ height: '48px', ...AddnewStyle }}
+            icon={<PlusCircleOutlined />}
+            onClickHandler={() => showModal(0)}
+          />
         </div>
         <CustomTable columns={columns} data={TradingAccounGroupList} headerStyle={headerStyle} />
         <CustomModal
@@ -196,12 +211,12 @@ const DeleteHandler = async (id)=>{
           width={800}
           footer={[]}
         >
-        <TradingAccountModal 
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          fetchData={fetchData}
-          TradingGroupID={TradingGroupID}
-        />
+          <TradingAccountModal
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+            fetchData={fetchData}
+            TradingGroupID={TradingGroupID}
+          />
         </CustomModal>
         <CustomModal
           isModalOpen={isAccountModalOpen}
@@ -219,8 +234,8 @@ const DeleteHandler = async (id)=>{
               </Tag>
             );
           })
-        : 'Thers no selected account'
-        }
+            : 'Thers no selected account'
+          }
         </CustomModal>
       </div>
     </Spin>
