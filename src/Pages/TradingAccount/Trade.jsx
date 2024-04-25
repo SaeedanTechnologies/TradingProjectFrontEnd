@@ -15,10 +15,7 @@ import { Autocomplete,TextField } from '@mui/material';
 import TradeChart from './TradeChart';
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
-import useBinanceBidAsk from '../../websockets/useBinanceBidAsk'
-
-
-
+import BinanceBidAsk from '../../websockets/BinanceBidAsk';
 
 const Trade = ({fetchLiveOrder}) => {
     const token = useSelector(({user})=> user?.user?.token )
@@ -40,6 +37,7 @@ const Trade = ({fetchLiveOrder}) => {
   const [takeProfit,setTakeProfit] = useState('');
   const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
+  const [pricing, setPricing] = useState({openPrice: '', askProfit: ''});
   const [errors, setErrors] = useState({});
 
     //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
@@ -161,11 +159,34 @@ const fetchSymbolSettings = async () => {
    fetchSymbolSettings()
   },[])
 
-   function onUpdateBidPrice (bidPrice){
-    setOpen_price(bidPrice);
+  //  function onUpdateBidPrice (bidPrice){
+  //   setOpen_price(bidPrice);
+  // };
+
+  const fetchData = (symbol) => {
+    const binanceBidAsk = BinanceBidAsk({ symbol: symbol?.feed_fetch_name });
+    binanceBidAsk.start(
+      (data) => {
+        console.log('Bid Price:', data.bidPrice);
+        console.log('Ask Price:', data.askPrice);
+        setPricing({
+          ...pricing,
+          openPrice:data.bidPrice,
+          askProfit:data.askPrice
+        })
+        // setOpen_price(data.bidPrice)
+        // setTakeProfit(data.askPrice)
+      },
+      (error) => {
+        console.error('Error:', error);
+      },
+      () => {
+        console.log('WebSocket connection closed');
+      }
+    );
+    // Optionally, stop the WebSocket connection when it's no longer needed
+    // binanceSocket.stop();
   };
-
-
 
 
   return (
@@ -206,6 +227,7 @@ const fetchSymbolSettings = async () => {
                 {
                    setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                    setSymbol(value)
+                  fetchData(value);
                 }
                 else
                   setSymbol(null)                                                        
@@ -310,6 +332,7 @@ const fetchSymbolSettings = async () => {
           {(type?.value === 'Buy Sell Limit' || type?.value === 'Sell Stop Limit') &&
           <CustomTextField label={'Stop Limit Price'} varient={'standard'} type="number" sx={numberInputStyle} value={stop_limit_price}  onChange={e => handleInputChange('stop_limit_price', e.target.value)}/>}
           </div>
+          <b> Open Price : {pricing.openPrice} / Ask Price : {pricing.askProfit}</b>
           <div className="mb-4 grid grid-cols-1 gap-4">
             <CustomTextField label={'Comments'}
             value={comment}

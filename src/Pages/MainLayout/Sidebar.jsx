@@ -33,13 +33,19 @@ const Sidebar = ({ collapsed }) => {
       children: [],
       label: 'Dashboard'
     },
+    // {
+    //   key: 'sub1',
+    //   icon: <DingdingOutlined />,
+    //   children: [
+    //     { key: '2', label: 'Brand List' },
+    //     //{ key: '3', label: 'Brand Settings' }
+    //   ],
+    //   label: 'Brands'
+    // },
     {
-      key: 'sub1',
+      key: '2',
       icon: <DingdingOutlined />,
-      children: [
-        { key: '2', label: 'Brand List' },
-        //{ key: '3', label: 'Brand Settings' }
-      ],
+      children: [],
       label: 'Brands'
     },
     {

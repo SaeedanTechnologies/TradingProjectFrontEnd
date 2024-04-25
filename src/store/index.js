@@ -3,10 +3,12 @@ import user from "./UserSlice";
 import trade from "./TradeSlice";
 import symbolSettings from "./symbolSettingsSlice";
 import storage from 'redux-persist/lib/storage'
+import group from './TradingGroupData'
 
 const createRootReducer = asyncReducers => {
   const appReducer = combineReducers({
       user,
+      group,
       trade,
       symbolSettings,
       ...asyncReducers
@@ -19,6 +21,7 @@ const createRootReducer = asyncReducers => {
       }
       return appReducer(state, action);
   }
+
 };
 
 // const store = configureStore({
