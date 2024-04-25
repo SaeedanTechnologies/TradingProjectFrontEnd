@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Dropdown, Space } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 
-const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsAddRemove}) =>{
+const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsAddRemove }) =>{
+  const [MassEditMode, setMassEditMode] = useState(false)
   const items = [
     {
       key: '1',
@@ -14,13 +15,17 @@ const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsA
     {
       key: '2',
       label: (
-        <button rel="noopener noreferrer" onClick={()=> setIsMassEdit(true)}>  Mass Edit </button>
+        <button rel="noopener noreferrer" onClick={()=> {
+          setMassEditMode(true)
+        }}>  Mass Edit </button>
       ),
     },
     {
       key: '3',
       label: (
-        <button  rel="noopener noreferrer"  onClick={()=> setIsMassDelete(true)}>  Mass Delete  </button>
+        <button  rel="noopener noreferrer"  onClick={()=> {
+          setIsMassDelete(true)
+        }}>  Mass Delete  </button>
       ),
     },
     {
@@ -38,9 +43,13 @@ const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsA
       placement="bottom"
       arrow
       trigger={['click']}
-      className='mb-3'
+      className='mb-3 mt-6'
     >
-      <Button><EllipsisOutlined /></Button>
+      <Button>
+      <span>{MassEditMode ? 'Mass Edit Mode':'Mass Delete Mode' 
+        }</span>
+        <EllipsisOutlined />
+      </Button>
     </Dropdown>
 );
 }

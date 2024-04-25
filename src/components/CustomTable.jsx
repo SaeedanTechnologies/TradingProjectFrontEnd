@@ -2,16 +2,19 @@ import React from 'react';
 import { Table, Pagination } from 'antd';
 import DnDTable from '../Pages/DnDTable';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
-const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, direction }) => {
+const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, direction, formName, token }) => {
   const handlePageChange = (page) => {
     onPageChange(page);
   };
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   return (
     <>
       <div style={{ overflowX: 'auto' }}>
         <DnDTable
+          formName={formName}
           direction ={direction}
           columns={columns}
           data={data}
@@ -19,6 +22,8 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           total={total}
           handlePageChange={handlePageChange}
           navigate={navigate}
+          token = {token}
+          dispatch={dispatch}
         />
         <div style={{ textAlign: 'right', marginTop: 16 }}>
           <Pagination
