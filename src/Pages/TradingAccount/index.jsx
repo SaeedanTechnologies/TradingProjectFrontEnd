@@ -43,6 +43,11 @@ const Index = ({ title, direction }) => {
       key: 'trading_group_id',
     },
     {
+      title: 'Brand',
+      dataIndex:'brand',
+       key: 'brand',
+    },
+    {
       title: 'Country',
       dataIndex: 'country',
       key: 'country',
@@ -142,7 +147,6 @@ const Index = ({ title, direction }) => {
     setIsLoading(true)
     const mData = await Trading_Accounts_List(token)
     const { data: { message, payload, success } } = mData
-    debugger
     setIsLoading(false)
     if (success) {
       const tradingAccounts = payload?.data?.map((item) => ({
@@ -150,6 +154,7 @@ const Index = ({ title, direction }) => {
         id: item.id,
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
+        brand: item.brand.name,
         country: item.country,
         phone: item.phone,
         email: item.email,
