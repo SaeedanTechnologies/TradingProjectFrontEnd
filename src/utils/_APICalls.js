@@ -38,3 +38,8 @@ export const DeleteBrand = async(BrandID, token)=>{
 
 }
 
+export const GenericDelete = async(Params, token)=>{
+  const res = await  _API(`${apiUrl}/admin/massDelete`,'delete',Params,token)
+  return res
+}
+
