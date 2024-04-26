@@ -5,21 +5,26 @@ import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 import { Link, useNavigate } from 'react-router-dom';
 import CustomTextField from '../../components/CustomTextField';
-import { Trading_Accounts_List, Delete_Trading_Account } from '../../utils/_TradingAPICalls';
+import { Trading_Accounts_List, Delete_Trading_Account, Save_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomModal from '../../components/CustomModal';
-import { notifySuccess, notifyError } from '../../utils/constants';
 import { useSelector, useDispatch } from 'react-redux';
 import TradingModal from './TradingModal'
 import { setAccountID } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
+import CreateTradingAccountModal from './CreateTradingAccountModal';
+import { submitStyle } from './style';
+
 
 
 const Index = ({ title, direction }) => {
 
+    const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const [tradingAccountsList, setTradingAccountsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [tradingID, setTradingID] = useState(null);
   const token = useSelector(({ user }) => user?.user?.token)
   const {
@@ -142,11 +147,44 @@ const Index = ({ title, direction }) => {
 
   }
 
+  
+  const CreateTradingAccount = async (brandId) => {
+  // debugger
+    try {
+     setIsLoading(true)
+     const res = await Save_Trading_Account({brand_id:brandId}, token)
+     const {data: {message, payload, success}} = res
+     setIsLoading(false)
+        if(success){
+          console.log('success message',message)
+          notifySuccess(message)
+          setIsCreateModalOpen(false)
+        
 
-  const fetchTradingAccounts = async () => {
+          if( userRole === 'brand' ){
+         fetchTradingAccounts(brandId)
+        } 
+        else{
+        fetchTradingAccounts(null)
+        }
+        
+        }else{
+          notifyError(payload.trading_group_id[0]) 
+        }      
+     
+    }catch (err) {
+     
+       notifyError(err) 
+    }
+  };
+
+
+  const fetchTradingAccounts = async (brandId) => {
+    // debugger
     setIsLoading(true)
-    const mData = await Trading_Accounts_List(token)
+    const mData = await Trading_Accounts_List(token,brandId)
     const { data: { message, payload, success } } = mData
+    // debugger
     setIsLoading(false)
     if (success) {
       const tradingAccounts = payload?.data?.map((item) => ({
@@ -184,8 +222,16 @@ const Index = ({ title, direction }) => {
     setIsModalOpen(false);
   };
 
+    const handleCreateOk = ()=>{
+      setIsCreateModalOpen(false)
+    }
+
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const handleCreateCancel = () => {
+    setIsCreateModalOpen(false);
   };
 
     const DeleteHandler = async (id)=>{
@@ -209,7 +255,14 @@ const Index = ({ title, direction }) => {
               text: message,
               icon: "success"
             });
-            fetchTradingAccounts()
+
+            if( userRole === 'brand' ){
+              fetchTradingAccounts(userBrand.public_key)
+              } 
+              else{
+              fetchTradingAccounts(null)
+              }
+           
           }else{
             Swal.fire({
               title: "Opps!",
@@ -227,10 +280,10 @@ const Index = ({ title, direction }) => {
 
   const [activeGroup, setActiveGroup] = useState([])
 
-  const fetchActiveGroups = async () => {
+  const fetchActiveGroups = async (brandId) => {
     try {
       setIsLoading(true)
-      const res = await Trading_Active_Group(token, 'active');
+      const res = await Trading_Active_Group(token, 'active',brandId);
       const { data: { message, success, payload } } = res
       const tradingAccounts = payload?.data?.map((item) => ({
 
@@ -262,10 +315,10 @@ const Index = ({ title, direction }) => {
   };
 
   const [marginCall, setMarginCall] = useState([])
-  const fetchMarginCalls = async () => {
+  const fetchMarginCalls = async (brandId) => {
     try {
       setIsLoading(true)
-      const res = await Trading_Margin_Calls(token, 'margin_call');
+      const res = await Trading_Margin_Calls(token, 'margin_call',brandId);
       const { data: { message, success, payload } } = res
       const tradingAccounts = payload?.data?.map((item) => ({
 
@@ -298,13 +351,32 @@ const Index = ({ title, direction }) => {
 
   useEffect(() => {
     if (direction === 1) { // trading account list
-      fetchTradingAccounts()
+
+       if( userRole === 'brand' ){
+         fetchTradingAccounts(userBrand.public_key)
+        } 
+        else{
+        fetchTradingAccounts(null)
+        }
 
     } else if (direction === 2) { // Active Account Group
-      fetchActiveGroups()
+
+         if( userRole === 'brand' ){
+            fetchActiveGroups(userBrand.public_key)
+          } 
+          else{
+                fetchActiveGroups(null)
+          }
+
 
     } else { // margin calls
-      fetchMarginCalls()
+      
+        if( userRole === 'brand' ){
+            fetchMarginCalls(userBrand.public_key)
+          } 
+          else{
+            fetchMarginCalls(null)
+          }
 
     }
 
@@ -313,6 +385,8 @@ const Index = ({ title, direction }) => {
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
+       
+
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>{title}</h1>
           <CustomTextField
@@ -320,12 +394,24 @@ const Index = ({ title, direction }) => {
             sx={{ width: '300px' }}
 
           />
-          {/* <CustomButton
+          {userRole === 'admin' ? 
+          
+          (
+          <CustomButton
+            Text='Add New Trading Account'
+            style={{ height: '48px', }}
+            icon={<PlusCircleOutlined />}
+            onClickHandler={() => setIsCreateModalOpen(true)}
+          />
+        ):( 
+              <CustomButton
                 Text='Add New Trading Account'
-                style={{borderRadius: '8px', padding: '14px, 20px, 14px, 20px'}}
-                icon={<PlusCircleOutlined />}
-                onClickHandler={()=>showModal(0)}
-              />*/}
+                style={submitStyle}
+                onClickHandler={()=>CreateTradingAccount(userBrand.public_key)}
+              />
+          )}
+           
+         
         </div>
         {direction === 1 && (
           <CustomTable columns={renderColumns} data={tradingAccountsList} headerStyle={headerStyle} />
@@ -351,6 +437,25 @@ const Index = ({ title, direction }) => {
             BrandID={tradingID}
           />
         </CustomModal>
+
+          
+        <CustomModal
+          isModalOpen={isCreateModalOpen}
+          handleOk={handleCreateOk}
+          handleCancel={handleCreateCancel}
+          title={''}
+          width={800}
+          footer={[]}
+        >
+          <CreateTradingAccountModal
+            isCreateModalOpen={isCreateModalOpen}
+            setIsCreateModalOpen={setIsCreateModalOpen}
+            fetchTradingAccounts={fetchTradingAccounts}
+          />
+        </CustomModal>
+
+
+
       </div>
     </Spin>
   )

@@ -31,9 +31,20 @@ const BrandList = () => {
     setIsLoading(true)
     const mData = await Brands_List(token)
     const { data: { message, payload, success } } = mData
+    // debugger;
     setIsLoading(false)
     if (success) {
-      setBrandsList(payload.data)
+      const brandData = payload.data.map((brand)=>({
+        id:brand.id,
+       domain:brand.domain,
+        name:brand.name,
+        email:brand.user.email,
+        original_password: brand.user.original_password,
+        public_key: brand.public_key,
+        margin_call:brand.margin_call
+      }))
+
+      setBrandsList(brandData)
     }
   }
   useEffect(() => {
@@ -80,9 +91,25 @@ const BrandList = () => {
       key: '3',
     },
     {
+      title: 'Username',
+      dataIndex: 'name',
+      key: '4',
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: '5',
+    },
+    {
+      title: 'Password',
+      dataIndex:'original_password',
+      key: '6',
+    },
+    
+    {
       title: 'Authorization Key',
       dataIndex: 'public_key',
-      key: '4',
+      key: '7',
        render: (_, record) => (
         <Stack direction="row" justifyContent={'space-between'}>
           <Typography sx={{fontWeight: showKey? 400 : 700,fontSize:showKey ? "14px": "22px"}}>{visibleBrandId === record.id  ? record.public_key: '................'}</Typography>
@@ -99,7 +126,7 @@ const BrandList = () => {
     {
       title: 'Margin Calls',
       dataIndex: 'margin_call',
-      key: '4',
+      key: '8',
     },
     {
       title: 'Actions',

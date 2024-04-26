@@ -11,6 +11,8 @@ import Swal from 'sweetalert2';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => {
+   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
   const location = useLocation()
   const { pathname } = location
@@ -131,7 +133,8 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => 
             text: message,
             icon: "success"
           });
-          fetchLiveOrder()
+          
+          fetchLiveOrder(null)
         } else {
           Swal.fire({
             title: "Opps!",
@@ -149,7 +152,13 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading }) => 
 
 
   useEffect(() => {
-    fetchLiveOrder()
+      if(userRole === 'brand' ){
+      fetchLiveOrder(userBrand.public_key)
+    }
+    else{
+      fetchLiveOrder(null)
+    }
+ 
   }, [pathname])
 
   return (

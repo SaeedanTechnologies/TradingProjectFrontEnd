@@ -10,6 +10,8 @@ import { Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { useSelector } from 'react-redux';
 
 const TransactionOrders = () => {
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, colorPrimary, TableHeaderColor },
@@ -104,10 +106,10 @@ const TransactionOrders = () => {
 
   const [isLoading, setIsLoading] = useState(false)
   const [transactionData, setTransactionData] = useState([])
-  const fetchTransactionOrder = async () => {
+  const fetchTransactionOrder = async (brandId) => {
     setIsLoading(true)
 
-    const res = await Trading_Transaction_Order(token)
+    const res = await Trading_Transaction_Order(token,brandId)
     const { data: { message, payload, success } } = res
     console.log(res)
     setIsLoading(false)
@@ -116,7 +118,12 @@ const TransactionOrders = () => {
     }
   }
   useEffect(() => {
-    fetchTransactionOrder()
+     if(userRole === 'brand' ){
+      fetchTransactionOrder(userBrand.public_key)
+    }
+    else{
+      fetchTransactionOrder(null)
+    }
   }, [])
 
   const headerStyle = {

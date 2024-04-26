@@ -5,6 +5,7 @@ import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+
   const { token: { colorBG, TableHeaderColor } } = theme.useToken();
   const navigate = useNavigate()
   return (

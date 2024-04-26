@@ -1,7 +1,6 @@
 import { Spin, theme } from 'antd';
 import React, { useState,useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { PlusCircleOutlined } from '@ant-design/icons';
 import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
@@ -10,9 +9,8 @@ import {  useNavigate } from 'react-router-dom';
 import { TradeValidationSchema } from '../../utils/validations';
 import { numberInputStyle } from './style';
 import { useSelector } from 'react-redux';
-import { Post_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete,TextField } from '@mui/material';
-import TradeChart from './TradeChart';
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
@@ -41,6 +39,7 @@ const Trade = ({fetchLiveOrder}) => {
   const [pricing, setPricing] = useState({openPrice: '', askProfit: ''});
   const [connected, setConnected] = useState(false);
   const [socketpricing, setSocketPricing] = useState({openPrice: '', askProfit: ''});
+  const [brand_id,setBrand_id] = useState(-1);
   const [errors, setErrors] = useState({});
 
     //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
@@ -111,6 +110,7 @@ const Trade = ({fetchLiveOrder}) => {
         trading_account_id,
         open_price,
         open_time: new Date().toISOString(),
+        brand_id
         
         
       }
@@ -158,7 +158,26 @@ const fetchSymbolSettings = async () => {
     }
   };
 
+
+   const fetchSingleTradeAccount = async () => {
+
+    setIsLoading(true)
+    const res = await Get_Single_Trading_Account(trading_account_id, token)
+    const { data: { message, payload, success } } = res
+
+
+    setIsLoading(false)
+    if (success) {
+      setBrand_id(payload?.brand_id)
+
+    }
+
+
+
+  }
+
   useEffect(()=>{
+    fetchSingleTradeAccount()
    fetchSymbolSettings()
   },[])
 

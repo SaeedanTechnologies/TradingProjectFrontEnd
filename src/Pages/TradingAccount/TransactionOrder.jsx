@@ -32,7 +32,8 @@ const TransactionOrder = () => {
   const [currency, setCurrency] = useState('')
   const [amount, setAmount] = useState('')
   const [comment, setComment] = useState('')
-  const [OperationsList, setOperationList] = useState([
+  const [brandId,setBrandId] = useState(-1)
+   const [OperationsList, setOperationList] = useState([
     { "label": "balance", "value": "balance" },
     { "label": "commission", "value": "commission" },
     { "label": "tax", "value": "tax" },
@@ -156,7 +157,8 @@ const TransactionOrder = () => {
         name: null,
         group: null,
         type,
-        status: "requested"
+        status: "requested",
+        brand_id :brandId
 
       }
 
@@ -194,6 +196,7 @@ const TransactionOrder = () => {
     setIsLoading(false)
     if (success) {
       setCurrency(payload?.currency)
+      setBrandId(payload?.brand_id)
 
     }
 

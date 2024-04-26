@@ -37,17 +37,32 @@ export const UpdateSymbolSettings = async (SymbolSettingsID, SymbolSettingsData,
     return res
 }
 
-export const Trading_Active_Group = async (token, status) => {
-    const res = await _API(`${apiUrl}/admin/trading_accounts?status=${status}`, 'get', [], token)
+export const Trading_Active_Group = async (token, status,brandId) => {
+
+    let url =`${apiUrl}/admin/trading_accounts?status=${status}`
+    if(brandId){
+        url= `${apiUrl}/admin/trading_accounts?status=${status}&brand_id=${brandId}`
+    }
+
+    const res = await _API(url, 'get', [], token)
     return res
 }
 
-export const Trading_Margin_Calls = async (token, status) => {
-    const res = await _API(`${apiUrl}/admin/trading_accounts?status=${status}`, 'get', [], token)
+export const Trading_Margin_Calls = async (token, status,brandId) => {
+    let url =`${apiUrl}/admin/trading_accounts?status=${status}`
+    if(brandId){
+        url= `${apiUrl}/admin/trading_accounts?status=${status}&brand_id=${brandId}`
+    }
+
+    const res = await _API(url, 'get', [], token)
     return res
 }
 
-export const Trading_Transaction_Order = async (token) => {
-    const res = await _API(`${apiUrl}/admin/transaction_order`, 'get', [], token)
+export const Trading_Transaction_Order = async (token,brandId) => {
+   let url = `${apiUrl}/admin/transaction_order`
+    if(brandId){
+     url = `${apiUrl}/admin/transaction_order?brand_id=${brandId}`
+    }
+    const res = await _API(url, 'get', [], token)
     return res
 }
