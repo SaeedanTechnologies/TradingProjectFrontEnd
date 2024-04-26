@@ -42,4 +42,7 @@ export const GenericDelete = async(Params, token)=>{
   const res = await  _API(`${apiUrl}/admin/massDelete`,'delete',Params,token)
   return res
 }
-
+export const GenericEdit = async(Params, token)=>{
+  const res = await  _API(`${apiUrl}/admin/massEdit`,'put',Params,token)
+  return res
+}
