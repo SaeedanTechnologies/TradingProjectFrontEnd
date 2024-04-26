@@ -4,7 +4,6 @@ import { EllipsisOutlined } from '@ant-design/icons';
 
 
 const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsAddRemove }) =>{
-  const [MassEditMode, setMassEditMode] = useState(false)
   const items = [
     {
       key: '1',
@@ -15,25 +14,24 @@ const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsA
     {
       key: '2',
       label: (
-        <button rel="noopener noreferrer" onClick={()=> {
-          setMassEditMode(true)
-        }}>  Mass Edit </button>
+        <button  rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
     {
       key: '3',
+      label: (
+        <button rel="noopener noreferrer" onClick={()=> setIsMassEdit(true)}>  Mass Edit </button>
+      ),
+    },
+    {
+      key: '4',
       label: (
         <button  rel="noopener noreferrer"  onClick={()=> {
           setIsMassDelete(true)
         }}>  Mass Delete  </button>
       ),
     },
-    {
-      key: '4',
-      label: (
-        <button  rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
-      ),
-    },
+   
   ];
   return (
     <Dropdown
@@ -45,11 +43,7 @@ const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsA
       trigger={['click']}
       className='mb-3 mt-6'
     >
-      <Button>
-      <span>{MassEditMode ? 'Mass Edit Mode':'Mass Delete Mode' 
-        }</span>
-        <EllipsisOutlined />
-      </Button>
+      <Button> <EllipsisOutlined /> </Button>
     </Dropdown>
 );
 }
