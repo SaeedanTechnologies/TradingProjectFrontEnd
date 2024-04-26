@@ -7,6 +7,11 @@ import ReactDragListView from "react-drag-listview";
 import CustomButton from "../../components/CustomButton";
 import TableActions from "./TableActions";
 import CustomNotification from "../../components/CustomNotification";
+import CustomModal from "../../components/CustomModal";
+import { Autocomplete, TextField } from "@mui/material";
+import { GenericDelete } from "../../utils/_APICalls";
+import Swal from "sweetalert2";
+import { setSymbolSettingsSelecetdIDs } from "../../store/symbolSettingsSlice";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -45,6 +50,12 @@ class DnDTable extends Component {
       isMassDelete: false,
       isAddRemove: false,
       selectedRowKeys: [],
+      dropDownColumns: [],
+      selectedColumns: null,
+      isCompleteSelect: false, 
+      isLoading: false, 
+      data: [],
+      isUpated:true,
     };
     this.setIsRearangments = this.setIsRearangments.bind(this);
     this.setIsMassEdit = this.setIsMassEdit.bind(this);
@@ -56,8 +67,9 @@ class DnDTable extends Component {
     this.toggleCompleteSelect = this.toggleCompleteSelect.bind(this);
     this.MassEditHandler = this.MassEditHandler.bind(this);
     this.MassDeleteHandler = this.MassDeleteHandler.bind(this);
-
+    this.handleCancel = this.handleCancel.bind(this);
     const that = this;
+
     this.dragProps = {
       onDragEnd(fromIndex, toIndex) {
         if (that.state.isRearangments) {
@@ -84,13 +96,32 @@ class DnDTable extends Component {
   }
 
   componentDidMount() {
-    this.setState({ columns: this.props.columns });
+    this.setState({ columns: this.props.columns,isUpated:true });
+    const ColumnsData = this.props.columns.map(x=>{
+      return {
+        key: x.key, 
+        dataIndex: x.dataIndex,
+        title: typeof x.title === 'string' ? x.title:x.title.props.children 
+      }
+    })
+    this.setState({dropDownColumns: ColumnsData,selectedColumns: ColumnsData})
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.columns !== this.props.columns) {
       this.setState({ columns: this.props.columns });
+    }else if(prevProps.data !== this.props.data && this.state.isCompleteSelect){
+        const allRowKeys = this.props.data.map((row) => row.id);
+        this.setState({ selectedRowKeys: allRowKeys });
     }
+    if(this.props.data.length > 0 && this.state.isUpated){
+      this.setState({ data: this.props.data, isUpated:false });
+    } 
+    // else if (prevProps.data !== this.props.data) {
+    //   // Update data state with new data from props
+    //   this.setState({ data: this.props.data });
+    // } 
+  
   }
 
   components = {
@@ -176,27 +207,25 @@ class DnDTable extends Component {
     this.setState({ isSelectAll: checked });
   }
   toggleCompleteSelect() {
-    this.setState((prevState) => ({
-      isCompleteSelect: !prevState.isCompleteSelect,
-    }));
-    if (this.state.isCompleteSelect) {
-      const allRowKeys = this.props.data.map((row) => row.id);
-      this.setState({ selectedRowKeys: allRowKeys });
-    } else {
-      this.setState({ selectedRowKeys: [] })
+    this.setState((prevState) => ({isCompleteSelect: !prevState.isCompleteSelect}),
+    ()=>{
+      if (this.state.isCompleteSelect) {
+        const allRowKeys = this.props.data.map((row) => row.id);
+        this.setState({ selectedRowKeys: allRowKeys });
+      } else {
+        this.setState({ selectedRowKeys: [] })
+      }
     }
+  );
+   
 
   }
   MassEditHandler() {
-    if (this.state.isMassEdit) {
       if (this.state.selectedRowKeys.length > 0) {
-        CustomNotification({
-          type: "success",
-          title: "Updated",
-          description: "Data Updated Successfully",
-          key: "2",
-        })
-
+        if (this.props.direction === "symbol-settings") {
+          this.props.dispatch(setSymbolSettingsSelecetdIDs(this.state.selectedRowKeys))
+          this.props.navigate(`/symbol-settings-entry`);
+        }
       } else {
         CustomNotification({
           type: "error",
@@ -205,24 +234,53 @@ class DnDTable extends Component {
           key: "2",
         })
       }
-    } else {
-      CustomNotification({
-        type: "error",
-        title: "Validation",
-        description: "Please enable mass edit mode",
-        key: "2",
-      })
-    }
   }
-  MassDeleteHandler() {
-    if (this.state.isMassDelete) {
+  async MassDeleteHandler() {
       if (this.state.selectedRowKeys.length > 0) {
-        CustomNotification({
-          type: "success",
-          title: "Deleted",
-          description: "Data Deleted Successfully",
-          key: "4",
-        })
+        if(this.props.direction === "symbol-settings"){ // symbol settings delete
+          const Params = {
+           table_name: "symbel_settings", 
+           table_ids:this.state.isCompleteSelect ? [] : this.state.selectedRowKeys
+          }
+         this.setState({isLoading: true})
+         Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#1CAC70",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const res = await GenericDelete(Params, this.props.token)
+            const { data: { success, message, payload } } = res
+            this.setState({isLoading: false})
+            const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
+            this.setState({data: newData})
+            if (success) {
+               CustomNotification({
+                type: "success",
+                title: "Deleted",
+                description: message,
+                key: "a4",
+              })
+            } else {
+              CustomNotification({
+                type: "error",
+                title: "Oppssss..",
+                description: message,
+                key: "b4",
+              })
+            }
+      
+          }
+        });
+       
+         this.setState({isLoading: false})
+        
+        }
+       
 
       } else {
         CustomNotification({
@@ -232,14 +290,9 @@ class DnDTable extends Component {
           key: "6",
         })
       }
-    } else {
-      CustomNotification({
-        type: "error",
-        title: "Validation",
-        description: "Please enable mass Delete mode",
-        key: "3",
-      })
-    }
+  }
+  handleCancel(){
+   this.setState({isAddRemove: false})
   }
   render() {
     const { columns, selectedRowKeys } = this.state;
@@ -250,14 +303,10 @@ class DnDTable extends Component {
         onResize: this.handleResize(index),
       }),
     }));
-
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method
       onSelectAll: this.onSelectAllChange,
-      getCheckboxProps: (record) => ({
-        disabled: !(this.state.isMassEdit || this.state.isMassDelete), // Disable checkboxes when isMassEdit is true
-      }),
     };
 
     return (
@@ -265,45 +314,33 @@ class DnDTable extends Component {
         <ReactDragListView.DragColumn {...this.dragProps}>
 
           <div className="flex justify-between gap-4">
-            <div className="bg-gray-100 p-4 flex gap-4 mb-4 rounded-md">
-              <EditOutlined
-                className="cursor-pointer"
-                style={{ fontSize: "20px" }}
-                disabled={true}
-                onClick={this.MassEditHandler}
-              />
-              <DeleteOutlined
-                className="cursor-pointer"
-                style={{ fontSize: "20px" }}
-                onClick={this.MassDeleteHandler}
-              />
-            </div>
-            {
-              this.state.isSelectAll ?
+            <div></div>
+          {
+                this.state.isSelectAll &&
                 <h1
                   className="text-2xl font-semibold text-blue-500 cursor-pointer"
                   onClick={this.toggleCompleteSelect}
                 >
-                  {
-                    this.state.isCompleteSelect ? "Select All Data" : "Deselect All Data"
-                  }
-                </h1> : null
-            }
+                  {this.state.isCompleteSelect ? `Deselect All Data (${selectedRowKeys.length})` : `Select All Data (${selectedRowKeys.length})`}
+                </h1>
+              }
 
-            <div >
+            <div className="self-end">
               {!(
                 this.state.isRearangments
               ) ? (
                 <TableActions
                   setIsRearangments={this.setIsRearangments}
                   setIsMassEdit={this.setIsMassEdit}
-                  setIsMassDelete={this.setIsMassDelete}
                   setIsAddRemove={this.setIsAddRemove}
+                  selectedRows= {this.state.selectedRowKeys}
+                  MassEditHandler={this.MassEditHandler}
+                  MassDeleteHandler = {this.MassDeleteHandler}
                 />
               ) : (
                 <CustomButton
                   Text={"Save Changes"}
-                  className="mb-3"
+                  className='mb-3 mt-6'
                   onClickHandler={this.handleSaveChanges}
                 />
               )}
@@ -338,6 +375,57 @@ class DnDTable extends Component {
             })}
           />
         </ReactDragListView.DragColumn>
+        <CustomModal
+          title={this.props.formName+' - Add Remove Columns'}
+          isModalOpen={this.state.isAddRemove}
+          footer={[]}
+          width={600}
+          handleCancel={this.handleCancel}
+        >
+        <Autocomplete
+          multiple
+          id="columns"
+          options={this.state.dropDownColumns}
+          getOptionLabel={(option) => option?.title ? option?.title : '' }
+          value={this.state.selectedColumns  ?  this.state.selectedColumns  : []}
+          onChange={(e, value) => {
+            if(value){
+              this.setState({selectedColumns: value })
+            }else{
+              this.setState({selectedColumns: null })
+            }
+          }}
+          
+          renderInput={(params) => (
+            <TextField {...params} label="Columns" placeholder="Columns" variant="standard" />
+          )}
+          fullWidth
+        />
+        <div className="flex justify-end gap-4 mt-4">
+        <CustomButton
+         Text={'Submit'}
+         style={{
+          padding: '12px',
+          height: '40px',
+          width: '140px',
+          borderRadius: '8px',
+          zIndex: '100'
+        }}
+        />
+        <CustomButton
+         Text={'Cancle'}
+         style={{
+          padding: '12px',
+          height: '40px',
+          width: '140px',
+          borderRadius: '8px',
+          backgroundColor: '#c5c5c5',
+          borderColor: '#c5c5c5',
+          color: '#fff'
+        }}
+        />
+        </div>
+        </CustomModal>
       </>
     );
   }

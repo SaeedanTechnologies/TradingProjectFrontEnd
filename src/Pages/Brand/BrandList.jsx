@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Space, Spin, theme } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined, EyeOutlined,EyeInvisibleOutlined} from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
 import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
@@ -12,7 +12,7 @@ import { AddnewStyle, footerStyle, submitStyle } from './style';
 import { Brands_List, DeleteBrand } from '../../utils/_APICalls';
 import { useSelector } from 'react-redux';
 
-import { Stack,Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
@@ -22,10 +22,9 @@ const BrandList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [BrandsList, setBrandsList] = useState([])
   const [BrandID, setBrandID] = useState(null);
-  const [visibleBrandId,setVisibleBrandId] = useState(null)
+  const [visibleBrandId, setVisibleBrandId] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [showKey,setShowKey] = useState(false)
-  
+  const [showKey, setShowKey] = useState(false)
 
   const fetchBrands = async () => {
     setIsLoading(true)
@@ -62,11 +61,11 @@ const BrandList = () => {
     setIsModalOpen(false);
   };
 
-  const toggleKey=(id)=>{
-   
+  const toggleKey = (id) => {
+
     setVisibleBrandId(id)
     setShowKey(!showKey)
-   
+
   }
 
   const headerStyle = {
@@ -111,15 +110,16 @@ const BrandList = () => {
       dataIndex: 'public_key',
       key: '7',
        render: (_, record) => (
+
         <Stack direction="row" justifyContent={'space-between'}>
-          <Typography sx={{fontWeight: showKey? 400 : 700,fontSize:showKey ? "14px": "22px"}}>{visibleBrandId === record.id  ? record.public_key: '................'}</Typography>
+          <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
 
           <Space size="middle" className='cursor-pointer'>
-            { visibleBrandId === record.id  ?
-            <EyeInvisibleOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={()=>toggleKey(record)} />:
-            <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={()=>toggleKey(record.id)} />
+            {visibleBrandId === record.id ?
+              <EyeInvisibleOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => toggleKey(record)} /> :
+              <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => toggleKey(record.id)} />
             }
-            </Space>
+          </Space>
         </Stack>
       ),
     },
@@ -135,14 +135,14 @@ const BrandList = () => {
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
           <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token,DeleteBrand, setIsLoading )} />
+          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, DeleteBrand, setIsLoading)} />
 
         </Space>
       ),
     },
 
   ];
-
+ 
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -157,7 +157,7 @@ const BrandList = () => {
             />
           </div>
         </div>
-        <CustomTable columns={columns} data={BrandsList} headerStyle={headerStyle} />
+        <CustomTable columns={columns} data={BrandsList} headerStyle={headerStyle}/>
         <CustomModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}
@@ -165,7 +165,7 @@ const BrandList = () => {
           title={''}
           width={800}
           footer={null}
-          
+
         >
           <BrandModal
             setIsModalOpen={setIsModalOpen}

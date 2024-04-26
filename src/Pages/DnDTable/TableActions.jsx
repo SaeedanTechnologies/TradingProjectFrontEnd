@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Dropdown, Space } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 
-const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsAddRemove}) =>{
+const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler }) =>{
   const items = [
     {
       key: '1',
@@ -14,21 +14,22 @@ const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsA
     {
       key: '2',
       label: (
-        <button rel="noopener noreferrer" onClick={()=> setIsMassEdit(true)}>  Mass Edit </button>
-      ),
-    },
-    {
-      key: '3',
-      label: (
-        <button  rel="noopener noreferrer"  onClick={()=> setIsMassDelete(true)}>  Mass Delete  </button>
-      ),
-    },
-    {
-      key: '4',
-      label: (
         <button  rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
+    selectedRows?.length > 0 && {
+      key: '3',
+      label: (
+        <button rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
+      ),
+    },
+    selectedRows?.length > 0 && {
+      key: '4',
+      label: (
+        <button  rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
+      ),
+    },
+   
   ];
   return (
     <Dropdown
@@ -38,9 +39,9 @@ const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsA
       placement="bottom"
       arrow
       trigger={['click']}
-      className='mb-3'
+      className='mb-3 mt-6'
     >
-      <Button><EllipsisOutlined /></Button>
+      <Button> <EllipsisOutlined /> </Button>
     </Dropdown>
 );
 }
