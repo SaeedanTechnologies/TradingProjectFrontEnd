@@ -99,7 +99,7 @@ class DnDTable extends Component {
       return {
         key: x.key, 
         dataIndex: x.dataIndex,
-        title: x.title.props.children
+        title: typeof x.title === 'string' ? x.title:x.title.props.children 
       }
     })
     this.setState({dropDownColumns: ColumnsData,selectedColumns: ColumnsData})
@@ -328,20 +328,7 @@ class DnDTable extends Component {
       <>
         <ReactDragListView.DragColumn {...this.dragProps}>
 
-          <div className="flex justify-between gap-4">
-            <div className="bg-gray-100 p-4 flex gap-4 my-4 rounded-md">
-              <EditOutlined
-                className="cursor-pointer"
-                style={{ fontSize: "20px" }}
-                disabled={true}
-                onClick={this.MassEditHandler}
-              />
-              <DeleteOutlined
-                className="cursor-pointer"
-                style={{ fontSize: "20px" }}
-                onClick={this.MassDeleteHandler}
-              />
-            </div>
+          <div className="flex justify-end gap-4">
             {
                 this.state.isSelectAll &&
                 <h1
@@ -352,7 +339,7 @@ class DnDTable extends Component {
                 </h1>
               }
 
-            <div >
+            <div className="self-end">
               {!(
                 this.state.isRearangments
               ) ? (
@@ -376,7 +363,7 @@ class DnDTable extends Component {
             bordered
             components={this.components}
             columns={combinedColumns}
-            dataSource={this.state.data}
+            dataSource={this.props.data}
             pagination={false}
             rowSelection={rowSelection}
             rowKey="id"
