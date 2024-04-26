@@ -16,6 +16,7 @@ import TradeChart from './TradeChart';
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
+import axios from 'axios';
 
 const Trade = ({fetchLiveOrder}) => {
     const token = useSelector(({user})=> user?.user?.token )
@@ -38,6 +39,8 @@ const Trade = ({fetchLiveOrder}) => {
   const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
   const [pricing, setPricing] = useState({openPrice: '', askProfit: ''});
+  const [connected, setConnected] = useState(false);
+  const [socketpricing, setSocketPricing] = useState({openPrice: '', askProfit: ''});
   const [errors, setErrors] = useState({});
 
     //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
@@ -163,17 +166,61 @@ const fetchSymbolSettings = async () => {
   //   setOpen_price(bidPrice);
   // };
 
+  const fetchBinancehData = async (symbol) => {
+    try {
+      const response = await axios.get(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`);
+      const data = response?.data;
+      setSocketPricing({
+        ...pricing,
+        openPrice: data?.bidPrice,
+        askProfit: data?.askPrice
+      })
+    } catch (error) {
+      // setError('Error fetching data');
+      console.error(error);
+    }
+  };
+
   const fetchData = (symbol) => {
+    fetchBinancehData(symbol?.feed_fetch_name)
+    
     const binanceBidAsk = BinanceBidAsk({ symbol: symbol?.feed_fetch_name });
+    
+    // if(connected){
+    //   binanceBidAsk.stop(
+    //   (data) => {
+    //     console.error('Error:', data);
+    //   },
+    // );
+    // setConnected(false)
+    // binanceBidAsk=null
+    // binanceBidAsk = BinanceBidAsk({ symbol: symbol?.feed_fetch_name });
+    // }
+
+    // if(connected)
+    // {
+    //   // binanceBidAsk.stop()
+    //   setConnected(false)
+    //   // binanceBidAsk = BinanceBidAsk({ symbol: symbol?.feed_fetch_name });
+    // }
+    // binanceBidAsk=BinanceBidAsk({ symbol: symbol?.feed_fetch_name });
+
     binanceBidAsk.start(
       (data) => {
         console.log('Bid Price:', data.bidPrice);
         console.log('Ask Price:', data.askPrice);
-        setPricing({
+        // if(data?.bidPrice !=null)
+        // {
+          setPricing({
           ...pricing,
-          openPrice:data.bidPrice,
-          askProfit:data.askPrice
+          openPrice:data?.bidPrice,
+          askProfit:data?.askPrice
         })
+        setConnected(true)
+        // }
+        // else {
+        // }
+        
         // setOpen_price(data.bidPrice)
         // setTakeProfit(data.askPrice)
       },
@@ -184,8 +231,10 @@ const fetchSymbolSettings = async () => {
         console.log('WebSocket connection closed');
       }
     );
+    // binanceBidAsk.stop()
     // Optionally, stop the WebSocket connection when it's no longer needed
-    // binanceSocket.stop();
+    
+      
   };
 
 
@@ -332,7 +381,7 @@ const fetchSymbolSettings = async () => {
           {(type?.value === 'Buy Sell Limit' || type?.value === 'Sell Stop Limit') &&
           <CustomTextField label={'Stop Limit Price'} varient={'standard'} type="number" sx={numberInputStyle} value={stop_limit_price}  onChange={e => handleInputChange('stop_limit_price', e.target.value)}/>}
           </div>
-          <b> Open Price : {pricing.openPrice} / Ask Price : {pricing.askProfit}</b>
+          <b> Open Price (Socket) : {pricing.openPrice} / Ask Price (Socket) : {pricing.askProfit}</b> <br /> <b> Open Price (Manual) : {socketpricing.openPrice} / Ask Price (Manual): {socketpricing.askProfit}</b>
           <div className="mb-4 grid grid-cols-1 gap-4">
             <CustomTextField label={'Comments'}
             value={comment}

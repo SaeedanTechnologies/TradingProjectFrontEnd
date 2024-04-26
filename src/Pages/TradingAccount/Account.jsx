@@ -27,9 +27,7 @@ const Account = () => {
   const [tradingAccountGroupList,setTradingAccountGroupList] = useState([])
   const [selectedTradingAccountGroup,setSelectedTradingAccountGroup] = useState(null)
   const [selectedLeverage,setSelectedLeverage] = useState(null)
-  const [oldPassword,setOldPassword] =  useState('')
   const [password,setPassword] =  useState('')
-  const [confirmPassword,setConfirmPassword] =  useState('')
  
   const [enable,setEnable] = useState(0);
   const [enable_password_change,setEnable_password_change] = useState(0);
@@ -92,10 +90,9 @@ const ChkBoxesControl = [
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res
       if(success){
-        
+          // debugger;
         const selectedGroup =  GroupsList?.find(x=> x.id === payload.trading_group_id)
-        
-        const selectedLeverage = LeverageList.find(x=>x.title === payload.leverage) 
+        const selectedLeverage = LeverageList.find(x=>x.value === payload.leverage) 
         setSelectedTradingAccountGroup(selectedGroup)
         setSelectedLeverage(selectedLeverage)
         setPassword(payload.password)
@@ -136,7 +133,7 @@ const ChkBoxesControl = [
        const tradingAccountData ={
         trading_group_id: selectedTradingAccountGroup?.id,
         leverage: selectedLeverage?.value,
-        password,
+        password:password,
         enable :  enable ? 1 : 0,
         enable_password_change :  enable_password_change ? 1 : 0,
         enable_investor_trading :  enable_investor_trading ? 1 : 0 ,
@@ -149,7 +146,6 @@ const ChkBoxesControl = [
     {
       CustomNotification({ type:"success", title:"Security Account", description:message, key:1 })
       setIsLoading(false)
-       fetchTradingAccountGroups()
     }   
     else{
       CustomNotification({ type:"error", title:"Security Account", description:message, key:1 })
@@ -192,6 +188,7 @@ const ChkBoxesControl = [
                       variant="standard"
                       options={tradingAccountGroupList}
                       value={selectedTradingAccountGroup}
+
                       getOptionLabel={(option) => option.name ? option.name : ""}
                       onChange={(event, value) => {
                         if(value)
@@ -243,7 +240,7 @@ const ChkBoxesControl = [
                 <div className='flex justify-start items-center'>
                     
                     <CustomButton
-                      Text={'Change Password'}
+                      Text={'Save Changes'}
                       style={{
                       width: '180px',
                       height: '50px',
@@ -265,6 +262,7 @@ const ChkBoxesControl = [
                       <ChangePasswordModal
                         setIsModalOpen={setIsModalOpen}
                         password={password}
+                        setPassword={setPassword}
                       
                         />
                     </CustomModal>
