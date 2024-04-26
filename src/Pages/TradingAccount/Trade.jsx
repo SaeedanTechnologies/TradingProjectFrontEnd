@@ -1,8 +1,10 @@
 import { Spin, theme } from 'antd';
 import React, { useState, useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
+import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
+
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { TradeOrderTypes, PendingOrderTypes, MarketOrderTypes } from '../../utils/constants';
+
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
@@ -10,9 +12,10 @@ import { useNavigate } from 'react-router-dom';
 import { TradeValidationSchema } from '../../utils/validations';
 import { numberInputStyle } from './style';
 import { useSelector } from 'react-redux';
+import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Autocomplete,TextField } from '@mui/material';
 import { Post_Trade_Order } from '../../utils/_TradingAPICalls';
-import { Autocomplete, TextField } from '@mui/material';
-import TradeChart from './TradeChart';
+
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
@@ -33,16 +36,19 @@ const Trade = ({ fetchLiveOrder }) => {
   const [symbolsList, setSymbolsList] = useState([])
   const [symbol, setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(null);
-  const [type, setType] = useState(null);
-  const [volume, setVolume] = useState('');
-  const [open_price, setOpen_price] = useState('');
-  const [comment, setComment] = useState('');
-  const [takeProfit, setTakeProfit] = useState('');
-  const [stopLoss, setStopLoss] = useState('');
-  const [stop_limit_price, setStop_limit_price] = useState('')
-  const [pricing, setPricing] = useState({ openPrice: null, askPrice: null });
-  const [connected, setConnected] = useState(true);
-  const [streamConnected, setStreamConnected] = useState(false);
+  const [type,setType] = useState(null);
+  const [volume,setVolume] = useState('');
+  const [open_price,setOpen_price] = useState('');
+  const [comment,setComment] = useState('');
+  const [takeProfit,setTakeProfit] = useState('');
+  const [stopLoss,setStopLoss] = useState('');
+  const [stop_limit_price,setStop_limit_price] = useState('')
+  const [pricing, setPricing] = useState({openPrice: '', askProfit: ''});
+  const [connected, setConnected] = useState(false);
+  const [socketpricing, setSocketPricing] = useState({openPrice: '', askProfit: ''});
+  const [brand_id,setBrand_id] = useState(-1);
+
+
   const [manualpricing, setManualPricing] = useState({ openPrice: null, askPrice: null });
   const [errors, setErrors] = useState({});
 
@@ -115,6 +121,7 @@ const Trade = ({ fetchLiveOrder }) => {
         open_price,
         open_time: new Date().toISOString(),
 
+        brand_id
 
       }
 
@@ -160,9 +167,29 @@ const Trade = ({ fetchLiveOrder }) => {
     }
   };
 
-  useEffect(() => {
-    fetchSymbolSettings()
-  }, [])
+
+   const fetchSingleTradeAccount = async () => {
+
+    setIsLoading(true)
+    const res = await Get_Single_Trading_Account(trading_account_id, token)
+    const { data: { message, payload, success } } = res
+
+
+    setIsLoading(false)
+    if (success) {
+      setBrand_id(payload?.brand_id)
+
+    }
+
+
+
+  }
+
+  useEffect(()=>{
+    fetchSingleTradeAccount()
+   fetchSymbolSettings()
+  },[])
+
 
   //  function onUpdateBidPrice (bidPrice){
   //   setOpen_price(bidPrice);

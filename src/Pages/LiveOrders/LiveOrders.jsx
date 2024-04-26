@@ -10,6 +10,8 @@ import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICall
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const LiveOrders = () => {
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
   const { token: { colorBG, colorPrimary, TableHeaderColor } } = theme.useToken();
   const [isLoading, setIsLoading] = useState(false)
@@ -22,10 +24,10 @@ const LiveOrders = () => {
     color: 'black',
   };
 
-  const fetchLiveOrder = async () => {
+  const fetchLiveOrder = async (brandId) => {
 
     setIsLoading(true)
-    const params = { OrderTypes: ['market', 'pending'], token }
+    const params = { OrderTypes: ['market', 'pending'], token,brandId  }
     const mData = await Get_Trade_Order(params)
     const { data: { message, payload, success } } = mData
     const allLiveOrders = payload?.data?.map((order) => ({
@@ -53,7 +55,16 @@ const LiveOrders = () => {
 
   }
   useEffect(() => {
-    fetchLiveOrder()
+       
+   
+
+    if(userRole === 'brand' ){
+      fetchLiveOrder(userBrand.public_key)
+    }
+    else{
+      fetchLiveOrder(null)
+    }
+
   }, [])
 
   const columns = [

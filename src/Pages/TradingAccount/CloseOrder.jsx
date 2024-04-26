@@ -10,6 +10,8 @@ import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 
 const CloseOrder = () => {
+    const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({user})=> user?.user?.token )
   const {token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const [isLoading,setIsLoading] = useState(false)
@@ -18,10 +20,10 @@ const CloseOrder = () => {
 
 
 
-    const fetchCloseOrder = async () => {
+    const fetchCloseOrder = async (brandId) => {
 
       setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['close'],token}
+      const params ={trading_account_id,OrderTypes:['close'],token,brandId}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
       
@@ -146,7 +148,14 @@ const CloseOrder = () => {
 
 
   useEffect(()=>{
-    fetchCloseOrder()
+    if( userRole === 'brand' ){
+         fetchCloseOrder(userBrand.public_key)
+        } 
+        else{
+              fetchCloseOrder(null)
+        }
+
+
   },[])
 
   return (

@@ -19,7 +19,10 @@ import { setTradingGroupData } from '../../store/TradingGroupData';
 
 
 
+
 const Index = () => {
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const [TradingGroupID, setTradingGroupID] = useState(null);
@@ -57,18 +60,28 @@ const Index = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const fetchData = async () => {
+  const fetchData = async (brandId) => {
     setIsLoading(true)
-    const res = await Trading_Account_Group_List(token)
+    const res = await Trading_Account_Group_List(token,brandId)
     const { data: { message, payload, success } } = res
+    // debugger;
     setIsLoading(false)
     if (success) {
+
+      
+
       setTradingAccountGroupList(payload.data)
     }
   }
   useEffect(() => {
 
-    fetchData()
+    if(userRole === 'brand' ){
+      fetchData(userBrand.public_key)
+    }
+    else{
+      fetchData(null)
+    }
+    
   }, [])
 
   const DeleteHandler = async (id) => {
@@ -116,6 +129,11 @@ const Index = () => {
       title: 'Group Name',
       dataIndex: 'name',
       key: '1',
+    },
+    {
+      title: 'Brand Id',
+      dataIndex: 'brand_id',
+      key: 'brandID',
     },
     {
       title: 'Symbol Group',
@@ -193,6 +211,8 @@ const Index = () => {
     <Spin spinning={isLoading} size="large">
 
       <div className='p-8' style={{ backgroundColor: colorBG }}>
+        
+
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
           <CustomButton

@@ -17,6 +17,8 @@ import LOGO_CDN from '../../assets/images/logo.png';
 import SubMenu from "antd/es/menu/SubMenu";
 import { useNavigate } from "react-router-dom";
 import { siderMenuStyle, siderStyle, subMenuTitleStyle } from "./style";
+import { useSelector } from "react-redux";
+
 
 const { Sider } = Layout;
 
@@ -24,6 +26,7 @@ const { Sider } = Layout;
 
 const Sidebar = ({ collapsed }) => {
   const [selectedKey, setSelectedKey] = useState('1');
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const { token: { sidebarColor, darkGray, colorTransparentPrimary, Gray2, colorPrimary } } = theme.useToken();
   const navigate = useNavigate();
   const items = [
@@ -31,7 +34,8 @@ const Sidebar = ({ collapsed }) => {
       key: '1',
       icon: <AppstoreFilled />,
       children: [],
-      label: 'Dashboard'
+      label: 'Dashboard',
+      display: 'show' 
     },
     // {
     //   key: 'sub1',
@@ -46,7 +50,8 @@ const Sidebar = ({ collapsed }) => {
       key: '2',
       icon: <DingdingOutlined />,
       children: [],
-      label: 'Brands'
+      label: 'Brands',
+      display: userRole === 'admin' ? 'show' : 'hide'
     },
     {
       key: 'sub3',
@@ -57,7 +62,8 @@ const Sidebar = ({ collapsed }) => {
         { key: '13', label: 'Active Account Group' },
         { key: '14', label: 'Margin Call Trading Account' },
       ],
-      label: 'Trading Account'
+      label: 'Trading Account',
+         display: 'show' 
     },
     {
       key: 'sub2',
@@ -66,13 +72,15 @@ const Sidebar = ({ collapsed }) => {
         { key: '6', label: 'Live Orders' },
         { key: '7', label: 'Close Orders' }
       ],
-      label: 'Trading Orders'
+      label: 'Trading Orders',
+         display: 'show' 
     },
     {
       key: '8',
       icon: <AntDesignOutlined />,
       children: [],
-      label: 'Transaction Orders'
+      label: 'Transaction Orders',
+         display: 'show' 
     },
     {
       key: 'sub4',
@@ -84,17 +92,18 @@ const Sidebar = ({ collapsed }) => {
         { key: '18', label: 'Tickets & Charts' },
         { key: '19', label: '1 Minute Charts' },
       ],
-      label: 'Symbol'
+      label: 'Symbol',
+      display: userRole ==='admin' ? 'show' : 'hide'
 
     },
     {
       key: '10',
       icon: <SettingOutlined />,
       children: [],
-      label: 'Settings'
+      label: 'Settings',
+      display: 'show' 
     },
   ];
-
   const handleMenuSelect = ({ key }) => {
     setSelectedKey(key);
     switch (key) {
@@ -179,7 +188,9 @@ const Sidebar = ({ collapsed }) => {
             style={siderMenuStyle}
           >
             {items.map(item => (
-              item.children.length > 0 && item.children ? (
+              (
+                item.display === 'show'  ?
+               item.children.length > 0 && item.children ? (
                 <SubMenu
                   key={item.key}
                   icon={<span style={{ color: Gray2, marginTop: "20px" }}>{item.icon}</span>}
@@ -194,7 +205,7 @@ const Sidebar = ({ collapsed }) => {
                     </Menu.Item>
                   ))}
                 </SubMenu>
-              ) : (
+              ) :   (
                 <Menu.Item
                   key={item.key}
                   icon={item.icon}
@@ -202,7 +213,9 @@ const Sidebar = ({ collapsed }) => {
                 >
                   {item.label}
                 </Menu.Item>
-              )
+              ) 
+            :"")
+             
             ))}
           </Menu>
 

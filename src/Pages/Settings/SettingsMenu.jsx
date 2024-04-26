@@ -1,25 +1,42 @@
 import React from 'react';
-import { Divider, List, Typography } from 'antd';
+import { Divider, List  } from 'antd';
 import {RightOutlined} from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-const data = [
-  {id:1, title:'FireWall (IP Restriction)', path:'/firewall'},
- { id:2, title:'Margin Call Levels', path:'/margin-levels'},
-  {id:3, title:'Change Password', path:'/change-password'},
+import { useSelector } from 'react-redux';
+
+
+
+
+
+
+
+const SettingsMenu = () => {
+
+
+    const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+
+    const data = [
+  {id:1, title:'FireWall (IP Restriction)', path:'/firewall',  display: userRole === 'admin' ? 'show' : 'hide'},
+  { id:2, title:'Margin Call Levels', path:'/margin-levels',  display: userRole === 'admin' ? 'show' : 'hide'},
+  {id:3, title:'Change Password', path:'/change-password',  display: 'show'},
+
 ];
-const SettingsMenu = () => (
-  <>
+
+ return (<>
     <List
       bordered
       dataSource={data}
       renderItem={(item) => (
+        item.display === 'show' ?(
         <List.Item className='text-xl font-semibold cursor-pointer'> 
           <Link to={item.path} > <span className='hover:text-green-600'>{item.title} </span>  </Link> 
           <Link to={item.path}>  <RightOutlined /> </Link>
         </List.Item>
+        ) :''
       )}
     />
     
   </>
-);
+  )
+};
 export default SettingsMenu;
