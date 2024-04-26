@@ -37,6 +37,7 @@ export const UpdateSymbolSettings = async (SymbolSettingsID, SymbolSettingsData,
     return res
 }
 
+
 export const Trading_Active_Group = async (token, status) => {
     const res = await _API(`${apiUrl}/admin/trading_accounts?status=${status}`, 'get', [], token)
     return res

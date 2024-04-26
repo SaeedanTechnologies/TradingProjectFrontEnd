@@ -8,8 +8,9 @@ import { AddnewSettingsStyle} from '../../Brand/style';
 import CustomTextField from '../../../components/CustomTextField';
 import {useNavigate } from 'react-router-dom';
 import { All_Setting_Data} from '../../../utils/_SymbolSettingAPICalls';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import  "../../DnDTable/index.css";
+import { setSymbolSettingsSelecetdIDs } from '../../../store/symbolSettingsSlice';
 
 
 
@@ -30,6 +31,7 @@ const Index = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const dispatch = useDispatch()
 
   const columns = [
     {
@@ -144,7 +146,10 @@ const Index = () => {
               Text='Add New Symbol Settings'
               style={AddnewSettingsStyle}
               icon={<PlusCircleOutlined />}
-              onClickHandler={() => navigate('/symbol-settings/0')}
+              onClickHandler={() =>{
+                dispatch(setSymbolSettingsSelecetdIDs([0]))
+                navigate('/symbol-settings-entry')
+              }}
             />
           </div>
         </div>

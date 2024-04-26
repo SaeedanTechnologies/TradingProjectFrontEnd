@@ -88,7 +88,7 @@ export const router = createBrowserRouter([
       { path: "/symbol-groups", element: <SymbolGroup /> },
       { path: "/symbol-groups/:id", element: <SymbolGroupEntry /> },
       { path: "/symbol-settings", element: <SymbolSettings /> },
-      { path: "/symbol-settings/:id", element: <SymbolSettingsEntry /> },
+      { path: "/symbol-settings-entry", element: <SymbolSettingsEntry /> },
       { path: "/data-feed", element: <DataFeed /> },
       { path: "/data-feed/:id", element: <NewFeedData /> },
       { path: "/ticket-charts", element: <TicketCharts /> },

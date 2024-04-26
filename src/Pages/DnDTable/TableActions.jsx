@@ -3,7 +3,7 @@ import { Button, Dropdown, Space } from 'antd';
 import { EllipsisOutlined } from '@ant-design/icons';
 
 
-const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsAddRemove }) =>{
+const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler }) =>{
   const items = [
     {
       key: '1',
@@ -17,18 +17,16 @@ const TableActions = ({setIsRearangments, setIsMassEdit, setIsMassDelete, setIsA
         <button  rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
-    {
+    selectedRows?.length > 0 && {
       key: '3',
       label: (
-        <button rel="noopener noreferrer" onClick={()=> setIsMassEdit(true)}>  Mass Edit </button>
+        <button rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
       ),
     },
-    {
+    selectedRows?.length > 0 && {
       key: '4',
       label: (
-        <button  rel="noopener noreferrer"  onClick={()=> {
-          setIsMassDelete(true)
-        }}>  Mass Delete  </button>
+        <button  rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
       ),
     },
    

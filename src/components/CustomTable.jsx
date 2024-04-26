@@ -4,7 +4,7 @@ import DnDTable from '../Pages/DnDTable';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, direction, formName, token }) => {
+const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, direction, formName, token ,updateHandler,isUpated}) => {
   const handlePageChange = (page) => {
     onPageChange(page);
   };
@@ -24,6 +24,8 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           navigate={navigate}
           token = {token}
           dispatch={dispatch}
+          updateHandler={updateHandler}
+          isUpated={isUpated}
         />
         <div style={{ textAlign: 'right', marginTop: 16 }}>
           <Pagination
