@@ -343,7 +343,7 @@ class DnDTable extends Component {
             bordered
             components={this.components}
             columns={combinedColumns}
-            dataSource={this.state.data}
+            dataSource={this.props.data}
             pagination={false}
             rowSelection={rowSelection}
             rowKey="id"

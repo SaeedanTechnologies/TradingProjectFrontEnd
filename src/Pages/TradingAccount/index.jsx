@@ -185,6 +185,7 @@ const Index = ({ title, direction }) => {
 
   const setTradeId = (id) => {
     dispatch(setAccountID(id))
+    
     navigate('/single-trading-accounts/details/live-order')
 
   }

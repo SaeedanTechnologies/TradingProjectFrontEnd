@@ -24,7 +24,7 @@ const CloseOrder = () => {
   const [totalRecords, setTotalRecords] = useState(0)
 
     const fetchCloseOrder = async (brandId) => {
-
+debugger
 
       setIsLoading(true)
       const params ={trading_account_id,OrderTypes:['close'],token,brandId}

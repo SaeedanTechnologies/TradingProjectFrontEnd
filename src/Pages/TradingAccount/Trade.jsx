@@ -120,7 +120,7 @@ const Trade = ({ fetchLiveOrder }) => {
         type: typeReceive ? typeReceive : type.value,
         volume,
         comment,
-        takeProfit,
+        takeProfit: String(takeProfit),
         stopLoss,
         stop_limit_price,
         trading_account_id,

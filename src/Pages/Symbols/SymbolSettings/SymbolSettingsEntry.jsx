@@ -424,7 +424,7 @@ const SymbolSettingsEntry = () => {
     {
       key: '2',
       label: (
-        <button  rel="noopener noreferrer"  >   Delete  </button>
+        <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
     },
    

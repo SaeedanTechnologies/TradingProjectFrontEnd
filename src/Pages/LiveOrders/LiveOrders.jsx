@@ -28,7 +28,6 @@ const LiveOrders = () => {
   };
 
   const fetchLiveOrder = async (brandId,page) => {
-
     setIsLoading(true)
     const params = { OrderTypes: ['market', 'pending'], token,brandId,page}
     const mData = await Get_Trade_Order(params,page)
@@ -52,6 +51,7 @@ const LiveOrders = () => {
     }))
     setIsLoading(false)
     if (success) {
+      debugger
       setLiveOrders(allLiveOrders)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
