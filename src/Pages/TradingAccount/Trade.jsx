@@ -1,7 +1,7 @@
 import { Spin, theme } from 'antd';
 import React, { useState, useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { TradeOrderTypes, PendingOrderTypes, MarketOrderTypes } from '../../utils/constants';
+import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
 
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -14,8 +14,6 @@ import { numberInputStyle } from './style';
 import { useSelector } from 'react-redux';
 import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete, TextField } from '@mui/material';
-// import { Post_Trade_Order } from '../../utils/_TradingAPICalls';
-
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
@@ -36,17 +34,17 @@ const Trade = ({ fetchLiveOrder }) => {
   const [symbolsList, setSymbolsList] = useState([])
   const [symbol, setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(null);
-  const [type, setType] = useState(null);
-  const [volume, setVolume] = useState('');
-  const [open_price, setOpen_price] = useState('');
-  const [comment, setComment] = useState('');
-  const [takeProfit, setTakeProfit] = useState('');
-  const [stopLoss, setStopLoss] = useState('');
-  const [stop_limit_price, setStop_limit_price] = useState('')
+  const [type,setType] = useState(null);
+  const [volume,setVolume] = useState('');
+  const [open_price,setOpen_price] = useState('');
+  const [comment,setComment] = useState('');
+  const [takeProfit,setTakeProfit] = useState('');
+  const [stopLoss,setStopLoss] = useState('');
+  const [stop_limit_price,setStop_limit_price] = useState('')
   const [pricing, setPricing] = useState({ openPrice: null, askPrice: null });
   const [connected, setConnected] = useState(true);
-  // const [streamConnected, setStreamConnected] = useState(false);
-  const [brand_id, setBrand_id] = useState(-1);
+  const [streamConnected, setStreamConnected] = useState(false);
+  const [brand_id,setBrand_id] = useState(-1);
 
 
   const [manualpricing, setManualPricing] = useState({ openPrice: null, askPrice: null });
@@ -168,7 +166,7 @@ const Trade = ({ fetchLiveOrder }) => {
   };
 
 
-  const fetchSingleTradeAccount = async () => {
+   const fetchSingleTradeAccount = async () => {
 
     setIsLoading(true)
     const res = await Get_Single_Trading_Account(trading_account_id, token)
@@ -185,10 +183,10 @@ const Trade = ({ fetchLiveOrder }) => {
 
   }
 
-  useEffect(() => {
+  useEffect(()=>{
     fetchSingleTradeAccount()
-    fetchSymbolSettings()
-  }, [])
+   fetchSymbolSettings()
+  },[])
 
 
   //  function onUpdateBidPrice (bidPrice){
@@ -212,10 +210,11 @@ const Trade = ({ fetchLiveOrder }) => {
 
   const handleCheckboxClick = (e) => {
     setConnected(e.target.checked)
-    if (symbol) {
+    if(symbol){
       fetchData(symbol, e.target.checked)
     }
   }
+
 
   const fetchData = (symbol, connected) => {
 
@@ -227,21 +226,22 @@ const Trade = ({ fetchLiveOrder }) => {
       console.log('Previous WebSocket connection closed');
     };
 
-    // const onStop = () => {
-    //   console.log('Previous WebSocket connection stopped manually');
-    // };
-    const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
+    const onStop = () => {
+      console.log('Previous WebSocket connection stopped manually');
+    };
+    const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name);
 
-    // if((!connected && streamConnected)){
-
-    //   binanceStream.stop(onStop)
-    //   setStreamConnected(false)
-    //   return
-    // }
-
+    if((!connected && streamConnected)){
+      
+      binanceStream.stop(onStop)
+      setStreamConnected(false)
+      return
+    }
+    
+    
     fetchBinancehData(symbol?.feed_fetch_name)
-    // setStreamConnected(true)
-
+    setStreamConnected(true)
+    
     if (binanceStream) {
       const onDataReceived = (data) => {
         console.log('Bid Price:', data.bidPrice);
@@ -252,7 +252,7 @@ const Trade = ({ fetchLiveOrder }) => {
           askPrice: data?.askPrice
         })
       };
-
+      
       binanceStream.start(onDataReceived, onError, onClose);
       // Optionally, stop the WebSocket connection when it's no longer needed  
       // binanceStream.stop();
@@ -294,7 +294,7 @@ const Trade = ({ fetchLiveOrder }) => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    if (value) {
+                    if (value ) {
                       setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       setSymbol(value)
                     }
@@ -392,15 +392,13 @@ const Trade = ({ fetchLiveOrder }) => {
                 }
 
                 <div className="flex flex-1 flex-row  gap-2 border-b">
-                  {!connected
-                    && <CustomButton style={{
-                      backgroundColor: colorTransparentPrimary,
-                      borderColor: colorTransparentPrimary,
-                      color: 'black',
-                      fontWeight: 'bold',
-                      borderRadius: 8
-                    }} Text={'Update'} />
-                  }
+                  {!connected && <CustomButton style={{
+                    backgroundColor: colorTransparentPrimary,
+                    borderColor: colorTransparentPrimary,
+                    color: 'black',
+                    fontWeight: 'bold',
+                    borderRadius: 8
+                  }} Text={'Update'} />}
                   <CustomCheckbox label='Auto' checked={connected} onChange={handleCheckboxClick} />
                   {/* <label className='mt-2'>Auto</label> */}
                 </div>
