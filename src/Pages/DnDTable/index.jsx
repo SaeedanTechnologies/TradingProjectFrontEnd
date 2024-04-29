@@ -245,7 +245,7 @@ class DnDTable extends Component {
          this.setState({isLoading: true})
          Swal.fire({
           title: "Are you sure?",
-          text: "You won't be able to revert this!",
+          text: "You won't be able to revert this! sdf",
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#1CAC70",
