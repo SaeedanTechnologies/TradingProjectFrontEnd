@@ -38,20 +38,28 @@ const Trade = ({ fetchLiveOrder }) => {
   const [volume,setVolume] = useState('');
   const [open_price,setOpen_price] = useState('');
   const [comment,setComment] = useState('');
-  const [takeProfit,setTakeProfit] = useState('');
+  const [takeProfit,setTakeProfit] = useState(0);
   const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
   const [pricing, setPricing] = useState({ openPrice: null, askPrice: null });
   const [connected, setConnected] = useState(true);
-  const [streamConnected, setStreamConnected] = useState(false);
+  // const [rerenderCount, setRerenderCount] = useState(0);
+  // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
 
 
-  const [manualpricing, setManualPricing] = useState({ openPrice: null, askPrice: null });
+  // const [manualpricing, setManualPricing] = useState({ openPrice: null, askPrice: null });
   const [errors, setErrors] = useState({});
 
   //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
 
+  const handleChange = (e) => {
+    const newValue = parseFloat(e.target.value);
+    if (!isNaN(newValue) && newValue >= 0) {
+      setTakeProfit(newValue);
+    }
+  };
+  
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
@@ -100,9 +108,9 @@ const Trade = ({ fetchLiveOrder }) => {
         symbol,
         order_type,
         volume,
-        open_price,
-        takeProfit,
-        stopLoss,
+        open_price: (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price,
+        // takeProfit,
+        // stopLoss,
       }, { abortEarly: false });
 
       setErrors({});
@@ -116,7 +124,7 @@ const Trade = ({ fetchLiveOrder }) => {
         stopLoss,
         stop_limit_price,
         trading_account_id,
-        open_price,
+        open_price: (connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price,
         open_time: new Date().toISOString(),
 
         brand_id
@@ -128,19 +136,19 @@ const Trade = ({ fetchLiveOrder }) => {
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
-        CustomNotification({ type: "success", title: "Transaction Order", description: message, key: 1 })
+        CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
 
         fetchLiveOrder()
         clearFields()
       }
       else {
         setIsLoading(false)
-        CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
+        CustomNotification({ type: "error", title: "Live Order", description: message, key: 1 })
 
       }
 
     } catch (err) {
-      CustomNotification({ type: "error", title: "Transaction Order", description: err.message, key: 1 })
+      CustomNotification({ type: "error", title: "Live Order", description: err.message, key: 1 })
 
       const validationErrors = {};
       err.inner.forEach(error => {
@@ -188,6 +196,25 @@ const Trade = ({ fetchLiveOrder }) => {
    fetchSymbolSettings()
   },[])
 
+useEffect(() => {
+    // Skip the first render
+    // if (rerenderCount > 0 && symbol !== null) {
+    //     fetchData(symbol, connected);
+    // }
+
+    // // Increment rerender count after the first render
+    // if (rerenderCount === 0) {
+    //     setRerenderCount(1);
+    // }
+
+    // Cleanup function
+    return () => {
+        // Cleanup actions here (if needed)
+        console.log('here')
+        fetchData('stop', connected); //to stop connection when component unmounts
+    };
+},[]);
+
 
   //  function onUpdateBidPrice (bidPrice){
   //   setOpen_price(bidPrice);
@@ -197,7 +224,12 @@ const Trade = ({ fetchLiveOrder }) => {
     try {
       const response = await axios.get(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`);
       const data = response?.data;
-      setManualPricing({
+      // setManualPricing({
+      //   ...pricing,
+      //   openPrice: data?.bidPrice,
+      //   askPrice: data?.askPrice
+      // })
+      setPricing({
         ...pricing,
         openPrice: data?.bidPrice,
         askPrice: data?.askPrice
@@ -226,24 +258,26 @@ const Trade = ({ fetchLiveOrder }) => {
       console.log('Previous WebSocket connection closed');
     };
 
-    const onStop = () => {
-      console.log('Previous WebSocket connection stopped manually');
-    };
-    const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name);
+    // const onStop = () => {
+    //   console.log('Previous WebSocket connection stopped manually');
+    // };
+    const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
 
-    if((!connected && streamConnected)){
-      
-      binanceStream.stop(onStop)
-      setStreamConnected(false)
-      return
-    }
-    
-    
-    fetchBinancehData(symbol?.feed_fetch_name)
-    setStreamConnected(true)
-    
+    // if((!connected && streamConnected)){
+
+    //   binanceStream.stop(onStop)
+    //   setStreamConnected(false)
+    //   return
+    // }
+
+    // setStreamConnected(true)
+
     if (binanceStream) {
       const onDataReceived = (data) => {
+        if(!data?.bidPrice){
+          fetchBinancehData(symbol?.feed_fetch_name)
+        }
+        else {
         console.log('Bid Price:', data.bidPrice);
         console.log('Ask Price:', data.askPrice);
         setPricing({
@@ -251,8 +285,9 @@ const Trade = ({ fetchLiveOrder }) => {
           openPrice: data?.bidPrice,
           askPrice: data?.askPrice
         })
+        }
       };
-      
+
       binanceStream.start(onDataReceived, onError, onClose);
       // Optionally, stop the WebSocket connection when it's no longer needed  
       // binanceStream.stop();
@@ -371,13 +406,11 @@ const Trade = ({ fetchLiveOrder }) => {
 
             </div>
 
-            <div className="mb-4 grid grid-cols-1 gap-4">
+            <div className="mb-4 grid grid-cols-1  gap-4">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
 
                 {
-                  (connected ?
-                    <TradePrice label={'Open Price / Ask Price'} openPrice={pricing?.openPrice ?? '"'} askPrice={pricing?.askPrice ?? '"'} />
-                    :
+                  (!connected || order_type?.value === 'pending') ?
                     <div className="flex-1">
                       <CustomTextField
                         label={'Open Price'}
@@ -388,36 +421,45 @@ const Trade = ({ fetchLiveOrder }) => {
                         onChange={e => handleInputChange('open_price', e.target.value)}
                       />
                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
-                    </div>)
+                    </div>
+                  :  <TradePrice label={'Open Price / Ask Price'} openPrice={pricing?.openPrice ?? ''} askPrice={pricing?.askPrice ?? ''} />  
                 }
 
-                <div className="flex flex-1 flex-row  gap-2 border-b">
-                  {!connected && <CustomButton style={{
-                    backgroundColor: colorTransparentPrimary,
-                    borderColor: colorTransparentPrimary,
-                    color: 'black',
-                    fontWeight: 'bold',
-                    borderRadius: 8
-                  }} Text={'Update'} />}
-                  <CustomCheckbox label='Auto' checked={connected} onChange={handleCheckboxClick} />
+                 
                   {/* <label className='mt-2'>Auto</label> */}
+                  {order_type?.value !== 'pending' && 
+              
+                <div className="gap-2 border-b">
+            
+                  <CustomCheckbox label='Auto' checked={connected} onChange={handleCheckboxClick} />
                 </div>
-                <div className="flex-1">
-                  <CustomTextField label={'Take Profit'} varient={'standard'} type="number" sx={numberInputStyle} value={takeProfit} onChange={e => handleInputChange('takeProfit', e.target.value)} />
-                  {errors.takeProfit && <span style={{ color: 'red' }}>{errors.takeProfit}</span>}
-                </div>
+                  }
               </div>
             </div>
 
             <div className={`mb-4 grid  ${type?.value === 'Buy Sell Limit' || type?.value === 'Sell Stop Limit' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} gap-4`}>
-              <div>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div className="flex-1">
+                <TextField
+                      type="number"
+                      label="Take Profit"
+                      value={takeProfit}
+                      InputProps={{ inputProps: { min: 0, step: 0.1 }, style: { border: 'none' } }}
+                      onChange={handleChange}
+                      variant='standard'
+                      fullWidth
+                    />
+                  {/* <CustomTextField label={'Take Profit'} varient={'standard'} type="number" sx={numberInputStyle} value={takeProfit} onChange={e => handleInputChange('takeProfit', e.target.value)} /> */}
+                  {errors.takeProfit && <span style={{ color: 'red' }}>{errors.takeProfit}</span>}
+                </div>
                 <CustomTextField label={'Stop Loss'} varient={'standard'} type="number" sx={numberInputStyle} value={stopLoss} onChange={e => handleInputChange('stopLoss', e.target.value)} />
                 {errors.stopLoss && <span style={{ color: 'red' }}>{errors.stopLoss}</span>}
               </div>
               {(type?.value === 'Buy Sell Limit' || type?.value === 'Sell Stop Limit') &&
                 <CustomTextField label={'Stop Limit Price'} varient={'standard'} type="number" sx={numberInputStyle} value={stop_limit_price} onChange={e => handleInputChange('stop_limit_price', e.target.value)} />}
             </div>
-            <b> Open Price (Socket) : {pricing?.openPrice} / Ask Price (Socket) : {pricing?.askPrice}</b> <br /> <b> Open Price (Manual) : {manualpricing.openPrice} / Ask Price (Manual): {manualpricing.askPrice}</b>
+            <b> Open Price (Socket) : {pricing?.openPrice} / Ask Price (Socket) : {pricing?.askPrice}</b> 
+            {/* <br /> <b> Open Price (Manual) : {manualpricing.openPrice} / Ask Price (Manual): {manualpricing.askPrice}</b> */}
             <div className="mb-4 grid grid-cols-1 gap-4">
               <CustomTextField label={'Comments'}
                 value={comment}
