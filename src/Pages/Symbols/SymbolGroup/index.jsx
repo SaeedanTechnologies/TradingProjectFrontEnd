@@ -20,74 +20,102 @@ const Index = () => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [SymbolList, setSymbolList] = useState([])
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
   const columns = [
     {
-      title: 'Name',
+      title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '1',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Laverage',
+      title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '2',
+      sorter: (a, b) => a.leverage.length - b.leverage.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Swap',
+      title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '3',
+      sorter: (a, b) => a.swap.length - b.swap.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Lot Size',
+      title:<span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
       key: '4',
+      sorter: (a, b) => a.lot_size.length - b.lot_size.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Lot Steps',
+      title:<span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
       key: '5',
+      sorter: (a, b) => a.lot_step.length - b.lot_step.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Minimum Value',
+      title:<span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
       key: '6',
+      sorter: (a, b) => a.vol_min.length - b.vol_min.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Maximum Value',
+     
+      title:<span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
       key: '7',
+      sorter: (a, b) => a.vol_max.length - b.vol_max.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Symbol Group TI',
+      title:<span className="dragHandler">Symbol Group TI</span>,
       dataIndex: 'trading_interval',
       key: '8',
+      sorter: (a, b) => a.trading_interval.length - b.trading_interval.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Symbols',
+      title:<span className="dragHandler">Symbols</span>,
       render: (text)=> <Link to={'#'} className='text-sm font-semibold cursor-pointer' style={{color: colorPrimary }}>View Details</Link>,
       key: '9',
+      
     },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-         <Link to={`/symbol-groups/${record.id}`}><EditOutlined style={{fontSize:"24px", color: colorPrimary }}  /></Link> 
-           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> DeleteHandler(record.id)} />
-        </Space>
-      ),
-    },
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (_, record) => (
+    //     <Space size="middle" className='cursor-pointer'>
+    //      <Link to={`/symbol-groups/${record.id}`}><EditOutlined style={{fontSize:"24px", color: colorPrimary }}  /></Link> 
+    //        <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} onClick={()=> DeleteHandler(record.id)} />
+    //     </Space>
+    //   ),
+    // },
   ];
 
-const FetchData = async () =>{
+  
+
+const FetchData = async (page) =>{
     setIsLoading(true)
-    const res = await Symbol_Group_List(token)
+    const res = await Symbol_Group_List(token,page)
   const {data:{message, payload, success}} = res
     setIsLoading(false)
     if(success){
+      // debugger;
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
       setSymbolList(payload.data)
     }
 }
@@ -112,7 +140,7 @@ const DeleteHandler = async (id)=>{
           text: message,
           icon: "success"
         });
-        FetchData()
+        FetchData(page)
       }else{
         Swal.fire({
           title: "Opps!",
@@ -127,8 +155,13 @@ const DeleteHandler = async (id)=>{
   setIsLoading(false)
  
 }
+
+ const onPageChange = (page) =>{
+    FetchData(page)
+  }
+
 useEffect(() => {
-  FetchData()
+  FetchData(CurrentPage)
 }, [])
 
   return (
@@ -147,7 +180,18 @@ useEffect(() => {
        
       </div>
     </div>
-    <CustomTable columns={columns} data={SymbolList} headerStyle={headerStyle} />
+     <CustomTable
+          direction="/symbol-groups"
+          formName = "Symbol Groups" 
+          columns={columns}
+          data={SymbolList} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+        />
+       
   </div>
   </Spin>
   )

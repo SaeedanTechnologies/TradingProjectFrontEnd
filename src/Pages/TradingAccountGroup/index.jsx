@@ -126,20 +126,26 @@ const Index = () => {
   };
   const columns = [
     {
-      title: 'Group Name',
+      title:<span className="dragHandler">Group Name</span>,
       dataIndex: 'name',
       key: '1',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Brand Id',
+      title:<span className="dragHandler">Brand Id</span>,
       dataIndex: 'brand_id',
-      key: 'brandID',
+      key: '1',
+      sorter: (a, b) => a.brand_id.length - b.brand_id.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Symbol Group',
+      title:<span className="dragHandler">Symbol Group</span>,
       dataIndex: 'symbel_groups',
-      key: '2',
-      render: (_, { symbel_groups }) => (
+      key: '1',
+      sorter: (a, b) => a.symbel_groups.length - b.symbel_groups.length,
+      sortDirections: ['ascend'], 
+       render: (_, { symbel_groups }) => (
         <>
           {symbel_groups?.map((tag) => {
             return (
@@ -150,17 +156,21 @@ const Index = () => {
           })}
         </>
       )
+
     },
     {
-      title: 'Mass Buy/Sell Trading Order',
+      title:<span className="dragHandler">Mass Buy/Sell Trading Order</span>,
       dataIndex: 'MBS',
-      key: '3',
-      render: (text) => <Link to={'/trading-group/mb-to/0'} style={{ color: colorPrimary, fontWeight: '600' }}>View Details</Link>
+      key: '1',
+      render: (text) => <Link to={'/trading-group/mb-to/0'} style={{ color: colorPrimary, fontWeight: '600' }}>View Details</Link>,
+      sorter: (a, b) => a.MBS.length - b.MBS.length,
+      sortDirections: ['ascend'],
+    
     },
     {
-      title: 'Mass deposit/widthdraw',
+      title:<span className="dragHandler">Mass deposit/widthdraw</span>,
       dataIndex: 'MDW',
-      key: '4',
+      key: '1',
       render: (_, record) => (
         <Link
           to={`/trading-group/mass-deposit/${record.id}`}
@@ -170,40 +180,48 @@ const Index = () => {
           View Details
         </Link>
       ),
+      sorter: (a, b) => a.MDW.length - b.MDW.length,
+      sortDirections: ['ascend'],
     },
 
     {
-      title: 'Mass Laverage',
+      title:<span className="dragHandler">Mass Laverage</span>,
       dataIndex: 'mass_leverage',
-      key: '5',
+      key: '1',
+      sorter: (a, b) => a.mass_leverage.length - b.mass_leverage.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Mass Swap',
+      title:<span className="dragHandler">Mass Swap</span>,
       dataIndex: 'mass_swap',
-      key: '6',
+      key: '1',
+      sorter: (a, b) => a.mass_swap.length - b.mass_swap.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Trading Accounts',
+      title:<span className="dragHandler">Trading Accounts</span>,
       dataIndex: 'trading_accounts',
-      key: '7',
+      key: '1',
       render: (text, record) => {
         const { trading_accounts } = record
         return (
           <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => showAccountModal(trading_accounts)}>View Accounts</span>
         )
-      }
+      },
+      sorter: (a, b) => a.trading_accounts.length - b.trading_accounts.length,
+      sortDirections: ['ascend'],
 
     },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-          <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, DeleteTradingAccountGroup, setIsLoading)} />
-        </Space>
-      ),
-    },
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (_, record) => (
+    //     <Space size="middle" className='cursor-pointer'>
+    //       <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
+    //       <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, DeleteTradingAccountGroup, setIsLoading)} />
+    //     </Space>
+    //   ),
+    // },
   ];
 
 

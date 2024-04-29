@@ -64,6 +64,17 @@ const Index = () => {
         <h1 className='text-2xl font-semibold'>1 Minute Charts</h1>
       </div>
       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
+       {/* <CustomTable
+          direction="/min-charts"
+          formName = "1 Minute Charts" 
+          columns={columns}
+          data={allSetting} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+        /> */}
     </div>
   )
 }

@@ -28,103 +28,144 @@ const TransactionOrders = () => {
     //   key: '1',
     // },
     {
-      title: 'OrderID',
+      title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
-      key: '2',
+      key: '1',
+      sorter: (a, b) => a.id.length - b.id.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Name',
+      title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '3',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Group',
+      title:<span className="dragHandler">Group</span>,
       dataIndex: 'group',
       key: '4',
+      sorter: (a, b) => a.group.length - b.group.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Country',
+      title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '5',
+      sorter: (a, b) => a.country.length - b.country.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Phone Number',
+      title:<span className="dragHandler">Phone Number</span>,
       dataIndex: 'phone',
       key: '6',
+      sorter: (a, b) => a.phone.length - b.phone.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Email',
+      title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '7',
+      sorter: (a, b) => a.email.length - b.email.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Time',
+      title:<span className="dragHandler">Time</span>,
       dataIndex: 'created_at',
       key: '8',
+      sorter: (a, b) => a.created_at.length - b.created_at.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Type',
+      title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '9',
-      render: (text) => <span style={{ color: colorPrimary }}>{text}</span>
+      sorter: (a, b) => a.type.length - b.type.length,
+      sortDirections: ['ascend'],
 
     },
     {
-      title: 'Method',
+     
+      title:<span className="dragHandler">Method</span>,
       dataIndex: 'method',
-      key: '9',
+      key: '10',
+      sorter: (a, b) => a.method.length - b.method.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Comment',
+      title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
-      key: '9',
-      render: (text) => <span style={{ color: colorPrimary }}>{text}</span>
-
+      key: '11',
+      sorter: (a, b) => a.comment.length - b.comment.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Amount',
+      title:<span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
-      key: '9',
+      key: '12',
+      sorter: (a, b) => a.amount.length - b.amount.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Currency',
+      title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
-      key: '9',
+      key: '13',
+      sorter: (a, b) => a.currency.length - b.currency.length,
+      sortDirections: ['ascend'],
     },
-    {
-      title: 'Actions',
-      dataIndex: 'type',
-      key: '9',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-          <Link to={"/transaction-orders/:0"}><EditOutlined style={{ fontSize: "24px", color: colorPrimary }} /></Link>
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} />
-        </Space>
-      ),
-    },
+    // {
+    //   title: 'Actions',
+    //   dataIndex: 'type',
+    //   key: '9',
+    //   render: (_, record) => (
+    //     <Space size="middle" className='cursor-pointer'>
+    //       <Link to={"/transaction-orders/:0"}><EditOutlined style={{ fontSize: "24px", color: colorPrimary }} /></Link>
+    //       <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} />
+    //     </Space>
+    //   ),
+    // },
   ];
 
   const [isLoading, setIsLoading] = useState(false)
   const [transactionData, setTransactionData] = useState([])
-  const fetchTransactionOrder = async (brandId) => {
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+
+
+  const fetchTransactionOrder = async (brandId,page) => {
     setIsLoading(true)
 
-    const res = await Trading_Transaction_Order(token,brandId)
+    const res = await Trading_Transaction_Order(token,brandId,page)
     const { data: { message, payload, success } } = res
     console.log(res)
     setIsLoading(false)
     if (success) {
+      
+      setCurrentPage(payload.current_page)
       setTransactionData(payload.data)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+    
     }
   }
   useEffect(() => {
      if(userRole === 'brand' ){
-      fetchTransactionOrder(userBrand.public_key)
+      fetchTransactionOrder(userBrand.public_key,CurrentPage)
     }
     else{
-      fetchTransactionOrder(null)
+      fetchTransactionOrder(null,CurrentPage)
     }
   }, [])
+
+  const onPageChange = (page) =>{
+      if(userRole === 'brand' ){
+      fetchTransactionOrder(userBrand.public_key,page)
+    }
+    else{
+      fetchTransactionOrder(null,page)
+    }
+  }
 
   const headerStyle = {
     background: TableHeaderColor,
@@ -194,7 +235,17 @@ const TransactionOrders = () => {
             </div>
           </div>
         }
-        <CustomTable columns={columns} data={transactionData} headerStyle={headerStyle} />
+         <CustomTable
+          direction="/transaction-orders"
+          formName = "Transactions Orders" 
+          columns={columns}
+          data={transactionData} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+        />
       </div>
     </Spin>
   )

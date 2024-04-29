@@ -16,15 +16,18 @@ import moment from 'moment';
 
 
 const TradingAccountDetails = () => {
-   const token = useSelector(({user})=> user?.user?.token )
+
+  const [liveOrders, setLiveOrders] = useState([])
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+  const token = useSelector(({user})=> user?.user?.token )
    
-  const {
-    token: { colorBG, TableHeaderColor, colorPrimary  },
-  } = theme.useToken();
+  const { token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const {tradeId} = useParams();
-const { TabPane } = Tabs;
+  const { TabPane } = Tabs;
 
   const [activeTab, setActiveTab] = useState('1');
    const [tradeOrder,setTradeOrder] = useState([])
@@ -43,6 +46,10 @@ const fetchLiveOrder = async () => {
       if(success){
       
       setTradeOrder( payload?.data)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+   
     }
     
   }
@@ -53,7 +60,7 @@ const fetchLiveOrder = async () => {
   {
     key: '1',
     label: 'Live Orders',
-    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder}  isLoading={isLoading} setIsLoading={setIsLoading}/>,
+    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder}  isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} />,
     path: '/single-trading-accounts/details/live-order'
   },
   {

@@ -10,8 +10,8 @@ export const Save_Transaction_Order  = async(TransactionOrderData, token)=>{
 }
 
 
-export const Get_Transaction_Orders  = async(trading_account_id, token)=>{
+export const Get_Transaction_Orders  = async(trading_account_id, token,page)=>{
     
-const res = await _API(`${apiUrl}/admin/transaction_order?trading_account_id=${trading_account_id}`, 'get', [], token);
+const res = await _API(`${apiUrl}/admin/transaction_order?page=${page}&trading_account_id=${trading_account_id}`, 'get', [], token);
   return res;
 }

@@ -32,6 +32,7 @@ const Index = () => {
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
   const [isUpdated, setIsUpdated] = useState(true)
+
   const dispatch = useDispatch()
 
   const columns = [

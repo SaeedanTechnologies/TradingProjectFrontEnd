@@ -37,11 +37,11 @@ export const UpdateSymbolSettings = async (SymbolSettingsID, SymbolSettingsData,
     return res
 }
 
-export const Trading_Active_Group = async (token, status,brandId) => {
+export const Trading_Active_Group = async (token, status,brandId,page) => {
 
-    let url =`${apiUrl}/admin/trading_accounts?status=${status}`
+    let url =`${apiUrl}/admin/trading_accounts?status=${status}?page=${page}`
     if(brandId){
-        url= `${apiUrl}/admin/trading_accounts?status=${status}&brand_id=${brandId}`
+        url= `${apiUrl}/admin/trading_accounts?status=${status}?page=${page}&brand_id=${brandId}`
     }
 
     const res = await _API(url, 'get', [], token)
@@ -49,20 +49,20 @@ export const Trading_Active_Group = async (token, status,brandId) => {
     return res
 }
 
-export const Trading_Margin_Calls = async (token, status,brandId) => {
-    let url =`${apiUrl}/admin/trading_accounts?status=${status}`
+export const Trading_Margin_Calls = async (token, status,brandId,page) => {
+    let url =`${apiUrl}/admin/trading_accounts?page=${page}&status=${status}`
     if(brandId){
-        url= `${apiUrl}/admin/trading_accounts?status=${status}&brand_id=${brandId}`
+        url= `${apiUrl}/admin/trading_accounts?page=${page}&status=${status}&brand_id=${brandId}`
     }
 
     const res = await _API(url, 'get', [], token)
     return res
 }
 
-export const Trading_Transaction_Order = async (token,brandId) => {
-   let url = `${apiUrl}/admin/transaction_order`
+export const Trading_Transaction_Order = async (token,brandId,page) => {
+   let url = `${apiUrl}/admin/transaction_order?page=${page}`
     if(brandId){
-     url = `${apiUrl}/admin/transaction_order?brand_id=${brandId}`
+     url = `${apiUrl}/admin/transaction_order?brand_id=${brandId}&page=${page}`
     }
     const res = await _API(url, 'get', [], token)
     return res

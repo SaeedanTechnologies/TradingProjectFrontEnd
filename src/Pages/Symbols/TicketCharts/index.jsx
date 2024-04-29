@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { theme } from 'antd';
 import CustomTable from '../../../components/CustomTable';
-
+import { useSelector } from 'react-redux';
 
 const columns = [
   {
@@ -53,6 +53,7 @@ const data = [
 
 
 const Index = () => {
+   const token = useSelector(({ user }) => user?.user?.token)
   const { token: { colorBG, TableHeaderColor } } = theme.useToken();
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
@@ -64,6 +65,17 @@ const Index = () => {
         <h1 className='text-2xl font-semibold'>Tickets & Charts</h1>
       </div>
       <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
+    {/* <CustomTable
+          direction="/ticket-charts"
+          formName = "Tickets & Charts" 
+          columns={columns}
+          data={allSetting} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+        /> */}
     </div>
   )
 }

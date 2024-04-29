@@ -10,17 +10,21 @@ import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 
 const CloseOrder = () => {
-    const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-   const userBrand = useSelector((state)=> state?.user?.user?.brand)
+  
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({user})=> user?.user?.token )
   const {token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const [isLoading,setIsLoading] = useState(false)
-    const [closeOrders,setCloseOrders] = useState([])
-    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+  const [closeOrders,setCloseOrders] = useState([])
+  const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
-
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
 
     const fetchCloseOrder = async (brandId) => {
+
 
       setIsLoading(true)
       const params ={trading_account_id,OrderTypes:['close'],token,brandId}
@@ -48,89 +52,134 @@ const CloseOrder = () => {
        setIsLoading(false)
       if(success){
       
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+
       setCloseOrders(orders)
     }
     
   }
 
 
+  const onPageChange = (page) =>{
+   
+      if( userRole === 'brand' )
+        {
+         fetchCloseOrder(userBrand.public_key,page)
+        } 
+      else
+      {
+          fetchCloseOrder(null,page)
+      }
+  
+    }
+
 
   const columns = [
     {
-      title: 'Open Time',
+      title:<span className="dragHandler">Open Time</span>,
       dataIndex: 'open_time',
       key: '1',
+      sorter: (a, b) => a.open_time.length - b.open_time.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Order No',
+      title:<span className="dragHandler">Order No</span>,
       dataIndex: 'order_no',
       key: '2',
+      sorter: (a, b) => a.order_no.length - b.order_no.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Type',
+      title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '3',
+      sorter: (a, b) => a.type.length - b.type.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Volume',
+      title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: '4',
+      sorter: (a, b) => a.volume.length - b.volume.length,
+      sortDirections: ['ascend'],
+
     },
     {
-      title: 'Symbol',
+      title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
       key: '5',
+      sorter: (a, b) => a.symbol.length - b.symbol.length,
+      sortDirections: ['ascend'],
+
     },
     {
-      title: 'Open Price',
+      title:<span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '6',
+      sorter: (a, b) => a.open_price.length - b.open_price.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'SL',
+      title:<span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: '7',
+      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'TP',
+      title:<span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: '8',
+      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Close Time',
+      title:<span className="dragHandler">Close Time</span>,
       dataIndex: 'close_time',
       key: '9',
+      sorter: (a, b) => a.close_time.length - b.close_time.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Close Price',
+      title:<span className="dragHandler">Close Price</span>,
       dataIndex: 'close_price',
       key: '10',
+      sorter: (a, b) => a.close_price.length - b.close_price.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Reason',
+      title:<span className="dragHandler">Reason</span>,
       dataIndex: 'reason',
       key: '11',
+      sorter: (a, b) => a.reason.length - b.reason.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Swap',
+      title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '12',
+      sorter: (a, b) => a.swap.length - b.swap.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Profit',
+      title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '13',
+      sorter: (a, b) => a.profit.length - b.profit.length,
+      sortDirections: ['ascend'],
     },
-    {
-      title: 'Actions',
-      dataIndex: 'actions',
-      key: '14',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }}  onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchCloseOrder)} /> 
-        </Space>
-      ),
-    },
+    // {
+    //   title: 'Actions',
+    //   dataIndex: 'actions',
+    //   key: '14',
+    //   render: (_, record) => (
+    //     <Space size="middle" className='cursor-pointer'>
+    //       <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }}  onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchCloseOrder)} /> 
+    //     </Space>
+    //   ),
+    // },
   ];
   
   
@@ -144,28 +193,31 @@ const CloseOrder = () => {
 
 
 
-
-
-
   useEffect(()=>{
     if( userRole === 'brand' ){
-         fetchCloseOrder(userBrand.public_key)
+         fetchCloseOrder(userBrand.public_key,CurrentPage)
         } 
-        else{
-              fetchCloseOrder(null)
+    else{
+          fetchCloseOrder(null,CurrentPage)
         }
-
-
   },[])
 
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{backgroundColor: colorBG}}>
+        
+
         <CustomTable
-          columns={columns} 
-          data={closeOrders} 
-          headerStyle={headerStyle} 
-        />
+            direction="/single-trading-accounts/details/close-order"
+            formName = "Close Orders" 
+            columns={columns}
+            data={closeOrders} 
+            headerStyle={headerStyle}
+            total={totalRecords}
+            onPageChange = {onPageChange}
+            current_page={CurrentPage}
+            token = {token}
+          />
       </div>
     </Spin>
   )
