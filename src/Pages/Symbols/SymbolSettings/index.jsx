@@ -10,7 +10,7 @@ import {useNavigate } from 'react-router-dom';
 import { All_Setting_Data} from '../../../utils/_SymbolSettingAPICalls';
 import { useDispatch, useSelector } from 'react-redux';
 import  "../../DnDTable/index.css";
-import { setSymbolSettingsSelecetdIDs } from '../../../store/symbolSettingsSlice';
+import { setSymbolSettingsData, setSymbolSettingsSelecetdIDs } from '../../../store/symbolSettingsSlice';
 
 
 
@@ -31,6 +31,7 @@ const Index = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [isUpdated, setIsUpdated] = useState(true)
 
   const dispatch = useDispatch()
 
@@ -119,11 +120,13 @@ const Index = () => {
       setLastPage(payload.last_page)
       setAllSetting(payload.data);
       setTotalRecords(payload.total)
+      setIsUpdated(false)
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
   }
   useEffect(() => {
+    setIsUpdated(true)
     fetchAllSetting(CurrentPage)
   }, [])
 
@@ -156,7 +159,7 @@ const Index = () => {
         </div>
       
         <CustomTable
-          direction="/symbol-settings"
+          direction="/symbol-settings-entry"
           formName = "Symbol Settings" 
           columns={newColumns}
           data={allSetting} 
@@ -165,6 +168,10 @@ const Index = () => {
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          isUpated={isUpdated}
+          setSelecetdIDs={setSymbolSettingsSelecetdIDs}
+          setTableData = {setSymbolSettingsData}
+          table_name= "symbel_settings"
         />
       </div>
     </Spin>

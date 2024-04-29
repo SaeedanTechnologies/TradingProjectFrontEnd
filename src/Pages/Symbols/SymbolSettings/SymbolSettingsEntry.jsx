@@ -1,21 +1,23 @@
-import { theme, Spin } from 'antd';
+import { theme, Spin, Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+
 import * as Yup from 'yup';
 
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
-import { AutocompleteDummyData, LeverageList } from '../../../utils/constants';
+import { LeverageList } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
 import { GetAskBidData, GetCryptoData, GetFasciData } from '../../../utils/_ExchangeAPI'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CustomNotification from '../../../components/CustomNotification';
 import { Autocomplete, TextField } from '@mui/material'
-import { styled, lighten, darken } from '@mui/system';
-import { GenericEdit } from '../../../utils/_APICalls';
-
+import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
+import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
+import { deleteSymbolSettingsById } from '../../../store/symbolSettingsSlice';
 
 const FeedData = [
   { feed_name: "First", server: 'First server' },
@@ -26,16 +28,17 @@ const FeedData = [
 
 const SymbolSettingsEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
-  const SymbolSettingIds = useSelector(({symbolSettings})=> symbolSettings.selectedRowsIds)
+  const SymbolSettingIds = useSelector(({ symbolSettings }) => symbolSettings.selectedRowsIds)
+  const SymbolSettingsData = useSelector(({symbolSettings})=> symbolSettings.symbolSettingsData)
+  const ArrangedSymbolSettingsData = SymbolSettingsData.slice().sort((a, b) => a.id - b.id);
   
-  const { id } = useParams()
   const {
-    token: { colorBG, TableHeaderColor, Gray2, colorPrimary },
-  } = theme.useToken();
+    token: { colorBG },} = theme.useToken();
   const navigate = useNavigate()
-
+  const dispatch = useDispatch()
   const [feedNameFetchList, setFeedNameFetchList] = useState([])
   const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   const [symbolName, setSymbolName] = useState('')
   const [SelectedLeverage, setSelectedLeverage] = useState(null)
@@ -141,40 +144,41 @@ const SymbolSettingsEntry = () => {
     }
   }
   const fetchSymbolSettingsWRTID = async (SymbList, feedlist) => {
-      setIsLoading(true)
-      const res = await SelectSymbolSettingsWRTID(SymbolSettingIds[0], token)
-      const { data: { message, payload, success } } = res
-      setIsLoading(false)
-      if (success) {
-        setSymbolName(payload.name)
-        const selectedGroup = SymbList.find(x => x.id === payload.symbel_group_id)
-        setSelectedSymbol(selectedGroup)
-        const SelectedFeedNameOption = feedlist.find(x => x.name === payload.feed_name)
-        if (payload.feed_name === 'binance') {
-          const res = await GetCryptoData()
-          const mData = res?.data?.symbols
-          const updatedData = mData.map((item) => {
-            return { ...item, id: item.symbol };
-          });
-          setFeedNameFetchList(updatedData)
-          const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
-          setSelectedFeedNameFetch(selectedSymb)
-        }
-        const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
-        setSelectedLeverage(selectedLeverageOpt)
-        setSelectedFeedName(SelectedFeedNameOption)
-        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
-        setSelectedEnable(selectedEnab)
-        setLeverage(parseFloat(payload.leverage))
-        setLotSize(payload.lot_size);
-        setLotSteps(payload.lot_step);
-        setVolMin(payload.vol_min);
-        setVolMax(payload.vol_max);
-        setSwap(payload.swap);
-        setCommission(payload.commission);
+    setIsLoading(true)
+    const res = await SelectSymbolSettingsWRTID(SymbolSettingIds[0], token)
+    const { data: { message, payload, success } } = res
+    setIsLoading(false)
+    setStatesForEditMode(payload, success, SymbList, feedlist)
+  }
+  const setStatesForEditMode = async (payload, success, SymbList, feedlist)=>{
+    if (success) {
+      setSymbolName(payload.name)
+      const selectedGroup = SymbList.find(x => x.id === payload.symbel_group_id)
+      setSelectedSymbol(selectedGroup)
+      const SelectedFeedNameOption = feedlist.find(x => x.name === payload.feed_name)
+      if (payload.feed_name === 'binance') {
+        const res = await GetCryptoData()
+        const mData = res?.data?.symbols
+        const updatedData = mData.map((item) => {
+          return { ...item, id: item.symbol };
+        });
+        setFeedNameFetchList(updatedData)
+        const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
+        setSelectedFeedNameFetch(selectedSymb)
       }
-
-    
+      const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
+      setSelectedLeverage(selectedLeverageOpt)
+      setSelectedFeedName(SelectedFeedNameOption)
+      const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
+      setSelectedEnable(selectedEnab)
+      setLeverage(parseFloat(payload.leverage))
+      setLotSize(payload.lot_size);
+      setLotSteps(payload.lot_step);
+      setVolMin(payload.vol_min);
+      setVolMax(payload.vol_max);
+      setSwap(payload.swap);
+      setCommission(payload.commission);
+    }
   }
 
   const fetchSymbolGroups = async () => {
@@ -189,21 +193,47 @@ const SymbolSettingsEntry = () => {
       console.error('Error fetching symbol groups:', error);
     }
   };
+  const handleNext = () => {
+    if (currentIndex < ArrangedSymbolSettingsData.length - 1) {
+      setCurrentIndex(prevIndex => prevIndex + 1);
+      const payload = ArrangedSymbolSettingsData[currentIndex + 1];
+      setIsLoading(true)
+      setTimeout(()=>{
+        setIsLoading(false)
+        setStatesForEditMode(payload, true,SymbolList, FeedNameList)
+      }, 3000)
+    }
+  };
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prevIndex => prevIndex - 1);
+      const payload = ArrangedSymbolSettingsData[currentIndex - 1];
+      setIsLoading(true)
+      setTimeout(()=>{
+        setIsLoading(false)
+        setStatesForEditMode(payload, true,SymbolList, FeedNameList)
+      }, 3000)
+      
+    }
+  };
+
   useEffect(() => {
     fetchSymbolGroups();
     fetchFeedData();
-    if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0){ // save
+    if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0) { // save
       setIsDisabled(false)
-    }else if(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0){ // single edit
+    } else if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) { // single edit
+      const cIndex = ArrangedSymbolSettingsData.findIndex(item => parseInt(item.id) === parseInt(SymbolSettingIds[0]))
+      setCurrentIndex(cIndex)
       setIsDisabled(true)
       fetchSymbolSettingsWRTID()
-    }else{ // mass edit
+    } else { // mass edit
       setIsDisabled(true)
     }
   }, []);
   const handleSubmit = async () => {
     try {
-      if(SymbolSettingIds.length < 2){
+      if (SymbolSettingIds.length < 2) {
         await validationSchema.validate({
           SymbolGroup: selectedGroup,
           symbolName: symbolName,
@@ -218,15 +248,15 @@ const SymbolSettingsEntry = () => {
           commission: commission,
           enabled: Selectedenable
         }, { abortEarly: false });
-  
+
         setErrors({});
       }
-        
-     
+
+
       const SymbolGroupData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
         name: symbolName ? symbolName : '',
         symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
-        feed_fetch_name:selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
+        feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
         speed_max: 'abc',
         lot_size: lotSize ? lotSize : '',
         lot_step: lotSteps ? lotSteps : '',
@@ -274,17 +304,17 @@ const SymbolSettingsEntry = () => {
           }
         }
 
-      }else if(SymbolSettingIds.length >= 2){
+      } else if (SymbolSettingIds.length >= 2) {
         setIsLoading(true)
-        const Params ={
-         table_name: 'symbel_settings', 
-         table_ids : SymbolSettingIds, 
-         ...SymbolGroupData
+        const Params = {
+          table_name: 'symbel_settings',
+          table_ids: SymbolSettingIds,
+          ...SymbolGroupData
         }
-        const res = await GenericEdit(Params, token )
+        const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
-        if(res !== undefined) {
+        if (res !== undefined) {
           if (success) {
             clearFields();
             CustomNotification({
@@ -304,8 +334,8 @@ const SymbolSettingsEntry = () => {
             })
           }
         }
-       
-      } 
+
+      }
       else {
         setIsLoading(true)
         const res = await UpdateSymbolSettings(SymbolSettingIds[0], SymbolGroupData, token);
@@ -362,22 +392,78 @@ const SymbolSettingsEntry = () => {
     setAskValue(askPrice)
     setBidValue(bidPrice)
   }
+  const deleteHandler = ()=>{
+    const Params = {
+      table_name:'symbel_settings',
+      table_ids: [ArrangedSymbolSettingsData[currentIndex].id]
+    }
+    
+    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
+    dispatch(deleteSymbolSettingsById(ArrangedSymbolSettingsData[currentIndex].id))
+    if(ArrangedSymbolSettingsData.length === 0 || ArrangedSymbolSettingsData === undefined || ArrangedSymbolSettingsData === null){
+       navigate("/symbol-settings")
+    }else{
+      if(currentIndex < ArrangedSymbolSettingsData.length)
+      handleNext()
+      else
+      handlePrevious()
+    }
+    
 
+  }
+  const items = [
+    
+    {
+      key: '1',
+      label: (
+        <button rel="noopener noreferrer" onClick={()=>{
+          setIsDisabled(false)
+        }}>   Edit </button>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <button  rel="noopener noreferrer"  >   Delete  </button>
+      ),
+    },
+   
+  ];
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
-        <div className='flex gap-3 items-center'>
-          <img
-            src={ARROW_BACK_CDN}
-            alt='back icon'
-            className='cursor-pointer'
-            onClick={() => navigate(-1)}
-          />
-          {
-            isDisabled  ? <h1 className='text-2xl font-semibold'>Preview Symbol Setting</h1> :
-              <h1 className='text-2xl font-semibold'>{SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Add Symbol Setting'  : 'Edit Symbol Setting'}</h1>
+        <div className='flex justify-between'>
+          <div className='flex gap-3 items-center'>
+            <img
+              src={ARROW_BACK_CDN}
+              alt='back icon'
+              className='cursor-pointer'
+              onClick={() => navigate(-1)}
+            />
+            {
+              isDisabled ? <h1 className='text-2xl font-semibold'>Preview Symbol Setting</h1> :
+                <h1 className='text-2xl font-semibold'>{SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Add Symbol Setting' : 'Edit Symbol Setting'}</h1>
+            }
+          </div>
+          {/* toolbar */}
+          {SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 &&
+            <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
+            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
+            <Dropdown
+              menu={{
+                items,
+              }}
+              placement="bottom"
+              arrow
+              trigger={['click']}
+              
+            >
+              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+          </Dropdown>
+            <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
+          </div>
           }
-
+        
         </div>
         <div className='border rounded-lg p-4'>
 
@@ -418,82 +504,82 @@ const SymbolSettingsEntry = () => {
               {errors.symbolName && <span style={{ color: 'red' }}>{errors.symbolName}</span>}
 
             </div>
-              <div>
-                <CustomAutocomplete
-                  key={3}
-                  name={'feed_name'}
-                  label="Select Feed Name"
-                  variant="standard"
-                  disabled={isDisabled}
-                  options={FeedNameList}
-                  value={selectedFeedName}
-                  getOptionLabel={(option) => option.name ? option.name : ""}
-                  onChange={(event, value) => {
-                    if (value) {
-                      setSelectedFeedNameFetch(null);
-                      setSelectedFeedName(value);
-                      GetSymbolData(value.module, value.feed_login)
-                      setErrors(prevErrors => ({ ...prevErrors, feed_name: "" }))
-                    } else {
-                      setSelectedFeedName(null);
-                      setSelectedFeedNameFetch(null);
-                    }
+            <div>
+              <CustomAutocomplete
+                key={3}
+                name={'feed_name'}
+                label="Select Feed Name"
+                variant="standard"
+                disabled={isDisabled}
+                options={FeedNameList}
+                value={selectedFeedName}
+                getOptionLabel={(option) => option.name ? option.name : ""}
+                onChange={(event, value) => {
+                  if (value) {
+                    setSelectedFeedNameFetch(null);
+                    setSelectedFeedName(value);
+                    GetSymbolData(value.module, value.feed_login)
+                    setErrors(prevErrors => ({ ...prevErrors, feed_name: "" }))
+                  } else {
+                    setSelectedFeedName(null);
+                    setSelectedFeedNameFetch(null);
+                  }
 
-                  }}
+                }}
 
-                />
+              />
 
-                {errors.feed_name && <span style={{ color: 'red' }}>{errors.feed_name}</span>}
-              </div>
+              {errors.feed_name && <span style={{ color: 'red' }}>{errors.feed_name}</span>}
+            </div>
 
-           
-              <>
-                {selectedFeedName?.module === 'fcsapi' ? (
-                  <div>
-                    <Autocomplete
-                      id="grouped-demo"
-                      fullWidth
-                      variant="standard"
-                      options={feedNameFetchList}
-                      groupBy={(option) => option.group}
-                      getOptionLabel={(option) => option.name}
-                      value={selectedFeedNameFetch}
-                      renderInput={(params) => <TextField {...params} variant="standard" label="Foxi Types" />}
-                      onChange={(event, value) => {
-                        if (value) {
-                          setSelectedFeedNameFetch(value);
-                          GetSymbolData(value.module, value.feed_login);
-                        } else {
-                          setSelectedFeedNameFetch(null);
-                        }
-                      }}
-                    />
-                    {errors.feed_name_fetch && <span style={{ color: 'red' }}>{errors.feed_name_fetch}</span>}
-                  </div>
-                ) : (
-                  <div>
-                    <CustomAutocomplete
-                      key={3}
-                      name={'feed_name_fetch'}
-                      label="Select Symbols"
-                      variant="standard"
-                      disabled={isDisabled}
-                      options={feedNameFetchList}
-                      value={selectedFeedNameFetch}
-                      getOptionLabel={(option) => option.symbol ? option.symbol : ""}
-                      onChange={(event, value) => {
-                        if (value) {
-                          setSelectedFeedNameFetch(value);
-                          GetAskBid(value.symbol);
-                        } else {
-                          setSelectedFeedNameFetch(null);
-                        }
-                      }}
-                    />
-                    {errors.feed_name_fetch && <span style={{ color: 'red' }}>{errors.feed_name_fetch}</span>}
-                  </div>
-                )}
-              </>
+
+            <>
+              {selectedFeedName?.module === 'fcsapi' ? (
+                <div>
+                  <Autocomplete
+                    id="grouped-demo"
+                    fullWidth
+                    variant="standard"
+                    options={feedNameFetchList}
+                    groupBy={(option) => option.group}
+                    getOptionLabel={(option) => option.name}
+                    value={selectedFeedNameFetch}
+                    renderInput={(params) => <TextField {...params} variant="standard" label="Foxi Types" />}
+                    onChange={(event, value) => {
+                      if (value) {
+                        setSelectedFeedNameFetch(value);
+                        GetSymbolData(value.module, value.feed_login);
+                      } else {
+                        setSelectedFeedNameFetch(null);
+                      }
+                    }}
+                  />
+                  {errors.feed_name_fetch && <span style={{ color: 'red' }}>{errors.feed_name_fetch}</span>}
+                </div>
+              ) : (
+                <div>
+                  <CustomAutocomplete
+                    key={3}
+                    name={'feed_name_fetch'}
+                    label="Select Symbols"
+                    variant="standard"
+                    disabled={isDisabled}
+                    options={feedNameFetchList}
+                    value={selectedFeedNameFetch}
+                    getOptionLabel={(option) => option.symbol ? option.symbol : ""}
+                    onChange={(event, value) => {
+                      if (value) {
+                        setSelectedFeedNameFetch(value);
+                        GetAskBid(value.symbol);
+                      } else {
+                        setSelectedFeedNameFetch(null);
+                      }
+                    }}
+                  />
+                  {errors.feed_name_fetch && <span style={{ color: 'red' }}>{errors.feed_name_fetch}</span>}
+                </div>
+              )}
+            </>
 
             <div>
               <CustomAutocomplete
@@ -617,8 +703,8 @@ const SymbolSettingsEntry = () => {
 
           </div>
           <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
-          <CustomButton
-              Text={isDisabled ? 'Edit' : SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Submit' : 'Update'}
+            <CustomButton
+              Text={ SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Submit' : 'Update'}
               style={{
                 padding: '16px',
                 height: '48px',
@@ -626,13 +712,8 @@ const SymbolSettingsEntry = () => {
                 borderRadius: '8px',
                 zIndex: '100'
               }}
-              onClickHandler={() => {
-                if (isDisabled) {
-                  setIsDisabled(false)
-                } else {
-                  handleSubmit()
-                }
-              }}
+              disabled={isDisabled}
+              onClickHandler={handleSubmit}
             />
             <CustomButton
               Text='Cancel'

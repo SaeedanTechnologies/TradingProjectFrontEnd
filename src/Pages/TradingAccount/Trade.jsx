@@ -2,7 +2,9 @@ import { Spin, theme } from 'antd';
 import React, { useState, useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
+
 import { PlusCircleOutlined } from '@ant-design/icons';
+
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
@@ -11,7 +13,7 @@ import { TradeValidationSchema } from '../../utils/validations';
 import { numberInputStyle } from './style';
 import { useSelector } from 'react-redux';
 import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
-import { Autocomplete,TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
@@ -20,15 +22,14 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 
 const Trade = ({ fetchLiveOrder }) => {
-
   const token = useSelector(({ user }) => user?.user?.token)
-
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
-
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
+
+
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
   const [symbol, setSymbol] = useState(null);
@@ -117,7 +118,9 @@ const Trade = ({ fetchLiveOrder }) => {
         trading_account_id,
         open_price,
         open_time: new Date().toISOString(),
+
         brand_id
+
       }
 
       setIsLoading(true)

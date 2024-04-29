@@ -3,7 +3,7 @@ import { w3cwebsocket as W3CWebSocket } from 'websocket';
 let client;
 let currentSymbol;
 
-const BinanceBidAsk = ( symbol ) => {
+const BinanceBidAsk = ( symbol, connected ) => {
   const WS_URL = `wss://fstream.binance.com/stream?streams=${symbol.toLowerCase()}@bookTicker`;
 
   if (typeof WebSocket === 'undefined') {
@@ -11,12 +11,21 @@ const BinanceBidAsk = ( symbol ) => {
     return null;
   }
 
-  // Check if the symbol has changed or if there's no existing connection
-  if (symbol !== currentSymbol) {
+  // Check if the checkbox is not checked
+  if (!connected) {
     if (client && client.readyState === WebSocket.OPEN) {
       client.close();
       console.log(`Closing previous WebSocket connection for symbol: ${currentSymbol}`);
     }
+    return null;
+  }
+
+  // Check if the symbol has changed or if there's no existing connection
+  // if (symbol !== currentSymbol) {
+    // if (client && client.readyState === WebSocket.OPEN) {
+    //   client.close();
+    //   console.log(`Closing previous WebSocket connection for symbol: ${currentSymbol}`);
+    // }
 
     client = new W3CWebSocket(WS_URL);
     currentSymbol = symbol;
@@ -80,9 +89,9 @@ const BinanceBidAsk = ( symbol ) => {
     };
 
     return { start, stop };
-  }
+  // }
 
-  return null; // Return null if no changes were made
+  // return null; // Return null if no changes were made
 };
 
 export default BinanceBidAsk;
