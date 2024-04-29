@@ -12,9 +12,12 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
   const dispatch = useDispatch()
 
   useEffect(()=>{
-    if(data.length > 0){
-      dispatch(setTableData(data))
+    if(setTableData){
+      if(data.length > 0){
+        dispatch(setTableData(data))
+      }
     }
+   
   }, [data, dispatch])
   return (
     <>

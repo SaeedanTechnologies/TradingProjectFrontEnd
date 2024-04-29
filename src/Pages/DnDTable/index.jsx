@@ -113,7 +113,7 @@ class DnDTable extends Component {
         const allRowKeys = this.props.data.map((row) => row.id);
         this.setState({ selectedRowKeys: allRowKeys });
     }
-    if(this.props.data.length > 0 && prevProps.data !== this.props.data){
+    if(this.props?.data?.length > 0 && prevProps.data !== this.props.data){
       this.setState({ data: this.props.data });
     } 
     // else if (prevProps.data !== this.props.data) {
