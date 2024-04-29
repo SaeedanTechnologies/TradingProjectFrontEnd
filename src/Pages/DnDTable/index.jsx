@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "./index.css";
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Table } from "antd";
 import { Resizable } from "react-resizable";
 import ReactDragListView from "react-drag-listview";
@@ -96,7 +95,7 @@ class DnDTable extends Component {
   }
 
   componentDidMount() {
-    this.setState({ columns: this.props.columns,isUpated:true });
+    this.setState({ columns: this.props.columns });
     const ColumnsData = this.props.columns.map(x=>{
       return {
         key: x.key, 
@@ -114,8 +113,8 @@ class DnDTable extends Component {
         const allRowKeys = this.props.data.map((row) => row.id);
         this.setState({ selectedRowKeys: allRowKeys });
     }
-    if(this.props.data.length > 0 && this.state.isUpated){
-      this.setState({ data: this.props.data, isUpated:false });
+    if(this.props.data.length > 0 && prevProps.data !== this.props.data){
+      this.setState({ data: this.props.data });
     } 
     // else if (prevProps.data !== this.props.data) {
     //   // Update data state with new data from props
@@ -147,9 +146,9 @@ class DnDTable extends Component {
 
   handleRowClick = (record) => {
     this.setState({ currentRecords: record });
-    if (this.props.direction === "symbol-settings") {
-      this.props.navigate(`/symbol-settings/${record.id}`);
-    }
+      this.props.dispatch(this.props.setSelecetdIDs([record.id]))
+      this.props.navigate(this.props.direction);
+     
   };
 
   setIsRearangments(newValue) {
@@ -222,10 +221,8 @@ class DnDTable extends Component {
   }
   MassEditHandler() {
       if (this.state.selectedRowKeys.length > 0) {
-        if (this.props.direction === "symbol-settings") {
-          this.props.dispatch(setSymbolSettingsSelecetdIDs(this.state.selectedRowKeys))
-          this.props.navigate(`/symbol-settings-entry`);
-        }
+          this.props.dispatch(this.props.setSelecetdIDs(this.state.selectedRowKeys))
+          this.props.navigate(this.props.direction);
       } else {
         CustomNotification({
           type: "error",
@@ -237,9 +234,8 @@ class DnDTable extends Component {
   }
   async MassDeleteHandler() {
       if (this.state.selectedRowKeys.length > 0) {
-        if(this.props.direction === "symbol-settings"){ // symbol settings delete
           const Params = {
-           table_name: "symbel_settings", 
+           table_name: this.props.table_name, 
            table_ids:this.state.isCompleteSelect ? [] : this.state.selectedRowKeys
           }
          this.setState({isLoading: true})
@@ -276,11 +272,7 @@ class DnDTable extends Component {
       
           }
         });
-       
          this.setState({isLoading: false})
-        
-        }
-       
 
       } else {
         CustomNotification({
@@ -351,7 +343,7 @@ class DnDTable extends Component {
             bordered
             components={this.components}
             columns={combinedColumns}
-            dataSource={this.props.data}
+            dataSource={this.state.data}
             pagination={false}
             rowSelection={rowSelection}
             rowKey="id"
