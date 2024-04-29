@@ -26,9 +26,14 @@ const BrandList = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [showKey, setShowKey] = useState(false)
 
-  const fetchBrands = async () => {
+   
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+
+  const fetchBrands = async (page) => {
     setIsLoading(true)
-    const mData = await Brands_List(token)
+    const mData = await Brands_List(token,page)
     const { data: { message, payload, success } } = mData
     // debugger;
     setIsLoading(false)
@@ -44,10 +49,13 @@ const BrandList = () => {
       }))
 
       setBrandsList(brandData)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
     }
   }
   useEffect(() => {
-    fetchBrands()
+    fetchBrands(CurrentPage)
   }, [])
 
   const showModal = (id = null) => {
@@ -68,6 +76,11 @@ const BrandList = () => {
 
   }
 
+     const onPageChange = (page) =>{
+   
+        fetchBrands(page)
+    }
+
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
@@ -78,38 +91,53 @@ const BrandList = () => {
       dataIndex: 'id',
       key: '1',
       hidden: true,
+
+      
     },
     {
-      title: 'Name',
+       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '2',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Domain',
+     
+       title:<span className="dragHandler">Domain</span>,
       dataIndex: 'domain',
       key: '3',
+      sorter: (a, b) => a.domain.length - b.domain.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Username',
+  
+      title:<span className="dragHandler">Username</span>,
       dataIndex: 'name',
       key: '4',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Email',
+      title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '5',
+      sorter: (a, b) => a.email.length - b.email.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Password',
-      dataIndex:'original_password',
+      title:<span className="dragHandler">Password</span>,
+      dataIndex: 'original_password',
       key: '6',
+      sorter: (a, b) => a.original_password.length - b.original_password.length,
+      sortDirections: ['ascend'],
     },
     
     {
-      title: 'Authorization Key',
+      
+      title:<span className="dragHandler">Authorization Key</span>,
       dataIndex: 'public_key',
       key: '7',
-       render: (_, record) => (
+      render: (_, record) => (
 
         <Stack direction="row" justifyContent={'space-between'}>
           <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
@@ -122,24 +150,30 @@ const BrandList = () => {
           </Space>
         </Stack>
       ),
+      sorter: (a, b) => a.public_key.length - b.public_key.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Margin Calls',
+ 
+      title:<span className="dragHandler">Margin Calls</span>,
       dataIndex: 'margin_call',
       key: '8',
-    },
-    {
-      title: 'Actions',
-      dataIndex: 'type',
-      key: '9',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-          <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, DeleteBrand, setIsLoading)} />
+      sorter: (a, b) => a.margin_call.length - b.margin_call.length,
+      sortDirections: ['ascend'],
 
-        </Space>
-      ),
     },
+    // {
+    //   title: 'Actions',
+    //   dataIndex: 'type',
+    //   key: '9',
+    //   render: (_, record) => (
+    //     <Space size="middle" className='cursor-pointer'>
+    //       <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
+    //       <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, DeleteBrand, setIsLoading)} />
+
+    //     </Space>
+    //   ),
+    // },
 
   ];
  
@@ -157,7 +191,18 @@ const BrandList = () => {
             />
           </div>
         </div>
-        <CustomTable columns={columns} data={BrandsList} headerStyle={headerStyle}/>
+      
+        <CustomTable
+            direction="/brand"
+            formName = "Brand List" 
+            columns={columns}
+            data={BrandsList} 
+            headerStyle={headerStyle}
+            total={totalRecords}
+            onPageChange = {onPageChange}
+            current_page={CurrentPage}
+            token = {token}
+          />
         <CustomModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}

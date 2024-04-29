@@ -80,34 +80,26 @@ const getBrandsList = async () =>{
     <Spin spinning={isLoading} size="large">
     <div className='flex flex-col gap-6'>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-
-        <div>
-        <CustomAutocomplete
-            name='brandsList'
-            variant='standard'
-            label='Select Brands'
-            options={brandList}
-            getOptionLabel={(option) => option?.name ? option?.name : ""}
-            value={ selectedBrand} 
-            onChange={(e, value) => {
-              if (value) {
-                setSelectedBrand(value);
-              } else {
-                setSelectedBrand(null);
-              }
-            }}
-          />
-         </div>
-
-
-      <div style={footerStyle}>
-        <CustomButton
-          Text={'Submit'}
-          style={submitStyle}
-          onClickHandler={handleSubmit}
-        />
-      </div>
-     
+          <CustomAutocomplete
+              name='brandsList'
+              variant='standard'
+              label='Select Brands'
+              options={brandList}
+              getOptionLabel={(option) => option?.name ? option?.name : ""}
+              value={ selectedBrand} 
+              onChange={(e, value) => {
+                if (value) {
+                  setSelectedBrand(value);
+                } else {
+                  setSelectedBrand(null);
+                }
+              }}
+            />
+            <CustomButton
+            Text={'Submit'}
+            style={submitStyle}
+            onClickHandler={handleSubmit}
+          /> 
         </div>
          <ToastContainer />
     </div>

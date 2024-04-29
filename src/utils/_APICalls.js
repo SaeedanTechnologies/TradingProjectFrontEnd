@@ -22,7 +22,7 @@ export const UpdateBrand = async (BrandID, BrandData, token) => {
   return res;
 };
 
-export const Brands_List = async(token) =>{
+export const Brands_List = async(token,page) =>{
   const mBrands = await _API(`${apiUrl}/admin/brands`,'get',[],token)
    return mBrands
 }

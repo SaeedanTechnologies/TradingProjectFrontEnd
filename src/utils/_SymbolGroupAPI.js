@@ -15,8 +15,8 @@ export const UpdateSymbolGroups = async (SymbolID, SymbolGroupData, token) => {
 
 }
 
-export const Symbol_Group_List = async (token) => {
-  const res = await _API(`${apiUrl}/admin/symbel_group`, 'get', [], token)
+export const Symbol_Group_List = async (token,page) => {
+  const res = await _API(`${apiUrl}/admin/symbel_group?page=${page}`, 'get', [], token)
   return res
 }
 

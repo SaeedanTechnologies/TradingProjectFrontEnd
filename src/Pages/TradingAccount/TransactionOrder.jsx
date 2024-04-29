@@ -44,34 +44,51 @@ const TransactionOrder = () => {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const [SelectedOperation, setSelectedOperation] = useState(null)
+
+  
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+  
 
   const columns = [
     {
-      title: 'Time',
+     
+      title:<span className="dragHandler">Time</span>,
       dataIndex: 'Time',
-      key: 'Time',
+      key: '1',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
+      sorter: (a, b) => a.Time.length - b.Time.length,
+      sortDirections: ['ascend'],
+    
     },
     {
-      title: 'Method',
+      title:<span className="dragHandler">Method</span>,
       dataIndex: 'method',
       key: 'method',
+      sorter: (a, b) => a.method.length - b.method.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Type',
+      title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: 'type',
+      sorter: (a, b) => a.type.length - b.type.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Currency',
+      title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: 'currency',
+      sorter: (a, b) => a.currency.length - b.currency.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Amount',
+      title:<span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
       key: 'amount',
+      sorter: (a, b) => a.amount.length - b.amount.length,
+      sortDirections: ['ascend'],
     },
 
   ];
@@ -118,13 +135,16 @@ const TransactionOrder = () => {
   };
 
 
-  const fetchTransactionOrder = async () => {
+  const fetchTransactionOrder = async (page) => {
     try {
       setIsLoading(true)
-      const res = await Get_Transaction_Orders(trading_account_id, token);
+      const res = await Get_Transaction_Orders(trading_account_id, token,page);
       const { data: { message, success, payload } } = res
       setTransactionOrders(payload.data)
-
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+      
       setIsLoading(false)
 
     } catch (error) {
@@ -138,6 +158,11 @@ const TransactionOrder = () => {
     setAmount('')
     setComment('')
   }
+
+   const onPageChange = (page) =>{
+   
+         fetchTransactionOrder(page)
+    }
 
   const handleSubmit = async (type) => {
     try {
@@ -168,7 +193,7 @@ const TransactionOrder = () => {
       if (success) {
         setIsLoading(false)
         CustomNotification({ type: "success", title: "Transaction Order", description: message, key: 1 })
-        fetchTransactionOrder()
+        fetchTransactionOrder(page)
         clearFields()
       }
       else {
@@ -205,7 +230,8 @@ const TransactionOrder = () => {
   }
 
   useEffect(() => {
-    fetchTransactionOrder()
+    
+    fetchTransactionOrder(CurrentPage)
     fetchSingleTradeAccount()
   }, [])
 
@@ -283,7 +309,19 @@ const TransactionOrder = () => {
           />
         </div>
         <div className="mb-4 grid grid-cols-1  gap-4 mt-4">
-          <CustomTable columns={columns} data={transactionOrders} headerStyle={headerStyle} />
+          {/* <CustomTable columns={columns} data={transactionOrders} headerStyle={headerStyle} /> */}
+          
+        <CustomTable
+            direction="/single-trading-accounts/details/transaction-order"
+            formName = "Transaction Order" 
+            columns={columns}
+            data={transactionOrders} 
+            headerStyle={headerStyle}
+            total={totalRecords}
+            onPageChange = {onPageChange}
+            current_page={CurrentPage}
+            token = {token}
+          />
         </div>
 
       </div>

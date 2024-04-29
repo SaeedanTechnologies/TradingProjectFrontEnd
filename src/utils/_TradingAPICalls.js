@@ -2,12 +2,12 @@ import { _API } from "./_API";
 
 const apiUrl = import.meta.env.VITE_TRADING_BASE_URL;
 
-export const Trading_Accounts_List = async(token,brandId) =>{
-  let url  = `${apiUrl}/admin/trading_accounts`
+export const Trading_Accounts_List = async(token,brandId,page) =>{
+  let url  = `${apiUrl}/admin/trading_accounts?page=${page}`
 
   if(brandId){
   
-    url  =  `${apiUrl}/admin/trading_accounts?brand_id=${brandId}`
+    url  =  `${apiUrl}/admin/trading_accounts?page=${page}&brand_id=${brandId}`
    
   }
   const mBrands = await _API(url,'get',[],token)
@@ -43,19 +43,19 @@ export const Delete_Trading_Account = async(TradingID, token)=>{
 }
 
 
-export const Get_Trade_Order = async({trading_account_id,OrderTypes,brandId, token})=>{
+export const Get_Trade_Order = async({trading_account_id,OrderTypes,brandId,token,page})=>{
   
   let apiRoute = null;
+  
   const orderTypeQuery = OrderTypes.map(type => `order_type[]=${type}`).join('&');
- 
-  apiRoute = `${apiUrl}/admin/trade_orders/?${orderTypeQuery}`
+     apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&${orderTypeQuery}`
   
   if(trading_account_id)
   {
-    apiRoute = `${apiUrl}/admin/trade_orders/?trading_account_id=${trading_account_id}&${orderTypeQuery}`;
+    apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&trading_account_id=${trading_account_id}&${orderTypeQuery}`;
   }
   if(brandId){
-    apiRoute = `${apiUrl}/admin/trade_orders/?brandId=${brandId}&${orderTypeQuery}`;
+    apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&brandId=${brandId}&${orderTypeQuery}`;
   }
     
 

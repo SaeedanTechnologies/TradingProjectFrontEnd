@@ -14,18 +14,25 @@ import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolS
 import Swal from 'sweetalert2';
 import CreateTradingAccountModal from './CreateTradingAccountModal';
 import { submitStyle } from './style';
+import CustomNotification from '../../components/CustomNotification';
 
 
 
 const Index = ({ title, direction }) => {
 
-    const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-   const userBrand = useSelector((state)=> state?.user?.user?.brand)
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const [tradingAccountsList, setTradingAccountsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [tradingID, setTradingID] = useState(null);
+
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+
+
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
@@ -37,90 +44,125 @@ const Index = ({ title, direction }) => {
 
   const renderColumns = [
     {
-      title: 'LoginId',
+      title:<span className="dragHandler">LoginID</span>,
       dataIndex: 'loginId',
-      key: 'loginId',
+      key: '1',
+      sorter: (a, b) => a.loginId.length - b.loginId.length,
+      sortDirections: ['ascend'],
     },
-
     {
-      title: 'Trading Group Id',
+      title:<span className="dragHandler">Trading Group Id</span>,
       dataIndex: 'trading_group_id',
-      key: 'trading_group_id',
+      key: '1',
+      sorter: (a, b) => a.trading_group_id.length - b.trading_group_id.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Brand',
-      dataIndex:'brand',
-       key: 'brand',
+      title:<span className="dragHandler">Brand</span>,
+      dataIndex: 'brand',
+      key: '1',
+      sorter: (a, b) => a.brand.length - b.brand.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Country',
+      title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
-      key: 'country',
+      key: '1',
+      sorter: (a, b) => a.country.length - b.country.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Phone No.',
+      title:<span className="dragHandler">Phone No.</span>,
       dataIndex: 'phone',
-      key: 'phone',
+      key: '1',
+      sorter: (a, b) => a.phone.length - b.phone.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Email',
+      title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
-      key: 'email',
+      key: '1',
+      sorter: (a, b) => a.email.length - b.email.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Leverage',
+      title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
-      key: 'leverage'
+      key: '1',
+      sorter: (a, b) => a.leverage.length - b.leverage.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Balance',
+      title:<span className="dragHandler">Balance</span>,
       dataIndex: 'balance',
-      key: 'balance'
+      key: '1',
+      sorter: (a, b) => a.balance.length - b.balance.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Credit',
+      title:<span className="dragHandler">Credit</span>,
       dataIndex: 'credit',
-      key: 'credit'
+      key: '1',
+      sorter: (a, b) => a.credit.length - b.credit.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Equity',
+      title:<span className="dragHandler">Equity</span>,
       dataIndex: 'equity',
-      key: 'equity'
+      key: '1',
+      sorter: (a, b) => a.equity.length - b.equity.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Margin Level',
+
+      title:<span className="dragHandler">Margin Level</span>,
       dataIndex: 'margin_level_percentage',
-      key: 'margin_level_percentage'
+      key: '1',
+      sorter: (a, b) => a.margin_level_percentage.length - b.margin_level_percentage.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Profit',
+      title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
-      key: 'profit'
+      key: '1',
+      sorter: (a, b) => a.profit.length - b.profit.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Swap',
+      title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
-      key: 'swap'
+      key: '1',
+      sorter: (a, b) => a.swap.length - b.swap.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Currency',
+     title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
-      key: 'currency'
+      key: '1',
+      sorter: (a, b) => a.currency.length - b.currency.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Registration Time',
+
+     title:<span className="dragHandler">Registration Time</span>,
       dataIndex: 'registration_time',
-      key: 'registration_time'
+      key: '1',
+      sorter: (a, b) => a.registration_time.length - b.registration_time.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Last Access Time',
+      title:<span className="dragHandler">Last Access Time</span>,
       dataIndex: 'last_access_time',
-      key: 'last_access_time'
+      key: '1',
+      sorter: (a, b) => a.last_access_time.length - b.last_access_time.length,
+      sortDirections: ['ascend'],
     },
     {
-      title: 'Last Access IP',
+      title:<span className="dragHandler">Last Access IP</span>,
       dataIndex: 'last_access_address_IP',
-      key: 'last_access_address_IP'
+      key: '1',
+      sorter: (a, b) => a.last_access_address_IP.length - b.last_access_address_IP.length,
+      sortDirections: ['ascend'],
     },
     {
       title: 'Actions',
@@ -148,8 +190,7 @@ const Index = ({ title, direction }) => {
   }
 
   
-  const CreateTradingAccount = async (brandId) => {
-  // debugger
+  const CreateTradingAccount = async (brandId,page) => {
     try {
      setIsLoading(true)
      const res = await Save_Trading_Account({brand_id:brandId}, token)
@@ -157,38 +198,33 @@ const Index = ({ title, direction }) => {
      setIsLoading(false)
         if(success){
           console.log('success message',message)
-          notifySuccess(message)
           setIsCreateModalOpen(false)
-        
-
+          CustomNotification({ type: "success", title: "Transaction Order", description: message, key: 1 })
           if( userRole === 'brand' ){
-         fetchTradingAccounts(brandId)
+            
+         fetchTradingAccounts(brandId,page)
         } 
         else{
-        fetchTradingAccounts(null)
+        fetchTradingAccounts(null,page)
         }
-        
+
         }else{
-          notifyError(payload.trading_group_id[0]) 
-        }      
+          CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
+           }      
      
     }catch (err) {
-     
-       notifyError(err) 
+         CustomNotification({ type: "success", title: "Transaction Order", description: err.message, key: 1 })
     }
   };
 
 
-  const fetchTradingAccounts = async (brandId) => {
-    // debugger
+  const fetchTradingAccounts = async (brandId,page) => {
     setIsLoading(true)
-    const mData = await Trading_Accounts_List(token,brandId)
+    const mData = await Trading_Accounts_List(token,brandId,page)
     const { data: { message, payload, success } } = mData
-    // debugger
     setIsLoading(false)
     if (success) {
       const tradingAccounts = payload?.data?.map((item) => ({
-
         id: item.id,
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
@@ -210,6 +246,9 @@ const Index = ({ title, direction }) => {
 
       }))
       setTradingAccountsList(tradingAccounts)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
     }
   }
 
@@ -256,12 +295,13 @@ const Index = ({ title, direction }) => {
               icon: "success"
             });
 
-            if( userRole === 'brand' ){
-              fetchTradingAccounts(userBrand.public_key)
-              } 
-              else{
-              fetchTradingAccounts(null)
-              }
+        
+       if( userRole === 'brand' ){
+         fetchTradingAccounts(userBrand.public_key)
+        } 
+        else{
+        fetchTradingAccounts(null)
+        }
            
           }else{
             Swal.fire({
@@ -278,12 +318,14 @@ const Index = ({ title, direction }) => {
  
 }
 
-  const [activeGroup, setActiveGroup] = useState([])
+const [marginCall, setMarginCall] = useState([])
+const [activeGroup, setActiveGroup] = useState([])
 
-  const fetchActiveGroups = async (brandId) => {
+
+  const fetchActiveGroups = async (brandId,page) => {
     try {
       setIsLoading(true)
-      const res = await Trading_Active_Group(token, 'active',brandId);
+      const res = await Trading_Active_Group(token, 'active',brandId,page);
       const { data: { message, success, payload } } = res
       const tradingAccounts = payload?.data?.map((item) => ({
 
@@ -309,16 +351,20 @@ const Index = ({ title, direction }) => {
       setIsLoading(false)
       setActiveGroup(tradingAccounts);
 
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
   };
 
-  const [marginCall, setMarginCall] = useState([])
-  const fetchMarginCalls = async (brandId) => {
+
+  const fetchMarginCalls = async (brandId,page) => {
     try {
       setIsLoading(true)
-      const res = await Trading_Margin_Calls(token, 'margin_call',brandId);
+      const res = await Trading_Margin_Calls(token, 'margin_call',brandId,page);
       const { data: { message, success, payload } } = res
       const tradingAccounts = payload?.data?.map((item) => ({
 
@@ -344,19 +390,35 @@ const Index = ({ title, direction }) => {
       setIsLoading(false)
       setMarginCall(tradingAccounts);
 
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
   };
 
+
+  const onPageChange = (page) =>{
+      if(userRole === 'brand' ){
+      fetchTradingAccounts(userBrand.public_key,page)
+    }
+    else{
+      fetchTradingAccounts(null,page)
+    }
+  }
+
+
+
   useEffect(() => {
     if (direction === 1) { // trading account list
 
        if( userRole === 'brand' ){
-         fetchTradingAccounts(userBrand.public_key)
+         fetchTradingAccounts(userBrand.public_key,CurrentPage)
         } 
         else{
-        fetchTradingAccounts(null)
+        fetchTradingAccounts(null,CurrentPage)
         }
 
     } else if (direction === 2) { // Active Account Group
@@ -407,20 +469,51 @@ const Index = ({ title, direction }) => {
               <CustomButton
                 Text='Add New Trading Account'
                 style={submitStyle}
-                onClickHandler={()=>CreateTradingAccount(userBrand.public_key)}
+                onClickHandler={()=>CreateTradingAccount(userBrand.public_key,page)}
               />
           )}
            
          
         </div>
         {direction === 1 && (
-          <CustomTable columns={renderColumns} data={tradingAccountsList} headerStyle={headerStyle} />
+          <CustomTable
+          direction="/trading-accounts"
+          formName = "Trading Accounts" 
+          columns={renderColumns}
+          data={tradingAccountsList} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+        />
         )}
         {direction === 2 && (
-          <CustomTable columns={renderColumns} data={activeGroup} headerStyle={headerStyle} />
-        )}
+        <CustomTable
+          direction="/active-accounts"
+          formName = "Active Accounts" 
+          columns={renderColumns}
+          data={activeGroup} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+        />
+       
+       )}
         {direction === 3 && (
-          <CustomTable columns={renderColumns} data={marginCall} headerStyle={headerStyle} />
+        <CustomTable
+          direction="/margin-calls"
+          formName = "Margin Calls" 
+          columns={renderColumns}
+          data={marginCall} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+        />
         )}
 
         <CustomModal
@@ -453,9 +546,6 @@ const Index = ({ title, direction }) => {
             fetchTradingAccounts={fetchTradingAccounts}
           />
         </CustomModal>
-
-
-
       </div>
     </Spin>
   )

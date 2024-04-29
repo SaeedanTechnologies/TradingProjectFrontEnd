@@ -31,6 +31,7 @@ const Index = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+
   const dispatch = useDispatch()
 
   const columns = [
@@ -155,7 +156,7 @@ const Index = () => {
         </div>
       
         <CustomTable
-          direction="symbol-settings"
+          direction="/symbol-settings"
           formName = "Symbol Settings" 
           columns={newColumns}
           data={allSetting} 
