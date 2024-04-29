@@ -40,9 +40,9 @@ const Trade = ({ fetchLiveOrder }) => {
   const [takeProfit,setTakeProfit] = useState('');
   const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
-  const [pricing, setPricing] = useState({openPrice: '', askProfit: ''});
-  const [connected, setConnected] = useState(false);
-  const [socketpricing, setSocketPricing] = useState({openPrice: '', askProfit: ''});
+  const [pricing, setPricing] = useState({ openPrice: null, askPrice: null });
+  const [connected, setConnected] = useState(true);
+  const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
 
 
