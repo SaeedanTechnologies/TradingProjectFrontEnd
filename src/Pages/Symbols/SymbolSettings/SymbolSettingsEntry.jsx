@@ -18,6 +18,7 @@ import { Autocomplete, TextField } from '@mui/material'
 import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
 import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
 import { deleteSymbolSettingsById } from '../../../store/symbolSettingsSlice';
+import { EditOutlined } from '@mui/icons-material';
 
 const FeedData = [
   { feed_name: "First", server: 'First server' },
@@ -202,6 +203,8 @@ const SymbolSettingsEntry = () => {
         setIsLoading(false)
         setStatesForEditMode(payload, true,SymbolList, FeedNameList)
       }, 3000)
+    }else{
+      alert(`no next record found`)
     }
   };
   const handlePrevious = () => {
@@ -429,6 +432,14 @@ const SymbolSettingsEntry = () => {
     },
    
   ];
+  const cancleHandler= ()=>{
+    if(isDisabled){
+      navigate('/symbol-settings')
+
+    }else{
+      setIsDisabled(true)
+    }
+  }
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -438,7 +449,7 @@ const SymbolSettingsEntry = () => {
               src={ARROW_BACK_CDN}
               alt='back icon'
               className='cursor-pointer'
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/symbol-settings")}
             />
             {
               isDisabled ? <h1 className='text-2xl font-semibold'>Preview Symbol Setting</h1> :
@@ -446,9 +457,10 @@ const SymbolSettingsEntry = () => {
             }
           </div>
           {/* toolbar */}
-          {SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 &&
+          {(isDisabled && SymbolSettingIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
+          {(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0)  &&
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
-            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
+            
             <Dropdown
               menu={{
                 items,
@@ -460,7 +472,8 @@ const SymbolSettingsEntry = () => {
             >
               <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
           </Dropdown>
-            <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
+          {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
+            {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
           </div>
           }
         
@@ -726,7 +739,7 @@ const SymbolSettingsEntry = () => {
                 borderColor: '#c5c5c5',
                 color: '#fff'
               }}
-              onClickHandler={() => navigate(-1)}
+              onClickHandler={cancleHandler}
             />
           </div>
         </div>

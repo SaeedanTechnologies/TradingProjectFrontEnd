@@ -126,9 +126,7 @@ const Trade = ({ fetchLiveOrder }) => {
         trading_account_id,
         open_price: (connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price,
         open_time: new Date().toISOString(),
-
         brand_id
-
       }
 
       setIsLoading(true)

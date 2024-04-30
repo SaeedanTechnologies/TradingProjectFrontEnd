@@ -328,6 +328,7 @@ class DnDTable extends Component {
                   selectedRows= {this.state.selectedRowKeys}
                   MassEditHandler={this.MassEditHandler}
                   MassDeleteHandler = {this.MassDeleteHandler}
+                  setPerPage={this.props.setPerPage}
                 />
               ) : (
                 <CustomButton
@@ -343,9 +344,13 @@ class DnDTable extends Component {
             bordered
             components={this.components}
             columns={combinedColumns}
-            dataSource={this.props.data}
+            dataSource={this.state.data}
             pagination={false}
             rowSelection={rowSelection}
+            showSorterTooltip={false}
+            onChange={(pagination, filters, sorter) => {
+              this.props.setSortDirection(sorter.order);
+            }}  
             rowKey="id"
             onRow={(record) => ({
               onClick: (event) => {
