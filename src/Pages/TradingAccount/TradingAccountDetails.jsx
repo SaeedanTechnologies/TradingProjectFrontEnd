@@ -35,13 +35,11 @@ const TradingAccountDetails = () => {
      const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
 
-const fetchLiveOrder = async () => {
-
+const fetchLiveOrder = async (page) => {
       setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['market','pending'],token}
+      const params ={trading_account_id,OrderTypes:['market','pending'],token,page}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
-      
        setIsLoading(false)
       if(success){
       

@@ -11,8 +11,7 @@ import Swal from 'sweetalert2';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage }) => {
-   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-  const userBrand = useSelector((state)=> state?.user?.user?.brand)
+ 
   const token = useSelector(({ user }) => user?.user?.token)
   const location = useLocation()
   const { pathname } = location
@@ -102,12 +101,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   };
 
  const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchLiveOrder(userBrand.public_key,page)
-    }
-    else{
-      fetchLiveOrder(null,page)
-    }
+      
+      fetchLiveOrder(page)
+   
   }
 
 
@@ -158,12 +154,8 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             icon: "success"
           });
           
-            if(userRole === 'brand' ){
-              fetchLiveOrder(userBrand.public_key,page)
-            }
-            else{
-              fetchLiveOrder(null,page)
-            }
+          fetchLiveOrder(page)
+            
 
         } else {
           Swal.fire({
@@ -182,12 +174,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
 
 
   useEffect(() => {
-      if(userRole === 'brand' ){
-      fetchLiveOrder(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchLiveOrder(null,CurrentPage)
-    }
+
+    fetchLiveOrder(CurrentPage)
+  
  
   }, [pathname])
 

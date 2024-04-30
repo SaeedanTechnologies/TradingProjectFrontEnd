@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { Stack, Typography } from '@mui/material';
 
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { useNavigate } from 'react-router-dom';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -30,6 +31,7 @@ const BrandList = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const navigate = useNavigate()
 
   const fetchBrands = async (page) => {
     setIsLoading(true)
@@ -139,7 +141,7 @@ const BrandList = () => {
       key: '7',
       render: (_, record) => (
 
-        <Stack direction="row" justifyContent={'space-between'}>
+        <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
           <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
 
           <Space size="middle" className='cursor-pointer'>
@@ -162,6 +164,18 @@ const BrandList = () => {
       sortDirections: ['ascend'],
 
     },
+     {
+      title:<span className="dragHandler">Actions</span>,
+      dataIndex: 'trading_accounts',
+      key: '9',
+      render: (text, record) => {
+        const { trading_accounts } = record
+        return (
+          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => navigate('/brand-permissions')}>Permissions</span>
+        )
+      },
+      
+     },
     // {
     //   title: 'Actions',
     //   dataIndex: 'type',

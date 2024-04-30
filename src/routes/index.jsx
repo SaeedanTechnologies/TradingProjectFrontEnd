@@ -40,6 +40,7 @@ import Account from '../Pages/TradingAccount/Account';
 import TransactionOrder from '../Pages/TradingAccount/TransactionOrder';
 import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder';
 import NewFeedData from '../Pages/Symbols/DataFeed/NewFeedData'
+import BrandPermissions from '../Pages/BrandPermissions/BrandPermissions';
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/dashboard-reports", element: <Reports /> },
       { path: "/brand", element: <BrandList /> },
+      { path: "/brand-permissions", element: <BrandPermissions /> },
       { path: "/brand-settings", element: <BrandSettings /> },
       { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },
       { path: "/trading-accounts/:id", element: <TradingAccountEntry /> },
