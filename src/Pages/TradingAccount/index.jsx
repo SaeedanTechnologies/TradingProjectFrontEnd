@@ -275,6 +275,7 @@ const Index = ({ title, direction }) => {
   };
 
     const DeleteHandler = async (id)=>{
+  
       setIsLoading(true)
       Swal.fire({
         title: "Are you sure?",
@@ -285,6 +286,7 @@ const Index = ({ title, direction }) => {
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes, delete it!"
       }).then(async(result) => {
+            debugger;
         if (result.isConfirmed) {
           const res = await Delete_Trading_Account(id, token)
           const {data:{success, message, payload}} = res
@@ -298,10 +300,31 @@ const Index = ({ title, direction }) => {
 
         
        if( userRole === 'brand' ){
-         fetchTradingAccounts(userBrand.public_key)
+        switch(direction){
+          case 1:
+            fetchTradingAccounts(userBrand.public_key,CurrentPage);
+            break;
+          case 2:
+             fetchActiveGroups(userBrand.public_key,CurrentPage);
+            break;
+          case 3: 
+            fetchMarginCalls(userBrand.public_key,CurrentPage) 
+            break;
+        }
         } 
         else{
-        fetchTradingAccounts(null)
+          switch(direction){
+          case 1:
+            fetchTradingAccounts(null,CurrentPage);
+            break;
+          case 2:
+             fetchActiveGroups(null,CurrentPage);
+            break;
+          case 3: 
+            fetchMarginCalls(null,CurrentPage) 
+            break;
+        }
+
         }
            
           }else{
@@ -363,10 +386,12 @@ const [activeGroup, setActiveGroup] = useState([])
 
 
   const fetchMarginCalls = async (brandId,page) => {
+    
     try {
       setIsLoading(true)
       const res = await Trading_Margin_Calls(token, 'margin_call',brandId,page);
       const { data: { message, success, payload } } = res
+      
       const tradingAccounts = payload?.data?.map((item) => ({
 
         id: item.id,
@@ -384,9 +409,8 @@ const [activeGroup, setActiveGroup] = useState([])
         swap: item.swap,
         currency: item.currency,
         registration_time: item.registration_time,
-        last_access_time: item.last_access_time === null ? 'null' : item.last_access_time,
-        last_access_address_IP: item.last_access_address_IP === null ? 'null' : item.last_access_address_IP,
-
+        last_access_time: item.last_access_time ? item.last_access_time : '...',
+        last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
       }))
       setIsLoading(false)
       setMarginCall(tradingAccounts);
@@ -412,38 +436,65 @@ const [activeGroup, setActiveGroup] = useState([])
 
 
 
-  useEffect(() => {
-    if (direction === 1) { // trading account list
+  // useEffect(() => {
+  //   if (direction === 1) { // trading account list
 
-       if( userRole === 'brand' ){
-         fetchTradingAccounts(userBrand.public_key,CurrentPage)
-        } 
-        else{
-        fetchTradingAccounts(null,CurrentPage)
-        }
+  //      if( userRole === 'brand' ){
+  //        fetchTradingAccounts(userBrand.public_key,CurrentPage)
+  //       } 
+  //       else{
+  //       fetchTradingAccounts(null,CurrentPage)
+  //       }
 
-    } else if (direction === 2) { // Active Account Group
+  //   } else if (direction === 2) { // Active Account Group
 
-         if( userRole === 'brand' ){
-            fetchActiveGroups(userBrand.public_key)
-          } 
-          else{
-                fetchActiveGroups(null)
-          }
+  //        if( userRole === 'brand' ){
+  //           fetchActiveGroups(userBrand.public_key,CurrentPage)
+  //         } 
+  //         else{
+  //               fetchActiveGroups(null,CurrentPage)
+  //         }
 
 
-    } else { // margin calls
+  //   } else { // margin calls
       
-        if( userRole === 'brand' ){
-            fetchMarginCalls(userBrand.public_key)
-          } 
-          else{
-            fetchMarginCalls(null)
-          }
+  //       if( userRole === 'brand' ){
+  //           fetchMarginCalls(userBrand.public_key,CurrentPage)
+  //         } 
+  //         else{
+  //           fetchMarginCalls(null,CurrentPage)
+  //         }
 
-    }
+  //   }
 
-  }, [direction])
+  // }, [direction])
+
+  useEffect(() => {
+
+  switch (direction) {
+    case 1:
+      if (userRole === 'brand') {
+        fetchTradingAccounts(userBrand.public_key, CurrentPage);
+      } else {
+        fetchTradingAccounts(null, CurrentPage);
+      }
+      break;
+    case 2:
+      if (userRole === 'brand') {
+        fetchActiveGroups(userBrand.public_key, CurrentPage);
+      } else {
+        fetchActiveGroups(null, CurrentPage);
+      }
+      break;
+    case 3:
+      if (userRole === 'brand') {
+        fetchMarginCalls(userBrand.public_key, CurrentPage);
+      } else {
+        fetchMarginCalls(null, CurrentPage);
+      }
+  }
+}, [direction]);
+
 
   return (
     <Spin spinning={isLoading} size="large">

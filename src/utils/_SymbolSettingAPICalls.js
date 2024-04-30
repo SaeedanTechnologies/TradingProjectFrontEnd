@@ -39,9 +39,9 @@ export const UpdateSymbolSettings = async (SymbolSettingsID, SymbolSettingsData,
 
 export const Trading_Active_Group = async (token, status,brandId,page) => {
 
-    let url =`${apiUrl}/admin/trading_accounts?status=${status}?page=${page}`
+    let url =`${apiUrl}/admin/trading_accounts?status=${status}&page=${page}`
     if(brandId){
-        url= `${apiUrl}/admin/trading_accounts?status=${status}?page=${page}&brand_id=${brandId}`
+        url= `${apiUrl}/admin/trading_accounts?status=${status}&page=${page}&brand_id=${brandId}`
     }
 
     const res = await _API(url, 'get', [], token)

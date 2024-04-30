@@ -2,42 +2,75 @@ import { useCallback, useState } from "react";
 import CustomPermissionTable from "../../components/CustomPermissionTable";
 import { Space,Tag,theme,Checkbox  } from 'antd';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomButton from "../../components/CustomButton";
+import { SaveBrandPermission } from "../../utils/_PermissionAPI";
+import { useSelector } from "react-redux";
 
 const BrandPermissions = () => {
 
   const navigate = useNavigate()
+  const token = useSelector(({ user }) => user?.user?.token)
+  const {user_id} = useParams()
+
 
 
   const data = [
   {
     index: 0,
-    module: 'Trading Account',
-    read_only:false,
-    create_edit:false,
+    module: 'Trading Account List',
+    read:false,
+    create:false,
+    update:false,
     del:false
   },
   {
     index: 1,
-    module: 'Trading Orders',
-    read_only:false,
-    create_edit:false,
+    module: 'Trading Account Group',
+    read:false,
+    create:false,
+    update:false,
     del:false
   },
   {
     index: 2,
-    module: 'Transaction Orders',
-    read_only:false,
-    create_edit:false,
-    del:false,
+    module: 'Active Account Group',
+    read:false,
+    create:false,
+    update:false,
+    del:false
   },
   {
     index: 3,
-    module: 'Settings',
-    read_only:false,
-    create_edit:false,
-    del:false,
+    module: 'Margin Call Trading Account',
+    read:false,
+    create:false,
+    update:false,
+    del:false
+  },
+   {
+    index: 4,
+    module: 'Live Orders',
+    read:false,
+    create:false,
+    update:false,
+    del:false
+  },
+   {
+    index: 5,
+    module: 'Close Orders',
+    read:false,
+    create:false,
+    update:false,
+    del:false
+  },
+   {
+    index: 6,
+    module: 'Transaction Orders',
+    read:false,
+    create:false,
+    update:false,
+    del:false
   },
   
 ];
@@ -53,43 +86,59 @@ const BrandPermissions = () => {
   },[permissions]);
 
 
+  const handleAllowPermission = async()=>{
+    const PermissionData ={ brand_id:user_id,model_permission: 'create_trading_account'}
+    const mData = await SaveBrandPermission(PermissionData,token)
+    const { data: { message, payload, success } } = mData
+
+  }
   
 
 const columns = [
   {
     title: 'Module',
     dataIndex: 'module',
-    
     key: 'module',
     render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Public: Read Only',
-    dataIndex: 'public_read_only',
+    title: 'Public: Read',
+    dataIndex: 'read',
     align: 'center',
-    key: 'public_read_only',
-    render: (_,{index,read_only} ) => (
+    key: 'public_read',
+    render: (_,{index,read} ) => (
       <div className="flex flex-row items-center justify-center">
-        <Checkbox  checked = {read_only} onChange={(e) =>{ 
-          handleChange(e,index,'read_only')} } />
+        <Checkbox  checked = {read} onChange={(e) =>{ 
+          handleChange(e,index,'read')} } />
         
        </div>
     ),
     
   },
   {
-    title: 'Public: Read Create/Edit',
-    dataIndex: 'public_create_edit',
+    title: 'Public: Create',
+    dataIndex: 'create',
     align: 'center',
-    key: 'public_create_edit',
-    render: (_, {index,create_edit}) => (
+    key: 'public_create',
+    render: (_, {index,create}) => (
       <div className="flex flex-row items-center justify-center">
-        <Checkbox  checked = {create_edit}  onChange={(e) => handleChange(e,index,'create_edit')} />
+        <Checkbox  checked = {create}  onChange={(e) => handleChange(e,index,'create')} />
        </div>
     ),
   },
   {
-    title: 'Public:Read, Create/Edit, Delete',
+    title: 'Public: Update',
+    dataIndex: 'update',
+    align: 'center',
+    key: 'public_create',
+    render: (_, {index,update}) => (
+      <div className="flex flex-row items-center justify-center">
+        <Checkbox  checked = {update}  onChange={(e) => handleChange(e,index,'update')} />
+       </div>
+    ),
+  },
+  {
+    title: 'Public: Delete',
     dataIndex: 'del',
     align: 'center',
     key: 'public_create_edit_delete',
@@ -125,6 +174,7 @@ const columns = [
          
           <CustomButton
               Text='Allow Permission'
+              onClickHandler={handleAllowPermission}
             />
         
         </div>

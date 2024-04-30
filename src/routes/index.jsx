@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/dashboard-reports", element: <Reports /> },
       { path: "/brand", element: <BrandList /> },
-      { path: "/brand-permissions", element: <BrandPermissions /> },
+      { path: "/brand-permissions/:user_id", element: <BrandPermissions /> },
       { path: "/brand-settings", element: <BrandSettings /> },
       { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },
       { path: "/trading-accounts/:id", element: <TradingAccountEntry /> },

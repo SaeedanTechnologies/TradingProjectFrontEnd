@@ -57,7 +57,7 @@ const SignIn = () => {
     <div className='flex flex-col gap-4 p-8' onKeyPress={handleKeyPress}>
       <h1 className='text-[30px] font-bold text-center'>Sign In</h1>
       <CustomTextField
-        label={'Email'}
+        label={'Email / Username'}
         varient={'standard'}
         sx={{ width: '360px', marginTop: '10px' }}
         onChange={(e) => setEmail(e.target.value)}

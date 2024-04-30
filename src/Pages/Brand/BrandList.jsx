@@ -37,14 +37,13 @@ const BrandList = () => {
     setIsLoading(true)
     const mData = await Brands_List(token,page)
     const { data: { message, payload, success } } = mData
-    // debugger;
     setIsLoading(false)
     if (success) {
       const brandData = payload.data.map((brand)=>({
         id:brand.id,
-       domain:brand.domain,
+        user_id:brand.user_id,
+        domain:brand.domain,
         name:brand.name,
-        email:brand.user.email,
         original_password: brand.user.original_password,
         public_key: brand.public_key,
         margin_call:brand.margin_call
@@ -111,21 +110,8 @@ const BrandList = () => {
       sorter: (a, b) => a.domain.length - b.domain.length,
       sortDirections: ['ascend'],
     },
-    {
-  
-      title:<span className="dragHandler">Username</span>,
-      dataIndex: 'name',
-      key: '4',
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['ascend'],
-    },
-    {
-      title:<span className="dragHandler">Email</span>,
-      dataIndex: 'email',
-      key: '5',
-      sorter: (a, b) => a.email.length - b.email.length,
-      sortDirections: ['ascend'],
-    },
+    
+   
     {
       title:<span className="dragHandler">Password</span>,
       dataIndex: 'original_password',
@@ -169,9 +155,9 @@ const BrandList = () => {
       dataIndex: 'trading_accounts',
       key: '9',
       render: (text, record) => {
-        const { trading_accounts } = record
+        const { user_id } = record
         return (
-          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => navigate('/brand-permissions')}>Permissions</span>
+          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => navigate(`/brand-permissions/${user_id}`)}>Permissions</span>
         )
       },
       
