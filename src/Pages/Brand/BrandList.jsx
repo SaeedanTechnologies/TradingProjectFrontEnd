@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { Stack, Typography } from '@mui/material';
 
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { useNavigate } from 'react-router-dom';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -30,19 +31,19 @@ const BrandList = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const navigate = useNavigate()
 
   const fetchBrands = async (page) => {
     setIsLoading(true)
     const mData = await Brands_List(token,page)
     const { data: { message, payload, success } } = mData
-    // debugger;
     setIsLoading(false)
     if (success) {
       const brandData = payload.data.map((brand)=>({
         id:brand.id,
-       domain:brand.domain,
+        user_id:brand.user_id,
+        domain:brand.domain,
         name:brand.name,
-        email:brand.user.email,
         original_password: brand.user.original_password,
         public_key: brand.public_key,
         margin_call:brand.margin_call
@@ -109,21 +110,8 @@ const BrandList = () => {
       sorter: (a, b) => a.domain.length - b.domain.length,
       sortDirections: ['ascend'],
     },
-    {
-  
-      title:<span className="dragHandler">Username</span>,
-      dataIndex: 'name',
-      key: '4',
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['ascend'],
-    },
-    {
-      title:<span className="dragHandler">Email</span>,
-      dataIndex: 'email',
-      key: '5',
-      sorter: (a, b) => a.email.length - b.email.length,
-      sortDirections: ['ascend'],
-    },
+    
+   
     {
       title:<span className="dragHandler">Password</span>,
       dataIndex: 'original_password',
@@ -139,7 +127,7 @@ const BrandList = () => {
       key: '7',
       render: (_, record) => (
 
-        <Stack direction="row" justifyContent={'space-between'}>
+        <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
           <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
 
           <Space size="middle" className='cursor-pointer'>
@@ -162,6 +150,18 @@ const BrandList = () => {
       sortDirections: ['ascend'],
 
     },
+     {
+      title:<span className="dragHandler">Actions</span>,
+      dataIndex: 'trading_accounts',
+      key: '9',
+      render: (text, record) => {
+        const { user_id } = record
+        return (
+          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => navigate(`/brand-permissions/${user_id}`)}>Permissions</span>
+        )
+      },
+      
+     },
     // {
     //   title: 'Actions',
     //   dataIndex: 'type',

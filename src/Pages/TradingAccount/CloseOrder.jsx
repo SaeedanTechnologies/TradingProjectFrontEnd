@@ -11,8 +11,7 @@ import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 const CloseOrder = () => {
   
-  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-  const userBrand = useSelector((state)=> state?.user?.user?.brand)
+
   const token = useSelector(({user})=> user?.user?.token )
   const {token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const [isLoading,setIsLoading] = useState(false)
@@ -23,9 +22,9 @@ const CloseOrder = () => {
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
 
-    const fetchCloseOrder = async (brandId) => {
+    const fetchCloseOrder = async (page) => {
       setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['close'],token,brandId}
+      const params ={trading_account_id,OrderTypes:['close'],token,page}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
       
@@ -62,14 +61,7 @@ const CloseOrder = () => {
 
   const onPageChange = (page) =>{
    
-      if( userRole === 'brand' )
-        {
-         fetchCloseOrder(userBrand.public_key,page)
-        } 
-      else
-      {
-          fetchCloseOrder(null,page)
-      }
+     fetchCloseOrder(page)      
   
     }
 
@@ -192,12 +184,9 @@ const CloseOrder = () => {
 
 
   useEffect(()=>{
-    if( userRole === 'brand' ){
-         fetchCloseOrder(userBrand.public_key,CurrentPage)
-        } 
-    else{
-          fetchCloseOrder(null,CurrentPage)
-        }
+
+         fetchCloseOrder(CurrentPage)
+  
   },[])
 
   return (
