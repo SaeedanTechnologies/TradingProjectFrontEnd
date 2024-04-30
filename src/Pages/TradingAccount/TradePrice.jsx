@@ -7,7 +7,8 @@ const TradePrice = ({openPrice, askPrice, label}) => {
     <div className="flex-1">
                   <CustomTextField 
                     label={label} 
-                    value={`${openPrice} / ${askPrice}`} 
+                    // value={`${openPrice} / ${askPrice}`} 
+                    value={askPrice} 
                     // type="number" 
                     sx={numberInputStyle}
                     varient={'standard'}  
