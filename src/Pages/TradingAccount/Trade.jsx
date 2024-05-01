@@ -21,6 +21,7 @@ import axios from 'axios';
 // import BinanceSocket from '../../websockets/BinanceSocket';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
+import CustomNumberTextField1 from '../../components/CustomNumberTextField1';
 
 const Trade = ({ fetchLiveOrder }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -407,8 +408,8 @@ useEffect(() => {
               <div>
               <CustomNumberTextField
                       label="Volume"
-                      value={parseFloat(volume)}
-                      initialFromState={parseFloat(0.01)}
+                      value={volume}
+                      initialFromState={0.01}
                       onChange={handleVolumeChange}
                       fullWidth
                       min={0.01}
@@ -458,8 +459,8 @@ useEffect(() => {
               <div className="flex-1">
                     <CustomNumberTextField
                       label="Take Profit"
-                      value={parseFloat(takeProfit)}
-                      initialFromState={parseFloat(pricing.askPrice ?? 0)}
+                      value={Number(takeProfit)}
+                      initialFromState={Number(pricing.askPrice ?? 0)}
                       checkFirst={pricing?.askPrice ? true : false}
                       onChange={ handleProfitChange}
                       fullWidth
@@ -471,8 +472,8 @@ useEffect(() => {
                 </div>
                 <CustomNumberTextField
                       label="Stop Loss"
-                      value={parseFloat(stopLoss)}
-                      initialFromState={parseFloat(pricing.askPrice ?? 0)}
+                      value={Number(stopLoss)}
+                      initialFromState={Number(pricing.askPrice ?? 0)}
                       checkFirst={pricing?.askPrice ? true : false}
                       onChange={handleLossChange}
                       fullWidth

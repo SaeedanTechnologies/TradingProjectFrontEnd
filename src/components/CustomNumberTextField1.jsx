@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 
-const CustomNumberTextField = ({
+const CustomNumberTextField1 = ({
   value,
   initialFromState,
   checkFirst,
@@ -17,41 +17,34 @@ const CustomNumberTextField = ({
   const [currentValue, setCurrentValue] = useState(value);
   const isFirstClick = useRef(true);
 
-  // Function to perform arithmetic operations (addition or subtraction) with a specified precision
-  function operateWithPrecision(num1, num2, operation) {
-    // Determine the precision based on the maximum precision of the two numbers
-    var precision = Math.max(getPrecision(num1), getPrecision(num2));
-
-    // Calculate the multiplier to shift the decimal point to preserve precision
-    var multiplier = Math.pow(10, precision);
-
-    // Scale the numbers to the same precision
-    var scaledNum1 = Math.round(num1 * multiplier);
-    var scaledNum2 = Math.round(num2 * multiplier);
-
-    // Perform the operation
-    var result;
-    if (operation === 'add') {
-      result = (scaledNum1 + scaledNum2) / multiplier;
-    } else if (operation === 'subtract') {
-      result = (scaledNum1 - scaledNum2) / multiplier;
+  function incrementNumber(num) {
+    if (Number.isInteger(num)) {
+    return num + 1;
     } else {
-      throw new Error('Unsupported operation. Only "add" or "subtract" are allowed.');
+    let numStr = num.toString();
+    let [integerPart, decimalPart] = numStr.split('.');
+    if (!decimalPart) {
+    decimalPart = '0';
     }
+    decimalPart = (parseInt(decimalPart) + 1).toString().padStart(decimalPart.length, '0');
+    return parseFloat(integerPart + '.' + decimalPart);
+    }
+    }
+    
 
-    // Return the result
-    return result;
-  }
-
-  // Function to get the precision of a number
-  function getPrecision(num) {
-    // Convert the number to a string and split it into integer and fractional parts
-    var parts = num.toString().split('.');
-
-    // Return the length of the fractional part, or 0 if there's no fractional part
-    return parts[1] ? parts[1].length : 0;
-  }
-
+    function decrementNumber(num) {
+      if (Number.isInteger(num)) {
+      return num - 1;
+      } else {
+      let numStr = num.toString();
+      let [integerPart, decimalPart] = numStr.split('.');
+      if (!decimalPart) {
+      decimalPart = '0';
+      }
+      decimalPart = (parseInt(decimalPart) - 1).toString().padStart(decimalPart.length, '0');
+      return parseFloat(integerPart + '.' + decimalPart);
+      }
+      }
 
   const handleChange = (event) => {
     const newValue = event.target.value;
@@ -78,7 +71,7 @@ const CustomNumberTextField = ({
         onChange(initialFromState);
       }
     } else {
-      const newValue = operateWithPrecision(currentValue, step, 'add')
+      const newValue = incrementNumber (currentValue)
       // const newValue = currentValue + step;
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
         setCurrentValue(newValue)
@@ -90,7 +83,7 @@ const CustomNumberTextField = ({
   const handleDecrement = () => {
     // const newValue = parseFloat(event.target.value);
     // const newValue = currentValue - step;
-    const newValue = operateWithPrecision(currentValue, step, 'subtract')
+    const newValue = decrementNumber(currentValue)
     if (isFirstClick.current && checkFirst) {
       if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
         setCurrentValue(initialFromState);
@@ -135,7 +128,7 @@ const CustomNumberTextField = ({
   );
 };
 
-CustomNumberTextField.propTypes = {
+CustomNumberTextField1.propTypes = {
   value: PropTypes.number,
   initialFromState: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
@@ -146,7 +139,7 @@ CustomNumberTextField.propTypes = {
   step: PropTypes.number,
 };
 
-CustomNumberTextField.defaultProps = {
+CustomNumberTextField1.defaultProps = {
   value: 0,
   label: 'Number',
   fullWidth: false,
@@ -155,4 +148,4 @@ CustomNumberTextField.defaultProps = {
   step: 0.1
 };
 
-export default CustomNumberTextField;
+export default CustomNumberTextField1;
