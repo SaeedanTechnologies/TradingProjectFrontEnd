@@ -460,7 +460,8 @@ const SymbolSettingsEntry = () => {
           {(isDisabled && SymbolSettingIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
           {(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0)  &&
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
-            
+          {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
+            {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
             <Dropdown
               menu={{
                 items,
@@ -472,8 +473,6 @@ const SymbolSettingsEntry = () => {
             >
               <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
           </Dropdown>
-          {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
-            {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
           </div>
           }
         
@@ -715,7 +714,8 @@ const SymbolSettingsEntry = () => {
 
 
           </div>
-          <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
+          {
+            !isDisabled &&  <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
             <CustomButton
               Text={ SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Submit' : 'Update'}
               style={{
@@ -742,6 +742,8 @@ const SymbolSettingsEntry = () => {
               onClickHandler={cancleHandler}
             />
           </div>
+          }
+         
         </div>
       </div>
     </Spin>
