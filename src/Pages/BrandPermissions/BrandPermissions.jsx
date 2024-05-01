@@ -2,78 +2,87 @@ import { useCallback, useState } from "react";
 import CustomPermissionTable from "../../components/CustomPermissionTable";
 import { Space,Tag,theme,Checkbox  } from 'antd';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CustomButton from "../../components/CustomButton";
 import { SaveBrandPermission } from "../../utils/_PermissionAPI";
-import { useSelector } from "react-redux";
+import { useSelector ,useDispatch} from "react-redux";
+import CustomNotification from "../../components/CustomNotification";
+import { setBrandUser } from "../../store/BrandsSlice";
+
 
 const BrandPermissions = () => {
 
   const navigate = useNavigate()
   const token = useSelector(({ user }) => user?.user?.token)
-  const {user_id} = useParams()
-
-
+  const brand = useSelector((state)=>state?.brands?.user)
+    const dispatch = useDispatch();
 
   const data = [
   {
     index: 0,
     module: 'Trading Account List',
-    read:false,
-    create:false,
-    update:false,
-    del:false
+    key:'trading_account_list',
+    read:brand.permissions.find((br)=>br.name=== 'trading_account_list_read') ? true : false,
+    create:brand.permissions.find((br)=>br.name=== 'trading_account_list_create') ? true : false,
+    update:brand.permissions.find((br)=>br.name=== 'trading_account_list_update') ? true : false,
+    del:brand.permissions.find((br)=>br.name=== 'trading_account_list_delete') ? true : false,
   },
   {
     index: 1,
     module: 'Trading Account Group',
-    read:false,
-    create:false,
-    update:false,
-    del:false
+    key:'trading_account_group',
+    read:brand.permissions.find((br)=>br.name=== 'trading_account_group_read') ? true : false,
+    create:brand.permissions.find((br)=>br.name=== 'trading_account_group_create') ? true : false,
+    update:brand.permissions.find((br)=>br.name=== 'trading_account_group_update') ? true : false,
+    del:brand.permissions.find((br)=>br.name=== 'trading_account_group_delete') ? true : false
   },
   {
     index: 2,
     module: 'Active Account Group',
-    read:false,
-    create:false,
-    update:false,
-    del:false
+    key:'active_account_group',
+    read:brand.permissions.find((br)=>br.name=== 'active_account_group_read') ? true : false,
+    create:brand.permissions.find((br)=>br.name=== 'active_account_group_create') ? true : false,
+    update:brand.permissions.find((br)=>br.name=== 'active_account_group_update') ? true : false,
+    del:brand.permissions.find((br)=>br.name=== 'active_account_group_delete') ? true : false
   },
   {
     index: 3,
     module: 'Margin Call Trading Account',
-    read:false,
-    create:false,
-    update:false,
-    del:false
+    key:'margin_call_trading',
+    read:brand.permissions.find((br)=>br.name=== 'margin_call_trading_read') ? true : false,
+    create:brand.permissions.find((br)=>br.name=== 'margin_call_trading_create') ? true : false,
+    update:brand.permissions.find((br)=>br.name=== 'margin_call_trading_update') ? true : false,
+    del:brand.permissions.find((br)=>br.name=== 'margin_call_trading_delete') ? true : false,
   },
    {
     index: 4,
     module: 'Live Orders',
-    read:false,
-    create:false,
-    update:false,
-    del:false
+    key:'live_orders',
+    read:brand.permissions.find((br)=>br.name=== 'live_orders_read') ? true : false,
+    create:brand.permissions.find((br)=>br.name=== 'live_orders_create') ? true : false,
+    update:brand.permissions.find((br)=>br.name=== 'live_orders_update') ? true : false,
+    del:brand.permissions.find((br)=>br.name=== 'live_orders_delete') ? true : false,
   },
    {
     index: 5,
     module: 'Close Orders',
-    read:false,
-    create:false,
-    update:false,
-    del:false
+    key:'close_orders',
+    read:brand.permissions.find((br)=>br.name=== 'close_orders_read') ? true : false,
+    create:brand.permissions.find((br)=>br.name=== 'close_orders_create') ? true : false,
+    update:brand.permissions.find((br)=>br.name=== 'close_orders_update') ? true : false,
+    del:brand.permissions.find((br)=>br.name=== 'close_orders_delete') ? true : false
   },
    {
     index: 6,
     module: 'Transaction Orders',
-    read:false,
-    create:false,
-    update:false,
-    del:false
+    key:'transaction_orders',
+    read:brand.permissions.find((br)=>br.name=== 'transaction_orders_read') ? true : false,
+    create:brand.permissions.find((br)=>br.name=== 'transaction_orders_create') ? true : false,
+    update:brand.permissions.find((br)=>br.name=== 'transaction_orders_update') ? true : false,
+    del:brand.permissions.find((br)=>br.name=== 'transaction_orders_delete') ? true : false,
   },
   
-];
+  ];
 
 
 
@@ -87,11 +96,51 @@ const BrandPermissions = () => {
 
 
   const handleAllowPermission = async()=>{
-    const PermissionData ={ brand_id:user_id,model_permission: 'create_trading_account'}
+
+    try{
+    const PermissionData ={ user_id:brand.user_id,permissions: permissions}
     const mData = await SaveBrandPermission(PermissionData,token)
     const { data: { message, payload, success } } = mData
+      if(success)
+      {
+        // debugger
+        const storePayload = {user_id:brand.user_id,permissions:payload}
+        dispatch(setBrandUser(storePayload))
+        
+        CustomNotification({
+          type: 'success',
+          title: 'Permissions',
+          description:message ,
+          key: 1 
+        });
+
+      }
+      else
+      {
+        
+        CustomNotification({
+          type: 'error',
+          title: 'Permissions',
+          description:message ,
+          key: 1 
+        });
+
+      }
+      
+    }
+    catch(error)
+    {
+       CustomNotification({
+          type: 'error',
+          title: 'Permissions',
+          description: error.message,
+          key: 1 
+      });
+    }
+    
 
   }
+  
   
 
 const columns = [

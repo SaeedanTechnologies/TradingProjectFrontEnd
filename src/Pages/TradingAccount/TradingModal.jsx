@@ -48,8 +48,8 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID}) 
   const Control = [
      {id: 1, control:'CustomTextField',  label:'User Login ID', varient: 'standard',value:tradingAccount.user_id, onChange:(e) =>{
         setTradingAccount(prevData => ({
-                    ...prevData,
-                    user_id: e.target.value
+          ...prevData,
+          user_id: e.target.value
         }));
       }},
      {

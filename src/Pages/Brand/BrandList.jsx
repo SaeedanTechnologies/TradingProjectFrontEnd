@@ -10,15 +10,18 @@ import { notifySuccess, notifyError } from '../../utils/constants';
 import { ToastContainer } from 'react-toastify';
 import { AddnewStyle, footerStyle, submitStyle } from './style';
 import { Brands_List, DeleteBrand } from '../../utils/_APICalls';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Stack, Typography } from '@mui/material';
 
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
+import { setBrandUser  } from '../../store/BrandsSlice';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
+  const dispatch = useDispatch();
+  
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [BrandsList, setBrandsList] = useState([])
@@ -39,6 +42,7 @@ const BrandList = () => {
     const { data: { message, payload, success } } = mData
     setIsLoading(false)
     if (success) {
+
       const brandData = payload.data.map((brand)=>({
         id:brand.id,
         user_id:brand.user_id,
@@ -46,15 +50,26 @@ const BrandList = () => {
         name:brand.name,
         original_password: brand.user.original_password,
         public_key: brand.public_key,
-        margin_call:brand.margin_call
+        margin_call:brand.margin_call,
+        permissions: brand.user.permissions
+
       }))
 
       setBrandsList(brandData)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
+
+
     }
   }
+
+  const openPermissions = (user)=>{
+    navigate('/brand-permissions')
+    const payload = { user_id:user.user_id,permissions:user.permissions} 
+    dispatch(setBrandUser(payload))
+  }
+
   useEffect(() => {
     fetchBrands(CurrentPage)
   }, [])
@@ -155,9 +170,8 @@ const BrandList = () => {
       dataIndex: 'trading_accounts',
       key: '9',
       render: (text, record) => {
-        const { user_id } = record
         return (
-          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => navigate(`/brand-permissions/${user_id}`)}>Permissions</span>
+          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
         )
       },
       
