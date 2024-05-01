@@ -441,12 +441,12 @@ const [activeGroup, setActiveGroup] = useState([])
           
     
             
-       CheckBrandPermission(userPermissions,userRole,'trading_account_list_create') &&(<CustomButton
+       {CheckBrandPermission(userPermissions,userRole,'trading_account_list_create') &&(<CustomButton
             Text='Add New Trading Account'
             style={{ height: '48px', }}
             icon={<PlusCircleOutlined />}
             onClickHandler={() => setIsModalOpen(true)}
-          />)
+          />)}
 
            
          
