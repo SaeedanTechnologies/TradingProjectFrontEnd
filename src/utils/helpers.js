@@ -81,3 +81,9 @@ export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading )=
   }
 }
 
+export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{
+  debugger
+  return userRole ===  'admin' || (userRole ===  'brand'  && permissions?.find((permission)=>permission?.name === permissionName));  
+   
+}
+

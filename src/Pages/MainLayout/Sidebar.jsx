@@ -9,8 +9,7 @@ import {
   UserOutlined,
   MoonFilled
 } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, Space, Switch, theme } from 'antd';
-
+import {  Layout, Menu,  Switch, theme } from 'antd';
 import './style.css';
 import LOGOUT_CDN from '../../assets/images/logout.svg';
 import LOGO_CDN from '../../assets/images/logo.png';
@@ -18,6 +17,7 @@ import SubMenu from "antd/es/menu/SubMenu";
 import { useNavigate } from "react-router-dom";
 import { siderMenuStyle, siderStyle, subMenuTitleStyle } from "./style";
 import { useSelector } from "react-redux";
+import { CheckBrandPermission } from "../../utils/helpers";
 
 
 const { Sider } = Layout;
@@ -27,6 +27,8 @@ const { Sider } = Layout;
 const Sidebar = ({ collapsed }) => {
   const [selectedKey, setSelectedKey] = useState('1');
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
+  // debugger
   const { token: { sidebarColor, darkGray, colorTransparentPrimary, Gray2, colorPrimary } } = theme.useToken();
   const navigate = useNavigate();
   const items = [
@@ -57,10 +59,10 @@ const Sidebar = ({ collapsed }) => {
       key: 'sub3',
       icon: <UserOutlined />,
       children: [
-        { key: '4', label: 'Trading Account List' },
-        { key: '5', label: 'Trading Account Group' },
-        { key: '13', label: 'Active Account Group' },
-        { key: '14', label: 'Margin Call Trading Account' },
+        { key: '4', label: 'Trading Account List',  display:  CheckBrandPermission(userPermissions,userRole,'trading_account_list_read') ? 'show' : 'hide'  },
+        { key: '5', label: 'Trading Account Group',  display: CheckBrandPermission(userPermissions,userRole,'trading_account_group_read') ? 'show' : 'hide' },
+        { key: '13', label: 'Active Account Group',  display: CheckBrandPermission(userPermissions,userRole,'active_account_group_read') ? 'show' : 'hide' },
+        { key: '14', label: 'Margin Call Trading Account', display: CheckBrandPermission(userPermissions,userRole,'margin_call_trading_account_read') ? 'show' : 'hide' },
       ],
       label: 'Trading Account',
          display: 'show' 
@@ -69,8 +71,8 @@ const Sidebar = ({ collapsed }) => {
       key: 'sub2',
       icon: <FileDoneOutlined />,
       children: [
-        { key: '6', label: 'Live Orders' },
-        { key: '7', label: 'Close Orders' }
+        { key: '6', label: 'Live Orders', display: CheckBrandPermission(userPermissions,userRole,'live_orders_read') ? 'show' : 'hide'  },
+        { key: '7', label: 'Close Orders',display: CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide'  }
       ],
       label: 'Trading Orders',
          display: 'show' 
@@ -80,17 +82,17 @@ const Sidebar = ({ collapsed }) => {
       icon: <AntDesignOutlined />,
       children: [],
       label: 'Transaction Orders',
-         display: 'show' 
+         display: CheckBrandPermission(userPermissions,userRole,'transaction_orders_read') ? 'show' : 'hide'   
     },
     {
       key: 'sub4',
       icon: <AntDesignOutlined />,
       children: [
-        { key: '15', label: 'Symbol Group' },
-        { key: '16', label: 'Symbol Settings' },
-        { key: '17', label: 'Data Feeds' },
-        { key: '18', label: 'Tickets & Charts' },
-        { key: '19', label: '1 Minute Charts' },
+        { key: '15', label: 'Symbol Group',display: userRole === 'admin' ? 'show' : 'hide'  },
+        { key: '16', label: 'Symbol Settings',display: userRole === 'admin' ? 'show' : 'hide'  },
+        { key: '17', label: 'Data Feeds',display: userRole === 'admin' ? 'show' : 'hide'  },
+        { key: '18', label: 'Tickets & Charts',display: userRole === 'admin' ? 'show' : 'hide'  },
+        { key: '19', label: '1 Minute Charts',display: userRole === 'admin' ? 'show' : 'hide'  },
       ],
       label: 'Symbol',
       display: userRole ==='admin' ? 'show' : 'hide'
@@ -197,15 +199,21 @@ const Sidebar = ({ collapsed }) => {
                   title={<span style={{ color: Gray2, ...subMenuTitleStyle }}>{item.label}</span>}
                 >
                   {item.children.map(child => (
+                    ( child.display === 'show'? (
+
                     <Menu.Item
                       key={child.key}
                       style={{ color: selectedKey === child.key ? colorPrimary : Gray2, marginTop: "20px", fontWeight: "600" }}
                     >
                       {child.label}
                     </Menu.Item>
+                    )   : 
+                    "")
+                   
                   ))}
                 </SubMenu>
               ) :   (
+                
                 <Menu.Item
                   key={item.key}
                   icon={item.icon}
