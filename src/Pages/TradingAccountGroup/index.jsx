@@ -14,13 +14,14 @@ import TradingAccountModal from '../TradingAccountGroup/TradingAccountModal';
 import { DeleteTradingAccountGroup, Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { setTradingGroupData } from '../../store/TradingGroupData';
 
 
 
 
 const Index = () => {
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
@@ -233,12 +234,13 @@ const Index = () => {
 
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
-          <CustomButton
+          {CheckBrandPermission(userPermissions,userRole,'trading_account_group_create') && <CustomButton
             Text='Add New Trading Group'
             style={{ height: '48px', ...AddnewStyle }}
             icon={<PlusCircleOutlined />}
             onClickHandler={() => showModal(0)}
           />
+         }
         </div>
         <CustomTable 
           columns={columns} 
@@ -246,6 +248,8 @@ const Index = () => {
           headerStyle={headerStyle}
           formName={'Trading Account Group'}
           token={token}
+          editPermissionName="active_account_group_update"
+          deletePermissionName="active_account_group_delete"
            />
         <CustomModal
           isModalOpen={isModalOpen}

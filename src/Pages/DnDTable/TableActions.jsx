@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Select, Space } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
+import { CheckBrandPermission } from '../../utils/helpers';
+import { useSelector } from 'react-redux';
 
 
-const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage }) =>{
+const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName }) =>{
   const [SelectedOption, setSelectedOption] = useState(10)
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
+  
   const items = [
     {
       key: '1',
@@ -18,13 +23,13 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button  rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
-    selectedRows?.length > 0 && {
+    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName)  && {
       key: '3',
       label: (
         <button rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
       ),
     },
-    selectedRows?.length > 0 && {
+    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName) && {
       key: '4',
       label: (
         <button  rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>

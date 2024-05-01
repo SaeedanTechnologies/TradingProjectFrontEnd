@@ -6,7 +6,9 @@ import DnDTable from '../Pages/DnDTable';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, table_name, setSortDirection, perPage, setPerPage}) => {
+const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
+  direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, 
+  table_name, setSortDirection, perPage, setPerPage, editPermissionName, deletePermissionName}) => {
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -21,7 +23,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
     }
    
   }, [data, dispatch])
- 
+ debugger
   return (
     <>
       <div style={{ overflowX: 'auto' }}>
@@ -42,6 +44,8 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           table_name= {table_name}
           setSortDirection={setSortDirection}
           setPerPage={setPerPage}
+          editPermissionName={editPermissionName}
+          deletePermissionName={deletePermissionName}
         />
         <div style={{ textAlign: 'right', marginTop: 16 }}>
           <Pagination
