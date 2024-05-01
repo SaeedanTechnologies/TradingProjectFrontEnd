@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./index.css";
-import { Table } from "antd";
+import { Spin, Table } from "antd";
 import { Resizable } from "react-resizable";
 import ReactDragListView from "react-drag-listview";
 import CustomButton from "../../components/CustomButton";
@@ -11,6 +11,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { GenericDelete } from "../../utils/_APICalls";
 import Swal from "sweetalert2";
 import { setSymbolSettingsSelecetdIDs } from "../../store/symbolSettingsSlice";
+import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -67,6 +68,9 @@ class DnDTable extends Component {
     this.MassEditHandler = this.MassEditHandler.bind(this);
     this.MassDeleteHandler = this.MassDeleteHandler.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.ShowHideColumnsHandler = this.ShowHideColumnsHandler.bind(this)
+    this.useEffect = this.useEffect.bind(this)
+
     const that = this;
 
     this.dragProps = {
@@ -94,16 +98,48 @@ class DnDTable extends Component {
     };
   }
 
-  componentDidMount() {
-    this.setState({ columns: this.props.columns });
-    const ColumnsData = this.props.columns.map(x=>{
-      return {
-        key: x.key, 
-        dataIndex: x.dataIndex,
-        title: typeof x.title === 'string' ? x.title:x.title.props.children 
+ async componentDidMount() {
+    this.useEffect()
+  }
+  async useEffect(){
+    try{
+      const ColumnsData = this.props.columns.map(x=>{
+        return {
+          key: x.key, 
+          dataIndex: x.dataIndex,
+          title: typeof x.title === 'string' ? x.title:x.title.props.children 
+        }
+      })
+      const Params = {
+        names:[this.props.formName]
       }
-    })
-    this.setState({dropDownColumns: ColumnsData,selectedColumns: ColumnsData})
+      // this.setState({dropDownColumns: ColumnsData, selectedColumns: ColumnsData})
+      this.setState({isLoading: true})
+      const res = await GetSettings(Params, this.props.token)
+      const {data:{message, payload, success}} = res
+      this.setState({isLoading: false})
+      
+      if(payload && payload.length > 0){
+        const selectedCols = JSON.parse(payload[0].value)
+        const filteredColumns = this.props.columns.filter(column =>
+          selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
+        );
+        const mData = ColumnsData.filter(column =>
+          selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
+        );
+        if(success){
+          this.setState({ columns: filteredColumns, dropDownColumns: ColumnsData, selectedColumns: mData });
+        }else{
+          this.setState({ columns: ColumnsData, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
+        }
+      }else{
+        this.setState({ columns: this.props.columns, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
+      }
+     
+  
+    }catch(err){
+        alert(`Error occured ${err.message}`)
+    } 
   }
 
   componentDidUpdate(prevProps) {
@@ -286,6 +322,36 @@ class DnDTable extends Component {
   handleCancel(){
    this.setState({isAddRemove: false})
   }
+ async ShowHideColumnsHandler(){
+    const Params = {
+      data:{
+      name: this.props.formName,
+      value: JSON.stringify(this.state.selectedColumns)
+    }}
+    this.setState({isLoading: true})
+    const res = await SetSettings(Params,this.props.token )
+    const {data:{message, data, success}} = res
+    this.setState({isLoading: false})
+    if(success){
+      this.handleCancel()
+      CustomNotification({
+        type: "success",
+        title: "Arranged ",
+        description: "Columns Settings updated successfully",
+        key: "arr4",
+      })
+      this.useEffect()
+      
+    }else{
+      CustomNotification({
+        type: "error",
+        title: "Oppssss... ",
+        description: message,
+        key: "arr4",
+      })
+    }
+    
+  }
   render() {
     const { columns, selectedRowKeys } = this.state;
     const combinedColumns = columns.map((stateCol, index) => ({
@@ -299,6 +365,7 @@ class DnDTable extends Component {
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method
       onSelectAll: this.onSelectAllChange,
+      
     };
 
     return (
@@ -344,7 +411,7 @@ class DnDTable extends Component {
             bordered
             components={this.components}
             columns={combinedColumns}
-            dataSource={this.state.data}
+            dataSource={this.props.data}
             pagination={false}
             rowSelection={rowSelection}
             showSorterTooltip={false}
@@ -408,6 +475,8 @@ class DnDTable extends Component {
           borderRadius: '8px',
           zIndex: '100'
         }}
+        onClickHandler={this.ShowHideColumnsHandler}
+        loading={this.state.isLoading}
         />
         <CustomButton
          Text={'Cancle'}

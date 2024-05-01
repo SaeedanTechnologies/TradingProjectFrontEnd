@@ -135,14 +135,14 @@ const Index = () => {
     {
       title:<span className="dragHandler">Brand Id</span>,
       dataIndex: 'brand_id',
-      key: '1',
+      key: '2',
       sorter: (a, b) => a.brand_id.length - b.brand_id.length,
       sortDirections: ['ascend'],
     },
     {
       title:<span className="dragHandler">Symbol Group</span>,
       dataIndex: 'symbel_groups',
-      key: '1',
+      key: '3',
       sorter: (a, b) => a.symbel_groups.length - b.symbel_groups.length,
       sortDirections: ['ascend'], 
        render: (_, { symbel_groups }) => (
@@ -161,7 +161,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Mass Buy/Sell Trading Order</span>,
       dataIndex: 'MBS',
-      key: '1',
+      key: '4',
       render: (text) => <Link to={'/trading-group/mb-to/0'} style={{ color: colorPrimary, fontWeight: '600' }}>View Details</Link>,
       sorter: (a, b) => a.MBS.length - b.MBS.length,
       sortDirections: ['ascend'],
@@ -170,7 +170,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Mass deposit/widthdraw</span>,
       dataIndex: 'MDW',
-      key: '1',
+      key: '5',
       render: (_, record) => (
         <Link
           to={`/trading-group/mass-deposit/${record.id}`}
@@ -187,21 +187,21 @@ const Index = () => {
     {
       title:<span className="dragHandler">Mass Laverage</span>,
       dataIndex: 'mass_leverage',
-      key: '1',
+      key: '6',
       sorter: (a, b) => a.mass_leverage.length - b.mass_leverage.length,
       sortDirections: ['ascend'],
     },
     {
       title:<span className="dragHandler">Mass Swap</span>,
       dataIndex: 'mass_swap',
-      key: '1',
+      key: '7',
       sorter: (a, b) => a.mass_swap.length - b.mass_swap.length,
       sortDirections: ['ascend'],
     },
     {
       title:<span className="dragHandler">Trading Accounts</span>,
       dataIndex: 'trading_accounts',
-      key: '1',
+      key: '8',
       render: (text, record) => {
         const { trading_accounts } = record
         return (
@@ -240,7 +240,13 @@ const Index = () => {
             onClickHandler={() => showModal(0)}
           />
         </div>
-        <CustomTable columns={columns} data={TradingAccounGroupList} headerStyle={headerStyle} />
+        <CustomTable 
+          columns={columns} 
+          data={TradingAccounGroupList} 
+          headerStyle={headerStyle}
+          formName={'Trading Account Group'}
+          token={token}
+           />
         <CustomModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}

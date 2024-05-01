@@ -5,6 +5,7 @@ import Highlighter from 'react-highlight-words';
 
 import { theme, Spin } from 'antd';
 import ARROW_UP_DOWN from '../../../assets/images/arrow-up-down.png'
+import FIND_IMAGE from '../../../assets/images/find.svg'
 import CustomTable from '../../../components/CustomTable';
 import CustomButton from '../../../components/CustomButton';
 import { AddnewSettingsStyle} from '../../Brand/style';
@@ -13,8 +14,7 @@ import { All_Setting_Data} from '../../../utils/_SymbolSettingAPICalls';
 import { useDispatch, useSelector } from 'react-redux';
 import  "../../DnDTable/index.css";
 import { setSymbolSettingsData, setSymbolSettingsSelecetdIDs } from '../../../store/symbolSettingsSlice';
-import { render } from 'react-dom';
-
+import './index.css'
 
 const Index = () => {
   const dispatch = useDispatch()
@@ -174,7 +174,6 @@ const Index = () => {
           width: 150,
         }
       ],
-      ...getColumnSearchProps('name'),
       
       
     },
@@ -197,7 +196,6 @@ const Index = () => {
           width: 80,
         }
       ],
-      ...getColumnSearchProps('leverage'),
     },
     {
       title:<span className="dragHandler">Swap</span>,
@@ -218,7 +216,6 @@ const Index = () => {
           width: 80,
         }
       ],
-      ...getColumnSearchProps('swap'),
     },
     {
       title:<span className="dragHandler">Lot Size</span>,
@@ -239,7 +236,6 @@ const Index = () => {
           width: 80,
         }
       ],
-      ...getColumnSearchProps('lot_size'),
     },
     {
       title:<span className="dragHandler">Lot Steps</span>,
@@ -260,7 +256,6 @@ const Index = () => {
           width: 80,
         }
       ],
-      ...getColumnSearchProps('lot_step'),
     },
     {
       title:<span className="dragHandler">Minimum Value</span>,
@@ -281,7 +276,6 @@ const Index = () => {
           width: 80,
         }
       ],
-      ...getColumnSearchProps('vol_min'),
     },
     {
       title:<span className="dragHandler">Maximum Value</span>,
@@ -302,7 +296,6 @@ const Index = () => {
           width: 80,
         }
       ],
-      ...getColumnSearchProps('vol_max'),
     },
     {
       title:<span className="dragHandler">Commision</span>,
@@ -324,7 +317,6 @@ const Index = () => {
         }, 
       ],
 
-      ...getColumnSearchProps('commission'),
     },
 
   //   {
@@ -371,6 +363,20 @@ const Index = () => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
   setNewColumns(newCols)
   }, [checkedList]);
+  useEffect(()=>{
+    const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
+    const button = document.createElement('button');
+    button.innerText = 'Search';
+    button.classList.add('custom-button');
+    // Add event listener to the button
+    button.addEventListener('click', () => {
+      SearchHandler()
+    });
+    firstColumnHeaderCell.appendChild(button);
+  },[])
+  const SearchHandler = ()=>{
+    alert('Button clicked!');
+  }
 
 
  
@@ -411,7 +417,7 @@ const Index = () => {
           setPerPage={setPerPage}
         />
       </div>
-    </Spin>
+     </Spin>
   )
 }
 
