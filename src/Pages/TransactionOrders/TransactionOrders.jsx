@@ -245,6 +245,8 @@ const TransactionOrders = () => {
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          editPermissionName="transaction_orders_update"
+          deletePermissionName="transaction_orders_delete"
         />
       </div>
     </Spin>

@@ -13,11 +13,12 @@ import { setAccountID } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
 import CustomNotification from '../../components/CustomNotification';
+import { CheckBrandPermission } from '../../utils/helpers';
 
 
 
 const Index = ({ title, direction }) => {
-
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const [tradingAccountsList, setTradingAccountsList] = useState([]);
@@ -168,8 +169,7 @@ const Index = ({ title, direction }) => {
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
           <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => setTradeId(record.id)} />
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
-
+            <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
         </Space>
       ),
     },
@@ -357,7 +357,6 @@ const [activeGroup, setActiveGroup] = useState([])
       const { data: { message, success, payload } } = res
       
       const tradingAccounts = payload?.data?.map((item) => ({
-
         id: item.id,
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
@@ -399,39 +398,6 @@ const [activeGroup, setActiveGroup] = useState([])
   }
 
 
-
-  // useEffect(() => {
-  //   if (direction === 1) { // trading account list
-
-  //      if( userRole === 'brand' ){
-  //        fetchTradingAccounts(userBrand.public_key,CurrentPage)
-  //       } 
-  //       else{
-  //       fetchTradingAccounts(null,CurrentPage)
-  //       }
-
-  //   } else if (direction === 2) { // Active Account Group
-
-  //        if( userRole === 'brand' ){
-  //           fetchActiveGroups(userBrand.public_key,CurrentPage)
-  //         } 
-  //         else{
-  //               fetchActiveGroups(null,CurrentPage)
-  //         }
-
-
-  //   } else { // margin calls
-      
-  //       if( userRole === 'brand' ){
-  //           fetchMarginCalls(userBrand.public_key,CurrentPage)
-  //         } 
-  //         else{
-  //           fetchMarginCalls(null,CurrentPage)
-  //         }
-
-  //   }
-
-  // }, [direction])
 
   useEffect(() => {
 
@@ -475,12 +441,13 @@ const [activeGroup, setActiveGroup] = useState([])
           
     
             
-          <CustomButton
+       CheckBrandPermission(userPermissions,userRole,'trading_account_list_create') &&(<CustomButton
             Text='Add New Trading Account'
             style={{ height: '48px', }}
             icon={<PlusCircleOutlined />}
             onClickHandler={() => setIsModalOpen(true)}
-          />
+          />)
+
            
          
         </div>
@@ -495,6 +462,8 @@ const [activeGroup, setActiveGroup] = useState([])
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          editPermissionName="trading_account_list_update"
+          deletePermissionName="trading_account_list_delete"
         />
         )}
         {direction === 2 && (
@@ -508,6 +477,8 @@ const [activeGroup, setActiveGroup] = useState([])
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          editPermissionName="active_account_group_update"
+          deletePermissionName="active_account_group_delete"
         />
        
        )}
@@ -522,6 +493,8 @@ const [activeGroup, setActiveGroup] = useState([])
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          editPermissionName="margin_call_trading_update"
+          deletePermissionName="margin_call_trading_delete"
         />
         )}
 

@@ -207,6 +207,8 @@ const LiveOrders = () => {
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          editPermissionName="live_orders_update"
+          deletePermissionName="live_orders_delete"
         />
       </div>
     </Spin>
