@@ -396,6 +396,8 @@ class DnDTable extends Component {
                   MassEditHandler={this.MassEditHandler}
                   MassDeleteHandler = {this.MassDeleteHandler}
                   setPerPage={this.props.setPerPage}
+                  editPermissionName={this.props.editPermissionName}
+                  deletePermissionName={this.props.deletePermissionName}
                 />
               ) : (
                 <CustomButton

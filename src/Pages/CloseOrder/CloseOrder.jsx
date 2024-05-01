@@ -227,6 +227,8 @@ const CloseOrder = () => {
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          editPermissionName="close_orders_update"
+          deletePermissionName="close_orders_delete"
         />
       </div>
     </Spin>
