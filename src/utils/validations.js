@@ -31,6 +31,13 @@ export const TradeValidationSchema = Yup.object().shape({
   });
 
 
+  export const TradingAccountValidationSchema = Yup.object().shape({
+  leverage:Yup.string().required('Select leverage is required.'),
+  brand_id: Yup.string().required('Select Brand is required.'),
+  
+
+  });
+
   export const PersonalDataValidationSchema = Yup.object().shape({
   symbol:Yup.object().required(' Symbol is required.'),
   order_type: Yup.object().required(' Order Type is required.'),

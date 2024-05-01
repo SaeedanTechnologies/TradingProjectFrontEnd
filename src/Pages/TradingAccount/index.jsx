@@ -12,8 +12,6 @@ import TradingModal from './TradingModal'
 import { setAccountID } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
-import CreateTradingAccountModal from './CreateTradingAccountModal';
-import { submitStyle } from './style';
 import CustomNotification from '../../components/CustomNotification';
 import { CheckBrandPermission } from '../../utils/helpers';
 
@@ -26,7 +24,6 @@ const Index = ({ title, direction }) => {
   const [tradingAccountsList, setTradingAccountsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [tradingID, setTradingID] = useState(null);
 
   const [CurrentPage, setCurrentPage] = useState(1)
@@ -191,33 +188,7 @@ const Index = ({ title, direction }) => {
   }
 
   
-  const CreateTradingAccount = async (brandId,page) => {
-    try {
-     setIsLoading(true)
-     const res = await Save_Trading_Account({brand_id:brandId}, token)
-     const {data: {message, payload, success}} = res
-     setIsLoading(false)
-        if(success){
-          console.log('success message',message)
-          setIsCreateModalOpen(false)
-          CustomNotification({ type: "success", title: "Transaction Order", description: message, key: 1 })
-          if( userRole === 'brand' ){
-            
-         fetchTradingAccounts(brandId,page)
-        } 
-        else{
-        fetchTradingAccounts(null,page)
-        }
-
-        }else{
-          CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
-           }      
-     
-    }catch (err) {
-         CustomNotification({ type: "success", title: "Transaction Order", description: err.message, key: 1 })
-    }
-  };
-
+ 
 
   const fetchTradingAccounts = async (brandId,page) => {
     setIsLoading(true)
@@ -262,18 +233,12 @@ const Index = ({ title, direction }) => {
     setIsModalOpen(false);
   };
 
-    const handleCreateOk = ()=>{
-      setIsCreateModalOpen(false)
-    }
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
-  const handleCreateCancel = () => {
-    setIsCreateModalOpen(false);
-  };
-
+ 
     const DeleteHandler = async (id)=>{
   
       setIsLoading(true)
@@ -473,25 +438,16 @@ const [activeGroup, setActiveGroup] = useState([])
             sx={{ width: '300px' }}
 
           />
-          {userRole === 'admin' ? 
           
-          (
-          <CustomButton
+    
+            
+       CheckBrandPermission(userPermissions,userRole,'trading_account_list_create') &&(<CustomButton
             Text='Add New Trading Account'
             style={{ height: '48px', }}
             icon={<PlusCircleOutlined />}
-            onClickHandler={() => setIsCreateModalOpen(true)}
-          />
-        ):
-        CheckBrandPermission(userPermissions,userRole,'trading_account_list_create') &&( 
-              <CustomButton
-              Text='Add New Trading Account'
-              style={submitStyle}
-              onClickHandler={()=>CreateTradingAccount(userBrand.public_key,page)}
-            />
+            onClickHandler={() => setIsModalOpen(true)}
+          />)
 
-             
-          )}
            
          
         </div>
@@ -554,24 +510,12 @@ const [activeGroup, setActiveGroup] = useState([])
             setIsModalOpen={setIsModalOpen}
             fetchTradingAccounts={fetchTradingAccounts}
             BrandID={tradingID}
+            page={CurrentPage}
           />
         </CustomModal>
 
           
-        <CustomModal
-          isModalOpen={isCreateModalOpen}
-          handleOk={handleCreateOk}
-          handleCancel={handleCreateCancel}
-          title={''}
-          width={800}
-          footer={[]}
-        >
-          <CreateTradingAccountModal
-            isCreateModalOpen={isCreateModalOpen}
-            setIsCreateModalOpen={setIsCreateModalOpen}
-            fetchTradingAccounts={fetchTradingAccounts}
-          />
-        </CustomModal>
+        
       </div>
     </Spin>
   )
