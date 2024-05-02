@@ -1,15 +1,19 @@
-import { Spin, theme } from 'antd';
+import { Spin, theme,Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-
+import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import {LeverageList} from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import {SaveSymbolGroups, SelectSymbolWRTID, UpdateSymbolGroups} from '../../../utils/_SymbolGroupAPI';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { GenericEdit,GenericDelete } from '../../../utils/_APICalls';
+import CustomNotification from '../../../components/CustomNotification';
+import { CustomBulkDeleteHandler } from '../../../utils/helpers';
+import { deleteSymbolGroupById } from '../../../store/symbolGroupsSlice';
 
 
 const SymbolGroupEntry = () => {
@@ -17,9 +21,8 @@ const SymbolGroupEntry = () => {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary  },
   } = theme.useToken();
   const token = useSelector(({user})=> user?.user?.token )
-  const {id} = useParams()
   const navigate = useNavigate()
-
+  const dispatch  = useDispatch()
   const [symbolGroupName, setSymbolGroupName] = useState('')
   const [SelectedLeverage, setSelectedLeverage] = useState(null)
   const [Swap, setSwap] = useState('')
@@ -31,6 +34,12 @@ const SymbolGroupEntry = () => {
   const [TradingInterval, setTradingInterval] = useState('')
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+   const SymbolGroupsIds = useSelector(({ symbolGroups }) => symbolGroups.selectedRowsIds)
+  const SymbolGroupsData = useSelector(({symbolGroups})=> symbolGroups.symbolGroupsData)
+   const ArrangedSymbolGroupsData = SymbolGroupsData.slice().sort((a, b) => a.id - b.id);
 
   const validationSchema = Yup.object().shape({
       symbolGroupName: Yup.string().required('Name is required'),
@@ -82,6 +91,9 @@ const SymbolGroupEntry = () => {
   }
   const handleSubmit = async()=> {
     try{
+   
+      if(SymbolGroupsIds.length < 2)
+      {
       await validationSchema.validate({
         symbolGroupName,
         Leverage : SelectedLeverage,
@@ -94,6 +106,7 @@ const SymbolGroupEntry = () => {
       }, { abortEarly: false });
 
       setErrors({});
+     }
       const SymbolGroupData = {
         name : symbolGroupName,
         leverage: SelectedLeverage.value,
@@ -104,30 +117,86 @@ const SymbolGroupEntry = () => {
         trading_interval: TradingInterval,
         swap: Swap
       }
-      if(parseInt(id) === 0){
+    
+   
+      if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){
        setIsLoading(true)
        const res = await SaveSymbolGroups(SymbolGroupData, token)
        const {data: {message, payload, success}} = res
        setIsLoading(false)
        if(success){
-        alert(message)
+          CustomNotification({
+            type: 'success',
+            title: 'success',
+            description: message,
+            key: 2
+          })
         clearFields()
         navigate('/symbol-groups')
       }else{
-        alert(message) 
+      setIsLoading(false)
+      CustomNotification({
+            type: 'error',
+            title: 'error',
+            description: message,
+            key: 2
+          })
       }
        
-      }else{ //update case 
+      }
+      else if(SymbolGroupsIds.length >= 2){
         setIsLoading(true)
-        const res = await UpdateSymbolGroups(id,SymbolGroupData, token)
+         const Params = {
+          table_name: 'symbol_groups',
+          table_ids: SymbolGroupsIds,
+          ...SymbolGroupData
+        }
+        
+        const res = await GenericEdit(Params, token)
+        const { data: { message, success, payload } } = res;
+        if (success)
+        {
+            clearFields();
+            CustomNotification({
+              type: 'success',
+              title: 'success',
+              description: 'Symbol Setting Updated Successfully',
+              key: 2
+            })
+            navigate('/symbol-groups')
+        }
+        else
+        {
+            setIsLoading(false)
+            CustomNotification({
+              type: 'error',
+              title: 'error',
+              description: message,
+              key: `abc`
+            })
+        }
+      }
+      else{ //update case 
+        setIsLoading(true)
+        const res = await UpdateSymbolGroups(SymbolGroupsIds[0],SymbolGroupData, token)
         const {data: {message, payload, success}} = res
         setIsLoading(false)
         if(success){
-          alert(message)
+            CustomNotification({
+            type: 'success',
+            title: 'success',
+            description: message,
+            key: 2
+          })
           clearFields()
           navigate('/symbol-groups')
         }else{
-          alert(message) 
+          CustomNotification({
+              type: 'error',
+              title: 'error',
+              description: message,
+              key: 2
+            })
         }
       }
     
@@ -139,15 +208,111 @@ const SymbolGroupEntry = () => {
       setErrors(validationErrors);
     }
   }
-  useEffect(()=>{
-      if(parseInt(id) !== 0){ // update case
-        fetchSymbolGroupWRTID()
-      }
-  },[id])
-  const fetchSymbolGroupWRTID = async()=>{
-    if(id !== 0){
+
+ const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(prevIndex => prevIndex - 1);
+      const payload = ArrangedSymbolGroupsData[currentIndex - 1];
       setIsLoading(true)
-      const res = await SelectSymbolWRTID(id, token)
+      setTimeout(()=>{
+        setIsLoading(false)
+        setStatesForEditMode(payload, true,LeverageList)
+      }, 3000)
+      
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < ArrangedSymbolGroupsData.length - 1) {
+      setCurrentIndex(prevIndex => prevIndex + 1);
+      const payload = ArrangedSymbolGroupsData[currentIndex + 1];
+      setIsLoading(true)
+      setTimeout(()=>{
+        setIsLoading(false)
+        setStatesForEditMode(payload, true,LeverageList)
+      }, 3000)
+    }else{
+      alert(`no next record found`)
+    }
+  }; 
+  
+  const setStatesForEditMode = async (payload, success, LeverageList)=>{
+    if (success) {
+  
+
+      const selectedOption = LeverageList.find(x=> x.title === payload.leverage)
+      setSelectedLeverage(selectedOption)
+      setSelectedLeverage(selectedOption)
+      setSymbolGroupName(payload.name)
+      setLotSize(payload.lot_size);
+      setLotStep(payload.lot_step);
+      setVolMin(payload.vol_min);
+      setVolMax(payload.vol_max);
+      setTradingInterval(payload.trading_interval);
+      setSwap(payload.swap);
+    }
+  }
+
+
+
+ const deleteHandler = ()=>{
+  debugger;
+    const Params = {
+      table_name:'symbel_groups',
+      table_ids: [ArrangedSymbolGroupsData[currentIndex].id]
+    }
+    
+    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
+    dispatch(deleteSymbolGroupById(ArrangedSymbolGroupsData[currentIndex].id))
+    if(ArrangedSymbolGroupsData.length === 0 || ArrangedSymbolGroupsData === undefined || ArrangedSymbolGroupsData === null){
+       navigate("/symbol-groups")
+    }else{
+      if(currentIndex < ArrangedSymbolGroupsData.length)
+      handleNext()
+      else
+      handlePrevious()
+    }
+    
+
+  }
+
+  const items = [
+    
+    {
+      key: '1',
+      label: (
+        <button rel="noopener noreferrer" onClick={()=>{
+          setIsDisabled(false)
+        }}>   Edit </button>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
+      ),
+    },
+   
+  ];
+
+
+
+  useEffect(()=>{
+      if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){ // update case
+        setIsDisabled(false)
+      }else if (SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) !== 0){
+        fetchSymbolGroupWRTID()
+        setIsDisabled(true)
+      }
+      else{
+         setIsDisabled(true)
+      }
+  },[])
+
+  const fetchSymbolGroupWRTID = async()=>{
+    if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) !== 0){
+      setIsLoading(true)
+      const res = await SelectSymbolWRTID(SymbolGroupsIds[0], token)
       const {data: {message, payload, success}} = res
       setIsLoading(false)
       if(success){
@@ -165,18 +330,46 @@ const SymbolGroupEntry = () => {
     }
    
   }
+
+
+
   return (
     <Spin spinning={isLoading} size="large">
     <div className='p-8' style={{ backgroundColor: colorBG }}>
-     <div className='flex gap-3 items-center'>
+      <div className='flex justify-between'>
+        <div className='flex gap-3 items-center'>
      <img 
         src={ARROW_BACK_CDN} 
         alt='back icon' 
         className='cursor-pointer'
         onClick={()=> navigate(-1)}
         />
-      <h1 className='text-2xl font-semibold'>{parseInt(id) === 0 ? 'Add Symbol Group' : 'Edit Symbol Group'}</h1>
-    </div>
+
+       { isDisabled ? <h1 className='text-2xl font-semibold'>Preview Symbol Group</h1> :
+      
+      <h1 className='text-2xl font-semibold'>{SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0 ? 'Add Symbol Group' : 'Edit Symbol Group'}</h1>
+      }
+        </div>
+    {/* toolbar */}
+          {(isDisabled && SymbolGroupsIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
+          {(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) !== 0)  &&
+          <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
+            {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
+            {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
+              <Dropdown
+                  menu={{
+                    items,
+                  }}
+                  placement="bottom"
+                  arrow
+                  trigger={['click']}
+                  
+                >
+                  <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+              </Dropdown>
+          </div>
+          }
+      </div>
     <div className='border rounded-lg p-4'>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-8'>
         <div>
@@ -187,6 +380,7 @@ const SymbolGroupEntry = () => {
           label='Name'
           type={'text'}
           value={symbolGroupName}
+           disabled={isDisabled}
           onChange={e => handleInputChange('symbolGroupName', e.target.value)}
         />
          {errors.symbolGroupName && <span style={{ color: 'red' }}>{errors.symbolGroupName}</span>}
@@ -196,6 +390,7 @@ const SymbolGroupEntry = () => {
             name='Leverage'
             variant='standard'
             label='Select Leverage'
+             disabled={isDisabled}
             options={LeverageList}
             getOptionLabel={(option) => option.title ? option.title : ""}
             value={ SelectedLeverage} 
@@ -216,6 +411,7 @@ const SymbolGroupEntry = () => {
           name='Swap'
           type={'number'}
           varient='standard'
+           disabled={isDisabled}
           label='Swap'
           value={Swap}
           onChange={e => handleInputChange('Swap', e.target.value)}
@@ -226,6 +422,7 @@ const SymbolGroupEntry = () => {
          <CustomTextField
           name='LotSize'
           type={'number'}
+           disabled={isDisabled}
           varient='standard'
           label='Lot Size'
           value={LotSize}
@@ -237,6 +434,7 @@ const SymbolGroupEntry = () => {
        <CustomTextField
           name='LotStep'
           type={'number'}
+           disabled={isDisabled}
           varient='standard'
           label='Lot Step'
           value={LotStep}
@@ -248,6 +446,7 @@ const SymbolGroupEntry = () => {
        <CustomTextField
           name='VolMin'
           type={'number'}
+           disabled={isDisabled}
           varient='standard'
           label='Vol Min'
           value={VolMin}
@@ -259,6 +458,7 @@ const SymbolGroupEntry = () => {
         <CustomTextField
           name='VolMax'
           type={'number'}
+           disabled={isDisabled}
           varient='standard'
           label='Vol Max'
           value={VolMax}
@@ -270,6 +470,7 @@ const SymbolGroupEntry = () => {
         <CustomTextField
           name='TradingInterval'
           type={'number'}
+           disabled={isDisabled}
           varient='standard'
           label='Trading Interval'
           value={TradingInterval}
@@ -279,7 +480,9 @@ const SymbolGroupEntry = () => {
         </div>
        
       </div>
-      <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>
+        {
+            !isDisabled && 
+        <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>
           <CustomButton
             Text='Cancel'
             style={{
@@ -294,7 +497,7 @@ const SymbolGroupEntry = () => {
             onClickHandler={()=> navigate(-1)}
           />
           <CustomButton
-            Text={parseInt(id) === 0 ? 'Submit' : 'Update' }
+            Text={SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0 ? 'Add Symbol Group' : 'Update Symbol Group'}
             style={{
               padding: '16px',
               height: '48px',
@@ -305,6 +508,7 @@ const SymbolGroupEntry = () => {
           />
 
         </div>
+      }
     </div>
     </div>
     </Spin>

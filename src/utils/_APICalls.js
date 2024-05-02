@@ -8,6 +8,12 @@ export const Login = async ({email, password})=> {
     return mLogin
 }
 
+export const Logout = async(token) =>{
+   let url  = `${apiUrl}/auth/logout`
+   const response = await _API(url,'get',[],token)
+   return response
+}
+
 //Brads
 export const SaveBrands = async(BrandData, token)=>{
   const res = await _API(`${apiUrl}/admin/brands`,'post',BrandData, token)

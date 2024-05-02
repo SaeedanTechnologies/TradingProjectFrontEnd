@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Space, Spin, theme } from 'antd';
-import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
-
+import {  Spin, theme,Input } from 'antd';
+import {PlusCircleOutlined, EditOutlined, DeleteOutlined,CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons';
+import ARROW_UP_DOWN from '../../../assets/images/arrow-up-down.png'
 import CustomTable from '../../../components/CustomTable';
 import CustomButton from '../../../components/CustomButton';
 import { AddnewStyle } from '../../Brand/style';
 import CustomTextField from '../../../components/CustomTextField';
 import { Symbol_Group_List, DeleteSymbolsGroup } from '../../../utils/_SymbolGroupAPI';
 import { Link, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { notifyError, notifySuccess } from '../../../utils/constants';
+import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
+import { setSymbolGroupsSelectedIDs,setSymbolGroupsData } from '../../../store/symbolGroupsSlice';
 
 const Index = () => {
+  const dispatch = useDispatch()
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary  },
   } = theme.useToken();
@@ -23,6 +24,11 @@ const Index = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [perPage, setPerPage] = useState(10)
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [sortDirection, setSortDirection] = useState("")
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
 
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
@@ -34,42 +40,73 @@ const Index = () => {
       dataIndex: 'name',
       key: '1',
       sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+   
     },
     {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '2',
       sorter: (a, b) => a.leverage.length - b.leverage.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />;  // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '3',
       sorter: (a, b) => a.swap.length - b.swap.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
       key: '4',
       sorter: (a, b) => a.lot_size.length - b.lot_size.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
       key: '5',
       sorter: (a, b) => a.lot_step.length - b.lot_step.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
       key: '6',
       sorter: (a, b) => a.vol_min.length - b.vol_min.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
      
@@ -77,19 +114,35 @@ const Index = () => {
       dataIndex: 'vol_max',
       key: '7',
       sorter: (a, b) => a.vol_max.length - b.vol_max.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Symbol Group TI</span>,
       dataIndex: 'trading_interval',
       key: '8',
       sorter: (a, b) => a.trading_interval.length - b.trading_interval.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Symbols</span>,
       render: (text)=> <Link to={'#'} className='text-sm font-semibold cursor-pointer' style={{color: colorPrimary }}>View Details</Link>,
       key: '9',
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
       
     },
     // {
@@ -108,15 +161,16 @@ const Index = () => {
 
 const FetchData = async (page) =>{
     setIsLoading(true)
-    const res = await Symbol_Group_List(token,page)
+    const res = await Symbol_Group_List(token,page,parseInt(perPage))
   const {data:{message, payload, success}} = res
     setIsLoading(false)
     if(success){
-      // debugger;
+   
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
       setSymbolList(payload.data)
+      setIsUpdated(false)
     }
 }
 const DeleteHandler = async (id)=>{
@@ -161,8 +215,9 @@ const DeleteHandler = async (id)=>{
   }
 
 useEffect(() => {
+  setIsUpdated(true)
   FetchData(CurrentPage)
-}, [])
+}, [perPage])
 
   return (
     <Spin spinning={isLoading} size="large">
@@ -172,16 +227,21 @@ useEffect(() => {
       <div className='flex items-center gap-4'>
        <CustomTextField label={'Search'} varient={'outlined'} sx={{height:'48px'}} />
         <CustomButton
-          Text='Add Symbol Group'
+          Text='Add New Symbol Group'
           style={AddnewStyle}
           icon={<PlusCircleOutlined />}
-          onClickHandler={()=> navigate('/symbol-groups/0')}
+          onClickHandler={()=> { 
+            dispatch(setSymbolGroupsSelectedIDs([0]))
+            navigate('/symbol-groups-entry')
+          }}
         />
        
       </div>
     </div>
-     <CustomTable
-          direction="/symbol-groups"
+
+    <div className='mb-5'>
+      <CustomTable
+          direction="/symbol-groups-entry"
           formName = "Symbol Groups" 
           columns={columns}
           data={SymbolList} 
@@ -190,7 +250,16 @@ useEffect(() => {
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          isUpated={isUpdated}
+          setSelecetdIDs={setSymbolGroupsSelectedIDs}
+          setTableData = {setSymbolGroupsData}
+          table_name= "symbel_groups"
+          setSortDirection = {setSortDirection}
+          perPage={perPage}
+          setPerPage={setPerPage}
+
         />
+      </div>
        
   </div>
   </Spin>

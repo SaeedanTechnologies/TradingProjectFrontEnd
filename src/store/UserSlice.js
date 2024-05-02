@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { Login } from "../utils/_APICalls";
+import { Login,Logout } from "../utils/_APICalls";
 
 
 export const loginUser = createAsyncThunk('user/loginUser',async(loginData)=>{
@@ -7,6 +7,14 @@ export const loginUser = createAsyncThunk('user/loginUser',async(loginData)=>{
     const {data:{message, payload, success}} = res
     return [payload, message, success]
   })
+
+export const logoutUser = createAsyncThunk('user/logoutUser',async(token)=>{
+    const res = await Logout(token)
+    const {data:{message, payload, success}} = res
+    return [payload, message, success]
+  })
+
+
 const userSlice = createSlice({
   name: 'user',
   initialState:{
@@ -14,6 +22,7 @@ const userSlice = createSlice({
    user: null, 
    error: null
   }, 
+ 
   extraReducers:(builder)=>{
     builder.addCase(loginUser.pending, (state)=>{
       state.loading = true,
@@ -26,6 +35,20 @@ const userSlice = createSlice({
       state.error=  null
     })
     .addCase(loginUser.rejected, (state)=>{
+      state.loading = false,
+      state.user = null, 
+      state.error=  null
+    }).addCase(logoutUser.pending, (state)=>{
+      state.loading = true,
+      state.user = null, 
+      state.error=  null
+    })
+    .addCase(logoutUser.fulfilled, (state, action)=>{
+      state.loading = false,
+      state.user = null, 
+      state.error=  null
+    })
+    .addCase(logoutUser.rejected, (state)=>{
       state.loading = false,
       state.user = null, 
       state.error=  null
