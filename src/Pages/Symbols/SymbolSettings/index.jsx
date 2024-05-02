@@ -159,21 +159,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input 
-          placeholder='search Name' 
-          onPressEnter={(e)=>{
-            const filteredArray = allSetting.filter(item => item.name.toLowerCase().includes(e.target.value.toLowerCase()));
-            setAllSetting(filteredArray)
-            setIsUpdated(true)
-          }}
-           />,
-          dataIndex: 'name',
-          key: 'name',
-          width: 150,
-        }
-      ],
+   
       
       
     },
@@ -188,14 +174,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />;  // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input placeholder='search Leverage'/>,
-          dataIndex: 'leverage',
-          key: 'leverage',
-          width: 80,
-        }
-      ],
+     
     },
     {
       title:<span className="dragHandler">Swap</span>,
@@ -208,14 +187,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input placeholder='search swap'/>,
-          dataIndex: 'swap',
-          key: 'swap',
-          width: 80,
-        }
-      ],
+     
     },
     {
       title:<span className="dragHandler">Lot Size</span>,
@@ -228,14 +200,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input placeholder='search Lot size'/>,
-          dataIndex: 'lot_size',
-          key: 'lot_size',
-          width: 80,
-        }
-      ],
+     
     },
     {
       title:<span className="dragHandler">Lot Steps</span>,
@@ -248,14 +213,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <CaretDownOutlined />; // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input placeholder='search lot step' />,
-          dataIndex: 'lot_step',
-          key: 'lot_step',
-          width: 80,
-        }
-      ],
+     
     },
     {
       title:<span className="dragHandler">Minimum Value</span>,
@@ -268,14 +226,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input placeholder='search vol min'/>,
-          dataIndex: 'vol_min',
-          key: 'vol_min',
-          width: 80,
-        }
-      ],
+     
     },
     {
       title:<span className="dragHandler">Maximum Value</span>,
@@ -288,14 +239,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input placeholder='search vol max'/>,
-          dataIndex: 'vol_max',
-          key: 'vol_max',
-          width: 80,
-        }
-      ],
+     
     },
     {
       title:<span className="dragHandler">Commision</span>,
@@ -308,27 +252,10 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-      children:[
-        {
-          title: <Input placeholder='search Commision' />,
-          dataIndex: 'commission',
-          key: 'commission',
-          width: 80,
-        }, 
-      ],
+     
 
     },
 
-  //   {
-  //     title: 'Action',
-  //     key: 'action',
-  //     render: (_, record) => (
-  //       <Space size="middle" className='cursor-pointer'>
-  //         <Link to={`/symbol-settings/${record.id}`}><EditOutlined style={{ fontSize: "24px", color: colorPrimary }} /></Link>
-  //         <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
-  //       </Space>
-  //     ),
-  //  }
   ];
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
@@ -363,20 +290,10 @@ const Index = () => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
   setNewColumns(newCols)
   }, [checkedList]);
-  useEffect(()=>{
-    const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
-    const button = document.createElement('button');
-    button.innerText = 'Search';
-    button.classList.add('custom-button');
-    // Add event listener to the button
-    button.addEventListener('click', () => {
-      SearchHandler()
-    });
-    firstColumnHeaderCell.appendChild(button);
+
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
   },[])
-  const SearchHandler = ()=>{
-    alert('Button clicked!');
-  }
 
 
  
@@ -398,7 +315,7 @@ const Index = () => {
           </div>
         </div>
       
-        <CustomTable
+        <CustomTable 
           direction="/symbol-settings-entry"
           formName = "Symbol Settings" 
           columns={newColumns}
@@ -415,6 +332,8 @@ const Index = () => {
           setSortDirection = {setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
+          SearchQuery = {All_Setting_Data}
+          LoadingHandler={LoadingHandler}
         />
       </div>
      </Spin>
