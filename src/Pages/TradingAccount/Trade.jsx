@@ -21,7 +21,7 @@ import axios from 'axios';
 // import BinanceSocket from '../../websockets/BinanceSocket';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
-import CustomNumberTextField1 from '../../components/CustomNumberTextField1';
+import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 
 const Trade = ({ fetchLiveOrder }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -38,12 +38,12 @@ const Trade = ({ fetchLiveOrder }) => {
   const [order_type, setOrder_type] = useState(null);
   const [type,setType] = useState(null);
   const [volume,setVolume] = useState(0.01);
-  const [open_price,setOpen_price] = useState('');
+  const [open_price,setOpen_price] = useState(0);
   const [comment,setComment] = useState('');
   const [takeProfit,setTakeProfit] = useState(0);
   const [stopLoss,setStopLoss] = useState(0);
   const [stop_limit_price,setStop_limit_price] = useState('')
-  const [pricing, setPricing] = useState({ openPrice: null, askPrice: null });
+  const [pricing, setPricing] = useState({ openPrice: 0, askPrice: 0 });
   const [connected, setConnected] = useState(true);
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
@@ -109,7 +109,7 @@ const Trade = ({ fetchLiveOrder }) => {
     setStop_limit_price('')
   }
 
-  const handleSubmit = async (typeReceive) => {
+  const createOrder = async (typeReceive) => {
     try {
       await TradeValidationSchema.validate({
         symbol,
@@ -123,6 +123,7 @@ const Trade = ({ fetchLiveOrder }) => {
       setErrors({});
       const SymbolData = {
         symbol: symbol.feed_fetch_name,
+        feed_name: symbol.feed_name,
         order_type: order_type.value,
         type: typeReceive ? typeReceive : type.value,
         volume: String(volume),
@@ -160,6 +161,17 @@ const Trade = ({ fetchLiveOrder }) => {
         validationErrors[error.path] = error.message;
       });
       setErrors(validationErrors);
+    }
+  }
+
+  const handleSubmit = (typeReceive) => {
+   { typeReceive === 'sell' ? 
+      (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+      createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
+      typeReceive === 'buy' ? 
+      (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
+      createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
+      createOrder(typeReceive)
     }
   }
 
@@ -236,9 +248,10 @@ useEffect(() => {
       // })
       setPricing({
         ...pricing,
-        openPrice: data?.bidPrice,
-        askPrice: data?.askPrice
+        openPrice: parseFloat(data?.bidPrice).toFixed(5),
+        askPrice: parseFloat(data?.askPrice).toFixed(5)
       })
+      setOpen_price(parseFloat(data?.askPrice).toFixed(5))
     } catch (error) {
       // setError('Error fetching data');
       console.error(error);
@@ -250,9 +263,9 @@ useEffect(() => {
     if(symbol){
       fetchData(symbol, e.target.checked)
     }
-    if(!e.target.checked){
-      setOpen_price(pricing.askPrice)
-    }
+    // if(!e.target.checked){
+    //   setOpen_price(pricing.askPrice)
+    // }
   }
 
 
@@ -286,8 +299,8 @@ useEffect(() => {
           fetchBinancehData(symbol?.feed_fetch_name)
         }
         else {
-        console.log('Bid Price:', data.bidPrice);
-        console.log('Ask Price:', data.askPrice);
+        // console.log('Bid Price:', data.bidPrice);
+        // console.log('Ask Price:', data.askPrice);
         setPricing({
           ...pricing,
           openPrice: data?.bidPrice,
@@ -337,14 +350,15 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    if (value ) {
+                    if (value) {
                       setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       setSymbol(value)
-                    }
-                    if (value && connected) {
-                      setSymbol(value)
-                      setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
+                      fetchBinancehData(value.feed_fetch_name)
+                      if (value && connected) {
+                      // setSymbol(value)
+                      // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       fetchData(value, connected);
+                    }
                     }
                     else
                       setSymbol(null)
@@ -374,7 +388,7 @@ useEffect(() => {
                       setOrder_type(null)
                   }}
                   renderInput={(params) =>
-                    <TextField {...params} name="Type" label="Select Type" variant="standard" />
+                    <TextField {...params} name="Type" label="Order Type" variant="standard" />
                   }
                 />
                 {errors.order_type && <span style={{ color: 'red' }}>{errors.order_type}</span>}
@@ -457,10 +471,10 @@ useEffect(() => {
             <div className={`mb-4 grid  ${type?.value === 'Buy Sell Limit' || type?.value === 'Sell Stop Limit' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} gap-4`}>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <div className="flex-1">
-                    <CustomNumberTextField
+                    <CustomStopLossTextField
                       label="Take Profit"
                       value={Number(takeProfit)}
-                      initialFromState={Number(pricing.askPrice ?? 0)}
+                      initialFromState={Number(pricing?.askPrice ?? 0)}
                       checkFirst={pricing?.askPrice ? true : false}
                       onChange={ handleProfitChange}
                       fullWidth
@@ -470,10 +484,10 @@ useEffect(() => {
                   {/* <CustomTextField label={'Take Profit'} varient={'standard'} type="number" sx={numberInputStyle} value={takeProfit} onChange={e => handleInputChange('takeProfit', e.target.value)} /> */}
                   {errors.takeProfit && <span style={{ color: 'red' }}>{errors.takeProfit}</span>}
                 </div>
-                <CustomNumberTextField
+                <CustomStopLossTextField
                       label="Stop Loss"
                       value={Number(stopLoss)}
-                      initialFromState={Number(pricing.askPrice ?? 0)}
+                      initialFromState={Number(pricing?.askPrice ?? 0)}
                       checkFirst={pricing?.askPrice ? true : false}
                       onChange={handleLossChange}
                       fullWidth
@@ -483,10 +497,10 @@ useEffect(() => {
                 {/* <CustomTextField label={'Stop Loss'} varient={'standard'} type="number" sx={numberInputStyle} value={stopLoss} onChange={e => handleInputChange('stopLoss', e.target.value)} /> */}
                 {errors.stopLoss && <span style={{ color: 'red' }}>{errors.stopLoss}</span>}
               </div>
-              {(type?.value === 'Buy Sell Limit' || type?.value === 'Sell Stop Limit') &&
+              {(type?.value === 'Buy Stop Limit' || type?.value === 'Sell Stop Limit') &&
                 <CustomTextField label={'Stop Limit Price'} varient={'standard'} type="number" sx={numberInputStyle} value={stop_limit_price} onChange={e => handleInputChange('stop_limit_price', e.target.value)} />}
             </div>
-            {/* <b>Open Price: {pricing?.openPrice ? `(${pricing?.openPrice})` : ''} / Ask Price: {pricing?.askPrice ? `(${pricing?.askPrice})` : ''}</b> */}
+            <b>Open Price: {pricing?.openPrice ? `(${pricing?.openPrice})` : ''} / Ask Price: {pricing?.askPrice ? `(${pricing?.askPrice})` : ''}</b>
             {/* <b> Open Price (Socket) : {pricing?.openPrice} / Ask Price (Socket) : {pricing?.askPrice}</b> <br /> <b> Open Price (Manual) : {manualpricing.openPrice} / Ask Price (Manual): {manualpricing.askPrice}</b> */}
             <div className="mb-4 grid grid-cols-1 gap-4">
               <CustomTextField label={'Comments'}
@@ -502,6 +516,12 @@ useEffect(() => {
                 <CustomButton
                   Text={"Place Order"}
                   style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
+                  disabled={(type?.label === "Sell Limit" || type?.label === "Sell Stop") ? 
+                  (stopLoss > open_price && takeProfit < open_price) ? false : true
+                  : (type?.label === "Buy Limit" || type?.label === "Buy Stop") ?
+                   (stopLoss < open_price && takeProfit > open_price) ? false : true 
+                   : (type?.label === "Buy Stop Limit" && stop_limit_price < open_price) ?  
+                   (stopLoss < stop_limit_price && takeProfit > stop_limit_price) ? false : true : (type?.label === "Sell Stop Limit" && stop_limit_price > open_price) ? (stopLoss > stop_limit_price && takeProfit < stop_limit_price) ? false : true : true}
                   onClickHandler={() => handleSubmit('')}
                 />
               </div>
@@ -510,10 +530,12 @@ useEffect(() => {
                 <CustomButton
                   Text={`Sell ${pricing.askPrice ? `(${pricing.askPrice})` : ''}`}
                   style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
+                  // disabled={connected ? (stopLoss > pricing.askPrice && takeProfit < pricing.askPrice) ? false : true : (stopLoss > open_price && takeProfit < open_price) ? false : true}
                   onClickHandler={() => handleSubmit('sell')}
                 />
                 <CustomButton Text={`Buy ${pricing.openPrice ? `(${pricing.openPrice})` : ''}`}
                   style={{ height: "48px" }}
+                  // disabled={connected ? (stopLoss < pricing.askPrice && takeProfit > pricing.askPrice) ? false : true : (stopLoss < open_price && takeProfit > open_price) ? false : true}
                   onClickHandler={() => handleSubmit('buy')}
                 />
               </div>

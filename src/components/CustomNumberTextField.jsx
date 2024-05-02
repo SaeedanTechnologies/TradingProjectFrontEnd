@@ -47,7 +47,6 @@ const CustomNumberTextField = ({
   function getPrecision(num) {
     // Convert the number to a string and split it into integer and fractional parts
     var parts = num.toString().split('.');
-
     // Return the length of the fractional part, or 0 if there's no fractional part
     return parts[1] ? parts[1].length : 0;
   }

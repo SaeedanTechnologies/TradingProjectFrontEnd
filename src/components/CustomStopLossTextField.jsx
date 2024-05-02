@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 
-const CustomNumberTextField1 = ({
+const CustomStopLossTextField = ({
   value,
   initialFromState,
   checkFirst,
@@ -18,33 +18,49 @@ const CustomNumberTextField1 = ({
   const isFirstClick = useRef(true);
 
   function incrementNumber(num) {
-    if (Number.isInteger(num)) {
-    return num + 1;
-    } else {
-    let numStr = num.toString();
-    let [integerPart, decimalPart] = numStr.split('.');
+    let [integerPart, decimalPart] = num.split('.');
+    // console.log('integral, decimal', integerPart, decimalPart)
     if (!decimalPart) {
-    decimalPart = '0';
+      // console.log(parseInt(num) + 1)
+      return parseInt(num) + 1;
     }
-    decimalPart = (parseInt(decimalPart) + 1).toString().padStart(decimalPart.length, '0');
-    return parseFloat(integerPart + '.' + decimalPart);
-    }
-    }
-    
+    let numZeros = decimalPart.length - 1;
 
-    function decrementNumber(num) {
-      if (Number.isInteger(num)) {
-      return num - 1;
-      } else {
-      let numStr = num.toString();
-      let [integerPart, decimalPart] = numStr.split('.');
-      if (!decimalPart) {
-      decimalPart = '0';
-      }
-      decimalPart = (parseInt(decimalPart) - 1).toString().padStart(decimalPart.length, '0');
-      return parseFloat(integerPart + '.' + decimalPart);
-      }
-      }
+    // Construct the result
+    let newdecimalPart = parseFloat(`0.${'0'.repeat(numZeros)}1`);
+    // console.log('newdecimalPart', newdecimalPart)
+    // console.log('Integral Part', num)
+    // console.log('newdecimalPart', typeof(newdecimalPart))
+    // console.log('Integral Part', typeof(num))
+
+    // Convert the string to a number and add it to the number
+    let result = newdecimalPart + Number(num);
+
+    // Format the result to have two digits after the decimal point
+    result = result.toFixed(decimalPart.length);
+
+
+    // console.log('newConverted', result)
+    return result;
+  }
+
+  function decrementNumber(num) {
+    let [integerPart, decimalPart] = num.split('.');
+    if (!decimalPart) {
+      // console.log(parseInt(num) - 1)
+      return parseInt(num) - 1;
+    }
+    let numZeros = decimalPart.length - 1;
+
+    // Construct the result
+    let newdecimalPart = parseFloat(`0.${'0'.repeat(numZeros)}1`);
+    // Convert the string to a number and add it to the number
+    let result = Number(num) - newdecimalPart;
+
+    // Format the result to have two digits after the decimal point
+    result = result.toFixed(decimalPart.length);
+    return result;
+  }
 
   const handleChange = (event) => {
     const newValue = event.target.value;
@@ -71,7 +87,7 @@ const CustomNumberTextField1 = ({
         onChange(initialFromState);
       }
     } else {
-      const newValue = incrementNumber (currentValue)
+      const newValue = incrementNumber(`${currentValue}`)
       // const newValue = currentValue + step;
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
         setCurrentValue(newValue)
@@ -83,7 +99,7 @@ const CustomNumberTextField1 = ({
   const handleDecrement = () => {
     // const newValue = parseFloat(event.target.value);
     // const newValue = currentValue - step;
-    const newValue = decrementNumber(currentValue)
+    const newValue = decrementNumber(`${currentValue}`)
     if (isFirstClick.current && checkFirst) {
       if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
         setCurrentValue(initialFromState);
@@ -119,7 +135,7 @@ const CustomNumberTextField1 = ({
       <div style={{
         marginLeft: '8px',
         fontSize: '24px',
-        cursor:'pointer',
+        cursor: 'pointer',
       }}>
         <button onClick={handleIncrement}>+</button>
         <button onClick={handleDecrement}>-</button>
@@ -128,7 +144,7 @@ const CustomNumberTextField1 = ({
   );
 };
 
-CustomNumberTextField1.propTypes = {
+CustomStopLossTextField.propTypes = {
   value: PropTypes.number,
   initialFromState: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired,
@@ -139,7 +155,7 @@ CustomNumberTextField1.propTypes = {
   step: PropTypes.number,
 };
 
-CustomNumberTextField1.defaultProps = {
+CustomStopLossTextField.defaultProps = {
   value: 0,
   label: 'Number',
   fullWidth: false,
@@ -148,4 +164,4 @@ CustomNumberTextField1.defaultProps = {
   step: 0.1
 };
 
-export default CustomNumberTextField1;
+export default CustomStopLossTextField;
