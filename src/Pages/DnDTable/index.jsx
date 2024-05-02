@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./index.css";
-import { Spin, Table } from "antd";
+import { Input, Spin, Table } from "antd";
 import { Resizable } from "react-resizable";
 import ReactDragListView from "react-drag-listview";
 import CustomButton from "../../components/CustomButton";
@@ -56,6 +56,8 @@ class DnDTable extends Component {
       isLoading: false, 
       data: [],
       isUpated:true,
+      searchValues: {},
+      buttonCreated: false
     };
     this.setIsRearangments = this.setIsRearangments.bind(this);
     this.setIsMassEdit = this.setIsMassEdit.bind(this);
@@ -68,8 +70,10 @@ class DnDTable extends Component {
     this.MassEditHandler = this.MassEditHandler.bind(this);
     this.MassDeleteHandler = this.MassDeleteHandler.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
-    this.ShowHideColumnsHandler = this.ShowHideColumnsHandler.bind(this)
+    this.setColumnsSetting = this.setColumnsSetting.bind(this)
     this.useEffect = this.useEffect.bind(this)
+    this.SearchHandler = this.SearchHandler.bind(this)
+    this.handleInputChange = this.handleInputChange.bind(this)
 
     const that = this;
 
@@ -77,8 +81,8 @@ class DnDTable extends Component {
       onDragEnd(fromIndex, toIndex) {
         if (that.state.isRearangments) {
           const columns = [...that.state.columns];
-          const item = columns.splice(fromIndex, 1)[0];
-          columns.splice(toIndex, 0, item);
+          const item = columns.splice(fromIndex - 1, 1)[0];
+          columns.splice(toIndex -1, 0, item);
           that.setState({
             columns,
           });
@@ -97,13 +101,52 @@ class DnDTable extends Component {
       ignoreSelector: "react-resizable-handle",
     };
   }
-
- async componentDidMount() {
+  async SearchHandler(){
+  //  this.setState({isLoading: true})
+  this.props.LoadingHandler(true)
+   const res = await this.props.SearchQuery(this.props.token, 1, 10, this.state.searchValues)
+   const {data:{payload, success, message}} = res
+  //  this.setState({isLoading: false})
+  this.props.LoadingHandler(false)
+   if(success){
+     this.setState({data: payload.data})
+   }
+  }
+  componentDidMount() {
     this.useEffect()
   }
+ 
   async useEffect(){
+    const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
+    if(!this.state.buttonCreated){
+      const button = document.createElement('button');
+      button.innerText = 'Search';
+      button.classList.add('custom-button');
+      // Add event listener to the button
+      button.addEventListener('click', () => {
+        this.SearchHandler()
+      });
+    firstColumnHeaderCell.appendChild(button);
+    }
+    this.setState({buttonCreated: true})
+    const columnsWithChildren = this.props.columns.map(column => ({
+      ...column,
+      children: [
+          {
+              title: <Input 
+              placeholder={`Search ${column.title.props.children}`}
+              onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
+              />,
+              dataIndex: column.dataIndex,
+              key: `${column.dataIndex}-search`,
+              width: 150,
+          }
+      ]
+  }));
+  
+  this.setState({columns: columnsWithChildren})
     try{
-      const ColumnsData = this.props.columns.map(x=>{
+      const ColumnsData = columnsWithChildren.map(x=>{
         return {
           key: x.key, 
           dataIndex: x.dataIndex,
@@ -117,13 +160,22 @@ class DnDTable extends Component {
       this.setState({isLoading: true})
       const res = await GetSettings(Params, this.props.token)
       const {data:{message, payload, success}} = res
+      debugger
       this.setState({isLoading: false})
       
       if(payload && payload.length > 0){
-        const selectedCols = JSON.parse(payload[0].value)
-        const filteredColumns = this.props.columns.filter(column =>
-          selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
-        );
+        const selectedCols = JSON.parse(payload[0].value) // from db
+        // const filteredColumns = columnsWithChildren.filter(column =>  
+        //   selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
+        // );
+        const columnMap = {};
+        columnsWithChildren.forEach(column => {
+          columnMap[column.dataIndex] = column;
+        });
+        const filteredColumns = selectedCols.map(selectedColumn => {
+          const column = columnMap[selectedColumn.dataIndex];
+          return column;
+        });
         const mData = ColumnsData.filter(column =>
           selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
         );
@@ -133,7 +185,7 @@ class DnDTable extends Component {
           this.setState({ columns: ColumnsData, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
         }
       }else{
-        this.setState({ columns: this.props.columns, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
+        this.setState({ columns: columnsWithChildren, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
       }
      
   
@@ -158,7 +210,14 @@ class DnDTable extends Component {
     // } 
   
   }
-
+  handleInputChange = (dataIndex, value) => {
+    this.setState(prevState => ({
+        searchValues: {
+            ...prevState.searchValues,
+            [dataIndex]: value
+        }
+    }));
+};
   components = {
     header: {
       cell: ResizableTitle,
@@ -229,12 +288,15 @@ class DnDTable extends Component {
   }
   handleSaveChanges() {
     if (this.state.isRearangments) {
-      CustomNotification({
-        type: "success",
-        title: "Success",
-        description: "Column Arranged Successfully",
-        key: "1",
-      });
+      const ColumnsData = this.state.columns.map(x=>{
+        return {
+          key: x.key, 
+          dataIndex: x.dataIndex,
+          title: typeof x.title === 'string' ? x.title:x.title.props.children 
+        }
+      })
+      debugger
+      this.setColumnsSetting(ColumnsData, "Columns Rearrangement Sucessfully")
       this.setIsRearangments(false);
     }
   }
@@ -322,11 +384,11 @@ class DnDTable extends Component {
   handleCancel(){
    this.setState({isAddRemove: false})
   }
- async ShowHideColumnsHandler(){
+ async setColumnsSetting(values, msg){
     const Params = {
       data:{
       name: this.props.formName,
-      value: JSON.stringify(this.state.selectedColumns)
+      value: JSON.stringify(values)
     }}
     this.setState({isLoading: true})
     const res = await SetSettings(Params,this.props.token )
@@ -336,8 +398,8 @@ class DnDTable extends Component {
       this.handleCancel()
       CustomNotification({
         type: "success",
-        title: "Arranged ",
-        description: "Columns Settings updated successfully",
+        title: "Success ",
+        description: message,
         key: "arr4",
       })
       this.useEffect()
@@ -413,7 +475,7 @@ class DnDTable extends Component {
             bordered
             components={this.components}
             columns={combinedColumns}
-            dataSource={this.props.data}
+            dataSource={this.state.data} 
             pagination={false}
             rowSelection={rowSelection}
             showSorterTooltip={false}
@@ -477,7 +539,7 @@ class DnDTable extends Component {
           borderRadius: '8px',
           zIndex: '100'
         }}
-        onClickHandler={this.ShowHideColumnsHandler}
+        onClickHandler={()=>this.setColumnsSetting(this.state.selectedColumns, "Columns Settings updated successfully")}
         loading={this.state.isLoading}
         />
         <CustomButton
