@@ -132,7 +132,7 @@ const SymbolGroupEntry = () => {
             key: 2
           })
         clearFields()
-        navigate('/symbol-groups')
+        // navigate('/symbol-groups')
       }else{
       setIsLoading(false)
       CustomNotification({
@@ -156,7 +156,7 @@ const SymbolGroupEntry = () => {
         const { data: { message, success, payload } } = res;
         if (success)
         {
-            clearFields();
+            // clearFields();
             CustomNotification({
               type: 'success',
               title: 'success',
@@ -189,7 +189,7 @@ const SymbolGroupEntry = () => {
             key: 2
           })
           clearFields()
-          navigate('/symbol-groups')
+          // navigate('/symbol-groups')
         }else{
           CustomNotification({
               type: 'error',

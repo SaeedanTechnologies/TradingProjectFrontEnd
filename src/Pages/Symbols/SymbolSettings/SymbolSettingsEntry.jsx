@@ -285,7 +285,7 @@ const SymbolSettingsEntry = () => {
             description: 'Symbol Setting Created Successfully',
             key: 2
           })
-          navigate('/symbol-settings')
+          // navigate('/symbol-settings')
         } else {
           setIsLoading(false)
           if (payload) {
@@ -352,7 +352,8 @@ const SymbolSettingsEntry = () => {
             description: 'Symbol Setting Updated Successfully',
             key: 2
           })
-          navigate('/symbol-settings')
+          // navigate('/symbol-settings')
+           setIsDisabled(true)
         } else {
           setIsLoading(false)
           CustomNotification({
