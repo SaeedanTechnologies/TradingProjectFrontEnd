@@ -16,7 +16,7 @@ import moment from 'moment'
 import CustomNotification from '../../components/CustomNotification';
 import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
 import { InputAdornment, IconButton, TextField } from '@mui/material';
-
+import { CheckBrandPermission } from "../../utils/helpers";
 
 
 const TransactionOrder = () => {
@@ -27,6 +27,10 @@ const TransactionOrder = () => {
   } = theme.useToken();
 
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
+
+
   const [transactionOrders, setTransactionOrders] = useState([])
   const [method, setMethod] = useState(null)
   const [currency, setCurrency] = useState('')
@@ -239,7 +243,11 @@ const TransactionOrder = () => {
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
+
+        {
+          CheckBrandPermission(userPermissions,userRole,'transaction_orders_create') ? 
+          <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
           <div>
             <CustomAutocomplete
               name={'Operations'}
@@ -296,7 +304,6 @@ const TransactionOrder = () => {
             onChange={e => handleInputChange('comment', e.target.value)}
           />
         </div>
-
         <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <CustomButton
             Text={"With Draw"}
@@ -308,6 +315,10 @@ const TransactionOrder = () => {
             onClickHandler={() => handleSubmit('deposit')}
           />
         </div>
+          </>
+          : null
+        }
+        
         <div className="mb-4 grid grid-cols-1  gap-4 mt-4">
           {/* <CustomTable columns={columns} data={transactionOrders} headerStyle={headerStyle} /> */}
           
