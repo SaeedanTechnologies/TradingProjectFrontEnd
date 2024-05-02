@@ -16,10 +16,13 @@ export const Feed_Data_List = async (token) => {
 }
 
 
-export const All_Setting_Data = async (token, page=1, perPage=10) => {
-    const res = await _API(`${apiUrl}/admin/symbel_setting?page=${page}&per_page=${perPage}`, 'get', [], token)
-    return res
-}
+export const All_Setting_Data = async (token, page = 1, perPage = 10, searchValues) => {
+    const queryParams = new URLSearchParams(searchValues).toString();
+    const apiUrlWithParams = `${apiUrl}/admin/symbel_setting?page=${page}&per_page=${perPage}&${queryParams}`;
+    const res = await _API(apiUrlWithParams, 'get', [], token);
+    return res;
+};
+
 
 export const DeleteSymbolSetting = async (id, token) => {
     const res = await _API(`${apiUrl}/admin/symbel_setting/${id}`, 'delete', [], token)

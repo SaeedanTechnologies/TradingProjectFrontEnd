@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 
 const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, 
-  table_name, setSortDirection, perPage, setPerPage, editPermissionName, deletePermissionName}) => {
+  table_name, setSortDirection, perPage, setPerPage, editPermissionName, deletePermissionName, SearchQuery,LoadingHandler}) => {
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -17,13 +17,13 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
   };
   useEffect(()=>{
     if(setTableData){
-      if(data.length > 0){
+      if(data?.length > 0){
         dispatch(setTableData(data))
       }
     }
    
   }, [data, dispatch])
- debugger
+ 
   return (
     <>
       <div style={{ overflowX: 'auto' }}>
@@ -46,6 +46,8 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           setPerPage={setPerPage}
           editPermissionName={editPermissionName}
           deletePermissionName={deletePermissionName}
+          SearchQuery={SearchQuery}
+          LoadingHandler={LoadingHandler}
         />
         <div style={{ textAlign: 'right', marginTop: 16 }}>
           <Pagination
@@ -63,6 +65,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
               }
               return originalElement;
             }}
+            // yhn b bhj dena
           />
            <span style={{ marginLeft: 8 }}>
             {total > 0 && `Showing ${((current_page - 1) * perPage) + 1}-${Math.min(current_page * perPage, total)} of ${total} items`}

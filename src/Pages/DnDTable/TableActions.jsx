@@ -14,25 +14,25 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
     {
       key: '1',
       label: (
-        <button rel="noopener noreferrer" onClick={()=> setIsRearangments(true)}>  Rearangments  </button>
+        <button className='w-full text-left' rel="noopener noreferrer" onClick={()=> setIsRearangments(true)}>  Rearangments  </button>
       ),
     },
     {
       key: '2',
       label: (
-        <button  rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
+        <button className='w-full text-left' rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
     selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName)  && {
       key: '3',
       label: (
-        <button rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
+        <button className='w-full text-left' rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
       ),
     },
     selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName) && {
       key: '4',
       label: (
-        <button  rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
+        <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
       ),
     },
    
