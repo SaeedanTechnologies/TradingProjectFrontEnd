@@ -13,6 +13,7 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
+import { CheckBrandPermission } from "../../utils/helpers";
 
 
 const TradingAccountDetails = () => {
@@ -22,6 +23,8 @@ const TradingAccountDetails = () => {
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
   const token = useSelector(({user})=> user?.user?.token )
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
    
   const { token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const navigate = useNavigate();
@@ -59,37 +62,43 @@ const fetchLiveOrder = async (page) => {
     key: '1',
     label: 'Live Orders',
     children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder}  isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} />,
-    path: '/single-trading-accounts/details/live-order'
+    path: '/single-trading-accounts/details/live-order',
+    display:  CheckBrandPermission(userPermissions,userRole,'live_orders_read') ? 'show' : 'hide' 
   },
   {
     key: '2',
     label: 'Trade',
     children: <Trade fetchLiveOrder = {fetchLiveOrder} />,
-    path: '/single-trading-accounts/details/symbol'
+    path: '/single-trading-accounts/details/symbol',
+    display:  CheckBrandPermission(userPermissions,userRole,'live_orders_create') ? 'show' : 'hide' 
   },
   {
     key: '3',
     label: 'Close Order',
     children: <CloseOrder />,
-    path: "/single-trading-accounts/details/close-order"
+    path: "/single-trading-accounts/details/close-order",
+    display:  CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide' 
   },
   {
     key: '4',
     label: 'Personal Data',
     children: <PersonalData />,
-    path: "/single-trading-accounts/details/personal-data"
+    path: "/single-trading-accounts/details/personal-data",
+    display:  'show' 
   },
   {
     key: '5',
     label: 'Account and Security',
     children: <Account />,
-    path: "/single-trading-accounts/details/account-security"
+    path: "/single-trading-accounts/details/account-security",
+    display:   'show' 
   },
   {
     key: '6',
     label: 'Transaction Orders',
     children: <TransactionOrder />,
-    path: "/single-trading-accounts/details/transaction-order"
+    path: "/single-trading-accounts/details/transaction-order",
+    display:  CheckBrandPermission(userPermissions,userRole,'transaction_orders_read') ? 'show' : 'hide' 
   },
 ];
 
@@ -129,9 +138,12 @@ const onChange = (key) => {
         tabBarStyle={{ fontSize: "14px", fontWeight: "600", color: "#606B85" }}
       >
         {items.map(item => (
-          <TabPane tab={item.label} key={item.key}>
-            {item.children}
-          </TabPane>
+          (item.display === 'show' ?
+         ( <TabPane tab={item.label} key={item.key}>
+          {item.children}
+        </TabPane>)
+          : null)
+         
         ))}
       </Tabs>
       </div>
