@@ -88,7 +88,7 @@ export const router = createBrowserRouter([
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },
       { path: "/margin-calls", element: <TradingAccount direction={3} title="Margin Call Trading Account List" /> },
       { path: "/symbol-groups", element: <SymbolGroup /> },
-      { path: "/symbol-groups/:id", element: <SymbolGroupEntry /> },
+      { path: "/symbol-groups-entry", element: <SymbolGroupEntry /> },
       { path: "/symbol-settings", element: <SymbolSettings /> },
       { path: "/symbol-settings-entry", element: <SymbolSettingsEntry /> },
       { path: "/data-feed", element: <DataFeed /> },

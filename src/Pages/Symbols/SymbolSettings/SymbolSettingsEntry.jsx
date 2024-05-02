@@ -20,6 +20,7 @@ import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../uti
 import { deleteSymbolSettingsById } from '../../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
 
+
 const FeedData = [
   { feed_name: "First", server: 'First server' },
   { feed_name: "Second", server: 'Second server' },
@@ -154,9 +155,9 @@ const SymbolSettingsEntry = () => {
   const setStatesForEditMode = async (payload, success, SymbList, feedlist)=>{
     if (success) {
       setSymbolName(payload.name)
-      const selectedGroup = SymbList.find(x => x.id === payload.symbel_group_id)
+      const selectedGroup = SymbList?.find(x => x?.id === payload.symbel_group_id)
       setSelectedSymbol(selectedGroup)
-      const SelectedFeedNameOption = feedlist.find(x => x.name === payload.feed_name)
+      const SelectedFeedNameOption = feedlist?.find(x => x?.name === payload.feed_name)
       if (payload.feed_name === 'binance') {
         const res = await GetCryptoData()
         const mData = res?.data?.symbols
@@ -255,8 +256,7 @@ const SymbolSettingsEntry = () => {
         setErrors({});
       }
 
-
-      const SymbolGroupData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
+     const SymbolGroupData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
         name: symbolName ? symbolName : '',
         symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
         feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
@@ -396,6 +396,7 @@ const SymbolSettingsEntry = () => {
     setBidValue(bidPrice)
   }
   const deleteHandler = ()=>{
+    // debugger
     const Params = {
       table_name:'symbel_settings',
       table_ids: [ArrangedSymbolSettingsData[currentIndex].id]

@@ -16,8 +16,10 @@ import LOGO_CDN from '../../assets/images/logo.png';
 import SubMenu from "antd/es/menu/SubMenu";
 import { useNavigate } from "react-router-dom";
 import { siderMenuStyle, siderStyle, subMenuTitleStyle } from "./style";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { CheckBrandPermission } from "../../utils/helpers";
+import { logoutUser } from "../../store/UserSlice";
+import CustomNotification from "../../components/CustomNotification";
 
 
 const { Sider } = Layout;
@@ -25,13 +27,48 @@ const { Sider } = Layout;
 
 
 const Sidebar = ({ collapsed }) => {
+    const token = useSelector(({ user }) => user?.user?.token)
   const [selectedKey, setSelectedKey] = useState('1');
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
 
   const { token: { sidebarColor, darkGray, colorTransparentPrimary, Gray2, colorPrimary } } = theme.useToken();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
      
+  const Logout_Handler = async () => {
+    try{
+       const res = await dispatch(logoutUser(token));
+    const { payload,message,success } = res;
+    if (payload[2]) {
+      CustomNotification({
+        type: 'success',
+        title: 'Logout',
+        description: payload[1],
+        key: 1
+      });
+      navigate('/');
+    } else {
+      CustomNotification({
+        type: 'error',
+        title: 'Invalid',
+        description: payload[1],
+        key: 2
+      });
+    }
+    }catch(error){
+       CustomNotification({
+        type: 'error',
+        title: 'Invalid',
+        description: error.message,
+        key: 2
+      });
+    }
+   
+  };
+
+
+
 
   const items = [
     {
@@ -171,7 +208,7 @@ const Sidebar = ({ collapsed }) => {
         trigger={
           <>
             <div style={{ backgroundColor: sidebarColor }}>
-              <div className={`flex px-3 py-1`} style={{ backgroundColor: colorTransparentPrimary }}>
+              <div className={`flex px-3 py-1`} style={{ backgroundColor: colorTransparentPrimary }} onClick={Logout_Handler}>
                 <img alt="icon" src={LOGOUT_CDN} />
                 {!collapsed && <span style={{ color: darkGray }}>Logout</span>}
               </div>

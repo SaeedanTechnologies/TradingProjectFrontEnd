@@ -23,7 +23,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
     }
    
   }, [data, dispatch])
- debugger
+//  debugger
   return (
     <>
       <div style={{ overflowX: 'auto' }}>
