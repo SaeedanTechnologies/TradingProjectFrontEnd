@@ -68,9 +68,6 @@ const Index = () => {
     // debugger;
     setIsLoading(false)
     if (success) {
-
-      
-
       setTradingAccountGroupList(payload.data)
     }
   }

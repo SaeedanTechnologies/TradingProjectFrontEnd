@@ -345,14 +345,13 @@ const SymbolSettingsEntry = () => {
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
-          clearFields();
           CustomNotification({
             type: 'success',
             title: 'success',
             description: 'Symbol Setting Updated Successfully',
             key: 2
           })
-          navigate('/symbol-settings')
+          setIsDisabled(true)
         } else {
           setIsLoading(false)
           CustomNotification({
