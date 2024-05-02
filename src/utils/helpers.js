@@ -53,7 +53,6 @@ export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading )=
       confirmButtonText: "Yes, delete it!"
     }).then(async (result) => {
       if (result.isConfirmed) {
-        debugger
         setLoading(true)
         const res = await _API(Params, token)
         const { data: { success, message, payload } } = res

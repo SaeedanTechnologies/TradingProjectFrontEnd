@@ -256,7 +256,6 @@ const SymbolGroupEntry = () => {
 
 
  const deleteHandler = ()=>{
-  debugger;
     const Params = {
       table_name:'symbel_groups',
       table_ids: [ArrangedSymbolGroupsData[currentIndex].id]
@@ -301,8 +300,11 @@ const SymbolGroupEntry = () => {
       if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){ // update case
         setIsDisabled(false)
       }else if (SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) !== 0){
+        const cIndex = ArrangedSymbolGroupsData.findIndex(item => parseInt(item.id) === parseInt(SymbolGroupsIds[0]))
+        setCurrentIndex(cIndex)
         fetchSymbolGroupWRTID()
         setIsDisabled(true)
+
       }
       else{
          setIsDisabled(true)

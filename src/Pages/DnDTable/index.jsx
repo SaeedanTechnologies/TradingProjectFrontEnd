@@ -160,7 +160,6 @@ class DnDTable extends Component {
       this.setState({isLoading: true})
       const res = await GetSettings(Params, this.props.token)
       const {data:{message, payload, success}} = res
-      debugger
       this.setState({isLoading: false})
       
       if(payload && payload.length > 0){

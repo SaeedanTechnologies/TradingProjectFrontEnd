@@ -345,13 +345,14 @@ const SymbolSettingsEntry = () => {
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
+          clearFields();
           CustomNotification({
             type: 'success',
             title: 'success',
             description: 'Symbol Setting Updated Successfully',
             key: 2
           })
-          setIsDisabled(true)
+          navigate('/symbol-settings')
         } else {
           setIsLoading(false)
           CustomNotification({
@@ -395,7 +396,6 @@ const SymbolSettingsEntry = () => {
     setBidValue(bidPrice)
   }
   const deleteHandler = ()=>{
-    // debugger
     const Params = {
       table_name:'symbel_settings',
       table_ids: [ArrangedSymbolSettingsData[currentIndex].id]
