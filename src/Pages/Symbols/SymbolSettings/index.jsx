@@ -167,7 +167,17 @@ const Index = () => {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '2',
-      sorter: (a, b) => a.leverage.length - b.leverage.length,
+      sorter: (a, b) => {
+        // Split the ratio values and parse them as numbers
+        const ratioA = a.leverage.split(':').map(Number);
+        const ratioB = b.leverage.split(':').map(Number);
+        
+        // Compare the ratio values
+        if (ratioA[0] === ratioB[0]) {
+          return ratioA[1] - ratioB[1];
+        }
+        return ratioA[0] - ratioB[0];
+      },
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

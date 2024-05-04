@@ -57,7 +57,8 @@ class DnDTable extends Component {
       data: [],
       isUpated:true,
       searchValues: {},
-      buttonCreated: false
+      buttonCreated: false, 
+      isSearching: true, 
     };
     this.setIsRearangments = this.setIsRearangments.bind(this);
     this.setIsMassEdit = this.setIsMassEdit.bind(this);
@@ -107,6 +108,8 @@ class DnDTable extends Component {
    const res = await this.props.SearchQuery(this.props.token, 1, 10, this.state.searchValues)
    const {data:{payload, success, message}} = res
   //  this.setState({isLoading: false})
+  
+  this.setState({isSearching: false})
   this.props.LoadingHandler(false)
    if(success){
      this.setState({data: payload.data})
@@ -120,11 +123,20 @@ class DnDTable extends Component {
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
       const button = document.createElement('button');
-      button.innerText = 'Search';
       button.classList.add('custom-button');
       // Add event listener to the button
       button.addEventListener('click', () => {
-        this.SearchHandler()
+        if(this.state.isSearching){
+          this.SearchHandler()
+        }else{
+          this.setState({isSearching: true})
+          this.props.LoadingHandler(true)
+          setTimeout(()=>{
+            this.setState({ data: this.props.data });
+            this.props.LoadingHandler(false)
+          },2000)
+        }
+       
       });
     firstColumnHeaderCell.appendChild(button);
     }
@@ -136,6 +148,7 @@ class DnDTable extends Component {
               title: <Input 
               placeholder={`Search ${column.title.props.children}`}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
+              onPressEnter={this.SearchHandler}
               />,
               dataIndex: column.dataIndex,
               key: `${column.dataIndex}-search`,
@@ -203,6 +216,20 @@ class DnDTable extends Component {
     if(this.props?.data?.length > 0 && prevProps.data !== this.props.data){
       this.setState({ data: this.props.data });
     } 
+     if (prevProps.isSearching !== this.state.isSearching) {
+        // Update the button when isSearching state changes
+        const buttonText = this.state.isSearching ? 'Search' : 'Cancel';
+        
+        const searchButton = document.querySelector('.ant-table-thead tr:first-child th:first-child button');
+        if (searchButton) {
+            searchButton.innerText = buttonText;
+            if(!this.state.isSearching){
+            searchButton.style.backgroundColor = 'red'
+            }else{
+              searchButton.style.backgroundColor = '#1CAC70' 
+            }
+        }
+    }
     // else if (prevProps.data !== this.props.data) {
     //   // Update data state with new data from props
     //   this.setState({ data: this.props.data });
