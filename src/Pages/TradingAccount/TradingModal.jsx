@@ -11,8 +11,9 @@ import CustomAutocomplete from '../../components/CustomAutocomplete';
 import CustomPhoneNo from '../../components/CustomPhoneNo';
 import { useSelector } from 'react-redux';
 import { LeverageList } from '../../utils/constants';
-import { GetBrandsList } from '../../utils/_BrandListAPI';
+import { GetAllBrandsCustomerList, GetBrandsList } from '../../utils/_BrandListAPI';
 import { TradingAccountValidationSchema } from '../../utils/validations';
+import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 
 
 const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,page}) => {
@@ -20,6 +21,8 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({user})=> user?.user?.token )
   const [brandList,setBrandList] = useState([])
+  const [brandCustomerList,setBrandCustomerList] = useState([])
+  const [tradingAccountGroupList,setTradingAccountGroupList] = useState([])
 
   const getBrandsList = async () =>{
     setIsLoading(true)
@@ -29,16 +32,45 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
     if (success) {
 
       setBrandList(payload)
-
-       
+      // setTradingAccount((prev)=> ({
+      //   ...prev, leverage: payload.leverage
+      // }))
     }
   }
 
+  const getAllBrandsCustomerList = async (public_key) =>{
+    setIsLoading(true)
+    const res = await GetAllBrandsCustomerList(token,public_key)
+    const { data: { success, message, payload } } = res
+    setIsLoading(false)
+    if (success) {
+      setBrandCustomerList(payload)
+    }
+  }
+
+  const fetchTradingAccountGroups = async()=>{
+    setIsLoading(true)
+    const group_response = await ALL_Trading_Account_Group_List(token)
+    const {data: { payload, success}} = group_response
+    setIsLoading(false)
+    if(success){
+      setTradingAccountGroupList(payload)
+      // if(parseInt(trading_account_id) !== 0){
+      //   fetchSingleAccount(payload)
+      // }
+    }
+
+  }
+  
+
    useEffect(()=>{
+    fetchTradingAccountGroups()
     if(userRole  === 'admin'){
     getBrandsList()
     }
- 
+    if(userRole  !== 'admin'){
+      getAllBrandsCustomerList(userBrand.public_key)
+      }
   },[])
 
 
@@ -51,6 +83,8 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
     swap:"",
     currency:"",
     brand_id:"",
+    brand_customer_id:"",
+    trading_group_id:"",
     status:"active"
   }
 
@@ -70,6 +104,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
         control:'CustomAutocomplete',
         name:'Brands',   
         label:'Brands', 
+        required: true,
         varient: 'standard',
         display: userRole === 'admin' ? 'show' : 'hide',
         options:brandList,
@@ -78,20 +113,24 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
         onChange:(e,value) =>{
           if(value){
 
-            setErrors(prevErrors => ({ ...prevErrors, brand_id: "" }))
+            setErrors(prevErrors => ({ ...prevErrors,brand_id: "",
+            //  leverage:""
+            }))
                setTradingAccount(prevData => ({
                     ...prevData,
-                    brand_id: value.public_key
+                    brand_id: value.public_key,
+                    // leverage: LeverageList.find(x => x.title === value.leverage)
                 }))
           } 
           }   
       },
       {
-        id: 14, 
+        id: 20, 
         control:'CustomAutocomplete',
         display: 'show' ,
         name:'Leverage',   
         label:'Leverage', 
+        required: true,
         varient: 'standard',
         options:LeverageList,
         value: tradingAccount.leverage,
@@ -108,7 +147,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
           }   
       },
    
-      {id: 5, control:'CustomTextField',   display: 'show' , label:'Email', varient: 'standard',  value:tradingAccount.email, onChange:(e) =>{
+      {id: 5, control:'CustomTextField',   display: 'show' , label:'Email', required: true , varient: 'standard',  value:tradingAccount.email, onChange:(e) =>{
                setTradingAccount(prevData => ({
                     ...prevData,
                     email: e.target.value
@@ -137,7 +176,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
         control:'CustomTextField',
         display: 'show' ,
         name:'Country',   
-        label:'Country', 
+        label:'Country',
         varient: 'standard',
         value:tradingAccount.country,
         onChange:(e) =>{
@@ -149,7 +188,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
           }   
       },
      
-      {id: 7, control:'CustomTextField',    display: 'show' , label:'Balance', varient: 'standard',value:tradingAccount.balance,onChange:(e) =>{
+      {id: 7, control:'CustomTextField',  display: 'show' , label:'Balance', varient: 'standard',value:tradingAccount.balance,onChange:(e) =>{
                setTradingAccount(prevData => ({
                     ...prevData,
                     balance: e.target.value
@@ -157,7 +196,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
     
      
       }},
-      {id: 12, control:'CustomTextField',   display: 'show' ,  label:'Swap', varient: 'standard',value:tradingAccount.swap,onChange:(e) =>{
+      {id: 18, control:'CustomTextField',   display: 'show' ,  label:'Swap', required: true, varient: 'standard',value:tradingAccount.swap,onChange:(e) =>{
                setTradingAccount(prevData => ({
                     ...prevData,
                     swap: e.target.value
@@ -169,6 +208,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
         name:'Currency',   
         display: 'show' ,
         label:'Currency', 
+        required: true,
         varient: 'standard',
         options:CurrenciesList,
         value:tradingAccount.currency,
@@ -182,7 +222,48 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
           }  
           } 
       },
-   
+      {
+        id: 1, 
+        control:'CustomAutocomplete',
+        name:'Customer',   
+        display: userRole !== 'admin' ? 'show' : 'hide',
+        label:'Customer', 
+        varient: 'standard',
+        options:brandCustomerList,
+        value:tradingAccount.brand_customer_id,
+        getOptionLabel:(option) => option.name ? option.name : "",
+        onChange:(e,value) =>{
+          if(value){
+
+            setErrors(prevErrors => ({ ...prevErrors, brand_customer_id: "" }))
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    brand_customer_id: value.id
+                }))
+          } 
+          } 
+      },
+      {
+        id: 4, 
+        control:'CustomAutocomplete',
+        name:'Trading Group',   
+        display: 'show',
+        label:'Trading Group', 
+        varient: 'standard',
+        options:tradingAccountGroupList,
+        value:tradingAccount.trading_group_id,
+        getOptionLabel:(option) => option.name ? option.name : "",
+        onChange:(e,value) =>{
+          if(value){
+
+            setErrors(prevErrors => ({ ...prevErrors, trading_group_id: "" }))
+               setTradingAccount(prevData => ({
+                    ...prevData,
+                    trading_group_id: value.id
+                }))
+          } 
+          } 
+      },
     
   ]
 
@@ -196,9 +277,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
   };
 
 
- 
-
-  const handleSubmit = async () => {
+  const handleSubmission = async() => {
     try {
      
       //  await TradingAccountValidationSchema.validate({
@@ -238,6 +317,13 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
 
      
     }
+  }
+ 
+
+  const handleSubmit = () => {
+    {
+      (tradingAccount.email === '' || tradingAccount.currency === '' || tradingAccount.leverage === '' || tradingAccount.swap === '' || (userRole === 'admin' && tradingAccount.brand_id === '')) ? CustomNotification({ type: "error", title: "Add New Trading Account", description: 'Please fill all the required fields', key: 1 })
+      : handleSubmission()}
   };
 
 
@@ -250,7 +336,8 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
        { Control.map(val=>{
             const ComponentToRender = ComponentMap[val.control]
              const shouldDisplay =
-            val.display === 'show' &&
+            val.display === 'show' 
+            &&
             (userRole === 'admin' || (userRole === 'brand' && val.name !== 'brand'));
 
          return  shouldDisplay && (
@@ -260,11 +347,32 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
               name={val.name} 
               variant={val.varient} 
               label={val.label}
+              required={val.required}
               options={val.options}
+              // value={val.value}
               getOptionLabel={(option) => val.getOptionLabel(option)}
               onChange={(e,value) => val.onChange(e,value)} 
               />
               {errors.marginCall && <span style={{ color: 'red' }}>{errors.marginCall}</span>}
+
+              {/* <CustomAutocomplete
+                name='Leverage'
+                variant='standard'
+                label='Select Leverage'
+                disabled={isDisabled}
+                options={LeverageList}
+                getOptionLabel={(option) => option.title ? option.title : ""}
+                value={SelectedLeverage}
+                onChange={(e, value) => {
+                  if (value) {
+                    setSelectedLeverage(value);
+                    setErrors(prevErrors => ({ ...prevErrors, Leverage: '' }));
+                  } else {
+                    setSelectedLeverage(null);
+                    setErrors(prevErrors => ({ ...prevErrors, Leverage: 'Leverage is Requried' }));
+                  }
+                }}
+              /> */}
             </div>)
 
             :
@@ -274,6 +382,7 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
               name={val.name} 
               varient={val.varient} 
               label={val.label}
+              required={val.required}
               options={val.options}
               getOptionLabel={(option) => val.getOptionLabel(option)}
               onChange={(e,value) => val.onChange(e,value)} 

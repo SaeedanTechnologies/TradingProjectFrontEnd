@@ -56,10 +56,10 @@ const Index = ({ title, direction }) => {
       sortDirections: ['ascend'],
     },
     {
-      title:<span className="dragHandler">Brand</span>,
-      dataIndex: 'brand',
+      title:<span className="dragHandler">{userRole === 'admin' ? 'Brand' : 'Customer'}</span>,
+      dataIndex: `${userRole === 'admin' ? 'brand' : 'customer'}`,
       key: '1',
-      sorter: (a, b) => a.brand.length - b.brand.length,
+      sorter: (a, b) => {userRole === 'admin' ? a.brand.length - b.brand.length : a.customer.length - b.customer.length},
       sortDirections: ['ascend'],
     },
     {
@@ -201,6 +201,7 @@ const Index = ({ title, direction }) => {
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
         brand: item.brand.name,
+        customer: item.brand_customer?.name,
         country: item.country,
         phone: item.phone,
         email: item.email,

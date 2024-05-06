@@ -1,13 +1,14 @@
 import React from 'react'
 import { MuiTelInput } from 'mui-tel-input'
 
-const CustomPhoneNo = ({value,onChange,label,...props}) => {
+const CustomPhoneNo = ({value, required=false,onChange,label,...props}) => {
  
   return <MuiTelInput
     value={value}
     defaultCountry="PK"
     label = {label}
     onChange={onChange}
+    required={required}
     variant= 'standard'
     style={{
     marginTop: '15px',
