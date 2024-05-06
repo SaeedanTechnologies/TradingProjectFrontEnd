@@ -108,7 +108,6 @@ class DnDTable extends Component {
    const res = await this.props.SearchQuery(this.props.token, 1, 10, this.state.searchValues)
    const {data:{payload, success, message}} = res
   //  this.setState({isLoading: false})
-  
   this.setState({isSearching: false})
   this.props.LoadingHandler(false)
    if(success){
@@ -174,9 +173,9 @@ class DnDTable extends Component {
       const res = await GetSettings(Params, this.props.token)
       const {data:{message, payload, success}} = res
       this.setState({isLoading: false})
-      
       if(payload && payload.length > 0){
         const selectedCols = JSON.parse(payload[0].value) // from db
+        
         // const filteredColumns = columnsWithChildren.filter(column =>  
         //   selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
         // );
@@ -191,6 +190,7 @@ class DnDTable extends Component {
         const mData = ColumnsData.filter(column =>
           selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
         );
+        
         if(success){
           this.setState({ columns: filteredColumns, dropDownColumns: ColumnsData, selectedColumns: mData });
         }else{
@@ -312,7 +312,7 @@ class DnDTable extends Component {
       isCompleteSelect: false,
     });
   }
-  handleSaveChanges() {
+  handleSaveChanges() { 
     if (this.state.isRearangments) {
       const ColumnsData = this.state.columns.map(x=>{
         return {
@@ -321,7 +321,6 @@ class DnDTable extends Component {
           title: typeof x.title === 'string' ? x.title:x.title.props.children 
         }
       })
-      debugger
       this.setColumnsSetting(ColumnsData, "Columns Rearrangement Sucessfully")
       this.setIsRearangments(false);
     }
@@ -411,11 +410,36 @@ class DnDTable extends Component {
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
-    const Params = {
-      data:{
-      name: this.props.formName,
-      value: JSON.stringify(values)
-    }}
+  const Params = {
+    data:{
+    name: this.props.formName,
+   
+  }}
+  const ColumnsData = this.state.columns.map(x=>{
+    return {
+      key: x.key, 
+      dataIndex: x.dataIndex,
+      title: typeof x.title === 'string' ? x.title:x.title.props.children 
+    }
+  })
+
+// Sort array A based on the index of keys in array B
+// if values length is less then its means remove column , if greater means add columns , in case of remove column remove column from columns data else add column
+if(values.length > ColumnsData.length){
+  const keysInB = new Set(ColumnsData.map(item => item.key));
+  values.forEach(item => {
+      if (!keysInB.has(item.key)) {
+        ColumnsData.push(item);
+      }
+  });
+      Params.data.value= JSON.stringify(ColumnsData)
+    }else if(values.length < ColumnsData.length){
+      const keysInValues = new Set(values.map(obj => obj.key));
+      const mData = ColumnsData.filter(item => keysInValues.has(item.key));
+      Params.data.value= JSON.stringify(mData)
+    }else{
+      Params.data.value= JSON.stringify(values)
+    }
     this.setState({isLoading: true})
     const res = await SetSettings(Params,this.props.token )
     const {data:{message, data, success}} = res
