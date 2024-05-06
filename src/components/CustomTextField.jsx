@@ -1,12 +1,13 @@
 import { TextField } from '@mui/material'
 import React from 'react'
 
-const CustomTextField = ({ label, varient, multiline, rows, type, value, className, sx, onChange, disabled}) => {
+const CustomTextField = ({ label, required=false, varient, multiline, rows, type, value, className, sx, onChange, disabled}) => {
   return (
     <TextField
       type={type}
       id="standard-basic"
       label={label}
+      required={required}
       variant={varient}
       multiline={multiline}
       rows={rows}

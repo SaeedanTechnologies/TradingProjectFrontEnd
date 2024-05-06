@@ -5,9 +5,10 @@ import CustomButton from '../../components/CustomButton';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
 import { GetSingleBrand, SaveBrands, UpdateBrand } from '../../utils/_APICalls';
-import { notifyError, notifySuccess } from '../../utils/constants';
+import { LeverageList, notifyError, notifySuccess } from '../../utils/constants';
 import { ToastContainer } from 'react-toastify';
 import { Spin } from 'antd';
+import CustomAutocomplete from '../../components/CustomAutocomplete';
 
 const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -15,6 +16,7 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
   const [domain, setDomain] = useState('');
   const [disabledDomain, setDisabledDomain] = useState(false);
   const [marginCall, setMarginCall] = useState('');
+  const [leverage, setLeverage] = useState('');
   const [errors, setErrors] = useState({}); 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -27,6 +29,7 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
         'Invalid domain'
       ),
     marginCall: Yup.number().required('Margin Call is required').positive('Margin Call must be a positive number'),
+    leverage: Yup.object().required('Leverage is required'),
   });
 
   const handleInputChange = (fieldName, value) => {
@@ -41,6 +44,9 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
       case 'marginCall':
         setMarginCall(value);
         break;
+        case 'leverage':
+          setLeverage(value);
+        break;
       default:
         break;
     }
@@ -49,6 +55,7 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
     setName('')
     setDomain('')
     setMarginCall('')
+    setLeverage('')
   }
 
   const handleSubmit = async () => {
@@ -57,16 +64,19 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
         name,
         domain,
         marginCall,
+        leverage
       }, { abortEarly: false });
 
       setErrors({});
       const BrandData = {
         name: name,
         domain: domain,
-        margin_call: marginCall
+        margin_call: marginCall,
+        leverage: leverage.value
       }
       if (BrandID === 0) {
         setIsLoading(true)
+        
         const res = await SaveBrands(BrandData, token)
         const { data: { message, payload, success } } = res
         setIsLoading(false)
@@ -121,6 +131,7 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
       setName(payload.name)
       setDomain(payload.domain)
       setMarginCall(payload.margin_call)
+      setLeverage(payload.leverage)
     } else {
       notifyError(message)
     }
@@ -160,6 +171,25 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
           onChange={e => handleInputChange('marginCall', e.target.value)}
         />
         {errors.marginCall && <span style={{ color: 'red' }}>{errors.marginCall}</span>}
+
+        <CustomAutocomplete
+          label="Select Leverage"
+          name='Leverage'
+          varient="standard"
+          options={LeverageList}
+          value={leverage}
+          getOptionLabel={(option) => option.title ? option.title : ""}
+          onChange={(e, value) => handleInputChange('leverage', value)}
+
+              // name={val.name} 
+              // variant={val.varient} 
+              // label={val.label}
+              // required={val.required}
+              // options={val.options}
+              // getOptionLabel={(option) => val.getOptionLabel(option)}
+              // onChange={(e,value) => val.onChange(e,value)}
+        />
+        {errors.leverage && <span style={{ color: 'red' }}>{errors.leverage}</span>}
        
         <div style={footerStyle}>
           <CustomButton
