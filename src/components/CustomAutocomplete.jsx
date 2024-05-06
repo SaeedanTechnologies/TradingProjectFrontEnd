@@ -16,7 +16,7 @@ const CustomAutocomplete = ({ name, id, defaultValue,options, getOptionLabel,get
       getOptionLabel={getOptionLabel}
       getOptionSelected={getOptionSelected}
       onChange={onChange}
-      renderInput={(params) => <TextField {...params} label={label} name={name} variant={variant} />}
+      renderInput={(params) => <TextField {...params} label={label} name={name} variant={variant}  />}
       fullWidth
     />
   );

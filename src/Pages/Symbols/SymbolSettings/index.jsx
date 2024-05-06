@@ -159,9 +159,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-   
-      
-      
+    
     },
     {
       title:<span className="dragHandler">Leverage</span>,

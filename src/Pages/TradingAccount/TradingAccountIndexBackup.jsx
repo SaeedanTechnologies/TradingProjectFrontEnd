@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { PlusCircleOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, EyeOutlined, DeleteOutlined,CaretUpOutlined,CaretDownOutlined } from '@ant-design/icons';
 import { Space, Spin, Tag, theme } from 'antd';
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
@@ -9,11 +9,12 @@ import { Trading_Accounts_List, Delete_Trading_Account, Save_Trading_Account } f
 import CustomModal from '../../components/CustomModal';
 import { useSelector, useDispatch } from 'react-redux';
 import TradingModal from './TradingModal'
-import { setAccountID } from '../../store/TradeSlice';
+import { setAccountID, setSelectedTradingAccountsIDs, setTradingAccountsData } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
 import CustomNotification from '../../components/CustomNotification';
 import { CheckBrandPermission } from '../../utils/helpers';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 
 
 
@@ -30,6 +31,12 @@ const Index = ({ title, direction }) => {
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
 
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [sortDirection, setSortDirection] = useState("")
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const [perPage, setPerPage] = useState(10)
+
+
 
   const token = useSelector(({ user }) => user?.user?.token)
   const {
@@ -39,6 +46,13 @@ const Index = ({ title, direction }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  
+  const setTradeId = (id) => {
+    dispatch(setAccountID(id))
+    
+    navigate('/single-trading-accounts/details/live-order')
+
+  }
 
   const renderColumns = [
     {
@@ -46,70 +60,122 @@ const Index = ({ title, direction }) => {
       dataIndex: 'loginId',
       key: '1',
       sorter: (a, b) => a.loginId.length - b.loginId.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
+
+
     },
     {
       title:<span className="dragHandler">Trading Group Id</span>,
       dataIndex: 'trading_group_id',
       key: '1',
       sorter: (a, b) => a.trading_group_id.length - b.trading_group_id.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Brand</span>,
       dataIndex: 'brand',
       key: '1',
       sorter: (a, b) => a.brand.length - b.brand.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '1',
       sorter: (a, b) => a.country.length - b.country.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Phone No.</span>,
       dataIndex: 'phone',
       key: '1',
       sorter: (a, b) => a.phone.length - b.phone.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '1',
       sorter: (a, b) => a.email.length - b.email.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '1',
       sorter: (a, b) => a.leverage.length - b.leverage.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Balance</span>,
       dataIndex: 'balance',
       key: '1',
       sorter: (a, b) => a.balance.length - b.balance.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Credit</span>,
       dataIndex: 'credit',
       key: '1',
       sorter: (a, b) => a.credit.length - b.credit.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Equity</span>,
       dataIndex: 'equity',
       key: '1',
       sorter: (a, b) => a.equity.length - b.equity.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
 
@@ -117,28 +183,48 @@ const Index = ({ title, direction }) => {
       dataIndex: 'margin_level_percentage',
       key: '1',
       sorter: (a, b) => a.margin_level_percentage.length - b.margin_level_percentage.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '1',
       sorter: (a, b) => a.profit.length - b.profit.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '1',
       sorter: (a, b) => a.swap.length - b.swap.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
      title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '1',
       sorter: (a, b) => a.currency.length - b.currency.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
 
@@ -146,21 +232,36 @@ const Index = ({ title, direction }) => {
       dataIndex: 'registration_time',
       key: '1',
       sorter: (a, b) => a.registration_time.length - b.registration_time.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Last Access Time</span>,
       dataIndex: 'last_access_time',
       key: '1',
       sorter: (a, b) => a.last_access_time.length - b.last_access_time.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Last Access IP</span>,
       dataIndex: 'last_access_address_IP',
       key: '1',
       sorter: (a, b) => a.last_access_address_IP.length - b.last_access_address_IP.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title: 'Actions',
@@ -180,11 +281,6 @@ const Index = ({ title, direction }) => {
     color: 'black', // Set the text color of the header
   };
 
-  const setTradeId = (id) => {
-    dispatch(setAccountID(id))
-    navigate('/single-trading-accounts/details/live-order')
-
-  }
 
   
  
@@ -195,7 +291,7 @@ const Index = ({ title, direction }) => {
     const { data: { message, payload, success } } = mData
     setIsLoading(false)
     if (success) {
-      const tradingAccounts = payload?.data?.map((item) => ({
+      const tradingAccounts = payload.data.map((item) => ({
         id: item.id,
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
@@ -304,6 +400,11 @@ const Index = ({ title, direction }) => {
   setIsLoading(false)
  
 }
+
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
 
 const [marginCall, setMarginCall] = useState([])
 const [activeGroup, setActiveGroup] = useState([])
@@ -444,7 +545,7 @@ const [activeGroup, setActiveGroup] = useState([])
             Text='Add New Trading Account'
             style={{ height: '48px', }}
             icon={<PlusCircleOutlined />}
-            onClickHandler={() => setIsModalOpen(true)}
+            onClickHandler={() => navigate('/trading-accounts-entry')}
           />)}
 
            
@@ -461,8 +562,16 @@ const [activeGroup, setActiveGroup] = useState([])
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
-          editPermissionName="trading_account_list_update"
-          deletePermissionName="trading_account_list_delete"
+          isUpated={isUpdated}
+          setSelecetdIDs={setSelectedTradingAccountsIDs}
+          setTableData = {setTradingAccountsData}
+          table_name= "trading_accounts"
+          setSortDirection = {setSortDirection}
+          perPage={perPage}
+          setPerPage={setPerPage}
+          SearchQuery = {Trading_Accounts_List}
+          LoadingHandler={LoadingHandler}
+
         />
         )}
         {direction === 2 && (
@@ -497,7 +606,7 @@ const [activeGroup, setActiveGroup] = useState([])
         />
         )}
 
-        <CustomModal
+        {/* <CustomModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}
           handleCancel={handleCancel}
@@ -511,7 +620,7 @@ const [activeGroup, setActiveGroup] = useState([])
             BrandID={tradingID}
             page={CurrentPage}
           />
-        </CustomModal>
+        </CustomModal> */}
 
           
         

@@ -50,6 +50,6 @@ export const TradeValidationSchema = Yup.object().shape({
 
    export const TransactionOrderValidationSchema = Yup.object().shape({
         trading_account_id: Yup.string().required(' Trading Account id  is required.'),
-        method: Yup.object().required(' Select Order method is required.'),
+        method: Yup.string().required(' Select Order method is required.'),
         amount: Yup.string().required('Order Amount is required.'),
    })

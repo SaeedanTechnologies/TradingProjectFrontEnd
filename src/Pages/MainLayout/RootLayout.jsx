@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
+import { Layout } from "antd";
 
 import Sidebar from "./Sidebar";
 import Appbar from "./Appbar";
@@ -15,7 +15,7 @@ const RootLayout = () => {
           marginLeft: collapsed ? 80 : 250,
         }}
       >
-        <Appbar collapsed={collapsed} setCollapsed={setCollapsed} />
+        {/* <Appbar collapsed={collapsed} setCollapsed={setCollapsed} /> */}
         <Outlet />
       </Layout>
     </Layout>

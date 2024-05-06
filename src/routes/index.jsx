@@ -41,6 +41,7 @@ import TransactionOrder from '../Pages/TradingAccount/TransactionOrder';
 import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder';
 import NewFeedData from '../Pages/Symbols/DataFeed/NewFeedData'
 import BrandPermissions from '../Pages/BrandPermissions/BrandPermissions';
+import TradingAccountsEntry from '../Pages/TradingAccount/TradingAccountsEntry';
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
       { path: "/brand-settings", element: <BrandSettings /> },
       { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },
       { path: "/trading-accounts/:id", element: <TradingAccountEntry /> },
+      { path: "/trading-accounts-entry",element: <TradingAccountsEntry/>},
       { path: "/trading-group", element: <TradingAccountGroup /> },
       { path: "/trading-group/:id", element: <TradingGroupEntry /> },
       { path: "/trading-group/mb-to/:id", element: <MBTradingOrder /> },
@@ -84,7 +86,7 @@ export const router = createBrowserRouter([
       { path: "/live-orders", element: <LiveOrders /> },
       { path: "/close-orders", element: <CloseOrder /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },
-      { path: "/transaction-orders/:id", element: <TransactionOrderEntry /> },
+      { path: "/transaction-orders-entry", element: <TransactionOrderEntry /> },
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },
       { path: "/margin-calls", element: <TradingAccount direction={3} title="Margin Call Trading Account List" /> },
       { path: "/symbol-groups", element: <SymbolGroup /> },

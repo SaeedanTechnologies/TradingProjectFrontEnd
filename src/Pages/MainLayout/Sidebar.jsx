@@ -7,9 +7,11 @@ import {
   AppstoreFilled,
   FileDoneOutlined,
   UserOutlined,
+  MenuFoldOutlined ,
   MoonFilled
 } from '@ant-design/icons';
-import {  Layout, Menu,  Switch, theme } from 'antd';
+import {  Layout,Button, Menu,  Switch, theme } from 'antd';
+import { colaspedBtnStyle, } from './style';
 import './style.css';
 import LOGOUT_CDN from '../../assets/images/logout.svg';
 import LOGO_CDN from '../../assets/images/logo.png';
@@ -200,6 +202,7 @@ const Sidebar = ({ collapsed }) => {
   };
   return (
     <div style={{ backgroundColor: sidebarColor }}>
+      
       <Sider
         collapsible
         collapsed={collapsed}
