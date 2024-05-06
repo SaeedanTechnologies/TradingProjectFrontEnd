@@ -2,8 +2,7 @@ import { Space, Tag, theme, Spin } from 'antd';
 import React, { useState, useEffect } from 'react'
 import { DeleteOutlined } from '@ant-design/icons';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
-import CustomMUISelect from '../../components/CustomMUISelect';
-import CustomTextField from '../../components/CustomTextField';
+
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 
@@ -15,7 +14,7 @@ import { TransactionOrderValidationSchema } from '../../utils/validations';
 import moment from 'moment'
 import CustomNotification from '../../components/CustomNotification';
 import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
-import { InputAdornment, IconButton, TextField } from '@mui/material';
+import {  TextField,Input,InputAdornment,FormControl ,Select,InputLabel,MenuItem   } from '@mui/material';
 import { CheckBrandPermission } from "../../utils/helpers";
 
 
@@ -32,7 +31,7 @@ const TransactionOrder = () => {
 
 
   const [transactionOrders, setTransactionOrders] = useState([])
-  const [method, setMethod] = useState(null)
+  const [method, setMethod] = useState('')
   const [currency, setCurrency] = useState('')
   const [amount, setAmount] = useState('')
   const [comment, setComment] = useState('')
@@ -158,7 +157,7 @@ const TransactionOrder = () => {
 
 
   const clearFields = () => {
-    setMethod(null)
+    setMethod('')
     setAmount('')
     setComment('')
   }
@@ -179,7 +178,7 @@ const TransactionOrder = () => {
       setErrors({});
       const TransactionOrderData = {
         trading_account_id,
-        method: method.value,
+        method: method,
         amount,
         comment,
         currency,
@@ -196,8 +195,8 @@ const TransactionOrder = () => {
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
-        CustomNotification({ type: "success", title: "Transaction Order", description: message, key: 1 })
-        fetchTransactionOrder(page)
+        CustomNotification({ type: "success", title: "Transaction Order", description: 'Transaction Order Created Successfully.', key: 1 })
+        fetchTransactionOrder(CurrentPage)
         clearFields()
       }
       else {
@@ -239,6 +238,11 @@ const TransactionOrder = () => {
     fetchSingleTradeAccount()
   }, [])
 
+   const defaultProps = {
+    options:OperationsList ,
+    getOptionLabel: (option) => option.label ? option.label : "",
+  };
+
 
   return (
     <Spin spinning={isLoading} size="large">
@@ -247,74 +251,105 @@ const TransactionOrder = () => {
         {
           CheckBrandPermission(userPermissions,userRole,'transaction_orders_create') ? 
           <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
-          <div>
-            <CustomAutocomplete
-              name={'Operations'}
-              variant={'standard'}
-              label={'Operations'}
-              value={method}
-              options={OperationsList}
-              getOptionLabel={(option) => option.label ? option.label : ""}
-              onChange={(e, value) => {
-                if (value) {
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-4">
 
-                  setErrors(prevErrors => ({ ...prevErrors, method: {} }))
-                  setMethod(value)
-                }
-                else {
-                  setMethod(null)
-                }
-              }}
-            />
-            {errors.method?.value && <span style={{ color: 'red' }}>{errors.method?.value}</span>}
+            
+              {/* <div>
+                <CustomAutocomplete
+                  name={'Operations'}
+                  variant={'standard'}
+                  label={'Operations'}
+                  value={method}
+                  options={OperationsList}
+                  getOptionLabel={(option) => option.label ? option.label : ""}
+                  onChange={(e, value) => {
+                    if (value) {
+
+                      setErrors(prevErrors => ({ ...prevErrors, method: {} }))
+                      setMethod(value)
+                    }
+                    else {
+                      setMethod(null)
+                    }
+                  }}
+                />
+                {errors.method?.value && <span style={{ color: 'red' }}>{errors.method?.value}</span>}
+              </div> */}
+
+              <div>
+                  <Select
+                    placeholder="Operation"
+                    variant = "standard"
+                    labelId="demo-simple-select-standard-label"
+                    id="demo-simple-select-standard"
+                    fullWidth
+                    defaultValue={OperationsList[0]}
+                    value={method}
+                    onChange={(e) => {
+                      setErrors(prevErrors => ({ ...prevErrors, method: '' }))
+                      setMethod(e.target.value)
+                    }
+                    
+                  }
+                  >
+                  
+                    {OperationsList.map((operation)=>(
+                    <MenuItem key={operation.value} value={operation.value}>
+                     {operation.label}
+                    </MenuItem>
+                    ))}
+                  </Select>
+              </div>
+
+              <div>
+                <Input
+                    id="input-with-icon-adornment"
+                    placeholder='Amount'
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <span>{currency}</span>
+                        </InputAdornment>
+                    }
+                    label={'Amount'}
+                    fullWidth
+                    variant={'standard'}
+                    type="number"
+                    sx={numberInputStyle}
+                    value={amount}
+                    onChange={e => handleInputChange('amount', e.target.value)}
+                />
+                {errors.amount && <span style={{ color: 'red' }}>{errors.amount}</span>}
+              </div>
+
+              <div>
+                <Input
+                   placeholder='Comments'
+                    label={'Comments'}
+                      fullWidth
+                    value={comment}
+                    onChange={e => handleInputChange('comment', e.target.value)}
+                    name={'Comments'}
+                    variant={'standard'}
+                 
+                  />
+              </div>
+
           </div>
 
+         
 
-
-          <div>
-            <span>{currency}</span>
-            <TextField label={'Amount'} fullWidth variant={'standard'} type="number" sx={numberInputStyle} value={amount} onChange={e => handleInputChange('amount', e.target.value)}
-            //      startAdornment={
-            //     <InputAdornment position="start">
-
-
-            //       <IconButton
-            //         aria-label="toggle password visibility"
-            //         onClick={handleClickShowPassword}
-            //         onMouseDown={handleMouseDownPassword}
-            //       >
-            //         {showPassword ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-
-            //       </IconButton>
-            //       </Stack>
-            //     </InputAdornment>
-            // }
-            />
-            {errors.amount && <span style={{ color: 'red' }}>{errors.amount}</span>}
+          <div className="mb-4 grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
+              <CustomButton
+                Text={"With Draw"}
+                style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E", borderRadius: "8px" }}
+                onClickHandler={() => handleSubmit('withdraw')}
+              />
+              <CustomButton Text={"Deposit"}
+                style={{ height: "48px", borderRadius: "8px" }}
+                onClickHandler={() => handleSubmit('deposit')}
+              />
           </div>
 
-        </div>
-
-        <div className="grid grid-cols-1 gap-8 mt-4">
-          <CustomTextField label={'Comments'}
-            multiline={true}
-            rows={4}
-            value={comment}
-            onChange={e => handleInputChange('comment', e.target.value)}
-          />
-        </div>
-        <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <CustomButton
-            Text={"With Draw"}
-            style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E", borderRadius: "8px" }}
-            onClickHandler={() => handleSubmit('withdraw')}
-          />
-          <CustomButton Text={"Deposit"}
-            style={{ height: "48px", borderRadius: "8px" }}
-            onClickHandler={() => handleSubmit('deposit')}
-          />
-        </div>
           </>
           : null
         }
