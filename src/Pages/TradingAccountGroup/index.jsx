@@ -65,7 +65,6 @@ const Index = () => {
     setIsLoading(true)
     const res = await Trading_Account_Group_List(token,brandId)
     const { data: { message, payload, success } } = res
-    // debugger;
     setIsLoading(false)
     if (success) {
       setTradingAccountGroupList(payload.data)

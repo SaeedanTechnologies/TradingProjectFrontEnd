@@ -14,7 +14,7 @@ import { numberInputStyle } from './style'
 import { useSelector } from 'react-redux';
 import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete, TextField } from '@mui/material';
-import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
+import { AllSymbelSettingList, All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
 import axios from 'axios';
@@ -23,7 +23,7 @@ import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 
-const Trade = ({ fetchLiveOrder }) => {
+const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
@@ -136,7 +136,6 @@ const Trade = ({ fetchLiveOrder }) => {
         open_time: new Date().toISOString(),
         brand_id
       }
-
       setIsLoading(true)
       const res = await Post_Trade_Order(SymbolData, token)
       const { data: { message, payload, success } } = res
@@ -144,7 +143,7 @@ const Trade = ({ fetchLiveOrder }) => {
         setIsLoading(false)
         CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
 
-        fetchLiveOrder()
+        CurrentPage && fetchLiveOrder(CurrentPage)
         clearFields()
       }
       else {
@@ -178,10 +177,12 @@ const Trade = ({ fetchLiveOrder }) => {
   const fetchSymbolSettings = async () => {
     try {
       setIsLoading(true)
-      const res = await All_Setting_Data(token);
+      // const res = await All_Setting_Data(token);
+      const res = await AllSymbelSettingList(token);
       // debugger;
       const { data: { message, success, payload } } = res
-      setSymbolsList(payload.data)
+      // setSymbolsList(payload).data
+      setSymbolsList(payload)
 
       setIsLoading(false)
 
@@ -228,7 +229,7 @@ useEffect(() => {
     return () => {
         // Cleanup actions here (if needed)
         console.log('here')
-        fetchData('stop', connected); //to stop connection when component unmounts
+        fetchData('stop', 'feed_name', connected); //to stop connection when component unmounts
     };
 },[]);
 
@@ -237,21 +238,28 @@ useEffect(() => {
   //   setOpen_price(bidPrice);
   // };
 
-  const fetchBinancehData = async (symbol) => {
+  const fetchBinancehData = async (symbol, feed_name) => {
     try {
-      const response = await axios.get(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`);
-      const data = response?.data;
-      // setManualPricing({
-      //   ...pricing,
-      //   openPrice: data?.bidPrice,
-      //   askPrice: data?.askPrice
-      // })
-      setPricing({
-        ...pricing,
-        openPrice: parseFloat(data?.bidPrice).toFixed(5),
-        askPrice: parseFloat(data?.askPrice).toFixed(5)
-      })
-      setOpen_price(parseFloat(data?.askPrice).toFixed(5))
+      const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
+      if(feed_name === 'binance') {
+        const response = await axios.get(endPoint);
+        const data = response?.data;
+        // setManualPricing({
+        //   ...pricing,
+        //   openPrice: data?.bidPrice,
+        //   askPrice: data?.askPrice
+        // })
+        setPricing({
+          ...pricing,
+          openPrice: parseFloat(data?.bidPrice).toFixed(5),
+          askPrice: parseFloat(data?.askPrice).toFixed(5)
+        })
+        setOpen_price(parseFloat(data?.askPrice).toFixed(5))
+      }
+      else {
+        CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
+      }
+     
     } catch (error) {
       // setError('Error fetching data');
       console.error(error);
@@ -271,48 +279,53 @@ useEffect(() => {
 
   const fetchData = (symbol, connected) => {
 
-    const onError = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    const onClose = () => {
-      console.log('Previous WebSocket connection closed');
-    };
-
-    // const onStop = () => {
-    //   console.log('Previous WebSocket connection stopped manually');
-    // };
-    const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
-
-    // if((!connected && streamConnected)){
-
-    //   binanceStream.stop(onStop)
-    //   setStreamConnected(false)
-    //   return
-    // }
-
-    // setStreamConnected(true)
-
-    if (binanceStream) {
-      const onDataReceived = (data) => {
-        if(!data?.bidPrice){
-          fetchBinancehData(symbol?.feed_fetch_name)
-        }
-        else {
-        // console.log('Bid Price:', data.bidPrice);
-        // console.log('Ask Price:', data.askPrice);
-        setPricing({
-          ...pricing,
-          openPrice: data?.bidPrice,
-          askPrice: data?.askPrice
-        })
-        }
+    if(symbol?.feed_name === 'binance') {
+      const onError = (error) => {
+        console.error('WebSocket error:', error);
       };
-
-      binanceStream.start(onDataReceived, onError, onClose);
-      // Optionally, stop the WebSocket connection when it's no longer needed  
-      // binanceStream.stop();
-    };
+  
+      const onClose = () => {
+        console.log('Previous WebSocket connection closed');
+      };
+  
+      // const onStop = () => {
+      //   console.log('Previous WebSocket connection stopped manually');
+      // };
+      const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
+  
+      // if((!connected && streamConnected)){
+  
+      //   binanceStream.stop(onStop)
+      //   setStreamConnected(false)
+      //   return
+      // }
+  
+      // setStreamConnected(true)
+  
+      if (binanceStream) {
+        const onDataReceived = (data) => {
+          if(!data?.bidPrice){
+            fetchBinancehData(symbol?.feed_fetch_name, symbol?.feed_name)
+          }
+          else {
+          // console.log('Bid Price:', data.bidPrice);
+          // console.log('Ask Price:', data.askPrice);
+          setPricing({
+            ...pricing,
+            openPrice: data?.bidPrice,
+            askPrice: data?.askPrice
+          })
+          }
+        };
+  
+        binanceStream.start(onDataReceived, onError, onClose);
+        // Optionally, stop the WebSocket connection when it's no longer needed  
+        // binanceStream.stop();
+      };
+    }
+    else {
+      CustomNotification({ type: "error", title: "Opps", description: `${symbol?.feed_name} not configured yet`, key: 1 })
+    }
   }
 
 
@@ -353,7 +366,7 @@ useEffect(() => {
                     if (value) {
                       setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       setSymbol(value)
-                      fetchBinancehData(value.feed_fetch_name)
+                      fetchBinancehData(value?.feed_fetch_name, value?.feed_name)
                       if (value && connected) {
                       // setSymbol(value)
                       // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
@@ -427,6 +440,7 @@ useEffect(() => {
                       onChange={handleVolumeChange}
                       fullWidth
                       min={0.01}
+                      max={100}
                       step={0.01}
                     />
                 {/* <CustomTextField label={'Volume'} varient={'standard'} type="number" sx={numberInputStyle} value={volume} onChange={e => handleInputChange('volume', e.target.value)} /> */}

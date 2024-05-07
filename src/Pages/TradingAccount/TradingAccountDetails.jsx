@@ -46,7 +46,7 @@ const fetchLiveOrder = async (page) => {
       const {data:{message, payload, success}} = mData
        setIsLoading(false)
       if(success){
-      
+
       setTradeOrder( payload?.data)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
@@ -69,7 +69,7 @@ const fetchLiveOrder = async (page) => {
   {
     key: '2',
     label: 'Trade',
-    children: <Trade fetchLiveOrder = {fetchLiveOrder} />,
+    children: <Trade fetchLiveOrder = {fetchLiveOrder} CurrentPage={CurrentPage} />,
     path: '/single-trading-accounts/details/symbol',
     display:  CheckBrandPermission(userPermissions,userRole,'live_orders_create') ? 'show' : 'hide' 
   },
