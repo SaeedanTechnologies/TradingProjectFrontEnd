@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import CustomNotification from '../../components/CustomNotification';
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage }) => {
  
@@ -80,18 +81,16 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       sorter: (a, b) => a.profit.length - b.profit.length,
       sortDirections: ['ascend'],
     },
-    // {
-    //   title: 'Actions',
-    //   dataIndex: 'actions',
-    //   key: 'actions',
-    //   render: (_, record) => (
-    //     <Space size="middle" className='cursor-pointer'>
-    //       <Link to={`/single-trading-accounts/details/live-order/${record.id}`}><EditOutlined style={{ fontSize: "24px", color: colorPrimary }} /></Link>
-    //       <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CancelLiveOrder(record.id)} />
-    //       <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order, setIsLoading, fetchLiveOrder)} />
-    //     </Space >
-    //   ),
-    // },
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="middle" className='cursor-pointer'>
+          <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CancelLiveOrder(record.id)} />
+        </Space >
+      ),
+    },
   ];
 
 
@@ -111,70 +110,42 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   const CancelLiveOrder = async (id) => {
 
    const requiredOrder = tradeOrder.find((order)=>order.id === id)
-
+    debugger;
 
     setIsLoading(true)
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#1CAC70",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Close the Order!"
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-
-
-        const currentDateISO = new Date().toISOString();
-        const currentDate = new Date(currentDateISO);
-        const formattedDate = moment(currentDate).format('MM/DD/YYYY HH:mm');
-   
+    const currentDateISO = new Date().toISOString();
+    // const currentDate = new Date(currentDateISO);
+    // const formattedDate = moment(currentDate).format('MM/DD/YYYY HH:mm');
     const closeOrderData = {
         order_type : 'close',
-        close_time: formattedDate,
+        close_time: currentDateISO,
         close_price : requiredOrder.open_price
+
       }
-
-
-
-        // const close_time = new Date().toISOString;
-        // const paramsString = `order_type=close&close_time=${close_time}&close_price=${requiredOrder.open_price}`;
-        // const res = await Put_Trade_Order(id, paramsString, token)
-
-        
+      try{
         const res = await Put_Trade_Order(id,closeOrderData, token)
         const { data: { message, payload, success } } = res
-
-        setIsLoading(false)
         if (success) {
-          Swal.fire({
-            title: "Order Closed!",
-            text: message,
-            icon: "success"
-          });
-          
-          fetchLiveOrder(page)
-            
-
-        } else {
-          Swal.fire({
-            title: "Opps!",
-            text: { message },
-            icon: "error"
-          });
-        }
+        
+        CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
+        fetchLiveOrder(page)       
+      
+      }
+      else {
+      
+        CustomNotification({ type: "error", title: "Live Order", description: message, key: 1 })
 
       }
-    });
+      }catch(error){
+        CustomNotification({ type: "error", title: "Live Order", description: error.message, key: 1 })
 
-    setIsLoading(false)
-
+      }
+        
   }
 
 
   useEffect(() => {
-
+    
     fetchLiveOrder(CurrentPage)
   
  

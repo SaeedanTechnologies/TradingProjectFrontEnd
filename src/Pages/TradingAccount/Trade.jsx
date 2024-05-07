@@ -10,7 +10,7 @@ import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
 import { useNavigate } from 'react-router-dom';
 import { TradeValidationSchema } from '../../utils/validations';
-import { numberInputStyle } from './style';
+import { numberInputStyle } from './style'
 import { useSelector } from 'react-redux';
 import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete, TextField } from '@mui/material';
@@ -529,12 +529,12 @@ useEffect(() => {
               <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CustomButton
                   Text={`Sell ${pricing.askPrice ? `(${pricing.askPrice})` : ''}`}
-                  style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
+                  style={{ height: "48px",width:"100%", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
                   // disabled={connected ? (stopLoss > pricing.askPrice && takeProfit < pricing.askPrice) ? false : true : (stopLoss > open_price && takeProfit < open_price) ? false : true}
                   onClickHandler={() => handleSubmit('sell')}
                 />
                 <CustomButton Text={`Buy ${pricing.openPrice ? `(${pricing.openPrice})` : ''}`}
-                  style={{ height: "48px" }}
+                  style={{ height: "48px",width:"100%" }}
                   // disabled={connected ? (stopLoss < pricing.askPrice && takeProfit > pricing.askPrice) ? false : true : (stopLoss < open_price && takeProfit > open_price) ? false : true}
                   onClickHandler={() => handleSubmit('buy')}
                 />

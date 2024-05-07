@@ -30,7 +30,6 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
     const { data: { success, message, payload } } = res
     setIsLoading(false)
     if (success) {
-
       setBrandList(payload)
       // setTradingAccount((prev)=> ({
       //   ...prev, leverage: payload.leverage
@@ -285,8 +284,9 @@ const TradingModal = ({setIsModalOpen, fetchTradingAccounts, TradingAccountID,pa
       //   leverage
       // }, { abortEarly: false });
       // setErrors({});
+      const selectedBrand =  brandList.find((brand)=>brand.brand_id === tradingAccount.brand_id)
 
-    const formPayload = {...tradingAccount, brand_id:userRole === 'admin' ? tradingAccount.brand_id :userBrand.public_key}
+    const formPayload = {...tradingAccount, brand_id:userRole === 'admin' ? tradingAccount.brand_id :userBrand.public_key,margin_call:selectedBrand?.margin_call}
     
      setIsLoading(true)
      const res = await Save_Trading_Account(formPayload, token)

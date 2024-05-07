@@ -252,30 +252,6 @@ const TransactionOrder = () => {
           CheckBrandPermission(userPermissions,userRole,'transaction_orders_create') ? 
           <>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-4">
-
-            
-              {/* <div>
-                <CustomAutocomplete
-                  name={'Operations'}
-                  variant={'standard'}
-                  label={'Operations'}
-                  value={method}
-                  options={OperationsList}
-                  getOptionLabel={(option) => option.label ? option.label : ""}
-                  onChange={(e, value) => {
-                    if (value) {
-
-                      setErrors(prevErrors => ({ ...prevErrors, method: {} }))
-                      setMethod(value)
-                    }
-                    else {
-                      setMethod(null)
-                    }
-                  }}
-                />
-                {errors.method?.value && <span style={{ color: 'red' }}>{errors.method?.value}</span>}
-              </div> */}
-
               <div>
                   <Select
                     placeholder="Operation"
