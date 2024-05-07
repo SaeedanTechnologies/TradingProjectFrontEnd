@@ -109,7 +109,6 @@ const Index = () => {
       },
     },
     {
-     
       title:<span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
       key: '7',
@@ -122,9 +121,33 @@ const Index = () => {
       },
     },
     {
+      title:<span className="dragHandler">Start Time</span>,
+      dataIndex: 'trading_interval_start_time',
+      key: '8',
+      sorter: (a, b) => a.trading_interval_start_time.length - b.trading_interval_start_time.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title:<span className="dragHandler">End Time</span>,
+      dataIndex: 'trading_interval_end_time',
+      key: '9',
+      sorter: (a, b) => a.trading_interval_end_time.length - b.trading_interval_end_time.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
       title:<span className="dragHandler">Symbol Group TI</span>,
       dataIndex: 'trading_interval',
-      key: '8',
+      key: '10',
       sorter: (a, b) => a.trading_interval.length - b.trading_interval.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -136,7 +159,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Symbols</span>,
       render: (text)=> <Link to={'#'} className='text-sm font-semibold cursor-pointer' style={{color: colorPrimary }}>View Details</Link>,
-      key: '9',
+      key: '11',
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

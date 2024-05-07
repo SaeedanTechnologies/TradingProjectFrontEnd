@@ -14,6 +14,7 @@ import { GenericEdit,GenericDelete } from '../../../utils/_APICalls';
 import CustomNotification from '../../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../../utils/helpers';
 import { deleteSymbolGroupById } from '../../../store/symbolGroupsSlice';
+import CustomDateRangePicker from '../../../components/CustomDateRange';
 
 
 const SymbolGroupEntry = () => {
@@ -31,7 +32,9 @@ const SymbolGroupEntry = () => {
   const [VolMin, setVolMin] = useState('')
   
   const [VolMax, setVolMax] = useState('')
-  const [TradingInterval, setTradingInterval] = useState('')
+  // const [TradingInterval, setTradingInterval] = useState('')
+  const [trading_interval_start_time, setTradingIntervalStartTime] = useState(null)
+  const [trading_interval_end_time, setTradingIntervalEndTime] = useState(null)
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
@@ -49,7 +52,7 @@ const SymbolGroupEntry = () => {
       LotStep: Yup.string().required('Lot Step is required'),
       VolMin: Yup.string().required('Vol Min is required'),
       VolMax: Yup.string().required('Vol Max is required'),
-      TradingInterval: Yup.string().required('Trading Interval is required'),
+      // TradingInterval: Yup.string().required('Trading Interval is required'),
   });
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
@@ -72,9 +75,9 @@ const SymbolGroupEntry = () => {
       case 'VolMax':
         setVolMax(value);
         break;
-      case 'TradingInterval':
-        setTradingInterval(value);
-        break;
+      // case 'TradingInterval':
+      //   setTradingInterval(value);
+      //   break;
       default:
         break;
     }
@@ -87,7 +90,7 @@ const SymbolGroupEntry = () => {
     setLotStep('');
     setVolMin('');
     setVolMax('');
-    setTradingInterval('')
+    // setTradingInterval('')
   }
   const handleSubmit = async()=> {
     try{
@@ -102,7 +105,7 @@ const SymbolGroupEntry = () => {
         LotStep,
         VolMin,
         VolMax,
-        TradingInterval
+        // TradingInterval
       }, { abortEarly: false });
 
       setErrors({});
@@ -114,7 +117,9 @@ const SymbolGroupEntry = () => {
         lot_step: LotStep,
         vol_min: VolMin,
         vol_max: VolMax,
-        trading_interval: TradingInterval,
+        // trading_interval: TradingInterval,
+        trading_interval_start_time: trading_interval_start_time,
+        trading_interval_end_time: trading_interval_end_time,
         swap: Swap
       }
     
@@ -235,6 +240,14 @@ const SymbolGroupEntry = () => {
       alert(`no next record found`)
     }
   }; 
+
+  const handleTimeChange = (start_time, end_time) => {
+    console.log('Formatted start time:', start_time);
+    console.log('Formatted end time:', end_time);
+    // Do something with the formatted start and end times
+    setTradingIntervalStartTime(start_time)
+    setTradingIntervalEndTime(end_time)
+};
   
   const setStatesForEditMode = async (payload, success, LeverageList)=>{
     if (success) {
@@ -248,7 +261,9 @@ const SymbolGroupEntry = () => {
       setLotStep(payload.lot_step);
       setVolMin(payload.vol_min);
       setVolMax(payload.vol_max);
-      setTradingInterval(payload.trading_interval);
+      // setTradingInterval(payload.trading_interval);
+      setTradingIntervalStartTime(payload.trading_interval_start_time)
+      setTradingIntervalEndTime(payload.trading_interval_end_time)
       setSwap(payload.swap);
     }
   }
@@ -325,8 +340,10 @@ const SymbolGroupEntry = () => {
         setLotStep(payload.lot_step);
         setVolMin(payload.vol_min);
         setVolMax(payload.vol_max);
-        setTradingInterval(payload.trading_interval);
-         setSwap(payload.swap);
+        // setTradingInterval(payload.trading_interval);
+        setTradingIntervalStartTime(payload.trading_interval_start_time)
+        setTradingIntervalEndTime(payload.trading_interval_end_time)
+        setSwap(payload.swap);
       }
 
     }
@@ -468,8 +485,8 @@ const SymbolGroupEntry = () => {
         />
         {errors.VolMax && <span style={{ color: 'red' }}>{errors.VolMax}</span>}
         </div>
-        <div>
-        <CustomTextField
+        <div className='pt-0'>
+        {/* <CustomTextField
           name='TradingInterval'
           type={'number'}
            disabled={isDisabled}
@@ -478,7 +495,8 @@ const SymbolGroupEntry = () => {
           value={TradingInterval}
           onChange={e => handleInputChange('TradingInterval', e.target.value)}
         />
-         {errors.TradingInterval && <span style={{ color: 'red' }}>{errors.TradingInterval}</span>}
+         {errors.TradingInterval && <span style={{ color: 'red' }}>{errors.TradingInterval}</span>} */}
+         <CustomDateRangePicker onChange={handleTimeChange} start_time={trading_interval_start_time} end_time={trading_interval_end_time} isDisabled={isDisabled} />
         </div>
        
       </div>
