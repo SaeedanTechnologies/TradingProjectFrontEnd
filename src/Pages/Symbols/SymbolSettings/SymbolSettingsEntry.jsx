@@ -1,7 +1,7 @@
 import { theme, Spin, Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, CaretDownOutlined } from '@ant-design/icons';
 
 import * as Yup from 'yup';
 
@@ -137,50 +137,65 @@ const SymbolSettingsEntry = () => {
       const res = await Feed_Data_List(token);
       const { data: { message, success, payload } } = res
       setFeedNameList(payload.data);
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) {
-        fetchSymbolSettingsWRTID(SymbolList, payload.data)
-      }
-
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
   }
-  const fetchSymbolSettingsWRTID = async (SymbList, feedlist) => {
+  const fetchSymbolSettingsWRTID = async () => {
     setIsLoading(true)
     const res = await SelectSymbolSettingsWRTID(SymbolSettingIds[0], token)
     const { data: { message, payload, success } } = res
     setIsLoading(false)
-    setStatesForEditMode(payload, success, SymbList, feedlist)
+    setStatesForEditMode(payload, success)
   }
-  const setStatesForEditMode = async (payload, success, SymbList, feedlist)=>{
-    if (success) {
-      setSymbolName(payload.name)
-      const selectedGroup = SymbList?.find(x => x?.id === payload.symbel_group_id)
-      setSelectedSymbol(selectedGroup)
-      const SelectedFeedNameOption = feedlist?.find(x => x?.name === payload.feed_name)
-      if (payload.feed_name === 'binance') {
-        const res = await GetCryptoData()
-        const mData = res?.data?.symbols
-        const updatedData = mData.map((item) => {
-          return { ...item, id: item.symbol };
-        });
-        setFeedNameFetchList(updatedData)
-        const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
-        setSelectedFeedNameFetch(selectedSymb)
+  const setStatesForEditMode = async (payload, success)=>{
+    try{
+      if (success) {
+        setIsLoading(true)
+        setSymbolName(payload.name)
+        const res = await Symbol_Group_List(token);
+        const { data } = res
+        const selectedGroup = data?.payload.data?.find(x => x?.id === payload.symbel_group_id)
+        setSelectedSymbol(selectedGroup)
+        const resp = await Feed_Data_List(token);
+        const { data : FeedList } = resp
+        const SelectedFeedNameOption = FeedList?.payload?.data?.find(x => x?.id === payload.data_feed.id)
+        if (payload.feed_name === 'binance') {
+          const res = await GetCryptoData()
+          const mData = res?.data?.symbols
+          const updatedData = mData.map((item) => {
+            return { ...item, id: item.symbol };
+          });
+          setFeedNameFetchList(updatedData)
+          const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
+          setSelectedFeedNameFetch(selectedSymb)
+          
+        }else if(payload.feed_name === 'fcsapi'){
+          const fasciResp = await GetFasciData(payload?.data_feed?.feed_login)
+          setFeedNameFetchList(fasciResp)
+          const selectedSymb = fasciResp.find(x => x.id === payload.feed_fetch_name)
+          setSelectedFeedNameFetch(selectedSymb) 
+        }
+        const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
+        setSelectedLeverage(selectedLeverageOpt)
+        setSelectedFeedName(SelectedFeedNameOption)
+        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
+        setSelectedEnable(selectedEnab)
+        setLeverage(parseFloat(payload.leverage))
+        setLotSize(payload.lot_size);
+        setLotSteps(payload.lot_step);
+        setVolMin(payload.vol_min);
+        setVolMax(payload.vol_max);
+        setSwap(payload.swap);
+        setCommission(payload.commission);
+        setIsLoading(false)
       }
-      const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
-      setSelectedLeverage(selectedLeverageOpt)
-      setSelectedFeedName(SelectedFeedNameOption)
-      const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
-      setSelectedEnable(selectedEnab)
-      setLeverage(parseFloat(payload.leverage))
-      setLotSize(payload.lot_size);
-      setLotSteps(payload.lot_step);
-      setVolMin(payload.vol_min);
-      setVolMax(payload.vol_max);
-      setSwap(payload.swap);
-      setCommission(payload.commission);
+    }catch(err){
+       alert(err.message)
+    }finally{
+      setIsLoading(false)
     }
+   
   }
 
   const fetchSymbolGroups = async () => {
@@ -188,9 +203,6 @@ const SymbolSettingsEntry = () => {
       const res = await Symbol_Group_List(token);
       const { data: { message, success, payload } } = res
       setSymbolList(payload.data);
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) {
-        fetchSymbolSettingsWRTID(payload.data)
-      }
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
@@ -202,7 +214,7 @@ const SymbolSettingsEntry = () => {
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
-        setStatesForEditMode(payload, true,SymbolList, FeedNameList)
+        setStatesForEditMode(payload, true)
       }, 3000)
     }else{
       alert(`no next record found`)
@@ -215,7 +227,7 @@ const SymbolSettingsEntry = () => {
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
-        setStatesForEditMode(payload, true,SymbolList, FeedNameList)
+        setStatesForEditMode(payload, true)
       }, 3000)
       
     }
@@ -420,7 +432,7 @@ const SymbolSettingsEntry = () => {
     {
       key: '1',
       label: (
-        <button rel="noopener noreferrer" onClick={()=>{
+        <button className='w-full text-left' rel="noopener noreferrer" onClick={()=>{
           setIsDisabled(false)
         }}>   Edit </button>
       ),
@@ -428,7 +440,7 @@ const SymbolSettingsEntry = () => {
     {
       key: '2',
       label: (
-        <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
+        <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
     },
    
@@ -459,10 +471,10 @@ const SymbolSettingsEntry = () => {
           </div>
           {/* toolbar */}
           {(isDisabled && SymbolSettingIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-          {(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0)  &&
+          {(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 && isDisabled)  &&
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
-          {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
-            {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
+           <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
+            <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
             <Dropdown
               menu={{
                 items,
@@ -472,7 +484,7 @@ const SymbolSettingsEntry = () => {
               trigger={['click']}
               
             >
-              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
           </Dropdown>
           </div>
           }
@@ -553,6 +565,7 @@ const SymbolSettingsEntry = () => {
                     id="grouped-demo"
                     fullWidth
                     variant="standard"
+                    disabled={isDisabled}
                     options={feedNameFetchList}
                     groupBy={(option) => option.group}
                     getOptionLabel={(option) => option.name}

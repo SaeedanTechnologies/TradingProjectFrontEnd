@@ -18,4 +18,6 @@
   cursor: move;
   background-color: #ccc;
 }
-
+.ant-table-selection-column {
+  text-align: left !important;
+}

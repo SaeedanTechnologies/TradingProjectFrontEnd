@@ -2,7 +2,7 @@ import { Space, theme, Spin } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
-import { EditOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, CloseOutlined, DeleteOutlined, MinusCircleOutlined  } from '@ant-design/icons';
 import { Link, useLocation, } from 'react-router-dom';
 import { Delete_Trade_Order,  Put_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
@@ -193,6 +193,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            footer={()=> <span className='text-sm font-bold text-arial'>
+             <MinusCircleOutlined /> Balance: 9 973.81 USD  Equity: 9 973.81 USD  Margin: 10.00 Free Margin 9.01  Margin Level:  10.04 %
+            </span>}
           />
       </div>
     </Spin>

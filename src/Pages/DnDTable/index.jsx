@@ -8,7 +8,7 @@ import TableActions from "./TableActions";
 import CustomNotification from "../../components/CustomNotification";
 import CustomModal from "../../components/CustomModal";
 import { Autocomplete, TextField } from "@mui/material";
-import { GenericDelete } from "../../utils/_APICalls";
+import { GenericDelete, MassCloseOrders } from "../../utils/_APICalls";
 import Swal from "sweetalert2";
 import { setSymbolSettingsSelecetdIDs } from "../../store/symbolSettingsSlice";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
@@ -74,6 +74,7 @@ class DnDTable extends Component {
     this.setColumnsSetting = this.setColumnsSetting.bind(this)
     this.useEffect = this.useEffect.bind(this)
     this.SearchHandler = this.SearchHandler.bind(this)
+    this.MassCloseOrdersHandler = this.MassCloseOrdersHandler.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
 
     const that = this;
@@ -105,7 +106,7 @@ class DnDTable extends Component {
   async SearchHandler(){
   //  this.setState({isLoading: true})
   this.props.LoadingHandler(true)
-   const res = await this.props.SearchQuery(this.props.token, 1, 10, this.state.searchValues)
+   const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
    const {data:{payload, success, message}} = res
   //  this.setState({isLoading: false})
   this.setState({isSearching: false})
@@ -375,9 +376,9 @@ class DnDTable extends Component {
             const res = await GenericDelete(Params, this.props.token)
             const { data: { success, message, payload } } = res
             this.setState({isLoading: false})
-            const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
-            this.setState({data: newData})
             if (success) {
+              const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
+              this.setState({data: newData})
                CustomNotification({
                 type: "success",
                 title: "Deleted",
@@ -406,63 +407,122 @@ class DnDTable extends Component {
         })
       }
   }
+  async MassCloseOrdersHandler (){
+    if (this.state.selectedRowKeys.length > 0) {
+      const Params = {
+       ids: this.state.selectedRowKeys
+      }
+     this.setState({isLoading: true})
+     Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1CAC70",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Close it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        debugger
+        const res = await MassCloseOrders(Params, this.props.token)
+        const { data: { success, message, payload } } = res
+        this.setState({isLoading: false})
+        if (success) {
+          const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
+          this.setState({data: newData})
+           CustomNotification({
+            type: "success",
+            title: "Deleted",
+            description: message,
+            key: "a4",
+          })
+        } else {
+          CustomNotification({
+            type: "error",
+            title: "Oppssss..",
+            description: message,
+            key: "b4",
+          })
+        }
+  
+      }
+    });
+     this.setState({isLoading: false})
+
+  } else {
+    CustomNotification({
+      type: "error",
+      title: "Validation",
+      description: "Please select any record first",
+      key: "6",
+    })
+  }
+  }
   handleCancel(){
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
-  const Params = {
-    data:{
-    name: this.props.formName,
-   
-  }}
-  const ColumnsData = this.state.columns.map(x=>{
-    return {
-      key: x.key, 
-      dataIndex: x.dataIndex,
-      title: typeof x.title === 'string' ? x.title:x.title.props.children 
-    }
-  })
-
-// Sort array A based on the index of keys in array B
-// if values length is less then its means remove column , if greater means add columns , in case of remove column remove column from columns data else add column
-if(values.length > ColumnsData.length){
-  const keysInB = new Set(ColumnsData.map(item => item.key));
-  values.forEach(item => {
-      if (!keysInB.has(item.key)) {
-        ColumnsData.push(item);
+  try{
+    const Params = {
+      data:{
+      name: this.props.formName,
+     
+    }}
+    const ColumnsData = this.state.columns.map(x=>{
+      return {
+        key: x.key, 
+        dataIndex: x.dataIndex,
+        title: typeof x.title === 'string' ? x.title:x.title.props.children 
       }
-  });
-      Params.data.value= JSON.stringify(ColumnsData)
-    }else if(values.length < ColumnsData.length){
-      const keysInValues = new Set(values.map(obj => obj.key));
-      const mData = ColumnsData.filter(item => keysInValues.has(item.key));
-      Params.data.value= JSON.stringify(mData)
-    }else{
-      Params.data.value= JSON.stringify(values)
-    }
-    this.setState({isLoading: true})
-    const res = await SetSettings(Params,this.props.token )
-    const {data:{message, data, success}} = res
-    this.setState({isLoading: false})
-    if(success){
-      this.handleCancel()
-      CustomNotification({
-        type: "success",
-        title: "Success ",
-        description: message,
-        key: "arr4",
-      })
-      this.useEffect()
-      
-    }else{
-      CustomNotification({
-        type: "error",
-        title: "Oppssss... ",
-        description: message,
-        key: "arr4",
-      })
-    }
-    
+    })
+    this.props.LoadingHandler(true)
+  // Sort array A based on the index of keys in array B
+  // if values length is less then its means remove column , if greater means add columns , in case of remove column remove column from columns data else add column
+  if(values.length > ColumnsData.length){
+    const keysInB = new Set(ColumnsData.map(item => item.key));
+    values.forEach(item => {
+        if (!keysInB.has(item.key)) {
+          ColumnsData.push(item);
+        }
+    });
+        Params.data.value= JSON.stringify(ColumnsData)
+      }else if(values.length < ColumnsData.length){
+        const keysInValues = new Set(values.map(obj => obj.key));
+        const mData = ColumnsData.filter(item => keysInValues.has(item.key));
+        Params.data.value= JSON.stringify(mData)
+      }else{
+        Params.data.value= JSON.stringify(values)
+      }
+      this.setState({isLoading: true})
+      const res = await SetSettings(Params,this.props.token )
+      const {data:{message, data, success}} = res
+      this.setState({isLoading: false})
+      if(success){
+        this.handleCancel()
+        CustomNotification({
+          type: "success",
+          title: "Success ",
+          description: message,
+          key: "arr4",
+        })
+        
+        this.useEffect()
+        this.props.LoadingHandler(false)
+        
+      }else{
+        CustomNotification({
+          type: "error",
+          title: "Oppssss... ",
+          description: message,
+          key: "arr4",
+        })
+      }
+  }catch(err){
+    alert(err.message)
+  }finally{
+    this.props.LoadingHandler(false)
+  }
+   
   }
   render() {
     const { columns, selectedRowKeys } = this.state;
@@ -477,6 +537,7 @@ if(values.length > ColumnsData.length){
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method
       onSelectAll: this.onSelectAllChange,
+      align: 'left',
       
     };
 
@@ -496,7 +557,15 @@ if(values.length > ColumnsData.length){
                 </h1>
               }
 
-            <div className="self-end">
+          
+
+          </div>
+          <Table
+            bordered
+            className="mt-4"
+            title={() => (
+              <div style={{ textAlign: 'right' }}>
+              <div className="self-end">
               {!(
                 this.state.isRearangments
               ) ? (
@@ -510,6 +579,8 @@ if(values.length > ColumnsData.length){
                   setPerPage={this.props.setPerPage}
                   editPermissionName={this.props.editPermissionName}
                   deletePermissionName={this.props.deletePermissionName}
+                  direction = {this.props.direction}
+                  MassCloseOrdersHandler={this.MassCloseOrdersHandler}
                 />
               ) : (
                 <CustomButton
@@ -520,9 +591,9 @@ if(values.length > ColumnsData.length){
               )}
             </div>
 
-          </div>
-          <Table
-            bordered
+              </div>
+            )}
+            footer={this.props.footer}
             components={this.components}
             columns={combinedColumns}
             dataSource={this.state.data} 
@@ -551,6 +622,7 @@ if(values.length > ColumnsData.length){
                 }
               },
             })}
+            scroll={{ x: 'max-content' }}
           />
         </ReactDragListView.DragColumn>
         <CustomModal
@@ -603,6 +675,7 @@ if(values.length > ColumnsData.length){
           borderColor: '#c5c5c5',
           color: '#fff'
         }}
+        onClickHandler={()=> this.setState({isAddRemove: false})}
         />
         </div>
         </CustomModal>

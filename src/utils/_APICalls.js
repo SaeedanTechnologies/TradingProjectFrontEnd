@@ -52,3 +52,7 @@ export const GenericEdit = async(Params, token)=>{
   const res = await  _API(`${apiUrl}/admin/massEdit`,'put',Params,token)
   return res
 }
+export const MassCloseOrders = async(Params, token)=>{
+  const res = await  _API(`${apiUrl}/admin/massCloseOrders`,'post',Params,token)
+  return res
+}
