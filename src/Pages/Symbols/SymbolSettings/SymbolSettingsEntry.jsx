@@ -8,17 +8,19 @@ import * as Yup from 'yup';
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
-import { LeverageList } from '../../../utils/constants';
+import { LeverageList, PipsValues } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
-import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
+import { ALL_Symbol_Group_List, Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
 import { GetAskBidData, GetCryptoData, GetFasciData } from '../../../utils/_ExchangeAPI'
 import { useDispatch, useSelector } from 'react-redux';
 import CustomNotification from '../../../components/CustomNotification';
-import { Autocomplete, TextField } from '@mui/material'
+import { Autocomplete, TextField,Input,InputAdornment } from '@mui/material'
 import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
 import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
 import { deleteSymbolSettingsById } from '../../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
+import CustomCheckbox from '../../../components/CustomCheckbox';
+import { numberInputStyle } from '../../TradingAccount/style';
 
 
 const FeedData = [
@@ -62,11 +64,13 @@ const SymbolSettingsEntry = () => {
     { id: 1, title: 'Yes' },
     { id: 2, title: 'No' },
   ])
+  const [selectedPip,setSelectedPip] = useState(null)
   const [Selectedenable, setSelectedEnable] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [askValue, setAskValue] = useState('')
   const [bidValue, setBidValue] = useState('')
   const [isDisabled, setIsDisabled] = useState(false)
+  const [connected, setConnected] = useState(false);
 
 
   const validationSchema = Yup.object().shape({
@@ -86,7 +90,9 @@ const SymbolSettingsEntry = () => {
 
 
   const clearFields = () => {
+    setSymbolName('');
     setSelectedEnable(null);
+    setSelectedPip(null);
     setErrors({});
     setSymbolList([]);
     setSelectedSymbol(null);
@@ -131,6 +137,15 @@ const SymbolSettingsEntry = () => {
         break;
     }
   };
+
+    const handleCheckboxClick = (e) => {
+    setConnected(e.target.checked)
+    if(!e.target.checked){
+      setSwap('')
+      setConnected(false)
+    }
+    
+  }
 
   const fetchFeedData = async () => {
     try {
@@ -181,6 +196,10 @@ const SymbolSettingsEntry = () => {
         setSelectedFeedName(SelectedFeedNameOption)
         const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
         setSelectedEnable(selectedEnab)
+
+        const selectedPip = PipsValues.find(pip => pip.value === (parseFloat(payload.pip)));
+        setSelectedPip(selectedPip)
+
         setLeverage(parseFloat(payload.leverage))
         setLotSize(payload.lot_size);
         setLotSteps(payload.lot_step);
@@ -195,12 +214,11 @@ const SymbolSettingsEntry = () => {
     }finally{
       setIsLoading(false)
     }
-   
   }
 
   const fetchSymbolGroups = async () => {
     try {
-      const res = await Symbol_Group_List(token);
+      const res = await ALL_Symbol_Group_List(token);
       const { data: { message, success, payload } } = res
       setSymbolList(payload.data);
     } catch (error) {
@@ -248,6 +266,7 @@ const SymbolSettingsEntry = () => {
     }
   }, []);
   const handleSubmit = async () => {
+  debugger
     try {
       if (SymbolSettingIds.length < 2) {
         await validationSchema.validate({
@@ -262,7 +281,9 @@ const SymbolSettingsEntry = () => {
           volMin: volMin,
           volMax: volMax,
           commission: commission,
-          enabled: Selectedenable
+          enabled: Selectedenable,
+         
+      
         }, { abortEarly: false });
 
         setErrors({});
@@ -272,11 +293,13 @@ const SymbolSettingsEntry = () => {
         name: symbolName ? symbolName : '',
         symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
         feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
+        feed_fetch_key:selectedFeedNameFetch.group.toLowerCase(),
         speed_max: 'abc',
         lot_size: lotSize ? lotSize : '',
         lot_step: lotSteps ? lotSteps : '',
         commission: commission ? commission : '',
         enabled: Selectedenable ? Selectedenable.title = 'Yes' ? 1 : 0 : 0,
+        pip:selectedPip.value,
         leverage: SelectedLeverage ? SelectedLeverage.value : '',
         feed_name: selectedFeedName ? selectedFeedName.module : '',
         feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
@@ -505,6 +528,8 @@ const SymbolSettingsEntry = () => {
                 onChange={(event, value) => {
                   if (value) {
                     setSelectedSymbol(value);
+                    setSwap(value.swap)
+                    setConnected(true)
                     setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "" }))
                   } else {
                     setSelectedSymbol(null);
@@ -629,16 +654,42 @@ const SymbolSettingsEntry = () => {
               {errors.Leverage && <span style={{ color: 'red' }}>{errors.Leverage}</span>}
             </div>
             <div>
-              <CustomTextField
+              <TextField
                 name={'swap'}
                 key={6}
                 label="Swap"
                 disabled={isDisabled}
                 type={'number'}
                 value={swap}
-                varient="standard"
+                variant="standard"
+                fullWidth
+                sx={numberInputStyle}
                 onChange={(e) => handleInputChange("swap", e.target.value)}
-              />
+                InputProps={{
+                  readOnly: connected,
+                  startAdornment:(
+                        <InputAdornment position="start">
+                            <CustomCheckbox  checked={connected} onChange={handleCheckboxClick} />
+                        </InputAdornment>
+                    )
+                }}
+              /> 
+                {/* <Input
+                    id="input-with-icon-adornment"
+                    placeholder='Swap'
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <CustomCheckbox label='Auto' checked={connected} onChange={handleCheckboxClick} />
+                        </InputAdornment>
+                    }
+                    label={'Swap'}
+                    fullWidth
+                    variant={'standard'}
+                    type="number"
+                    value={swap}
+                    onChange={e => handleInputChange('swap', e.target.value)}
+                /> */}
+
               {errors.swap && <span style={{ color: 'red' }}>{errors.swap}</span>}
             </div>
 
@@ -724,6 +775,25 @@ const SymbolSettingsEntry = () => {
               />
               {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
             </div>
+
+              <div>
+              <CustomAutocomplete
+                label="Pips"
+                variant="standard"
+                disabled={isDisabled}
+                options={PipsValues}
+                value={selectedPip}
+                getOptionLabel={(option) => option.label ? option.label : ""}
+                onChange={(event, value) => {
+                 
+                  setSelectedPip(value);
+                  setErrors(prevErrors => ({ ...prevErrors, enabled: "" }))
+                }}
+
+              />
+              {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
+            </div>   
+
             {askValue > 0 && <span className='text-sm text-green-500 font-semibold'>Ask Price is {askValue} and Bid Price is {bidValue}</span>}
 
 

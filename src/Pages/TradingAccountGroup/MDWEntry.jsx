@@ -1,5 +1,5 @@
 import { theme } from 'antd';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from 'react-router-dom';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
@@ -9,32 +9,38 @@ import CustomButton from '../../components/CustomButton';
 import { Save_Group_Order } from '../../utils/_TradeOrderAPI';
 import CustomNotification from '../../components/CustomNotification';
 import { useSelector } from 'react-redux';
+import {TextField,InputAdornment} from '@mui/material'
+import { numberInputStyle } from '../TradingAccount/style';
+import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
+import { TransactionOrderValidationSchema } from '../../utils/validations';
+
 
 const MDWEntry = () => {
-  const token = useSelector(({ user }) => user?.user?.token)
+  const token = useSelector(({ user }) => user?.user?.token);
+  const trading_account_id = useSelector((state) => state?.trade?.trading_account_id);
   const { id, name } = useSelector(({ group }) => group?.tradingGroupData)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
   const [transactionOrders, setTransactionOrders] = useState([])
-  const [method, setMethod] = useState(null)
+  const [selectedMethod, setSelectedMethod] = useState(null)
   const [currency, setCurrency] = useState('')
   const [amount, setAmount] = useState('')
   const [comment, setComment] = useState('')
   const [errors, setErrors] = useState({})
   const [OperationsList, setOperationList] = useState([
-    { "label": "balance", "value": "balance" },
-    { "label": "commission", "value": "commission" },
-    { "label": "tax", "value": "tax" },
-    { "label": "Credit", "value": "Credit" },
-    { "label": "bonus", "value": "bonus" }
+    { label: "balance", value: "balance" },
+    { label: "commission", value: "commission" },
+    { label: "tax", value: "tax" },
+    { label: "Credit", value: "Credit" },
+    { label: "bonus", value: "bonus" }
   ])
   const [SelectedOperation, setSElectedOperation] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate();
 
   const clearFields = () => {
-    setMethod(null)
+    setSelectedMethod(null)
     setAmount('')
     setComment('')
   }
@@ -62,13 +68,15 @@ const MDWEntry = () => {
   };
 
   const handleSubmit = async (type) => {
-    debugger
     try {
-
+        await TransactionOrderValidationSchema.validate({
+        trading_account_id,
+        method:selectedMethod?.value,
+        amount,
+      }, { abortEarly: false });
       setErrors({});
-
       const TransactionOrderGroupData = {
-        method: method.value,
+        method: selectedMethod?.value,
         amount,
         comment,
         currency,
@@ -79,18 +87,12 @@ const MDWEntry = () => {
         status: "requested"
 
       }
-
-
       setIsLoading(true)
-
-      alert(JSON.stringify(TransactionOrderGroupData))
       const res = await Save_Group_Order(TransactionOrderGroupData, token)
-      // debugger
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
         CustomNotification({ type: "success", title: "Transaction Order", description: message, key: 1 })
-
         clearFields()
       }
       else {
@@ -110,7 +112,26 @@ const MDWEntry = () => {
     }
   }
 
+  const fetchSingleTradeAccount = async () => {
 
+    setIsLoading(true)
+    const res = await Get_Single_Trading_Account(trading_account_id, token)
+    const { data: { message, payload, success } } = res
+
+
+    setIsLoading(false)
+    if (success) {
+      setCurrency(payload?.currency)
+
+    }
+
+
+
+  }
+
+   useEffect(() => {
+    fetchSingleTradeAccount()
+  }, [])
 
   return (
     <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -130,26 +151,42 @@ const MDWEntry = () => {
               name={'Operations'}
               variant={'standard'}
               label={'Operations'}
-              value={method}
+              value={selectedMethod}
               options={OperationsList}
               getOptionLabel={(option) => option.label ? option.label : ""}
               onChange={(e, value) => {
                 if (value) {
-
-                  setErrors(prevErrors => ({ ...prevErrors, method: {} }))
-                  setMethod(value)
+                  setErrors(prevErrors => ({ ...prevErrors, method: null }))
+                  setSelectedMethod(value)
                 }
                 else {
-                  setMethod(null)
+                  setSelectedMethod(null)
                 }
               }}
             />
-            {errors.method?.value && <span style={{ color: 'red' }}>{errors.method?.value}</span>}
+            {errors.method && <span style={{ color: 'red' }}>{errors.method}</span>}
           </div>
           <div>
-            <span>{currency}</span>
-            <CustomTextField label={'Amount'} fullWidth varient={'standard'} type="number" value={amount} onChange={e => handleInputChange('amount', e.target.value)}
-            />
+          
+            <TextField
+                name={'amount'}
+                key={6}
+                label="Amount"
+                type={'number'}
+                value={amount}
+                variant="standard"
+                fullWidth
+                sx={numberInputStyle}
+                onChange={(e) => handleInputChange("amount", e.target.value)}
+                InputProps={{
+                  startAdornment:(
+                        <InputAdornment position="start">
+                            <span>{currency}</span>
+                        </InputAdornment>
+                    )
+                }}
+              /> 
+
             {errors.amount && <span style={{ color: 'red' }}>{errors.amount}</span>}
           </div>
         </div>

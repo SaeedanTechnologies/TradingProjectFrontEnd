@@ -10,6 +10,11 @@ export const Symbol_Group_List = async (token) => {
     return res
 }
 
+export const ALL_Symbol_Group_List = async (token) => {
+    const res = await _API(`${apiUrl}/admin/getAllSymbelGroupList`, 'get', [], token)
+    return res
+}
+
 export const Feed_Data_List = async (token) => {
     const res = await _API(`${apiUrl}/admin/data_feed`, 'get', [], token)
     return res

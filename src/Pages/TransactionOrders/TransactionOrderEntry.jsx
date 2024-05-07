@@ -2,7 +2,7 @@ import React, { useState,useEffect } from 'react'
 import { theme,Dropdown } from 'antd';
 import CustomTextField from '../../components/CustomTextField'
 import CustomAutocomplete from '../../components/CustomAutocomplete'
-import { AutocompleteDummyData } from '../../utils/constants';
+import { AutocompleteDummyData, CurrenciesList } from '../../utils/constants';
 import CustomPhoneNo from '../../components/CustomPhoneNo';
 import { TextField } from '@mui/material';
 import CustomButton from '../../components/CustomButton';
@@ -13,6 +13,7 @@ import { Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { TransactionOrderValidationSchema } from '../../utils/validations';
 import CustomNotification from '../../components/CustomNotification';
+
 
 
 const TransactionOrderEntry = () => {
@@ -105,8 +106,8 @@ const TransactionOrderEntry = () => {
       name:'Curency',   
       label:'Curency', 
       varient: 'standard',
-      options:CurencyList,
-      getOptionLabel:(option) => option.title ? option.title : "",
+      options:CurrenciesList,
+      getOptionLabel:(option) => option.label ? option.label : "",
       onChange:(e,value) =>{
         if(value){
             setSelectedCurrency(value)
