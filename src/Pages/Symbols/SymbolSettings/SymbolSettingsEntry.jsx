@@ -208,9 +208,7 @@ const SymbolSettingsEntry = () => {
       const res = await ALL_Symbol_Group_List(token);
       const { data: { message, success, payload } } = res
       setSymbolList(payload);
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) {
-        fetchSymbolSettingsWRTID(payload)
-      }
+
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
@@ -514,7 +512,7 @@ const SymbolSettingsEntry = () => {
                 options={SymbolList}
                 value={SelectedSymbol}
                 disabled={isDisabled}
-                getOptionLabel={(option) => option.name ? option.name : ""}
+                getOptionLabel={(option) => option?.name ? option?.name : ""}
                 onChange={(event, value) => {
                   if (value) {
                     setSelectedSymbol(value);
