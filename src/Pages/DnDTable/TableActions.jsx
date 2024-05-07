@@ -5,7 +5,7 @@ import { CheckBrandPermission } from '../../utils/helpers';
 import { useSelector } from 'react-redux';
 
 
-const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName }) =>{
+const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler }) =>{
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
@@ -33,6 +33,12 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
       key: '4',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
+      ),
+    },
+    (selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName) && direction ==='/single-trading-accounts/details/live-orders') &&{
+      key: '5',
+      label: (
+        <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassCloseOrdersHandler}>   Close  </button>
       ),
     },
    
@@ -67,7 +73,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
       placement="bottom"
       arrow
       trigger={['click']}
-      className='mb-3 mt-6'
+      className='mb-3'
     >
       <Button> 
         <div className='flex items-center gap-2'>
