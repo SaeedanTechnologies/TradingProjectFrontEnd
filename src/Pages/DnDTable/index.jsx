@@ -132,7 +132,7 @@ class DnDTable extends Component {
           this.setState({isSearching: true})
           this.props.LoadingHandler(true)
           setTimeout(()=>{
-            this.setState({ data: this.props.data });
+            this.setState({ data: this.props.data, searchValues: {} });
             this.props.LoadingHandler(false)
           },2000)
         }
@@ -219,7 +219,7 @@ class DnDTable extends Component {
     } 
      if (prevProps.isSearching !== this.state.isSearching) {
         // Update the button when isSearching state changes
-        const buttonText = this.state.isSearching ? 'Search' : 'Cancel';
+        const buttonText = this.state.isSearching ? 'Search' : 'Clear';
         
         const searchButton = document.querySelector('.ant-table-thead tr:first-child th:first-child button');
         if (searchButton) {
@@ -545,7 +545,7 @@ class DnDTable extends Component {
       <>
         <ReactDragListView.DragColumn {...this.dragProps}>
 
-          <div className="flex justify-between gap-4">
+          <div className="flex justify-center gap-4">
             <div></div>
           {
                 this.state.isSelectAll &&

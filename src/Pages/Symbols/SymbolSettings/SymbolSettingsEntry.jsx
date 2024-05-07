@@ -71,6 +71,7 @@ const SymbolSettingsEntry = () => {
   const [bidValue, setBidValue] = useState('')
   const [isDisabled, setIsDisabled] = useState(false)
   const [connected, setConnected] = useState(false);
+  const [holdSwap, setHoldSwap] = useState(0)
 
 
   const validationSchema = Yup.object().shape({
@@ -143,6 +144,8 @@ const SymbolSettingsEntry = () => {
     if(!e.target.checked){
       setSwap('')
       setConnected(false)
+    }else{
+       setSwap(holdSwap)
     }
     
   }
@@ -206,6 +209,7 @@ const SymbolSettingsEntry = () => {
         setVolMin(payload.vol_min);
         setVolMax(payload.vol_max);
         setSwap(payload.swap);
+        setHoldSwap(payload.swap)
         setCommission(payload.commission);
         setIsLoading(false)
       }
@@ -294,7 +298,7 @@ const SymbolSettingsEntry = () => {
         name: symbolName ? symbolName : '',
         symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
         feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
-        feed_fetch_key:selectedFeedNameFetch.group.toLowerCase(),
+        feed_fetch_key:selectedFeedNameFetch?.group?.toLowerCase(),
         speed_max: 'abc',
         lot_size: lotSize ? lotSize : '',
         lot_step: lotSteps ? lotSteps : '',
@@ -670,7 +674,7 @@ const SymbolSettingsEntry = () => {
                   readOnly: connected,
                   startAdornment:(
                         <InputAdornment position="start">
-                            <CustomCheckbox  checked={connected} onChange={handleCheckboxClick} />
+                            <CustomCheckbox  checked={connected} onChange={handleCheckboxClick} disabled={isDisabled} />
                         </InputAdornment>
                     )
                 }}

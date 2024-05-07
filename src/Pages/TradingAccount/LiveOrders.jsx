@@ -81,16 +81,16 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       sorter: (a, b) => a.profit.length - b.profit.length,
       sortDirections: ['ascend'],
     },
-    {
-      title: 'Actions',
-      dataIndex: 'actions',
-      key: 'actions',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-          <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CancelLiveOrder(record.id)} />
-        </Space >
-      ),
-    },
+    // {
+    //   title: 'Actions',
+    //   dataIndex: 'actions',
+    //   key: 'actions',
+    //   render: (_, record) => (
+    //     <Space size="middle" className='cursor-pointer'>
+    //       <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CancelLiveOrder(record.id)} />
+    //     </Space >
+    //   ),
+    // },
   ];
 
 

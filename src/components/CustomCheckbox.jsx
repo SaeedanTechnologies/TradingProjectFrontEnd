@@ -13,7 +13,7 @@ const CustomsCheckbox = styled(Checkbox)`
     `}
 `;
 
-const CustomCheckbox = ({ title, value, onChange, checked, indeterminate, label, className }) => {
+const CustomCheckbox = ({ title, value, onChange, checked, indeterminate, label, className, disabled }) => {
   const {
     token: { colorPrimary },
   } = theme.useToken();
@@ -26,6 +26,7 @@ const CustomCheckbox = ({ title, value, onChange, checked, indeterminate, label,
       checked={checked}
       indeterminate={indeterminate}
       className={className}
+      disabled={disabled}
     >
       {title}
     </CustomsCheckbox>
