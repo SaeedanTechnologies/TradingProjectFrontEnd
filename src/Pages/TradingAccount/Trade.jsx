@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { TradeValidationSchema } from '../../utils/validations';
 import { numberInputStyle } from './style'
 import { useSelector } from 'react-redux';
-import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Get_Single_Trading_Account, Post_Group_Trade_Order, Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete, TextField } from '@mui/material';
 import { AllSymbelSettingList, All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
@@ -30,7 +30,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   } = theme.useToken();
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
-
+  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds[0])
+  console.log('trading_group_id',trading_group_id)
 
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
@@ -136,8 +137,24 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
         open_time: new Date().toISOString(),
         brand_id
       }
+      
+      const TradeGroupSymbolData = {
+        symbol: symbol.feed_fetch_name,
+        feed_name: symbol.feed_name,
+        order_type: order_type.value,
+        type: typeReceive ? typeReceive : type.value,
+        volume: String(volume),
+        comment,
+        takeProfit: String(takeProfit),
+        stopLoss: String(stopLoss),
+        stop_limit_price,
+        trading_group_id: trading_group_id,
+        open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
+        open_time: new Date().toISOString(),
+        // brand_id
+      }
       setIsLoading(true)
-      const res = await Post_Trade_Order(SymbolData, token)
+      const res = await (!CurrentPage ? Post_Group_Trade_Order(TradeGroupSymbolData, token) : Post_Trade_Order(SymbolData, token))
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
@@ -164,14 +181,18 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   }
 
   const handleSubmit = (typeReceive) => {
-   { typeReceive === 'sell' ? 
+    {
+      (stopLoss || takeProfit) > 0 ?  typeReceive === 'sell' ? 
       (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
       createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
       typeReceive === 'buy' ? 
       (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
       createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
       createOrder(typeReceive)
+      :
+      createOrder(typeReceive)
     }
+   
   }
 
   const fetchSymbolSettings = async () => {

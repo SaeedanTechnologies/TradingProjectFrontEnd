@@ -85,16 +85,16 @@ const MBTradingOrder = () => {
       dataIndex: 'profit',
       key: '10',
     },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-          <Link to="/trading-group/mb-to/0/0"><EditOutlined style={{ fontSize: "24px", color: colorPrimary }} /></Link>
-          <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} />
-        </Space>
-      ),
-    },
+    // {
+    //   title: 'Action',
+    //   key: 'action',
+    //   render: (_, record) => (
+    //     <Space size="middle" className='cursor-pointer'>
+    //       <Link to="/trading-group/mb-to/0/0"><EditOutlined style={{ fontSize: "24px", color: colorPrimary }} /></Link>
+    //       <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} />
+    //     </Space>
+    //   ),
+    // },
   ];
 
   const data = [
@@ -146,10 +146,10 @@ const MBTradingOrder = () => {
               height: '48px',
               borderRadius: '8px',
             }}
-            onClickHandler={() => navigate('/trading-group/mb-to/0/0')}
+            onClickHandler={() => navigate('/trading-group/mb-to/create')}
           />
         </div>
-        <CustomTable columns={columns} data={tradeOrder} headerStyle={headerStyle} />
+        <CustomTable columns={columns} column_name={tradeOrder?.group_unique_id} data={tradeOrder} headerStyle={headerStyle} />
 
       </div>
     </Spin>

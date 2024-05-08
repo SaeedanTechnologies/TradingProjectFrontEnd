@@ -21,7 +21,7 @@ const TradingGroupEntry = () => {
        
         <h1 className='text-3xl font-bold'>Trading Account Group</h1>
      </div>
-     <Link to={'/trading-group/0'}>
+     <Link to={'/trading-group-entry'}>
        <CustomButton
          Text='Add Trading Group'
          style={{
