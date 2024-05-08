@@ -163,11 +163,11 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             token = {token}
             footer={()=> <span className='text-sm font-bold text-arial'>
              <MinusCircleOutlined /> 
-             Balance: {balance} {CurrencyName}  
-             Equity: {parseFloat(balance) + parseFloat(grandProfit)} {CurrencyName}  
-             Margin: {parseFloat(lotSize).toFixed(2)/parseFloat(accountLeverage).toFixed(2)} 
-             Free Margin {(parseFloat(balance) + parseFloat(grandProfit))- (parseFloat(lotSize/accountLeverage).toFixed(2))} 
-             Margin Level:  {((parseFloat(balance) + parseFloat(grandProfit))/(parseFloat(lotSize/accountLeverage).toFixed(2)))*100} %
+             Balance: {balance} {CurrencyName} &nbsp;
+             Equity: {parseFloat(balance) + parseFloat(grandProfit)} {CurrencyName}  &nbsp;
+             Margin: {(parseFloat(lotSize).toFixed(2) * 1000)/parseFloat(accountLeverage).toFixed(2)} &nbsp;
+             Free Margin {(parseFloat(balance) + parseFloat(grandProfit)) - ((parseFloat(lotSize).toFixed(2) * 1000)/parseFloat(accountLeverage).toFixed(2)).toFixed(2)} &nbsp;
+             Margin Level:  {((parseFloat(balance) + parseFloat(grandProfit))/((parseFloat(lotSize).toFixed(2) * 1000)/parseFloat(accountLeverage).toFixed(2))).toFixed(2)*100} %
             </span>}
           />
       </div>
