@@ -134,15 +134,28 @@ export const getOpenPriceFromAPI= async(symbol, feedName)=> {
   }
 }
 
-export const calculateProfitLoss = (currentPrice, entryPrice, direction, volume)=> {
-  // Calculate profit/loss based on direction of the trade
-  if (direction === 'buy') {
-      // For a buy order, profit = (currentPrice - entryPrice) * volume
-      return (currentPrice - entryPrice) * volume;
-  } else {
-      // For a sell order, profit = (entryPrice - currentPrice) * volume
-      return (entryPrice - currentPrice) * volume;
+export function numberFormat(number, decimals) {
+  const fixedNumber = number.toFixed(decimals);
+  return parseFloat(fixedNumber).toLocaleString('en-US', { minimumFractionDigits: decimals });
+}
+function addZeroAfterOne(num) {
+  let resultStr = '1';
+  for (let i = 0; i < num; i++) {
+          resultStr += '0';
   }
+  return parseInt(resultStr);
 }
 
+
+export const calculateProfitLoss = (currentPrice, entryPrice, direction, volume,pip)=> {
+let profit = 0
+if (direction === 'buy') {
+    profit =  (currentPrice - entryPrice) ;
+} else {
+     profit= entryPrice - currentPrice  
+}
+
+return (numberFormat(profit, pip) * addZeroAfterOne(pip)) * volume
+
+}
 
