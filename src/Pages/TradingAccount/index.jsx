@@ -14,6 +14,7 @@ import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolS
 import Swal from 'sweetalert2';
 import CustomNotification from '../../components/CustomNotification';
 import { CheckBrandPermission } from '../../utils/helpers';
+import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 
 
 
@@ -168,7 +169,11 @@ const Index = ({ title, direction }) => {
       key: '9',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-          <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => setTradeId(record.id)} />
+          <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() =>{ 
+            setTradeId(record.id)
+            debugger
+               dispatch(setTradingAccountGroupData(record)) 
+            }} />
             <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
         </Space>
       ),

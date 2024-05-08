@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "./index.css";
 import { Input, Spin, Table } from "antd";
 import { Resizable } from "react-resizable";
@@ -43,6 +43,7 @@ const ResizableTitle = (props) => {
 class DnDTable extends Component {
   constructor(props) {
     super(props);
+    this.inputRef = createRef();
     this.state = {
       columns: props.columns,
       isRearangments: false,
@@ -76,6 +77,7 @@ class DnDTable extends Component {
     this.SearchHandler = this.SearchHandler.bind(this)
     this.MassCloseOrdersHandler = this.MassCloseOrdersHandler.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleClearSearch = this.handleClearSearch.bind(this)
 
     const that = this;
 
@@ -132,7 +134,8 @@ class DnDTable extends Component {
           this.setState({isSearching: true})
           this.props.LoadingHandler(true)
           setTimeout(()=>{
-            this.setState({ data: this.props.data, searchValues: {} });
+            this.setState({ data: this.props.data });
+            this.handleClearSearch()
             this.props.LoadingHandler(false)
           },2000)
         }
@@ -147,6 +150,7 @@ class DnDTable extends Component {
           {
               title: <Input 
               placeholder={`Search ${column.title.props.children}`}
+              value={this.state?.searchValues[column.dataIndex]}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
               onPressEnter={this.SearchHandler}
               />,
@@ -156,7 +160,12 @@ class DnDTable extends Component {
           }
       ]
   }));
-  
+  const newObject = {
+    title: <span className="dragHandler">Test</span>,
+    dataIndex: 'Search',
+    key: '-1',
+};
+columnsWithChildren.unshift(newObject);
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
@@ -193,6 +202,12 @@ class DnDTable extends Component {
         );
         
         if(success){
+          const newObject = {
+            title: <button className="custom-button">search</button>,
+            dataIndex: 'Search',
+            key: '-1', 
+        };
+        filteredColumns.unshift(newObject);
           this.setState({ columns: filteredColumns, dropDownColumns: ColumnsData, selectedColumns: mData });
         }else{
           this.setState({ columns: ColumnsData, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
@@ -326,6 +341,19 @@ class DnDTable extends Component {
       this.setIsRearangments(false);
     }
   }
+  handleClearSearch = () => {
+    // Reset the search values state
+    // this.setState({ searchValues: {} }, () => {
+    //   // After resetting the state, clear the input fields
+    //   const inputs = document.querySelectorAll('.ant-input');
+    //   inputs.forEach(input => {
+    //     input.value = '';
+    //   });
+    // });
+    this.setState({searchValues: {}})
+    
+  };
+  
   onSelectAllChange(checked, selectedRows) {
     this.setState({ isSelectAll: checked });
   }
@@ -333,7 +361,8 @@ class DnDTable extends Component {
     this.setState((prevState) => ({isCompleteSelect: !prevState.isCompleteSelect}),
     ()=>{
       if (this.state.isCompleteSelect) {
-        const allRowKeys = this.props.data.map((row) => row.id);
+        const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
+
         this.setState({ selectedRowKeys: allRowKeys });
       } else {
         this.setState({ selectedRowKeys: [] })
@@ -361,6 +390,9 @@ class DnDTable extends Component {
           const Params = {
            table_name: this.props.table_name, 
            table_ids:this.state.isCompleteSelect ? [] : this.state.selectedRowKeys
+          }
+          if (this.props.column_name) {
+            Params.column_name = this.props.column_name;
           }
          this.setState({isLoading: true})
          Swal.fire({

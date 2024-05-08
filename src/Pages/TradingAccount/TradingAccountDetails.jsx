@@ -1,6 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { Tabs, theme } from 'antd';
 import LiveOrders from './LiveOrders';
+import { Decimal } from 'decimal.js';
 import { useNavigate,useLocation,useParams } from 'react-router-dom';
 
 
@@ -13,7 +14,7 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { CheckBrandPermission } from "../../utils/helpers";
+import { CheckBrandPermission, calculateProfitLoss, getOpenPrice, getOpenPriceFromAPI } from "../../utils/helpers";
 
 
 const TradingAccountDetails = () => {
@@ -43,10 +44,20 @@ const fetchLiveOrder = async (page) => {
       const params ={trading_account_id,OrderTypes:['market','pending'],token,page}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
+      debugger
        setIsLoading(false)
       if(success){
-
-      setTradeOrder( payload?.data)
+        const updatedData = await Promise.all(payload.data.map(async (x) => {
+          const mPrice = await getOpenPriceFromAPI(x.symbol, x.feed_name);
+          const profit = calculateProfitLoss(mPrice, x.open_price, x.type, x.volume);
+          
+          // Convert profit to Decimal and round to desired precision
+          const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
+          const updatedProfit = new Decimal(profit).toFixed(pipVal);
+          
+          return { ...x, updatedProfit };
+        }));
+      setTradeOrder( updatedData)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
