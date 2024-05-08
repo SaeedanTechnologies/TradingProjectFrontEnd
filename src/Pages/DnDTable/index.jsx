@@ -455,7 +455,6 @@ columnsWithChildren.unshift(newObject);
       confirmButtonText: "Yes, Close it!"
     }).then(async (result) => {
       if (result.isConfirmed) {
-        debugger
         const res = await MassCloseOrders(Params, this.props.token)
         const { data: { success, message, payload } } = res
         this.setState({isLoading: false})
