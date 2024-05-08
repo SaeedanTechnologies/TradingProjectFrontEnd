@@ -224,9 +224,12 @@ useEffect(() => {
     }
   };
 
-const deleteHandler = ()=>{
+
+
+   const deleteHandler = ()=>{
+    debugger
     const Params = {
-      table_name: "transaction_orders",
+      table_name:'transaction_orders',
       table_ids: [ArrangedTransactionOrdersData[currentIndex].id]
     }
     

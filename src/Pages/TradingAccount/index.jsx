@@ -3,17 +3,17 @@ import { PlusCircleOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/ico
 import { Space, Spin, Tag, theme } from 'antd';
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import CustomTextField from '../../components/CustomTextField';
 import { Trading_Accounts_List, Delete_Trading_Account, Save_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomModal from '../../components/CustomModal';
 import { useSelector, useDispatch } from 'react-redux';
 import TradingModal from './TradingModal'
-import { setAccountID } from '../../store/TradeSlice';
+import { setAccountID,setSelectedTradingAccountsIDs,setTradingAccountsData } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
-import CustomNotification from '../../components/CustomNotification';
 import { CheckBrandPermission } from '../../utils/helpers';
+
 
 
 
@@ -25,8 +25,12 @@ const Index = ({ title, direction }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tradingID, setTradingID] = useState(null);
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [sortDirection, setSortDirection] = useState("")
+
 
   const [CurrentPage, setCurrentPage] = useState(1)
+  const [perPage, setPerPage] = useState(10)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
 
@@ -425,6 +429,10 @@ const [activeGroup, setActiveGroup] = useState([])
   }
 }, [direction]);
 
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
 
   return (
     <Spin spinning={isLoading} size="large">
@@ -462,9 +470,18 @@ const [activeGroup, setActiveGroup] = useState([])
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
-          editPermissionName="trading_account_list_update"
-          deletePermissionName="trading_account_list_delete"
+          isUpated={isUpdated}
+          setSelecetdIDs={setSelectedTradingAccountsIDs}
+          setTableData = {setTradingAccountsData}
+          table_name= "trading_accounts"
+          setSortDirection = {setSortDirection}
+          perPage={perPage}
+          setPerPage={setPerPage}
+          SearchQuery = {Trading_Accounts_List}
+          LoadingHandler={LoadingHandler}
         />
+
+        
         )}
         {direction === 2 && (
         <CustomTable

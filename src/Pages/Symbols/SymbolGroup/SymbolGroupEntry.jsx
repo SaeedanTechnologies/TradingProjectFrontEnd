@@ -33,8 +33,8 @@ const SymbolGroupEntry = () => {
   
   const [VolMax, setVolMax] = useState('')
   // const [TradingInterval, setTradingInterval] = useState('')
-  const [trading_interval_start_time, setTradingIntervalStartTime] = useState(null)
-  const [trading_interval_end_time, setTradingIntervalEndTime] = useState(null)
+  const [trading_interval_start_time, setTradingIntervalStartTime] = useState('')
+  const [trading_interval_end_time, setTradingIntervalEndTime] = useState('')
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
@@ -327,6 +327,7 @@ const SymbolGroupEntry = () => {
   const fetchSymbolGroupWRTID = async()=>{
     if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) !== 0){
       setIsLoading(true)
+      debugger
       const res = await SelectSymbolWRTID(SymbolGroupsIds[0], token)
       const {data: {message, payload, success}} = res
       setIsLoading(false)
@@ -500,7 +501,20 @@ const SymbolGroupEntry = () => {
       </div>
         {
             !isDisabled && 
+  
+
         <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>
+          
+        <CustomButton
+            Text={SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0 ? 'Submit' : 'Update'}
+            style={{
+              padding: '16px',
+              height: '48px',
+              width: '200px',
+              borderRadius: '8px',
+            }}
+            onClickHandler={handleSubmit}
+          />  
           <CustomButton
             Text='Cancel'
             style={{
@@ -514,16 +528,7 @@ const SymbolGroupEntry = () => {
             }}
             onClickHandler={()=> navigate(-1)}
           />
-          <CustomButton
-            Text={SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0 ? 'Add Symbol Group' : 'Update Symbol Group'}
-            style={{
-              padding: '16px',
-              height: '48px',
-              width: '200px',
-              borderRadius: '8px',
-            }}
-            onClickHandler={handleSubmit}
-          />
+          
 
         </div>
       }

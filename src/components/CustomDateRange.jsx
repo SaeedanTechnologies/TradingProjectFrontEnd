@@ -16,7 +16,7 @@ export default function CustomDateRange({ onChange, start_time, end_time, isDisa
     // };
 
     // const [value, setValue] = React.useState(() => [getCurrentTime(), getCurrentTime()]); // Set initial value to current time
-    const [value, setValue] = React.useState(() => [dayjs(start_time), dayjs(end_time)]); // Set initial value to current time
+    const [value, setValue] = React.useState(() => [dayjs(start_time,"hh:mm A"), dayjs(end_time,"hh:mm A")]); // Set initial value to current time
 
     const handleValueChange = (newValue) => {
         console.log("New value:", newValue);
