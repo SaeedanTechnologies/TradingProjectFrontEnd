@@ -23,11 +23,11 @@ const TransactionOrders = () => {
   const [IsShowFilter, setIsShowFilter] = useState(false)
   const [TypeList, setTypeList] = useState([])
   const [SelectedType, setSelectedType] = useState(null)
-  const [MethodList, setMethodList] = useState([])
   const [SelectedMethod, setSelectedMethod] = useState([])
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
+
 
 
 
@@ -41,7 +41,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
       key: '1',
-      sorter: (a, b) => a.id.length - b.id.length,
+      sorter: (a, b) => a?.id?.length - b?.id?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -53,7 +53,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '3',
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: (a, b) => a?.name?.length - b?.name?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -66,7 +66,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Group</span>,
       dataIndex: 'group',
       key: '4',
-      sorter: (a, b) => a.group.length - b.group.length,
+      sorter: (a, b) => a?.group?.length - b?.group?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -80,7 +80,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '5',
-      sorter: (a, b) => a.country.length - b.country.length,
+      sorter: (a, b) => a?.country?.length - b?.country?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -92,7 +92,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Phone Number</span>,
       dataIndex: 'phone',
       key: '6',
-      sorter: (a, b) => a.phone.length - b.phone.length,
+      sorter: (a, b) => a?.phone?.length - b?.phone?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -104,7 +104,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '7',
-      sorter: (a, b) => a.email.length - b.email.length,
+      sorter: (a, b) => a?.email?.length - b?.email?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -116,7 +116,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'created_at',
       key: '8',
-      sorter: (a, b) => a.created_at.length - b.created_at.length,
+      sorter: (a, b) => a?.created_at?.length - b?.created_at?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -128,7 +128,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '9',
-      sorter: (a, b) => a.type.length - b.type.length,
+      sorter: (a, b) => a?.type?.length - b?.type?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -142,7 +142,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Method</span>,
       dataIndex: 'method',
       key: '10',
-      sorter: (a, b) => a.method.length - b.method.length,
+      sorter: (a, b) => a?.method?.length - b?.method?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -154,7 +154,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: '11',
-      sorter: (a, b) => a.comment.length - b.comment.length,
+      sorter: (a, b) => a?.comment?.length - b?.comment?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -166,7 +166,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
       key: '12',
-      sorter: (a, b) => a.amount.length - b.amount.length,
+      sorter: (a, b) => a?.amount?.length - b?.amount?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -178,7 +178,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '13',
-      sorter: (a, b) => a.currency.length - b.currency.length,
+      sorter: (a, b) => a?.currency?.length - b?.currency?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -198,6 +198,12 @@ const TransactionOrders = () => {
     //   ),
     // },
   ];
+
+    
+    const defaultCheckedList = columns.map((item) => item.key);
+
+   const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
 
   const [isLoading, setIsLoading] = useState(false)
   const [transactionData, setTransactionData] = useState([])
@@ -263,79 +269,35 @@ const TransactionOrders = () => {
           />
           
         </div>
-        {
-          IsShowFilter && <div className="grid grid-cols-12 gap-4 my-3">
-            <div className="col-span-12 sm:col-span-5 ">
-              <CustomAutocomplete
-                name={'Type'}
-                varient={'standard'}
-                label={'Select Type'}
-                options={TypeList}
-                getOptionLabel={(option) => option.title ? option.title : ""}
-                onChange={(e, value) => {
-                  if (value) {
-                    setSelectedType(value)
-                  }
-                  else {
-                    setSelectedType(null)
-                  }
-                }}
-              />
-            </div>
-            <div className="col-span-12 sm:col-span-5 ">
-              <CustomAutocomplete
-                name={'Method'}
-                varient={'standard'}
-                label={'Select Method'}
-                options={SelectedMethod}
-                getOptionLabel={(option) => option.title ? option.title : ""}
-                onChange={(e, value) => {
-                  if (value) {
-                    setSelectedMethod(value)
-                  }
-                  else {
-                    setSelectedMethod(null)
-                  }
-                }}
-              />
-            </div>
-            <div className="col-span-6 sm:col-span-1">
-              <CustomButton
-                Text={"Cancle"}
-                style={{ height: "48px", borderRadius: "8px", backgroundColor: "#fff", borderColor: "#c1c1c1", color: "#7E7E7E" }}
-                onClickHandler={() => setIsShowFilter(!IsShowFilter)}
-              />
-            </div>
-            <div className="col-span-6 sm:col-span-1">
-              <CustomButton
-                Text={"Apply Filters"}
-                style={{ height: "48px", borderRadius: "8px" }}
-              />
-            </div>
-          </div>
-        }
-         <CustomTable
-          direction="/transaction-orders-entry"
-          formName = "Transactions Orders" 
-          columns={columns}
-          data={transactionData} 
-          headerStyle={headerStyle}
-          total={totalRecords}
-          onPageChange = {onPageChange}
-          current_page={CurrentPage}
-          token = {token}
-          isUpated={isUpdated}
-          setSelecetdIDs={setTransactionsOrdersSelectedIDs}
-          setTableData = {setTransactionOrdersData}
-          table_name= "transaction_orders"
-          setSortDirection = {setSortDirection}
-          perPage={perPage}
-          setPerPage={setPerPage}
-          SearchQuery = {Trading_Transaction_Order}
-          LoadingHandler={LoadingHandler}
+        
+         
+        <div className="mb-6">
+          <CustomTable
+              direction="/transaction-orders-entry"
+              formName = "Transactions Orders" 
+              columns={columns}
+              data={transactionData} 
+              headerStyle={headerStyle}
+              total={totalRecords}
+              onPageChange = {onPageChange}
+              current_page={CurrentPage}
+              token = {token}
+              isUpated={isUpdated}
+              setSelecetdIDs={setTransactionsOrdersSelectedIDs}
+              setTableData = {setTransactionOrdersData}
+              table_name= "transaction_orders"
+              setSortDirection = {setSortDirection}
+              perPage={perPage}
+              setPerPage={setPerPage}
+              SearchQuery = {Trading_Transaction_Order}
+              LoadingHandler={LoadingHandler}
 
 
-        />
+
+             
+          />
+        </div>
+         
 
         
 
