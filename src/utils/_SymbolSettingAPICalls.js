@@ -28,6 +28,12 @@ export const All_Setting_Data = async (token, page = 1, perPage = 10, searchValu
     return res;
 };
 
+export const AllSymbelSettingList = async (token) => {
+    const apiUrlWithParams = `${apiUrl}/admin/getAllSymbelSettingList`;
+    const res = await _API(apiUrlWithParams, 'get', [], token);
+    return res;
+};
+
 
 export const DeleteSymbolSetting = async (id, token) => {
     const res = await _API(`${apiUrl}/admin/symbel_setting/${id}`, 'delete', [], token)

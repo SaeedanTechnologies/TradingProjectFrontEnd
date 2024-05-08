@@ -167,8 +167,18 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
           label="Margin Call"
           varient="standard"
           type="number"
+          InputProps={{
+            inputProps: { min: 1, max: 100 },
+          }}
+    
           value={marginCall}
-          onChange={e => handleInputChange('marginCall', e.target.value)}
+          onChange={e => {
+            if(e.target.value >= 0 && e.target.value <= 100){
+              handleInputChange('marginCall', e.target.value)
+            }
+            
+          }}
+          
         />
         {errors.marginCall && <span style={{ color: 'red' }}>{errors.marginCall}</span>}
 
