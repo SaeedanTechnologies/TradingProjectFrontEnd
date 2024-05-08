@@ -74,6 +74,11 @@ export const Post_Trade_Order = async(TradeOrderData, token)=>{
   return res
 }
 
+export const Post_Group_Trade_Order = async(TradeOrderData, token)=>{
+  const res = await _API(`${apiUrl}/admin/group_trade_orders`,'post',TradeOrderData,token)
+  return res
+}
+
 // export const Put_Trade_Order = async(id, paramsString, token)=>{
 //   const res = await _API(`${apiUrl}/admin/trade_orders/${id}?${paramsString}`,'put',[],token)
 //   return res

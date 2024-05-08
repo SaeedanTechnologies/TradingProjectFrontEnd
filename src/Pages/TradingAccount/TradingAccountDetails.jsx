@@ -35,8 +35,7 @@ const TradingAccountDetails = () => {
   const [activeTab, setActiveTab] = useState('1');
    const [tradeOrder,setTradeOrder] = useState([])
    const [isLoading, setIsLoading] = useState(false)
-     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
-
+   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id)
 
 const fetchLiveOrder = async (page) => {
 
@@ -69,7 +68,7 @@ const fetchLiveOrder = async (page) => {
   {
     key: '2',
     label: 'Trade',
-    children: <Trade fetchLiveOrder = {fetchLiveOrder} CurrentPage={CurrentPage} />,
+    children: <Trade fetchLiveOrder = {fetchLiveOrder} CurrentPage={CurrentPage}  />,
     path: '/single-trading-accounts/details/symbol',
     display:  CheckBrandPermission(userPermissions,userRole,'live_orders_create') ? 'show' : 'hide' 
   },
