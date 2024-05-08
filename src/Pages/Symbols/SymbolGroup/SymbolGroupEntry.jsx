@@ -238,8 +238,6 @@ const SymbolGroupEntry = () => {
   
   const setStatesForEditMode = async (payload, success, LeverageList)=>{
     if (success) {
-  
-
       const selectedOption = LeverageList.find(x=> x.title === payload.leverage)
       setSelectedLeverage(selectedOption)
       setSelectedLeverage(selectedOption)

@@ -75,3 +75,10 @@ export const Trading_Transaction_Order = async (token,brandId,page) => {
     const res = await _API(url, 'get', [], token)
     return res
 }
+
+export const Single_Transaction_Order = async (token,id,page) => {
+   let url = `${apiUrl}/admin/transaction_order/${id}?page=${page}`
+   
+    const res = await _API(url, 'get', [], token)
+    return res
+}

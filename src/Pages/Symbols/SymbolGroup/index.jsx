@@ -214,6 +214,11 @@ const DeleteHandler = async (id)=>{
     FetchData(page)
   }
 
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
+
 useEffect(() => {
   setIsUpdated(true)
   FetchData(CurrentPage)
@@ -257,6 +262,8 @@ useEffect(() => {
           setSortDirection = {setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
+          SearchQuery = {Symbol_Group_List}
+          LoadingHandler={LoadingHandler}
 
         />
       </div>

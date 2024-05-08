@@ -170,7 +170,7 @@ const SymbolSettingsEntry = () => {
         setSymbolName(payload.name)
         const res = await Symbol_Group_List(token);
         const { data } = res
-        const selectedGroup = data?.payload.data?.find(x => x?.id === payload.symbel_group_id)
+        const selectedGroup = data?.payload?.data?.find(x => x?.id === payload.symbel_group_id)
         setSelectedSymbol(selectedGroup)
         const resp = await Feed_Data_List(token);
         const { data : FeedList } = resp
@@ -294,7 +294,7 @@ const SymbolSettingsEntry = () => {
         name: symbolName ? symbolName : '',
         symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
         feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
-        feed_fetch_key:selectedFeedNameFetch.group.toLowerCase(),
+        feed_fetch_key:selectedFeedNameFetch?.group?.toLowerCase(),
         speed_max: 'abc',
         lot_size: lotSize ? lotSize : '',
         lot_step: lotSteps ? lotSteps : '',

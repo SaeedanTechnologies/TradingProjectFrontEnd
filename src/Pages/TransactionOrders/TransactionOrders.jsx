@@ -23,11 +23,11 @@ const TransactionOrders = () => {
   const [IsShowFilter, setIsShowFilter] = useState(false)
   const [TypeList, setTypeList] = useState([])
   const [SelectedType, setSelectedType] = useState(null)
-  const [MethodList, setMethodList] = useState([])
   const [SelectedMethod, setSelectedMethod] = useState([])
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
+
 
 
 
@@ -199,6 +199,12 @@ const TransactionOrders = () => {
     // },
   ];
 
+    
+    const defaultCheckedList = columns.map((item) => item.key);
+
+   const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+
   const [isLoading, setIsLoading] = useState(false)
   const [transactionData, setTransactionData] = useState([])
   const [CurrentPage, setCurrentPage] = useState(1)
@@ -263,79 +269,31 @@ const TransactionOrders = () => {
           />
           
         </div>
-        {
-          IsShowFilter && <div className="grid grid-cols-12 gap-4 my-3">
-            <div className="col-span-12 sm:col-span-5 ">
-              <CustomAutocomplete
-                name={'Type'}
-                varient={'standard'}
-                label={'Select Type'}
-                options={TypeList}
-                getOptionLabel={(option) => option.title ? option.title : ""}
-                onChange={(e, value) => {
-                  if (value) {
-                    setSelectedType(value)
-                  }
-                  else {
-                    setSelectedType(null)
-                  }
-                }}
-              />
-            </div>
-            <div className="col-span-12 sm:col-span-5 ">
-              <CustomAutocomplete
-                name={'Method'}
-                varient={'standard'}
-                label={'Select Method'}
-                options={SelectedMethod}
-                getOptionLabel={(option) => option.title ? option.title : ""}
-                onChange={(e, value) => {
-                  if (value) {
-                    setSelectedMethod(value)
-                  }
-                  else {
-                    setSelectedMethod(null)
-                  }
-                }}
-              />
-            </div>
-            <div className="col-span-6 sm:col-span-1">
-              <CustomButton
-                Text={"Cancle"}
-                style={{ height: "48px", borderRadius: "8px", backgroundColor: "#fff", borderColor: "#c1c1c1", color: "#7E7E7E" }}
-                onClickHandler={() => setIsShowFilter(!IsShowFilter)}
-              />
-            </div>
-            <div className="col-span-6 sm:col-span-1">
-              <CustomButton
-                Text={"Apply Filters"}
-                style={{ height: "48px", borderRadius: "8px" }}
-              />
-            </div>
-          </div>
-        }
-         <CustomTable
-          direction="/transaction-orders-entry"
-          formName = "Transactions Orders" 
-          columns={columns}
-          data={transactionData} 
-          headerStyle={headerStyle}
-          total={totalRecords}
-          onPageChange = {onPageChange}
-          current_page={CurrentPage}
-          token = {token}
-          isUpated={isUpdated}
-          setSelecetdIDs={setTransactionsOrdersSelectedIDs}
-          setTableData = {setTransactionOrdersData}
-          table_name= "transaction_orders"
-          setSortDirection = {setSortDirection}
-          perPage={perPage}
-          setPerPage={setPerPage}
-          SearchQuery = {Trading_Transaction_Order}
-          LoadingHandler={LoadingHandler}
-
-
-        />
+        
+         
+        <div className="mb-6">
+          <CustomTable
+              direction="/transaction-orders-entry"
+              formName = "Transactions Orders" 
+              columns={columns}
+              data={transactionData} 
+              headerStyle={headerStyle}
+              total={totalRecords}
+              onPageChange = {onPageChange}
+              current_page={CurrentPage}
+              token = {token}
+              isUpated={isUpdated}
+              setSelecetdIDs={setTransactionsOrdersSelectedIDs}
+              setTableData = {setTransactionOrdersData}
+              table_name= "transaction_orders"
+              setSortDirection = {setSortDirection}
+              perPage={perPage}
+              setPerPage={setPerPage}
+              SearchQuery = {Trading_Transaction_Order}
+              LoadingHandler={LoadingHandler}
+          />
+        </div>
+         
 
         
 

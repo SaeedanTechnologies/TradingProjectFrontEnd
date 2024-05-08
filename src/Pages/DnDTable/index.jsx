@@ -156,7 +156,6 @@ class DnDTable extends Component {
           }
       ]
   }));
-  
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
