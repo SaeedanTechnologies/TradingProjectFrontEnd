@@ -10,10 +10,14 @@ import moment from 'moment';
 import Swal from 'sweetalert2';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
+import { CurrenciesList } from '../../utils/constants';
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
+  const {balance, currency} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+  const {title : CurrencyName} = CurrenciesList.find(x=> x.value === currency)
+ 
   const location = useLocation()
   const { pathname } = location
   const {
@@ -100,13 +104,8 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   };
 
  const onPageChange = (page) =>{
-      
       fetchLiveOrder(page)
-   
   }
-
-
-
   const CancelLiveOrder = async (id) => {
 
    const requiredOrder = tradeOrder.find((order)=>order.id === id)
@@ -142,13 +141,8 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       }
         
   }
-
-
   useEffect(() => {
-    
     fetchLiveOrder(CurrentPage)
-  
- 
   }, [pathname])
 
   return (
@@ -165,7 +159,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             current_page={CurrentPage}
             token = {token}
             footer={()=> <span className='text-sm font-bold text-arial'>
-             <MinusCircleOutlined /> Balance: 9 973.81 USD  Equity: 9 973.81 USD  Margin: 10.00 Free Margin 9.01  Margin Level:  10.04 %
+             <MinusCircleOutlined /> Balance: {balance} {CurrencyName}  Equity: 9 973.81 {CurrencyName}  Margin: 10.00 Free Margin 9.01  Margin Level:  10.04 %
             </span>}
           />
       </div>
