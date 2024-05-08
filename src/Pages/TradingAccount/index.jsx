@@ -466,7 +466,7 @@ const [activeGroup, setActiveGroup] = useState([])
         </div>
         {direction === 1 && (
           <CustomTable
-          direction="/trading-accounts"
+          direction="/trading-accounts-entry"
           formName = "Trading Accounts" 
           columns={renderColumns}
           data={tradingAccountsList} 
