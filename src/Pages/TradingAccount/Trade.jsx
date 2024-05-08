@@ -30,8 +30,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   } = theme.useToken();
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
-  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds[0])
-  console.log('trading_group_id',trading_group_id)
+  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
+  // console.log('trading_group_id',trading_group_id)
 
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
