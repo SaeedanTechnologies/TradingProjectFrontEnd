@@ -173,7 +173,7 @@ const SymbolSettingsEntry = () => {
         setSymbolName(payload.name)
         const res = await Symbol_Group_List(token);
         const { data } = res
-        const selectedGroup = data?.payload.data?.find(x => x?.id === payload.symbel_group_id)
+        const selectedGroup = data?.payload?.data?.find(x => x?.id === payload.symbel_group_id)
         setSelectedSymbol(selectedGroup)
         const resp = await Feed_Data_List(token);
         const { data : FeedList } = resp
