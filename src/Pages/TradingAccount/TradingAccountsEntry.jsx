@@ -20,7 +20,7 @@ import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../utils/
 import { deleteSymbolSettingsById } from '../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
 import { CurrenciesList } from '../../utils/constants';
-import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
+
 
 const FeedData = [
   { feed_name: "First", server: 'First server' },
@@ -37,8 +37,7 @@ const TradingAccountsEntry = () => {
   const TradingAccountsData = useSelector(({trade})=> trade.tradingAccountsData)
   const ArrangedTradingAccountsData = TradingAccountsData.slice().sort((a, b) => a?.id - b?.id);
   const [brandList,setBrandList] = useState([])
-
-
+  
   const initialValues= {
     country:"",
     phone:"",
@@ -202,6 +201,7 @@ const TradingAccountsEntry = () => {
   const [FeedNameList, setFeedNameList] = useState([])
   const [selectedFeedName, setSelectedFeedName] = useState(null)
   const [SelectedSymbol, setSelectedSymbol] = useState(null)
+  const [feedValues, setFeedValues] = useState(FeedData)
   const [selectedGroup, setSelectedGroup] = useState([]);
   const [leverage, setLeverage] = useState('')
   const [swap, setSwap] = useState('')
@@ -286,21 +286,42 @@ const TradingAccountsEntry = () => {
     }
   };
 
+  const fetchFeedData = async () => {
+    try {
+      const res = await Feed_Data_List(token);
+      const { data: { message, success, payload } } = res
+      setFeedNameList(payload.data);
+      if (TradingAccountsIds.length === 1 && parseInt(TradingAccountsIds[0]) !== 0) {
+        fetchSymbolSettingsWRTID(SymbolList, payload.data)
+      }
 
-  const fetchSingleTradingAccount = async () => {
-    setIsLoading(true)
-      debugger;
-    const res = await Get_Single_Trading_Account(TradingAccountsIds[0], token)
-    const { data: { message, payload, success } } = res
-
-    setIsLoading(false)
-    setStatesForEditMode(payload, success,)
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
   }
-  const setStatesForEditMode = async (payload, success)=>{
+  const fetchSymbolSettingsWRTID = async (SymbList, feedlist) => {
+    setIsLoading(true)
+    const res = await SelectSymbolSettingsWRTID(TradingAccountsIds[0], token)
+    const { data: { message, payload, success } } = res
+    setIsLoading(false)
+    setStatesForEditMode(payload, success, SymbList, feedlist)
+  }
+  const setStatesForEditMode = async (payload, success, SymbList, feedlist)=>{
     if (success) {
       setSymbolName(payload.name)
-      
-     
+      const selectedGroup = SymbList?.find(x => x?.id === payload.symbel_group_id)
+      setSelectedSymbol(selectedGroup)
+      const SelectedFeedNameOption = feedlist?.find(x => x?.name === payload.feed_name)
+      if (payload.feed_name === 'binance') {
+        const res = await GetCryptoData()
+        const mData = res?.data?.symbols
+        const updatedData = mData.map((item) => {
+          return { ...item, id: item.symbol };
+        });
+        setFeedNameFetchList(updatedData)
+        const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
+        setSelectedFeedNameFetch(selectedSymb)
+      }
       const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
       setSelectedLeverage(selectedLeverageOpt)
       setSelectedFeedName(SelectedFeedNameOption)
@@ -316,7 +337,18 @@ const TradingAccountsEntry = () => {
     }
   }
 
- 
+  const fetchSymbolGroups = async () => {
+    try {
+      const res = await Symbol_Group_List(token);
+      const { data: { message, success, payload } } = res
+      setSymbolList(payload.data);
+      if (TradingAccountsIds.length === 1 && parseInt(TradingAccountsIds[0]) !== 0) {
+        fetchSymbolSettingsWRTID(payload.data)
+      }
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  };
   const handleNext = () => {
     if (currentIndex < ArrangedTradingAccountsData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
@@ -344,13 +376,15 @@ const TradingAccountsEntry = () => {
   };
 
   useEffect(() => {
+    fetchSymbolGroups();
+    fetchFeedData();
     if (TradingAccountsIds.length === 1 && parseInt(TradingAccountsIds[0]) === 0) { // save
       setIsDisabled(false)
     } else if (TradingAccountsIds.length === 1 && parseInt(TradingAccountsIds[0]) !== 0) { // single edit
       const cIndex = ArrangedTradingAccountsData.findIndex(item => parseInt(item?.id) === parseInt(TradingAccountsIds[0]))
       setCurrentIndex(cIndex)
       setIsDisabled(true)
-      fetchSingleTradingAccount()
+      fetchSymbolSettingsWRTID()
     } else { // mass edit
       setIsDisabled(true)
     }
@@ -446,7 +480,7 @@ const TradingAccountsEntry = () => {
               description: 'Symbol Setting Updated Successfully',
               key: 2
             })
-            navigate('/trading-accounts')
+            navigate('/symbol-settings')
           } else {
             setIsLoading(false)
             CustomNotification({
@@ -555,7 +589,7 @@ const TradingAccountsEntry = () => {
   ];
   const cancleHandler= ()=>{
     if(isDisabled){
-      navigate('/trading-accounts')
+      navigate('/symbol-settings')
 
     }else{
       setIsDisabled(true)
