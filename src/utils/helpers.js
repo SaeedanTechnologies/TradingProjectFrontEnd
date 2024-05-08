@@ -90,5 +90,72 @@ export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{
   return true;
 }
 
+export const getOpenPrice = (symbol) => {
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket('wss://stream.binance.com:9443/ws');
 
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ method: 'SUBSCRIBE', params: [`${symbol.toLowerCase()}@ticker`], id: 1 }));
+    };
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.s === symbol.toUpperCase() && message.o) {
+        const openPrice = parseFloat(message.o);
+        ws.close();
+        resolve(openPrice);
+      }
+    };
+
+    ws.onerror = (error) => {
+      ws.close();
+      reject(error);
+    };
+
+    ws.onclose = () => {
+      // WebSocket connection closed
+    };
+  });
+};
+
+export const getOpenPriceFromAPI= async(symbol, feedName)=> {
+  try {
+    if(feedName === 'binance'){
+      const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+      const data = await response.json();
+      const openPrice = parseFloat(data.openPrice);
+      return openPrice;
+    }else{
+      return null
+    }
+  } catch (error) {
+    console.error('Error fetching open price:', error);
+    return null;
+  }
+}
+
+export function numberFormat(number, decimals) {
+  const fixedNumber = number.toFixed(decimals);
+  return parseFloat(fixedNumber).toLocaleString('en-US', { minimumFractionDigits: decimals });
+}
+function addZeroAfterOne(num) {
+  let resultStr = '1';
+  for (let i = 0; i < num; i++) {
+          resultStr += '0';
+  }
+  return parseInt(resultStr);
+}
+
+
+export const calculateProfitLoss = (currentPrice, entryPrice, direction, volume,pip)=> {
+let profit = 0
+if (direction === 'buy') {
+    profit =  (currentPrice - entryPrice) ;
+} else {
+     profit= entryPrice - currentPrice  
+}
+
+return (numberFormat(profit, pip) * addZeroAfterOne(pip)) * volume
+
+}
 

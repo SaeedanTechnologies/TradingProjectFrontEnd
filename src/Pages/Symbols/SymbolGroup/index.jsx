@@ -124,7 +124,7 @@ const Index = () => {
       title:<span className="dragHandler">Start Time</span>,
       dataIndex: 'trading_interval_start_time',
       key: '8',
-      sorter: (a, b) => a.trading_interval_start_time.length - b.trading_interval_start_time.length,
+      sorter: (a, b) => a?.trading_interval_start_time?.length - b?.trading_interval_start_time?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -136,7 +136,7 @@ const Index = () => {
       title:<span className="dragHandler">End Time</span>,
       dataIndex: 'trading_interval_end_time',
       key: '9',
-      sorter: (a, b) => a.trading_interval_end_time.length - b.trading_interval_end_time.length,
+      sorter: (a, b) => a?.trading_interval_end_time?.length - b?.trading_interval_end_time?.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

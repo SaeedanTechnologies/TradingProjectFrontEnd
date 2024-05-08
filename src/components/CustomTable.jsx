@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 
 const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, 
-  table_name, setSortDirection, perPage, setPerPage, editPermissionName, deletePermissionName, SearchQuery,LoadingHandler, footer}) => {
+  table_name, setSortDirection, perPage, setPerPage, editPermissionName, deletePermissionName, SearchQuery,LoadingHandler, footer, column_name}) => {
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -50,6 +50,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           SearchQuery={SearchQuery}
           LoadingHandler={LoadingHandler}
           footer={footer}
+          column_name={column_name}
         />
         <div style={{ textAlign: 'right', marginTop: 16 }}>
           <Pagination

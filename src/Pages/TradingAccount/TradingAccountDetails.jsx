@@ -1,6 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { Tabs, theme } from 'antd';
 import LiveOrders from './LiveOrders';
+import { Decimal } from 'decimal.js';
 import { useNavigate,useLocation,useParams } from 'react-router-dom';
 
 
@@ -13,7 +14,7 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { CheckBrandPermission } from "../../utils/helpers";
+import { CheckBrandPermission, calculateProfitLoss, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
 
 
 const TradingAccountDetails = () => {
@@ -21,6 +22,8 @@ const TradingAccountDetails = () => {
   const [liveOrders, setLiveOrders] = useState([])
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
+  const [grandProfit, setGrandProfit] = useState(0)
+  const [grandVolumn, setGrandVolumn] = useState(0) 
   const [totalRecords, setTotalRecords] = useState(0)
   const token = useSelector(({user})=> user?.user?.token )
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
@@ -35,8 +38,7 @@ const TradingAccountDetails = () => {
   const [activeTab, setActiveTab] = useState('1');
    const [tradeOrder,setTradeOrder] = useState([])
    const [isLoading, setIsLoading] = useState(false)
-     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
-
+   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id)
 
 const fetchLiveOrder = async (page) => {
 
@@ -46,8 +48,19 @@ const fetchLiveOrder = async (page) => {
       const {data:{message, payload, success}} = mData
        setIsLoading(false)
       if(success){
-
-      setTradeOrder( payload?.data)
+        let totalProfit = 0
+        let totalVolumn = 0
+        const updatedData = await Promise.all(payload.data.map(async (x) => {
+          const mPrice = await getOpenPriceFromAPI(x.symbol, x.feed_name);
+          const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
+          const profit = calculateProfitLoss(mPrice, parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal));
+          totalProfit+= profit
+          totalVolumn+= parseFloat(x.volume)
+          return { ...x, profit };
+        }));
+      setGrandProfit(totalProfit)
+      setGrandVolumn(totalVolumn)
+      setTradeOrder( updatedData)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
@@ -56,20 +69,19 @@ const fetchLiveOrder = async (page) => {
     
   }
   
- 
 
   const items = [
   {
     key: '1',
     label: 'Live Orders',
-    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder}  isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} />,
+    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder} grandProfit={grandProfit} lotSize={grandVolumn}  isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} />,
     path: '/single-trading-accounts/details/live-order',
     display:  CheckBrandPermission(userPermissions,userRole,'live_orders_read') ? 'show' : 'hide' 
   },
   {
     key: '2',
     label: 'Trade',
-    children: <Trade fetchLiveOrder = {fetchLiveOrder} CurrentPage={CurrentPage} />,
+    children: <Trade fetchLiveOrder = {fetchLiveOrder} CurrentPage={CurrentPage}  />,
     path: '/single-trading-accounts/details/symbol',
     display:  CheckBrandPermission(userPermissions,userRole,'live_orders_create') ? 'show' : 'hide' 
   },

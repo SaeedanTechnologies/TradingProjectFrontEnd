@@ -41,7 +41,7 @@ const SymbolGroupEntry = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
 
    const SymbolGroupsIds = useSelector(({ symbolGroups }) => symbolGroups.selectedRowsIds)
-  const SymbolGroupsData = useSelector(({symbolGroups})=> symbolGroups.symbolGroupsData)
+    const SymbolGroupsData = useSelector(({symbolGroups})=> symbolGroups.symbolGroupsData)
    const ArrangedSymbolGroupsData = SymbolGroupsData.slice().sort((a, b) => a.id - b.id);
 
   const validationSchema = Yup.object().shape({
@@ -91,6 +91,8 @@ const SymbolGroupEntry = () => {
     setVolMin('');
     setVolMax('');
     // setTradingInterval('')
+    setTradingIntervalStartTime(null)
+    setTradingIntervalEndTime(null)
   }
   const handleSubmit = async()=> {
     try{

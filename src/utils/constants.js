@@ -713,9 +713,9 @@ export const LeverageList = [
 ]
 
 export const CurrenciesList = [
-    {label: 'Dollar ($)', value: '$'},
-    {label:'Euro (€)',value:'€'},
-    {label: 'Pound (£)',value:'£'}
+    {label: 'Dollar ($)', value: '$', title: 'USD'},
+    {label:'Euro (€)',value:'€', title: 'EUR'},
+    {label: 'Pound (£)',value:'£', title: 'GBP'}
 ]
 
 export const PipsValues = [

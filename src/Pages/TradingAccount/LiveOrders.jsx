@@ -10,10 +10,15 @@ import moment from 'moment';
 import Swal from 'sweetalert2';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
+import { CurrenciesList, LeverageList } from '../../utils/constants';
 
-const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage }) => {
+const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
+  const {balance, currency, leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+  const {value: accountLeverage} = LeverageList.find(x=> x.title === leverage)
+  const {title : CurrencyName} = CurrenciesList.find(x=> x.value === currency)
+  const [equity, setEquity] = useState(0) 
   const location = useLocation()
   const { pathname } = location
   const {
@@ -80,6 +85,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       key: 'profit',
       sorter: (a, b) => a.profit.length - b.profit.length,
       sortDirections: ['ascend'],
+      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     // {
     //   title: 'Actions',
@@ -100,13 +106,8 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   };
 
  const onPageChange = (page) =>{
-      
       fetchLiveOrder(page)
-   
   }
-
-
-
   const CancelLiveOrder = async (id) => {
 
    const requiredOrder = tradeOrder.find((order)=>order.id === id)
@@ -142,13 +143,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       }
         
   }
-
-
   useEffect(() => {
-    
-    fetchLiveOrder(CurrentPage)
-  
  
+    fetchLiveOrder(CurrentPage)
   }, [pathname])
 
   return (
@@ -165,7 +162,12 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             current_page={CurrentPage}
             token = {token}
             footer={()=> <span className='text-sm font-bold text-arial'>
-             <MinusCircleOutlined /> Balance: 9 973.81 USD  Equity: 9 973.81 USD  Margin: 10.00 Free Margin 9.01  Margin Level:  10.04 %
+             <MinusCircleOutlined /> 
+             Balance: {balance} {CurrencyName}  
+             Equity: {parseFloat(balance) + parseFloat(grandProfit)} {CurrencyName}  
+             Margin: {parseFloat(lotSize).toFixed(2)/parseFloat(accountLeverage).toFixed(2)} 
+             Free Margin {(parseFloat(balance) + parseFloat(grandProfit))- (parseFloat(lotSize/accountLeverage).toFixed(2))} 
+             Margin Level:  {((parseFloat(balance) + parseFloat(grandProfit))/(parseFloat(lotSize/accountLeverage).toFixed(2)))*100} %
             </span>}
           />
       </div>
