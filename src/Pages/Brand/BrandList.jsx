@@ -169,7 +169,8 @@ const BrandList = () => {
       render: (_, record) => (
 
         <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
-          <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
+          <Typography sx={{ fontWeight:  400, fontSize: "14px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
+          {/* <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography> */}
 
           <Space size="middle" className='cursor-pointer'>
             {visibleBrandId === record.id ?

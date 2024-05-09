@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import CustomPermissionTable from "../../components/CustomPermissionTable";
-import { Space,Tag,theme,Checkbox  } from 'antd';
+import { Space,Tag,theme,Checkbox, Spin  } from 'antd';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from "react-router-dom";
 import CustomButton from "../../components/CustomButton";
@@ -11,6 +11,7 @@ import { setBrandUser } from "../../store/BrandsSlice";
 
 
 const BrandPermissions = () => {
+  const [isLoading, setIsLoading] = useState(false)
 
   const navigate = useNavigate()
   const token = useSelector(({ user }) => user?.user?.token)
@@ -98,11 +99,13 @@ const BrandPermissions = () => {
   const handleAllowPermission = async()=>{
 
     try{
+      setIsLoading(true)
     const PermissionData ={ user_id:brand.user_id,permissions: permissions}
     const mData = await SaveBrandPermission(PermissionData,token)
     const { data: { message, payload, success } } = mData
       if(success)
       {
+        setIsLoading(false)
         // debugger
         const storePayload = {user_id:brand.user_id,permissions:payload}
         dispatch(setBrandUser(storePayload))
@@ -117,7 +120,7 @@ const BrandPermissions = () => {
       }
       else
       {
-        
+        setIsLoading(false)
         CustomNotification({
           type: 'error',
           title: 'Permissions',
@@ -130,6 +133,7 @@ const BrandPermissions = () => {
     }
     catch(error)
     {
+      setIsLoading(false)
        CustomNotification({
           type: 'error',
           title: 'Permissions',
@@ -209,6 +213,7 @@ const columns = [
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
 
   return (
+    <Spin spinning={isLoading} size="large">
       <div className='flex flex-col gap-5 p-8' style={{ backgroundColor: colorBG }}>
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <div className='flex gap-3'>
@@ -233,6 +238,7 @@ const columns = [
         </div>
        
       </div>
+      </Spin>
   )
 }
 

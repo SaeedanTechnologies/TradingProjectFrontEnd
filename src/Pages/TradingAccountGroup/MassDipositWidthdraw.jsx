@@ -13,7 +13,8 @@ import { setTradeWithdrawGroupsData, setTradeWithdrawGroupsSelectedIDs } from '.
 const MassDipositWidthdraw = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const trading_group_id = useSelector((state) => state?.tradeWithdrawGroups?.selectedRowsIds && state?.tradeWithdrawGroups?.selectedRowsIds[0])
-  
+  const { id, name } = useSelector(({ group }) => group?.tradingGroupData)
+
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
@@ -32,7 +33,8 @@ const MassDipositWidthdraw = () => {
   const getTransectionOrder = async () => {
     try {
       setIsLoading(true)
-      const res = await GET_Group_Transaction_Order(token, trading_group_id)
+      // const res = await GET_Group_Transaction_Order(token, trading_group_id)
+      const res = await GET_Group_Transaction_Order(token, id)
       const { data: { message, payload, success, } } = res
       setIsLoading(false)
       setTransactionOrder(payload.data)
