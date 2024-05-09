@@ -159,3 +159,26 @@ return (numberFormat(profit, pip) * addZeroAfterOne(pip)) * volume
 
 }
 
+export const calculateLotSize = (num)=>{
+  if(num >= 0.01 && num<0.10 ){
+      return num*1000
+  }else if(num >= 0.10 && num < 1.00){
+       return num*10000
+  }else{
+      return num*100000
+  }
+  
+}
+
+export const calculateMarginCallPer  = (balance,grandProfit,lotSize,accountLeverage)=>{
+ return parseFloat(((parseFloat(balance) + parseFloat(grandProfit))/((parseFloat(lotSize).toFixed(2))/parseFloat(accountLeverage).toFixed(2))).toFixed(2)*100).toFixed(2)
+}
+export const calculateFreeMargin = (balance,grandProfit,lotSize,accountLeverage) =>{
+  return (parseFloat(balance) + parseFloat(grandProfit)) - ((parseFloat(lotSize).toFixed(2))/parseFloat(accountLeverage).toFixed(2)).toFixed(2)
+}
+export const calculateMargin = (lotSize,accountLeverage)=>{
+ return (parseFloat(lotSize).toFixed(2))/parseFloat(accountLeverage).toFixed(2)
+}
+export const calculateEquity = (balance,grandProfit)=>{
+  return parseFloat(balance) + parseFloat(grandProfit)
+}

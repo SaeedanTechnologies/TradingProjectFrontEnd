@@ -12,7 +12,7 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { CheckBrandPermission, calculateProfitLoss, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
+import { CheckBrandPermission, calculateLotSize, calculateProfitLoss, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
 
 
 const TradingAccountDetails = () => {
@@ -53,7 +53,8 @@ const fetchLiveOrder = async (page) => {
           const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
           const profit = calculateProfitLoss(mPrice, parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal));
           totalProfit+= profit
-          totalVolumn+= parseFloat(x.volume)
+          const res = calculateLotSize(parseFloat(x.volume))
+          totalVolumn+= parseFloat(res)
           return { ...x, profit };
         }));
       setGrandProfit(totalProfit)
@@ -62,7 +63,6 @@ const fetchLiveOrder = async (page) => {
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
-   
     }
     
   }

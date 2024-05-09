@@ -69,8 +69,8 @@ export const router = createBrowserRouter([
       { path: "/trading-group-entry", element: <TradingGroupEntry /> },
       { path: "/trading-group/mb-to", element: <MBTradingOrder /> },
       { path: "/trading-group/mb-to/create", element: <Trade /> },
-      { path: "/trading-group/mass-deposit/:id", element: <MassDipositWidthdraw /> },
-      { path: "/trading-group/mass-deposit/:id/:massid", element: <MDWEntry /> },
+      { path: "/trading-group/mass-deposit", element: <MassDipositWidthdraw /> },
+      { path: "/trading-group/mass-deposit/create", element: <MDWEntry /> },
       { path: "/single-trading-accounts", element: <SingleTradingAccount /> },
       {
         path: "/single-trading-accounts/details", element: <TradingAccountDetails />, children: [

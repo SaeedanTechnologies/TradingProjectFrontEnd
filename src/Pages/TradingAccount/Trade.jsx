@@ -365,11 +365,11 @@ useEffect(() => {
 
             <h1 className='text-3xl font-bold'>Create New Order</h1>
           </div>
-          <CustomTextField
+          {/* <CustomTextField
             label={'Search'}
             varient={'standard'}
             sx={{ width: '300px' }}
-          />
+          /> */}
         </div>
         <div className='flex'>
           <div className="flex-1 mr-2 ">

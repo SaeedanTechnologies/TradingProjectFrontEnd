@@ -259,14 +259,14 @@ const TransactionOrders = () => {
       <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
         <div className='flex items-center justify-between'>
           <h1 className='text-2xl font-bold'>Transactions Orders</h1>
-           <CustomButton
+           {/* <CustomButton
             Text={'Add New Transaction Order'}
             style={{ height: '48px', borderRadius: '8px' }}
              onClickHandler={() =>{
                 dispatch(setTransactionsOrdersSelectedIDs([0]))
                 navigate('/transaction-orders-entry')
               }}
-          />
+          /> */}
           
         </div>
         

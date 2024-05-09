@@ -13,6 +13,7 @@ import { setTradeGroupsData, setTradeGroupsSelectedIDs } from '../../store/trade
 
 const MBTradingOrder = () => {
   const token = useSelector(({ user }) => user?.user?.token)
+  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
@@ -32,7 +33,7 @@ const MBTradingOrder = () => {
   const FetchTradeGroup = async () => {
     try{
       setIsLoading(true)
-    const mData = await GET_Group_Trade_Order(token)
+    const mData = await GET_Group_Trade_Order(token, trading_group_id)
     const { data: { message, payload, success } } = mData
       setIsLoading(false)
       setTradeOrder(payload.data)
@@ -42,7 +43,7 @@ const MBTradingOrder = () => {
       setIsUpdated(false)
     }
     catch (error) {
-      console.error('Error fetching trade groups:', error);
+      console.error('Error fetching trade Deposit groups:', error);
     }
   }
 
@@ -162,7 +163,7 @@ const MBTradingOrder = () => {
               src={ARROW_BACK_CDN}
               alt='back icon'
               className='cursor-pointer'
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(-2)}
             />
 
             <h1 className='text-3xl font-bold'>Mass Buy/Sell Trading Order</h1>

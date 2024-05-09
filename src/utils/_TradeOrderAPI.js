@@ -6,17 +6,17 @@ export const deleteOrder = async (id, token) => {
     return res
 }
 
-export const GET_Group_Trade_Order = async (token) => {
-    const res = await _API(`${apiUrl}/admin/group_trade_orders`, 'get', [], token)
+export const GET_Group_Trade_Order = async (token, trading_group_id) => {
+    const res = await _API(`${apiUrl}/admin/group_trade_orders?trading_group_id=${trading_group_id}`, 'get', [], token)
     return res
 }
 
-export const GET_Group_Transaction_Order = async (token) => {
-    const res = await _API(`${apiUrl}/admin/group_transaction_orders`, 'get', [], token)
+export const GET_Group_Transaction_Order = async (token, trading_group_id) => {
+    const res = await _API(`${apiUrl}/admin/group_transaction_orders?trading_group_id=${trading_group_id}`, 'get', [], token)
     return res
 }
 
-export const Save_Group_Order = async (TransactionOrderGroupData, token) => {
-    const res = await _API(`${apiUrl}/admin/group_transaction_orders`, 'post', TransactionOrderGroupData, token)
+export const Save_Group_Order = async (TransactionOrderGroupData, trading_group_id, token) => {
+    const res = await _API(`${apiUrl}/admin/group_transaction_orders?trading_group_id=${trading_group_id}`, 'post', TransactionOrderGroupData, token)
     return res
 }

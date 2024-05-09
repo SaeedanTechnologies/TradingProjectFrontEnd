@@ -18,6 +18,7 @@ import { CheckBrandPermission, CustomDeleteDeleteHandler } from '../../utils/hel
 import { setTradingGroupData } from '../../store/TradingGroupData';
 // import { setTradeSettingsData, setTradeSettingsSelecetdIDs } from '../../store/tradeGroupsSlice';
 import {setTradeGroupsData, setTradeGroupsSelectedIDs} from '../../store/tradeGroupsSlice'
+import { setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
 
 
 
@@ -48,7 +49,7 @@ const Index = () => {
   };
   const showAccountModal = (trading_accounts) => {
     setIsAccountModalOpen(true)
-    if (trading_accounts.length > 0) {
+    if (trading_accounts?.length > 0) {
       setSelectedAccountData(trading_accounts)
     } else {
       setSelectedAccountData([]);
@@ -69,13 +70,13 @@ const Index = () => {
     const { data: { message, payload, success } } = res
     setIsLoading(false)
     if (success) {
-      setTradingAccountGroupList(payload.data)
+      setTradingAccountGroupList(payload?.data)
     }
   }
   useEffect(() => {
 
     if(userRole === 'brand' ){
-      fetchData(userBrand.public_key)
+      fetchData(userBrand?.public_key)
     }
     else{
       fetchData(null)
@@ -148,7 +149,7 @@ const Index = () => {
         <>
           {symbel_groups?.map((tag) => {
             return (
-              <Tag color={'green'} key={tag.id}>
+              <Tag color={'green'} key={tag?.id}>
                 {tag.name.toUpperCase()}
               </Tag>
             );
@@ -174,13 +175,18 @@ const Index = () => {
       dataIndex: 'MDW',
       key: '5',
       render: (_, record) => (
-        <Link
-          to={`/trading-group/mass-deposit/${record.id}`}
+        <span
+        onClick={()=>{
+          dispatch(setTradeWithdrawGroupsSelectedIDs(record.id))
+          handleMassDepositWithdrawClick(record.id, record.name)
+          navigate('/trading-group/mass-deposit')
+        }}
+          // to={`/trading-group/mass-deposit/${record.id}`}
           style={{ color: colorPrimary, fontWeight: '600' }}
-          onClick={() => handleMassDepositWithdrawClick(record.id, record.name)}
+          // onClick={() => handleMassDepositWithdrawClick(record.id, record.name)}
         >
           View Details
-        </Link>
+        </span>
       ),
       sorter: (a, b) => a.MDW.length - b.MDW.length,
       sortDirections: ['ascend'],

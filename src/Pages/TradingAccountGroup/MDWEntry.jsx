@@ -1,4 +1,4 @@
-import { theme } from 'antd';
+import { Spin, theme } from 'antd';
 import React, { useState,useEffect } from 'react';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from 'react-router-dom';
@@ -69,6 +69,7 @@ const MDWEntry = () => {
 
   const handleSubmit = async (type) => {
     try {
+      // setIsLoading(true)
         await TransactionOrderValidationSchema.validate({
         trading_account_id,
         method:selectedMethod?.value,
@@ -88,7 +89,7 @@ const MDWEntry = () => {
 
       }
       setIsLoading(true)
-      const res = await Save_Group_Order(TransactionOrderGroupData, token)
+      const res = await Save_Group_Order(TransactionOrderGroupData, id, token)
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
@@ -134,6 +135,7 @@ const MDWEntry = () => {
   }, [])
 
   return (
+    <Spin spinning={isLoading} size="large">
     <div className='p-8' style={{ backgroundColor: colorBG }}>
       <div className='flex gap-3'>
         <img
@@ -212,6 +214,7 @@ const MDWEntry = () => {
         </div>
       </div>
     </div>
+    </Spin>
   );
 };
 

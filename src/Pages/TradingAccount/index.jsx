@@ -5,6 +5,7 @@ import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 import { Link, useNavigate } from 'react-router-dom';
 import CustomTextField from '../../components/CustomTextField';
+import pusher from '../../pusher';
 import { Trading_Accounts_List, Delete_Trading_Account, Save_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomModal from '../../components/CustomModal';
 import { useSelector, useDispatch } from 'react-redux';
@@ -257,7 +258,8 @@ const Index = ({ title, direction }) => {
       title: 'Action',
       dataIndex: 'type',
       key: '9',
-      render: (_, record) => (
+      render: (_, record) => {
+        return (
         <Space size="middle" className='cursor-pointer'>
           <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() =>{ 
             setTradeId(record)
@@ -266,7 +268,7 @@ const Index = ({ title, direction }) => {
             }} />
             <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
         </Space>
-      ),
+      )},
     },
   ]
 
@@ -276,8 +278,8 @@ const Index = ({ title, direction }) => {
   };
 
   const setTradeId = (record) => {
+    dispatch(setTradingAccountGroupData(record))
     dispatch(setAccountID(record.id))
-    dispatch(setTradingAccountGroupData(record)) 
     navigate('/single-trading-accounts/details/live-order')
 
   }
@@ -294,6 +296,7 @@ const Index = ({ title, direction }) => {
 
     const { data: { message, payload, success } } = mData
   
+
     setIsLoading(false)
     if (success) {
       const tradingAccounts = payload?.data?.map((item) => ({
@@ -317,6 +320,8 @@ const Index = ({ title, direction }) => {
         last_access_time: item.last_access_time ? item.last_access_time : '...',
         last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
         brand_public_key: item?.brand?.public_key,
+        brand_leverage: item?.brand?.leverage,
+        brand_margin_call: item?.brand?.margin_call,
 
       }))
       setTradingAccountsList(tradingAccounts)
@@ -499,10 +504,7 @@ const [activeGroup, setActiveGroup] = useState([])
     }
   }
 
-
-
   useEffect(() => {
-
   switch (direction) {
     case 1:
       if (userRole === 'brand') {
@@ -524,7 +526,42 @@ const [activeGroup, setActiveGroup] = useState([])
       } else {
         fetchMarginCalls(null, CurrentPage);
       }
+
   }
+  const channel = pusher.subscribe('trading_accounts');
+        channel.bind('update', (data) => {
+          const mData = [data]
+          console.log(data)
+          const isExist = !!marginCall.find(x => x.id === data.id);
+          debugger
+          if(data.status === 'margin_call' && !isExist ){
+            const tradingAccounts = mData?.map((item) => ({
+              id: item.id,
+              loginId: item.login_id,
+              trading_group_id: item.trading_group_id,
+              country: item.country,
+              phone: item.phone,
+              email: item.email,
+              leverage: item.leverage,
+              balance: item.balance,
+              credit: item.credit,
+              equity: item.equity,
+              margin_level_percentage: item.margin_level_percentage,
+              profit: item.profit,
+              swap: item.swap,
+              currency: item.currency,
+              registration_time: item.registration_time,
+              last_access_time: item.last_access_time ? item.last_access_time : '...',
+              last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
+            }))
+            setMarginCall(tradingAccounts)
+          }
+          
+        });
+  return () => {
+    channel.unbind('update');
+    pusher.unsubscribe('trading_accounts');
+  };
 }, [direction]);
 
 

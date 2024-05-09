@@ -20,7 +20,7 @@ export const Save_Trading_Account = async(TradingAccountData, token)=>{
 }
 
 export const Put_Trading_Account = async(id,paramsString, token)=>{
-  const res = await _API(`${apiUrl}/admin/trading_accounts/${id}?${paramsString}`,'put',[], token)
+  const res = await _API(`${apiUrl}/admin/trading_accounts/${id}`,'put',paramsString, token)
   return res 
 }
 
