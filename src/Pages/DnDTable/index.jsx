@@ -60,6 +60,7 @@ class DnDTable extends Component {
       searchValues: {},
       buttonCreated: false, 
       isSearching: true, 
+      isClear: false
     };
     this.setIsRearangments = this.setIsRearangments.bind(this);
     this.setIsMassEdit = this.setIsMassEdit.bind(this);
@@ -124,18 +125,21 @@ class DnDTable extends Component {
   async useEffect(){
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
+      const hr = document.createElement('hr');
+      hr.classList.add("custom-line")
+      firstColumnHeaderCell.appendChild(hr);
       const button = document.createElement('button');
       button.classList.add('custom-button');
       // Add event listener to the button
       button.addEventListener('click', () => {
-        if(this.state.isSearching){
+        if(this.state.isSearching){ // search 
           this.SearchHandler()
-        }else{
+        }else{ // clear
           this.setState({isSearching: true})
           this.props.LoadingHandler(true)
+          this.handleClearSearch()
           setTimeout(()=>{
             this.setState({ data: this.props.data });
-            this.handleClearSearch()
             this.props.LoadingHandler(false)
           },2000)
         }
@@ -146,13 +150,15 @@ class DnDTable extends Component {
     this.setState({buttonCreated: true})
     const columnsWithChildren = this.props.columns.map(column => ({
       ...column,
-      children: [
+      children: [ // inputs
           {
               title: <Input 
+              id={`search-input`}
               placeholder={`Search ${column.title.props.children}`}
-              value={this.state?.searchValues[column.dataIndex]}
+              value={this.state.searchValues[column.dataIndex]}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
               onPressEnter={this.SearchHandler}
+              ref={this.inputRef}
               />,
               dataIndex: column.dataIndex,
               key: `${column.dataIndex}-search`,
@@ -160,12 +166,7 @@ class DnDTable extends Component {
           }
       ]
   }));
-  const newObject = {
-    title: <span className="dragHandler">Test</span>,
-    dataIndex: 'Search',
-    key: '-1',
-};
-columnsWithChildren.unshift(newObject);
+
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
@@ -202,12 +203,7 @@ columnsWithChildren.unshift(newObject);
         );
         
         if(success){
-          const newObject = {
-            title: <button className="custom-button">search</button>,
-            dataIndex: 'Search',
-            key: '-1', 
-        };
-        filteredColumns.unshift(newObject);
+         
           this.setState({ columns: filteredColumns, dropDownColumns: ColumnsData, selectedColumns: mData });
         }else{
           this.setState({ columns: ColumnsData, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
@@ -222,7 +218,7 @@ columnsWithChildren.unshift(newObject);
     } 
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps,prevState) {
     if (prevProps.columns !== this.props.columns) {
       this.setState({ columns: this.props.columns });
     }else if(prevProps.data !== this.props.data && this.state.isCompleteSelect){
@@ -246,6 +242,7 @@ columnsWithChildren.unshift(newObject);
             }
         }
     }
+   
     // else if (prevProps.data !== this.props.data) {
     //   // Update data state with new data from props
     //   this.setState({ data: this.props.data });
@@ -342,15 +339,41 @@ columnsWithChildren.unshift(newObject);
     }
   }
   handleClearSearch = () => {
-    // Reset the search values state
-    // this.setState({ searchValues: {} }, () => {
-    //   // After resetting the state, clear the input fields
-    //   const inputs = document.querySelectorAll('.ant-input');
-    //   inputs.forEach(input => {
-    //     input.value = '';
-    //   });
+    // const _test = this.inputRef
+
+    // this.inputRef.current.input.value = '';
+
+    const clearedSearchValues = {};
+    const inputRefs = Object.keys(this.state.searchValues);
+    inputRefs.forEach((key) => {
+      clearedSearchValues[key] = '';
+    });
+    this.setState({ searchValues:clearedSearchValues, isSearching: true })
+
+    // this.setState({ searchValues:clearedSearchValues, isSearching: true },()=>{
+    //   document.getElementById('search-input-Name').value = '';
     // });
-    this.setState({searchValues: {}})
+  //   const columnsWithChildren = this.props.columns.map(column => ({
+  //     ...column,
+  //     children: [ // inputs
+  //         {
+  //             title: <Input 
+  //             id={`search-input-${column.title.props.children}`}
+  //             placeholder={`Search ${column.title.props.children}`}
+  //             value={this.state.searchValues[column.dataIndex]}
+  //             onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
+  //             onPressEnter={this.SearchHandler}
+  //             ref={this.inputRef}
+  //             />,
+  //             dataIndex: column.dataIndex,
+  //             key: `${column.dataIndex}-search`,
+  //             width: 150,
+  //         }
+  //     ]
+  // }));
+
+  // this.setState({columns: columnsWithChildren})
+    document.getElementById("search-input").value = ''
     
   };
   
@@ -568,8 +591,6 @@ columnsWithChildren.unshift(newObject);
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method
       onSelectAll: this.onSelectAllChange,
-      align: 'left',
-      
     };
 
     return (
