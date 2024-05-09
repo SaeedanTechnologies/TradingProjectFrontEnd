@@ -226,7 +226,7 @@ columnsWithChildren.unshift(newObject);
     if (prevProps.columns !== this.props.columns) {
       this.setState({ columns: this.props.columns });
     }else if(prevProps.data !== this.props.data && this.state.isCompleteSelect){
-        const allRowKeys = this.props.data.map((row) => row.id);
+       const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
         this.setState({ selectedRowKeys: allRowKeys });
     }
     if(this.props?.data?.length > 0 && prevProps.data !== this.props.data){
@@ -634,7 +634,7 @@ columnsWithChildren.unshift(newObject);
             onChange={(pagination, filters, sorter) => {
               this.props.setSortDirection(sorter.order);
             }}  
-            rowKey="id"
+            rowKey={this.props.column_name ? this.props.column_name : "id"}
             onRow={(record) => ({
               onClick: (event) => {
                 const clickedCell = event.target.closest("td");
