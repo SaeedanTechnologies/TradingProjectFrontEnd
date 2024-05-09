@@ -1,31 +1,27 @@
-import { Space, theme, Spin } from 'antd';
+import { theme, Spin } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
-import { EditOutlined, CloseOutlined, DeleteOutlined, MinusCircleOutlined  } from '@ant-design/icons';
-import { Link, useLocation, } from 'react-router-dom';
-import { Delete_Trade_Order,  Put_Trade_Order } from '../../utils/_TradingAPICalls';
+import { MinusCircleOutlined  } from '@ant-design/icons';
+import { useLocation, } from 'react-router-dom';
+import { Put_Trade_Order, Put_Trading_Account } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import Swal from 'sweetalert2';
-import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
+import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
-  const {balance, currency, leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const {value: accountLeverage} = LeverageList.find(x=> x.title === leverage)
   const {title : CurrencyName} = CurrenciesList.find(x=> x.value === currency)
-  const [equity, setEquity] = useState(0) 
   const location = useLocation()
   const { pathname } = location
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
-
-
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
@@ -99,7 +95,6 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     // },
   ];
 
-
   const headerStyle = {
     background: TableHeaderColor,
     color: 'black',
@@ -108,46 +103,60 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
  const onPageChange = (page) =>{
       fetchLiveOrder(page)
   }
-  const CancelLiveOrder = async (id) => {
+  // const CancelLiveOrder = async (id) => {
 
-   const requiredOrder = tradeOrder.find((order)=>order.id === id)
-    debugger;
+  //  const requiredOrder = tradeOrder.find((order)=>order.id === id)
+  //   ;
 
-    setIsLoading(true)
-    const currentDateISO = new Date().toISOString();
-    // const currentDate = new Date(currentDateISO);
-    // const formattedDate = moment(currentDate).format('MM/DD/YYYY HH:mm');
-    const closeOrderData = {
-        order_type : 'close',
-        close_time: currentDateISO,
-        close_price : requiredOrder.open_price
+  //   setIsLoading(true)
+  //   const currentDateISO = new Date().toISOString();
+  //   // const currentDate = new Date(currentDateISO);
+  //   // const formattedDate = moment(currentDate).format('MM/DD/YYYY HH:mm');
+  //   const closeOrderData = {
+  //       order_type : 'close',
+  //       close_time: currentDateISO,
+  //       close_price : requiredOrder.open_price
 
-      }
-      try{
-        const res = await Put_Trade_Order(id,closeOrderData, token)
-        const { data: { message, payload, success } } = res
-        if (success) {
+  //     }
+  //     try{
+  //       const res = await Put_Trade_Order(id,closeOrderData, token)
+  //       const { data: { message, payload, success } } = res
+  //       if (success) {
         
-        CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
-        fetchLiveOrder(page)       
+  //       CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
+  //       fetchLiveOrder(page)       
       
-      }
-      else {
+  //     }
+  //     else {
       
-        CustomNotification({ type: "error", title: "Live Order", description: message, key: 1 })
+  //       CustomNotification({ type: "error", title: "Live Order", description: message, key: 1 })
 
-      }
-      }catch(error){
-        CustomNotification({ type: "error", title: "Live Order", description: error.message, key: 1 })
+  //     }
+  //     }catch(error){
+  //       CustomNotification({ type: "error", title: "Live Order", description: error.message, key: 1 })
 
-      }
+  //     }
         
-  }
+  // }
   useEffect(() => {
- 
     fetchLiveOrder(CurrentPage)
   }, [pathname])
-
+  useEffect(()=>{
+    const res = calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)
+    
+    if(parseFloat(res) < parseFloat(brand_margin_call)){
+      UpdateTradingAccountStatus()
+    }
+  }, [balance,grandProfit,lotSize,accountLeverage])
+  const UpdateTradingAccountStatus = async()=>{
+    const Params = {
+      status: "margin_call", 
+      margin_level_percentage:calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage),
+      equity:calculateEquity(balance, grandProfit)
+    }
+    const res = await Put_Trading_Account(id, Params, token)
+    
+  }
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -164,10 +173,10 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             footer={()=> <span className='text-sm font-bold text-arial'>
              <MinusCircleOutlined /> 
              Balance: {balance} {CurrencyName} &nbsp;
-             Equity: {parseFloat(balance) + parseFloat(grandProfit)} {CurrencyName}  &nbsp;
-             Margin: {(parseFloat(lotSize).toFixed(2) * 1000)/parseFloat(accountLeverage).toFixed(2)} &nbsp;
-             Free Margin {(parseFloat(balance) + parseFloat(grandProfit)) - ((parseFloat(lotSize).toFixed(2) * 1000)/parseFloat(accountLeverage).toFixed(2)).toFixed(2)} &nbsp;
-             Margin Level:  {((parseFloat(balance) + parseFloat(grandProfit))/((parseFloat(lotSize).toFixed(2) * 1000)/parseFloat(accountLeverage).toFixed(2))).toFixed(2)*100} %
+             Equity: {calculateEquity(balance, grandProfit)} {CurrencyName}  &nbsp;
+             Margin: {calculateMargin(lotSize,accountLeverage)} &nbsp;
+             Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
+             Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %
             </span>}
           />
       </div>
