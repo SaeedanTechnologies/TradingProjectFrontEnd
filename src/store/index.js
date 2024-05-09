@@ -9,6 +9,7 @@ import group from './TradingGroupData'
 import brands from './BrandsSlice'
 import tradeGroups from "./tradeGroupsSlice";
 import tradingAccountGroup from "./tradingAccountGroupSlice";
+import tradeWithdrawGroups from "./tradeGroupsWithdrawSlice";
 
 const createRootReducer = asyncReducers => {
   const appReducer = combineReducers({
@@ -21,6 +22,7 @@ const createRootReducer = asyncReducers => {
       transactionOrders,
       tradeGroups,
       tradingAccountGroup,
+      tradeWithdrawGroups,
       ...asyncReducers
   });
   
