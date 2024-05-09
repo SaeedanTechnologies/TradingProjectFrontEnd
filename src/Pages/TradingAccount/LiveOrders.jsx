@@ -16,6 +16,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
  
   const token = useSelector(({ user }) => user?.user?.token)
   const {balance, currency, leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+    
   const {value: accountLeverage} = LeverageList.find(x=> x.title === leverage)
   const {title : CurrencyName} = CurrenciesList.find(x=> x.value === currency)
   const [equity, setEquity] = useState(0) 
@@ -111,7 +112,6 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   const CancelLiveOrder = async (id) => {
 
    const requiredOrder = tradeOrder.find((order)=>order.id === id)
-    debugger;
 
     setIsLoading(true)
     const currentDateISO = new Date().toISOString();

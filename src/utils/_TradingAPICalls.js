@@ -2,12 +2,12 @@ import { _API } from "./_API";
 
 const apiUrl = import.meta.env.VITE_TRADING_BASE_URL;
 
-export const Trading_Accounts_List = async(token,brandId,page) =>{
-  let url  = `${apiUrl}/admin/trading_accounts?page=${page}`
+export const Trading_Accounts_List = async(token,brandId,page = 1, perPage = 10) =>{
+  let url  = `${apiUrl}/admin/trading_accounts?page=${page}&per_page=${perPage}`
 
   if(brandId){
   
-    url  =  `${apiUrl}/admin/trading_accounts?page=${page}&brand_id=${brandId}`
+    url  =  `${apiUrl}/admin/trading_accounts?page=${page}&per_page=${perPage}&brand_id=${brandId}`
    
   }
   const mBrands = await _API(url,'get',[],token)

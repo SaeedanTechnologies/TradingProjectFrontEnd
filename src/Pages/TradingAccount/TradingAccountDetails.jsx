@@ -3,8 +3,6 @@ import { Tabs, theme } from 'antd';
 import LiveOrders from './LiveOrders';
 import { Decimal } from 'decimal.js';
 import { useNavigate,useLocation,useParams } from 'react-router-dom';
-
-
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import Trade from './Trade';
 import CloseOrder from './CloseOrder';

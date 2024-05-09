@@ -271,7 +271,6 @@ const SymbolSettingsEntry = () => {
     }
   }, []);
   const handleSubmit = async () => {
-  debugger
     try {
       if (SymbolSettingIds.length < 2) {
         await validationSchema.validate({

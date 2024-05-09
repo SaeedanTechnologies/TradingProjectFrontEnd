@@ -54,9 +54,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     setIsLoading(false)
     if (success) {
       setTradingAccountGroupList(payload)
-      // if(parseInt(trading_account_id) !== 0){
-      //   fetchSingleAccount(payload)
-      // }
+     
     }
 
   }
@@ -292,9 +290,6 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     },
   ]
 
-
-
-
   const ComponentMap = {
     CustomTextField: CustomTextField,
     CustomAutocomplete: CustomAutocomplete,
@@ -310,7 +305,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       //   leverage
       // }, { abortEarly: false });
       // setErrors({});
-      const selectedBrand =  brandList.find((brand)=>brand.public_key === tradingAccount.brand_id)
+      const selectedBrand =  brandList?.find((brand)=>brand?.public_key === tradingAccount?.brand_id?.public_key)
 
       const formPayload = {
         ...tradingAccount,
