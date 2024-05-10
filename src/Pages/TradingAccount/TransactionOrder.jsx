@@ -9,13 +9,14 @@ import CustomTable from '../../components/CustomTable';
 import { Link } from 'react-router-dom';
 import { numberInputStyle } from './style';
 import { Save_Transaction_Order, Get_Transaction_Orders } from '../../utils/_TransactionOrderAPI';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { TransactionOrderValidationSchema } from '../../utils/validations';
 import moment from 'moment'
 import CustomNotification from '../../components/CustomNotification';
 import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
 import {  TextField,Input,InputAdornment,FormControl ,Select,InputLabel,MenuItem   } from '@mui/material';
 import { CheckBrandPermission } from "../../utils/helpers";
+import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 
 
 const TransactionOrder = () => {
@@ -24,11 +25,12 @@ const TransactionOrder = () => {
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
-
+  const dispatch = useDispatch()
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
-
+  const currentTradingAccountData = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+  
 
   const [transactionOrders, setTransactionOrders] = useState([])
   const [method, setMethod] = useState('')
@@ -44,19 +46,12 @@ const TransactionOrder = () => {
     { "label": "bonus", "value": "bonus" }
   ])
   const [errors, setErrors] = useState({})
-
   const [isLoading, setIsLoading] = useState(false)
-
-
-  
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
-  
-
   const columns = [
     {
-     
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'Time',
       key: '1',
@@ -167,51 +162,83 @@ const TransactionOrder = () => {
          fetchTransactionOrder(page)
     }
 
-  const handleSubmit = async (type) => {
-    try {
-      await TransactionOrderValidationSchema.validate({
-        trading_account_id,
-        method,
-        amount,
-      }, { abortEarly: false });
+  const handleSubmit = async (type) => { 
+    // handle sumbit
+    let isApplicable = true; 
 
-      setErrors({});
-      const TransactionOrderData = {
-        trading_account_id,
-        method: method,
-        amount,
-        comment,
-        currency,
-        name: null,
-        group: null,
-        type,
-        status: "requested",
-        brand_id :brandId
-
-      }
-
-      setIsLoading(true)
-      const res = await Save_Transaction_Order(TransactionOrderData, token)
-      const { data: { message, payload, success } } = res
-      if (success) {
-        setIsLoading(false)
-        CustomNotification({ type: "success", title: "Transaction Order", description: 'Transaction Order Created Successfully.', key: 1 })
-        fetchTransactionOrder(CurrentPage)
-        clearFields()
-      }
-      else {
-        setIsLoading(false)
-        CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
-      }
-
-    } catch (err) {
-      CustomNotification({ type: "error", title: "Transaction Order", description: err.message, key: 1 })
-      const validationErrors = {};
-      err.inner.forEach(error => {
-        validationErrors[error.path] = error.message;
-      });
-      setErrors(validationErrors);
+    if (method === "balance" && type === 'withdraw') {
+        isApplicable = parseFloat(currentTradingAccountData.balance) >= amount;
+        if (!isApplicable) {
+            CustomNotification({ type: "error", title: "Transaction Order", description: "Insufficient Balance", key: 1 });
+            return; 
+        }
     }
+   
+      try {
+        await TransactionOrderValidationSchema.validate({
+          trading_account_id,
+          method,
+          amount,
+        }, { abortEarly: false });
+  
+        setErrors({});
+        const TransactionOrderData = {
+          trading_account_id,
+          method: method,
+          amount,
+          comment,
+          currency,
+          name: null,
+          group: null,
+          type,
+          status: "requested",
+          brand_id :brandId
+  
+        }
+  
+        setIsLoading(true)
+        const res = await Save_Transaction_Order(TransactionOrderData, token)
+        const { data: { message, payload, success } } = res
+        if (success) {
+          setIsLoading(false)
+          // for update redux value
+          if(method === 'balance' && type === 'withdraw'){
+            const cBal = currentTradingAccountData.balance - amount
+            const updatedAccountData = {
+              ...currentTradingAccountData,
+              balance: cBal,
+              equity: cBal
+            };
+            dispatch(setTradingAccountGroupData(updatedAccountData))
+  
+          }else if(method === 'balance' && type === 'deposit'){
+            const cBal = currentTradingAccountData.balance + amount
+            const updatedAccountData = {
+              ...currentTradingAccountData,
+              balance: cBal,
+              equity: cBal
+            };
+            dispatch(setTradingAccountGroupData(updatedAccountData))
+          }
+          CustomNotification({ type: "success", title: "Transaction Order", description: 'Transaction Order Created Successfully.', key: 1 })
+          fetchTransactionOrder(CurrentPage)
+          clearFields()
+        }
+        else {
+          setIsLoading(false)
+          CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
+        }
+  
+      } catch (err) {
+        CustomNotification({ type: "error", title: "Transaction Order", description: err.message, key: 1 })
+        const validationErrors = {};
+        err.inner.forEach(error => {
+          validationErrors[error.path] = error.message;
+        });
+        setErrors(validationErrors);
+      }
+    
+  
   }
 
   const fetchSingleTradeAccount = async () => {
