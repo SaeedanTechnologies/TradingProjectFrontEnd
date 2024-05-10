@@ -14,6 +14,7 @@ import CustomNotification from '../../components/CustomNotification';
 const PersonalData = () => {
   const token = useSelector(({user})=> user?.user?.token );
   const tradingAccountGroupData = useSelector(({tradingAccountGroup})=>tradingAccountGroup?.tradingAccountGroupData)
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const { token: { colorBG,  }} = theme.useToken();
   const [name,setName] = useState('')
   const [registration_time,setRegistration_time ] =  useState(moment().format('YYYY-MM-DD'))
@@ -190,31 +191,34 @@ const fetchSingleTradeAccount= async()=>{
         </div>
 
         <div>
-           <Autocomplete
-                  name="Customers"
-                  id="Customers"
-                  variant={'standard'}
-                  options={BrandCustomerList}
-                  getOptionLabel={ (option) => option.name ? option.name : ""}
-                  value={SelectedCustomerBrand}
-                  onChange={(e, value) => {
-                    if (value) {
-                     
-                      SetSelectedCustomerBrand(value)
-                       setName(value?.name);
-                        setEmail(value?.email);
-                        setCountry(value?.country);
-                        setPhone(value?.phone);
+        { userRole === 'brand' &&
+    <Autocomplete
+    name="Customers"
+    id="Customers"
+    variant={'standard'}
+    options={BrandCustomerList}
+    getOptionLabel={ (option) => option.name ? option.name : ""}
+    value={SelectedCustomerBrand}
+    onChange={(e, value) => {
+      if (value) {
+       
+        SetSelectedCustomerBrand(value)
+         setName(value?.name);
+          setEmail(value?.email);
+          setCountry(value?.country);
+          setPhone(value?.phone);
 
-                    
-                    }
-                    else
-                      SetSelectedCustomerBrand(null)
-                  }}
-                  renderInput={(params) =>
-                    <TextField {...params} name="Customer" label="Select Customer" variant="standard" />
-                  }
-                />
+      
+      }
+      else
+        SetSelectedCustomerBrand(null)
+    }}
+    renderInput={(params) =>
+      <TextField {...params} name="Customer" label="Select Customer" variant="standard" />
+    }
+  />
+        }   
+     
         </div>
 
           

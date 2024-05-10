@@ -11,7 +11,7 @@ import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
 
-const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize }) => {
+const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
@@ -171,11 +171,13 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             token = {token}
             footer={()=> <span className='text-sm font-bold text-arial'>
              <MinusCircleOutlined /> 
-             Balance: {balance} {CurrencyName} &nbsp;
+             Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
              Equity: {calculateEquity(balance, grandProfit)} {CurrencyName}  &nbsp;
-             Margin: {calculateMargin(lotSize,accountLeverage)} &nbsp;
+             {tradeOrder.length > 0  &&
+             <span> Margin: {margin}</span>}&nbsp;
              Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
-             Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %
+             {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
+             
             </span>}
           />
       </div>

@@ -21,6 +21,8 @@ const Account = () => {
     
   const token = useSelector(({user})=> user?.user?.token )
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+  const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+
   const { token: { colorBG,   }} = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   //
@@ -92,7 +94,7 @@ const ChkBoxesControl = [
       if(success){
           // debugger;
         const selectedGroup =  GroupsList?.find(x=> x.id === payload.trading_group_id)
-        const selectedLeverage = LeverageList.find(x=>x.value === payload.leverage) 
+        const selectedLeverage = LeverageList.find(x=>x.title === leverage) 
         setSelectedTradingAccountGroup(selectedGroup)
         setSelectedLeverage(selectedLeverage)
         setPassword(payload.password)
