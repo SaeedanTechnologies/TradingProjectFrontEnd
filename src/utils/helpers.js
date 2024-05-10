@@ -123,8 +123,9 @@ export const getOpenPriceFromAPI= async(symbol, feedName)=> {
     if(feedName === 'binance'){
       const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
       const data = await response.json();
-      const openPrice = parseFloat(data.openPrice);
-      return openPrice;
+      const {askPrice, bidPrice} = data
+      // const openPrice = parseFloat(data.openPrice);
+      return {askPrice, bidPrice};
     }else{
       return null
     }
@@ -174,11 +175,11 @@ export const calculateMarginCallPer  = (balance,grandProfit,lotSize,accountLever
  return parseFloat(((parseFloat(balance) + parseFloat(grandProfit))/((parseFloat(lotSize).toFixed(2))/parseFloat(accountLeverage).toFixed(2))).toFixed(2)*100).toFixed(2)
 }
 export const calculateFreeMargin = (balance,grandProfit,lotSize,accountLeverage) =>{
-  return (parseFloat(balance) + parseFloat(grandProfit)) - ((parseFloat(lotSize).toFixed(2))/parseFloat(accountLeverage).toFixed(2)).toFixed(2)
+  return parseFloat((parseFloat(balance) + parseFloat(grandProfit)) - (parseFloat(lotSize)/parseFloat(accountLeverage))).toFixed(2)
 }
 export const calculateMargin = (lotSize,accountLeverage)=>{
- return (parseFloat(lotSize).toFixed(2))/parseFloat(accountLeverage).toFixed(2)
+ return parseFloat(parseFloat(lotSize)/parseFloat(accountLeverage)).toFixed(2)
 }
 export const calculateEquity = (balance,grandProfit)=>{
-  return parseFloat(balance) + parseFloat(grandProfit)
+  return parseFloat(parseFloat(balance) + parseFloat(grandProfit)).toFixed(2)
 }
