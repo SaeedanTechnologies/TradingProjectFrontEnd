@@ -75,9 +75,10 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     country: "",
     phone: "",
     email: "",
-    balance: "",
+    // balance: "",
+    name:"",
     leverage: "",
-    swap: "",
+    // swap: "",
     currency: "",
     brand_id: "",
     brand_customer_id: "",
@@ -191,24 +192,33 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       }
     },
 
+    // {
+    //   id: 7, control: 'CustomTextField', display: 'show', label: 'Balance', varient: 'standard', value: tradingAccount.balance, onChange: (e) => {
+
+    //     setTradingAccount(prevData => ({
+    //       ...prevData,
+    //       balance: e.target.value
+    //     }))
+    //   }
+    // },
     {
-      id: 7, control: 'CustomTextField', display: 'show', label: 'Balance', varient: 'standard', value: tradingAccount.balance, onChange: (e) => {
+      id: 7, control: 'CustomTextField', display: 'show', label: 'Name', varient: 'standard', value: tradingAccount.name, onChange: (e) => {
 
         setTradingAccount(prevData => ({
           ...prevData,
-          balance: e.target.value
+          name: e.target.value
         }))
       }
     },
-    {
-      id: 18, control: 'CustomTextField', display: 'show', label: 'Swap', required: true, varient: 'standard', value: tradingAccount.swap, onChange: (e) => {
+    // {
+    //   id: 18, control: 'CustomTextField', display: 'show', label: 'Swap', required: true, varient: 'standard', value: tradingAccount.swap, onChange: (e) => {
 
-        setTradingAccount(prevData => ({
-          ...prevData,
-          swap: e.target.value
-        }))
-      }
-    },
+    //     setTradingAccount(prevData => ({
+    //       ...prevData,
+    //       swap: e.target.value
+    //     }))
+    //   }
+    // },
     {
       id: 13,
       control: 'CustomAutocomplete',
@@ -351,7 +361,9 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
 
   const handleSubmit = () => {
     {
-      (tradingAccount.email === '' || tradingAccount.currency === '' || tradingAccount.leverage === '' || tradingAccount.swap === '' || (userRole === 'admin' && tradingAccount.brand_id === '')) ? CustomNotification({ type: "error", title: "Add New Trading Account", description: 'Please fill all the required fields', key: 1 })
+      (tradingAccount.email === '' || tradingAccount.currency === '' || tradingAccount.leverage === '' 
+      // ||tradingAccount.swap === '' 
+       || (userRole === 'admin' && tradingAccount.brand_id === '')) ? CustomNotification({ type: "error", title: "Add New Trading Account", description: 'Please fill all the required fields', key: 1 })
         : handleSubmission()
     }
   };

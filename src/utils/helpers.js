@@ -167,7 +167,11 @@ export const calculateLotSize = (num)=>{
   }else{
       return num*100000
   }
-  
+}
+
+export const requiredMargin = (volume,accountLeverage) =>{
+  const lotsize = calculateLotSize(volume)
+  return (volume * lotsize) / accountLeverage
 }
 
 export const calculateMarginCallPer  = (balance,grandProfit,lotSize,accountLeverage)=>{

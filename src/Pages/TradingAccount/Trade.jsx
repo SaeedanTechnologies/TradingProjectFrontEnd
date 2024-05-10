@@ -1,7 +1,7 @@
 import { Spin, theme } from 'antd';
 import React, { useState, useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
+import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes, LeverageList } from '../../utils/constants';
 
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -22,6 +22,7 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
+import {requiredMargin } from '../../utils/helpers';
 
 const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -31,6 +32,9 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
   const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
+  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+  const {value: accountLeverage} = LeverageList.find(x=> x.title === leverage)
+
   // console.log('trading_group_id',trading_group_id)
 
   const [isLoading, setIsLoading] = useState(false)
@@ -55,6 +59,12 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const [errors, setErrors] = useState({});
 
   //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
+
+  // const getLotsize = (vol)=> {
+  //   calculateLotSize(vol)
+  // }
+  
+  const calculatedMargin = requiredMargin(volume,accountLeverage)
 
   const handleProfitChange = (newValue) => {
     setTakeProfit(newValue);
@@ -182,8 +192,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
 
   const handleSubmit = (typeReceive) => {
     {
-      (stopLoss || takeProfit) > 0 ?  typeReceive === 'sell' ? 
-      (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+      (balance > 0 && calculatedMargin < balance) ? (stopLoss || takeProfit) > 0 ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
       createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
       typeReceive === 'buy' ? 
       (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
@@ -191,6 +200,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       createOrder(typeReceive)
       :
       createOrder(typeReceive)
+      :
+      CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
     }
    
   }
