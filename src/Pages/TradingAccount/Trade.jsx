@@ -22,7 +22,7 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
-import {requiredMargin } from '../../utils/helpers';
+import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
 
 const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -32,8 +32,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
   const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
-  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
-  const {value: accountLeverage} = LeverageList.find(x=> x.title === leverage)
+  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 
   // console.log('trading_group_id',trading_group_id)
 
@@ -60,11 +60,11 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
 
   //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
 
-  // const getLotsize = (vol)=> {
-  //   calculateLotSize(vol)
-  // }
+  const lotSize = calculateLotSize(volume)
   
   const calculatedMargin = requiredMargin(volume,accountLeverage)
+
+  const Margin= calculateMargin(lotSize,accountLeverage)
 
   const handleProfitChange = (newValue) => {
     setTakeProfit(newValue);
@@ -192,7 +192,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
 
   const handleSubmit = (typeReceive) => {
     {
-      (balance > 0 && calculatedMargin < balance) ? (stopLoss || takeProfit) > 0 ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+      (balance > 0 && (calculatedMargin + Margin) < balance) ? (stopLoss || takeProfit) > 0 ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
       createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
       typeReceive === 'buy' ? 
       (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
@@ -202,6 +202,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       createOrder(typeReceive)
       :
       CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
+      // CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You have $${balance}`, key: 1 })
     }
    
   }
@@ -546,7 +547,7 @@ useEffect(() => {
               {(type?.value === 'Buy Stop Limit' || type?.value === 'Sell Stop Limit') &&
                 <CustomTextField label={'Stop Limit Price'} varient={'standard'} type="number" sx={numberInputStyle} value={stop_limit_price} onChange={e => handleInputChange('stop_limit_price', e.target.value)} />}
             </div>
-            <b>Open Price: {pricing?.openPrice ? `(${pricing?.openPrice})` : ''} / Ask Price: {pricing?.askPrice ? `(${pricing?.askPrice})` : ''}</b>
+            {/* <b>Open Price: {pricing?.openPrice ? `(${pricing?.openPrice})` : ''} / Ask Price: {pricing?.askPrice ? `(${pricing?.askPrice})` : ''}</b> */}
             {/* <b> Open Price (Socket) : {pricing?.openPrice} / Ask Price (Socket) : {pricing?.askPrice}</b> <br /> <b> Open Price (Manual) : {manualpricing.openPrice} / Ask Price (Manual): {manualpricing.askPrice}</b> */}
             <div className="mb-4 grid grid-cols-1 gap-4">
               <CustomTextField label={'Comments'}

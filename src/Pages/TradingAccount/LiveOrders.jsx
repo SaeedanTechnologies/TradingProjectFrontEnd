@@ -14,9 +14,9 @@ import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginC
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
-  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
-  const {value: accountLeverage} = LeverageList.find(x=> x.title === leverage)
-  const {title : CurrencyName} = CurrenciesList.find(x=> x.value === currency)
+  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
+  const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
   const location = useLocation()
   const { pathname } = location
   const {

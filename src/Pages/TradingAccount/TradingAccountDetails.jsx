@@ -52,7 +52,7 @@ const fetchLiveOrder = async (page) => {
           const mPrice = await getOpenPriceFromAPI(x.symbol, x.feed_name);
           const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
           const profit = calculateProfitLoss(mPrice, parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal));
-          totalProfit+= profit
+          totalProfit+= parseFloat(profit).toFixed(2)
           const res = calculateLotSize(parseFloat(x.volume))
           totalVolumn+= parseFloat(res)
           return { ...x, profit };
