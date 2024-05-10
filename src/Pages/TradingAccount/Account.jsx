@@ -5,24 +5,21 @@ import CustomPasswordField from '../../components/CustomPassowordField';
 import CustomCheckbox from '../../components/CustomCheckbox';
 import CustomButton from '../../components/CustomButton';
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { LeverageList } from '../../utils/constants';
 import { Get_Single_Trading_Account,  Update_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import ChangePasswordModal from './ChangePasswordModal';
 import CustomModal from '../../components/CustomModal';
-
-
-
-
-
+import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 
 const Account = () => {
     
   const token = useSelector(({user})=> user?.user?.token )
+  const dispatch = useDispatch()
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
   const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
-
+  const tradingAccountGroupData = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const { token: { colorBG,   }} = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   //
@@ -35,7 +32,7 @@ const Account = () => {
   const [enable_password_change,setEnable_password_change] = useState(0);
   const [enable_investor_trading,setEnable_investor_trading] = useState(0);
   const [change_password_at_next_login,setChange_password_at_next_login] = useState(0)
-   const [isLoading,setIsLoading ] = useState(false)
+  const [isLoading,setIsLoading ] = useState(false)
 
 
 const ChkBoxesControl = [
@@ -71,7 +68,6 @@ const ChkBoxesControl = [
   },
 ]
 
-
  const fetchTradingAccountGroups = async()=>{
     setIsLoading(true)
     const group_response = await ALL_Trading_Account_Group_List(token)
@@ -82,9 +78,7 @@ const ChkBoxesControl = [
       if(parseInt(trading_account_id) !== 0){
         fetchSingleAccount(payload)
       }
-      
     }
-
   }
 
  const fetchSingleAccount= async(GroupsList)=>{
@@ -103,9 +97,6 @@ const ChkBoxesControl = [
         payload.enable_investor_trading ? setEnable_investor_trading(true) : setEnable_investor_trading(false);
         payload.change_password_at_next_login ? setChange_password_at_next_login( true ) : setChange_password_at_next_login( false) 
         setIsLoading(false)
-      
-      
-
     }
    
   } 
@@ -146,6 +137,11 @@ const ChkBoxesControl = [
        const {data: {message, payload, success}} = res
        if(success)
     {
+      const updatedAccountData = {
+        ...tradingAccountGroupData,
+        leverage: selectedLeverage.title,
+      };
+      dispatch(setTradingAccountGroupData(updatedAccountData))
       CustomNotification({ type:"success", title:"Security Account", description:message, key:1 })
       setIsLoading(false)
     }   
@@ -160,7 +156,6 @@ const ChkBoxesControl = [
     }
   }
 
-
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -172,12 +167,10 @@ const ChkBoxesControl = [
     setIsModalOpen(true);
   };
 
-
   useEffect(()=>{
     fetchTradingAccountGroups()
   
   },[])
- 
 
   return (
       <Spin spinning={isLoading} size="large">

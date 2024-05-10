@@ -45,7 +45,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       key: 'type',
       sorter: (a, b) => a.time.length - b.time.length,
       sortDirections: ['ascend'],
-      render: (text) => <span style={{ color: colorPrimary }}>{text}</span>
+      render: (text)=> <span className={`${text === 'sell' ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     {
       title: <span className="dragHandler">Volume</span>,

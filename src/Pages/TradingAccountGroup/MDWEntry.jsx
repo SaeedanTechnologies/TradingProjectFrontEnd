@@ -1,5 +1,6 @@
 import { Spin, theme } from 'antd';
 import React, { useState,useEffect } from 'react';
+import Swal from "sweetalert2";
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from 'react-router-dom';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
@@ -89,7 +90,17 @@ const MDWEntry = () => {
 
       }
       setIsLoading(true)
-      const res = await Save_Group_Order(TransactionOrderGroupData, id, token)
+      Swal.fire({
+        title: "Are you sure?",
+        text: type === "withdraw" ? "you want to widthdraw" : "you want to deposit",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#1CAC70",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "yes proceed it",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const res = await Save_Group_Order(TransactionOrderGroupData, id, token)
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
@@ -100,6 +111,11 @@ const MDWEntry = () => {
         setIsLoading(false)
         CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
       }
+    
+        }else{
+          setIsLoading(false)
+        }
+      });
 
     } catch (err) {
       CustomNotification({ type: "error", title: "Transaction Order", description: err.message, key: 1 });
