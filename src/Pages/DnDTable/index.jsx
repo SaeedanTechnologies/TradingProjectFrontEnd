@@ -432,8 +432,13 @@ class DnDTable extends Component {
             const { data: { success, message, payload } } = res
             this.setState({isLoading: false})
             if (success) {
-              const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
-              this.setState({data: newData})
+              if(this.props.direction === "/trading-group/mass-deposit" || this.props.direction === "/trading-group/mb-to"){
+                const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item[this.props.column_name]));
+                this.setState({data: newData})
+              }else{
+                const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
+                this.setState({data: newData})
+              }
                CustomNotification({
                 type: "success",
                 title: "Deleted",
