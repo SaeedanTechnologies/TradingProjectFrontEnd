@@ -10,6 +10,7 @@ import { notifySuccess, notifyError } from '../../utils/constants';
 import { GetAllBrandsCustomerList } from '../../utils/_BrandListAPI';
 import { Autocomplete,TextField } from '@mui/material'
 import CustomNotification from '../../components/CustomNotification';
+import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 
 const PersonalData = () => {
   const token = useSelector(({user})=> user?.user?.token );
@@ -100,6 +101,7 @@ const fetchSingleTradeAccount= async()=>{
        if(success)
     {
       setIsLoading(false)
+     
        CustomNotification({ type: "success", title: "Trading Account", description: message, key: 1 })
       fetchSingleTradeAccount()
     }   
