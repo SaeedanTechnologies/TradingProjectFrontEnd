@@ -22,7 +22,7 @@ export const tradeGroupsWithdrawSlice = createSlice({
         });
       state.tradeWithdrawGroupsData = newData;
     }, 
-    tradeWithdrawGroupsData: (state, action) => {
+    deleteTradeWithdrawGroupById: (state, action) => {
       const idToDelete = action.payload;
       state.tradeWithdrawGroupsData = state.tradeWithdrawGroupsData.filter(item => item.id !== idToDelete);
     }

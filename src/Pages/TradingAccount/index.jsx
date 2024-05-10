@@ -572,11 +572,11 @@ const [activeGroup, setActiveGroup] = useState([])
 
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>{title}</h1>
-          <CustomTextField
+          {/* <CustomTextField
             label='Search'
             sx={{ width: '300px' }}
 
-          />
+          /> */}
           
     
             
