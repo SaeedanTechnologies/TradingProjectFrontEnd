@@ -63,7 +63,7 @@ const CustomStopLossTextField = ({
   }
 
   const handleChange = (event) => {
-    const newValue = event.target.value;
+    const newValue = event.target.value.replace(/[^0-9.]/g, '');
     if (isFirstClick.current && checkFirst) {
       if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
         setCurrentValue(initialFromState);
@@ -87,6 +87,9 @@ const CustomStopLossTextField = ({
         onChange(initialFromState);
       }
     } else {
+      if(currentValue === ""){
+        setCurrentValue(0)
+      }
       const newValue = incrementNumber(`${currentValue}`)
       // const newValue = currentValue + step;
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
@@ -99,7 +102,6 @@ const CustomStopLossTextField = ({
   const handleDecrement = () => {
     // const newValue = parseFloat(event.target.value);
     // const newValue = currentValue - step;
-    const newValue = decrementNumber(`${currentValue}`)
     if (isFirstClick.current && checkFirst) {
       if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
         setCurrentValue(initialFromState);
@@ -107,7 +109,11 @@ const CustomStopLossTextField = ({
         onChange(initialFromState);
       }
     } else {
+      if(currentValue === ""){
+        setCurrentValue(0)
+      }
       // setCurrentValue((prevValue) => {
+        const newValue = decrementNumber(`${currentValue}`)
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
         onChange(newValue);
         setCurrentValue(newValue)
@@ -126,7 +132,8 @@ const CustomStopLossTextField = ({
         type="text"
         label={label}
         value={currentValue}
-        inputProps={{ step, min, max }}
+        inputProps={{ step, min, max, inputMode: 'numeric', pattern: '[0-9]*'}}
+        InputLabelProps={{ shrink: currentValue !==null && currentValue !== '' }}
         onChange={handleChange}
         variant="standard"
         fullWidth={fullWidth}

@@ -45,8 +45,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const [volume,setVolume] = useState(0.01);
   const [open_price,setOpen_price] = useState(0);
   const [comment,setComment] = useState('');
-  const [takeProfit,setTakeProfit] = useState(0);
-  const [stopLoss,setStopLoss] = useState(0);
+  const [takeProfit,setTakeProfit] = useState('');
+  const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
   const [pricing, setPricing] = useState({ openPrice: 0, askPrice: 0 });
   const [connected, setConnected] = useState(true);
@@ -112,7 +112,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
     setSymbol(null);
     setOrder_type(null);
     setType(null);
-    setVolume('');
+    setVolume(0.01);
     setOpen_price('');
     setComment('');
     setTakeProfit('');
@@ -139,8 +139,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
         type: typeReceive ? typeReceive : type.value,
         volume: String(volume),
         comment,
-        takeProfit: String(takeProfit),
-        stopLoss: String(stopLoss),
+        takeProfit: String(takeProfit === "" ? "" : takeProfit),
+        stopLoss: String(stopLoss === "" ? "" : stopLoss),
         stop_limit_price,
         trading_account_id,
         open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
@@ -155,8 +155,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
         type: typeReceive ? typeReceive : type.value,
         volume: String(volume),
         comment,
-        takeProfit: String(takeProfit),
-        stopLoss: String(stopLoss),
+        takeProfit: String(takeProfit === "" ? "" : takeProfit),
+        stopLoss: String(stopLoss === "" ? "" : stopLoss),
         stop_limit_price,
         trading_group_id: trading_group_id,
         open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
@@ -192,7 +192,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
 
   const handleSubmit = (typeReceive) => {
     {
-      (balance > 0 && (calculatedMargin + Margin) < balance) ? (stopLoss || takeProfit) > 0 ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+      // (balance > 0 && (calculatedMargin + Margin) < balance) 
+      balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
       createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
       typeReceive === 'buy' ? 
       (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
@@ -202,7 +203,6 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       createOrder(typeReceive)
       :
       CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
-      // CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You have $${balance}`, key: 1 })
     }
    
   }
@@ -520,8 +520,8 @@ useEffect(() => {
               <div className="flex-1">
                     <CustomStopLossTextField
                       label="Take Profit"
-                      value={Number(takeProfit)}
-                      initialFromState={Number(pricing?.askPrice ?? 0)}
+                      value={takeProfit}
+                      initialFromState={pricing?.askPrice ?? 0}
                       checkFirst={pricing?.askPrice ? true : false}
                       onChange={ handleProfitChange}
                       fullWidth
@@ -533,8 +533,8 @@ useEffect(() => {
                 </div>
                 <CustomStopLossTextField
                       label="Stop Loss"
-                      value={Number(stopLoss)}
-                      initialFromState={Number(pricing?.askPrice ?? 0)}
+                      value={stopLoss}
+                      initialFromState={pricing?.askPrice ?? 0}
                       checkFirst={pricing?.askPrice ? true : false}
                       onChange={handleLossChange}
                       fullWidth
@@ -559,7 +559,7 @@ useEffect(() => {
             {order_type?.value === 'pending' ?
 
 
-              <div className="mb-4 grid grid-cols-1   gap-4">
+              <div className="mb-4 grid grid-cols-1 w-full gap-4">
                 <CustomButton
                   Text={"Place Order"}
                   style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
@@ -573,7 +573,7 @@ useEffect(() => {
                 />
               </div>
               :
-              <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mb-4 grid grid-cols-1 md:grid-cols-2 w-full gap-4">
                 <CustomButton
                   Text={`Sell ${pricing.askPrice ? `(${pricing.askPrice})` : ''}`}
                   style={{ height: "48px",width:"100%", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}

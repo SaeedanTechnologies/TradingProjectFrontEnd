@@ -731,6 +731,9 @@ const SymbolSettingsEntry = () => {
                 label="Vol Minimum"
                 disabled={isDisabled}
                 value={volMin}
+                InputProps={{
+                  inputProps: { min: 0, max: 100 },
+                }}
                 type={'number'}
                 varient="standard"
                 onChange={(e) => handleInputChange("volMin", e.target.value)}
@@ -744,6 +747,9 @@ const SymbolSettingsEntry = () => {
                 label="Vol Maximum"
                 disabled={isDisabled}
                 value={volMax}
+                InputProps={{
+                  inputProps: { min: 0, max: 100 },
+                }}
                 type={'number'}
                 varient="standard"
                 onChange={(e) => handleInputChange("volMax", e.target.value)}
