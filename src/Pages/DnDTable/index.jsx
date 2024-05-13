@@ -264,10 +264,12 @@ class DnDTable extends Component {
   };
 
   onSelectChange(newSelectedRowKeys) {
+    
     this.setState({ selectedRowKeys: newSelectedRowKeys });
   }
 
   handleResize = (index) => (e, { size }) => {
+    debugger;
     this.setState(({ columns }) => {
       const nextColumns = [...columns];
       nextColumns[index] = {

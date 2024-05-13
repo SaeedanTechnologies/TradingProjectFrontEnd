@@ -95,6 +95,7 @@ const SymbolGroupEntry = () => {
     setTradingIntervalEndTime(null)
   }
   const handleSubmit = async()=> {
+    debugger
     try{
    
       if(SymbolGroupsIds.length < 2)
@@ -195,8 +196,11 @@ const SymbolGroupEntry = () => {
             description: message,
             key: 2
           })
-          clearFields()
           // navigate('/symbol-groups')
+        
+        
+           setIsDisabled(true)
+
         }else{
           CustomNotification({
               type: 'error',
@@ -329,7 +333,6 @@ const SymbolGroupEntry = () => {
   const fetchSymbolGroupWRTID = async()=>{
     if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) !== 0){
       setIsLoading(true)
-      debugger
       const res = await SelectSymbolWRTID(SymbolGroupsIds[0], token)
       const {data: {message, payload, success}} = res
       setIsLoading(false)

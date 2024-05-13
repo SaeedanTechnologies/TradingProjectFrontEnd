@@ -271,6 +271,7 @@ const SymbolSettingsEntry = () => {
     }
   }, []);
   const handleSubmit = async () => {
+    
     try {
       if (SymbolSettingIds.length < 2) {
         await validationSchema.validate({
@@ -384,7 +385,6 @@ const SymbolSettingsEntry = () => {
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
-          clearFields();
           CustomNotification({
             type: 'success',
             title: 'success',

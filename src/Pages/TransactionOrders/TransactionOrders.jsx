@@ -200,9 +200,8 @@ const TransactionOrders = () => {
   ];
 
     
-    const defaultCheckedList = columns.map((item) => item.key);
-
-   const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
   const [newColumns , setNewColumns] = useState(columns)
 
   const [isLoading, setIsLoading] = useState(false)
@@ -213,11 +212,11 @@ const TransactionOrders = () => {
 
 
   const fetchTransactionOrder = async (brandId,page) => {
+    
     setIsLoading(true)
-
+   
     const res = await Trading_Transaction_Order(token,brandId,page)
     const { data: { message, payload, success } } = res
-    console.log(res)
     setIsLoading(false)
     if (success) {
       
@@ -236,6 +235,11 @@ const TransactionOrders = () => {
       fetchTransactionOrder(null,CurrentPage)
     }
   }, [])
+
+   useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
 
   const onPageChange = (page) =>{
       if(userRole === 'brand' ){
