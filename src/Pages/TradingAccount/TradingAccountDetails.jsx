@@ -12,7 +12,7 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { CheckBrandPermission, calculateLotSize, calculateMargin, calculateProfitLoss, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
+import { CheckBrandPermission, calculateLotSize, calculateMargin, calculateNights, calculateProfitLoss, getCurrentDateTime, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
 import { LeverageList } from '../../utils/constants';
 
 
@@ -25,6 +25,7 @@ const TradingAccountDetails = () => {
   const [grandVolumn, setGrandVolumn] = useState(0) 
   const [grandMargin, setGrandMargin] = useState(0)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [totalSwap, setTotalSwap] = useState(0)
   const token = useSelector(({user})=> user?.user?.token )
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
@@ -53,24 +54,32 @@ const fetchLiveOrder = async (page) => {
         let totalProfit = 0
         let totalVolumn = 0
         let totalMargin = 0
+        let _totalSwap = 0
+        const currentDateTime = getCurrentDateTime();
         const updatedData = await Promise.all(payload.data.map(async (x) => {
           const {askPrice, bidPrice} = await getOpenPriceFromAPI(x.symbol, x.feed_name);
           const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
-          const profit = calculateProfitLoss(x.type === "sell"? askPrice : bidPrice, parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal));
-          totalProfit+= parseFloat(profit).toFixed(2)
-          const res = calculateLotSize(parseFloat(x.volume))
+          const profit = parseFloat(calculateProfitLoss(x.type === "sell"? askPrice ?? 0  : bidPrice ?? 0 , parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
+          totalProfit+= parseFloat(profit)
+          debugger
+          const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.type === "sell"? parseFloat(askPrice)  : parseFloat(bidPrice) ).toFixed(2))
           const margin = calculateMargin(res, accountLeverage)
+          const totalNights = calculateNights(x.created_at,currentDateTime)
+          const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0)
+          _totalSwap += parseFloat(Calswap ?? 0);
+          const swap = Calswap > 0 ? -Calswap : Calswap
           totalMargin+= parseFloat(margin)
           totalVolumn+= parseFloat(res)
-          return { ...x, profit };
+          return { ...x,swap, profit };
         }));
-      setGrandProfit(totalProfit)
-      setGrandVolumn(totalVolumn)
-      setGrandMargin(totalMargin)
-      setTradeOrder( updatedData)
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setTotalRecords(payload.total)
+        setGrandProfit(totalProfit.toFixed(2));
+        setGrandVolumn(totalVolumn.toFixed(2)); 
+        setGrandMargin(totalMargin.toFixed(2)); 
+        setTotalSwap(_totalSwap.toFixed(2)); 
+        setTradeOrder( updatedData)
+        setCurrentPage(payload.current_page)
+        setLastPage(payload.last_page)
+        setTotalRecords(payload.total)
     }
     
   }
@@ -83,7 +92,7 @@ const fetchLiveOrder = async (page) => {
     children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder} grandProfit={grandProfit} 
     lotSize={grandVolumn}  isLoading={isLoading} setIsLoading={setIsLoading} 
     CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords}
-    margin = {grandMargin}
+    margin = {grandMargin} totalSwap={totalSwap}
     />,
     path: '/single-trading-accounts/details/live-order',
     display:  CheckBrandPermission(userPermissions,userRole,'live_orders_read') ? 'show' : 'hide' 

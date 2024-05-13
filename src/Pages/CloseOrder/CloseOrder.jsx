@@ -17,74 +17,13 @@ const CloseOrder = () => {
   const { token: { colorBG, colorPrimary, TableHeaderColor } } = theme.useToken();
   const [isLoading, setIsLoading] = useState(false)
   const [closeOrders, setCloseOrders] = useState([])
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [perPage, setPerPage] = useState(10)
 
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
-
-
-  const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
-  };
-  const fetchCloseOrders = async (brandId,page) => {
-
-    setIsLoading(true)
-    const params = { OrderTypes: ['close'], token,brandId,page }
-    const mData = await Get_Trade_Order(params)
-    const { data: { message, payload, success } } = mData
-    const allCloseOrders = payload?.data?.map((order) => ({
-      id: order.id,
-      loginId: order.trading_account_id,
-      orderId: order.id,
-      symbol: order.symbol,
-      open_time:  moment(order.open_time).format('MM/DD/YYYY HH:mm'),
-      close_time: moment(order.close_time).format('MM/DD/YYYY HH:mm') ,
-      type: order.type,
-      volume: order.volume,
-      open_price: order.open_price,
-      close_price: order.close_price,
-      stopLoss: order.stopLoss,
-      takeProfit: order.takeProfit,
-      reason: order.reason ? order.reason : '...',
-      swap: order.swap ? order.swap : '...',
-      profit: order.profit ? order.profit : '...',
-      comment: order.comment
-
-    }))
-    setIsLoading(false)
-    if (success) {
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setTotalRecords(payload.total)
-      setCloseOrders(allCloseOrders)
-    }
-
-  }
-
-  const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchCloseOrders(userBrand.public_key,page)
-    }
-    else{
-      fetchCloseOrders(null,page)
-    }
-  }
-
-  useEffect(() => {
-
-    if(userRole === 'brand' ){
-      fetchCloseOrders(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchCloseOrders(null,CurrentPage)
-    }
-  }, [])
-
-
-
-
-
+  const [sortDirection, setSortDirection] = useState("")
   const columns = [
 
 
@@ -208,11 +147,78 @@ const CloseOrder = () => {
     //   ),
     // },
   ];
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
 
 
+  const headerStyle = {
+    background: TableHeaderColor, // Set the background color of the header
+    color: 'black', // Set the text color of the header
+  };
+  const fetchCloseOrders = async (brandId,page) => {
 
+    setIsLoading(true)
+    const params = { OrderTypes: ['close'], token,brandId,page }
+    const mData = await Get_Trade_Order(params)
+    const { data: { message, payload, success } } = mData
+    const allCloseOrders = payload?.data?.map((order) => ({
+      id: order.id,
+      loginId: order.trading_account_id,
+      orderId: order.id,
+      symbol: order.symbol,
+      open_time:  moment(order.open_time).format('MM/DD/YYYY HH:mm'),
+      close_time: moment(order.close_time).format('MM/DD/YYYY HH:mm') ,
+      type: order.type,
+      volume: order.volume,
+      open_price: order.open_price,
+      close_price: order.close_price,
+      stopLoss: order.stopLoss,
+      takeProfit: order.takeProfit,
+      reason: order.reason ? order.reason : '...',
+      swap: order.swap ? order.swap : '...',
+      profit: order.profit ? order.profit : '...',
+      comment: order.comment
 
+    }))
+    setIsLoading(false)
+    if (success) {
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+      setCloseOrders(allCloseOrders)
+      setIsUpdated(false)
 
+    }
+
+  }
+
+  const onPageChange = (page) =>{
+      if(userRole === 'brand' ){
+      fetchCloseOrders(userBrand.public_key,page)
+    }
+    else{
+      fetchCloseOrders(null,page)
+    }
+  }
+  useEffect(() => {
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
+    }, [checkedList]);
+
+  useEffect(() => {
+    setIsUpdated(true)
+
+    if(userRole === 'brand' ){
+      fetchCloseOrders(userBrand.public_key,CurrentPage)
+    }
+    else{
+      fetchCloseOrders(null,CurrentPage)
+    }
+  }, [])
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
@@ -220,15 +226,22 @@ const CloseOrder = () => {
          <CustomTable
           direction="/close-orders"
           formName = "Close Orders" 
-          columns={columns}
+          columns={newColumns}
           data={closeOrders} 
           headerStyle={headerStyle}
           total={totalRecords}
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          isUpated={isUpdated}
+          table_name= "trade_orders"
           editPermissionName="close_orders_update"
           deletePermissionName="close_orders_delete"
+          setSortDirection = {setSortDirection}
+          perPage={parseInt(perPage)}
+          setPerPage={setPerPage}
+          SearchQuery = {Get_Trade_Order}
+          LoadingHandler={LoadingHandler}
         />
       </div>
     </Spin>

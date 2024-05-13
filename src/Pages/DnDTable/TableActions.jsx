@@ -54,18 +54,20 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
   };
   return (
     <div>
-       <Select
-          style={{ width: 120 }}
-          className='mr-3'
-          onChange={handleChange}
-          value={SelectedOption}
-          options={[
-            { value: '10', label: '10' },
-            { value: '20', label: '20' },
-            { value: '50', label: '50' },
-            { value: '100', label: '100' },
-          ]}
-    />
+     {
+      direction !== "/single-trading-accounts/details/live-orders" && <Select
+      style={{ width: 120 }}
+      className='mr-3'
+      onChange={handleChange}
+      value={SelectedOption}
+      options={[
+        { value: '10', label: '10' },
+        { value: '20', label: '20' },
+        { value: '50', label: '50' },
+        { value: '100', label: '100' },
+      ]}
+/>
+     }  
     <Dropdown
       menu={{
         items,

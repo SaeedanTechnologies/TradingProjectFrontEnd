@@ -1,4 +1,4 @@
-import { theme, Spin } from 'antd';
+import { theme, Spin, Table } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
@@ -11,7 +11,7 @@ import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
 
-const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin }) => {
+const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin, totalSwap }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
@@ -73,6 +73,13 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       dataIndex: 'open_price',
       key: 'open_price',
       sorter: (a, b) => a.open_price.length - b.open_price.length,
+      sortDirections: ['ascend'],
+    },
+    {
+      title: <span className="dragHandler">Swap</span>,
+      dataIndex: 'swap',
+      key: 'swap',
+      sorter: (a, b) => a.profit.length - b.profit.length,
       sortDirections: ['ascend'],
     },
     {
@@ -179,6 +186,15 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
              {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
              
             </span>}
+            summary={() => (
+              <Table.Summary fixed>
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={0} colSpan={8}>Total</Table.Summary.Cell>
+                  <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{grandProfit}</Table.Summary.Cell>
+                </Table.Summary.Row>
+              </Table.Summary>
+            )}
           />
       </div>
     </Spin>

@@ -108,15 +108,17 @@ class DnDTable extends Component {
   }
   async SearchHandler(){
   //  this.setState({isLoading: true})
-  this.props.LoadingHandler(true)
-   const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
-   const {data:{payload, success, message}} = res
-  //  this.setState({isLoading: false})
-  this.setState({isSearching: false})
-  this.props.LoadingHandler(false)
-   if(success){
-     this.setState({data: payload.data})
-   }
+    this.props.LoadingHandler(true)
+    
+    const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
+    const {data:{payload, success, message}} = res
+    
+   //  this.setState({isLoading: false})
+   this.setState({isSearching: false})
+   this.props.LoadingHandler(false)
+    if(success){
+      this.setState({data: payload.data})
+    }
   }
   componentDidMount() {
     this.useEffect()
@@ -166,7 +168,6 @@ class DnDTable extends Component {
           }
       ]
   }));
-
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
@@ -521,6 +522,7 @@ class DnDTable extends Component {
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
+  debugger
   try{
     const Params = {
       data:{
@@ -657,6 +659,7 @@ class DnDTable extends Component {
             pagination={false}
             rowSelection={rowSelection}
             showSorterTooltip={false}
+            summary={this.props.summary}
             onChange={(pagination, filters, sorter) => {
               this.props.setSortDirection(sorter.order);
             }}  
