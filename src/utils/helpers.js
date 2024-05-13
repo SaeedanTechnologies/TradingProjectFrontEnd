@@ -151,23 +151,23 @@ function addZeroAfterOne(num) {
 export const calculateProfitLoss = (currentPrice, entryPrice, direction, volume,pip)=> {
 let profit = 0
 if (direction === 'buy') {
-    profit =  (currentPrice - entryPrice) ;
+    profit =  (parseFloat(currentPrice).toFixed(2) - parseFloat(entryPrice).toFixed(2)) ;
 } else {
-     profit= entryPrice - currentPrice  
+     profit= parseFloat(entryPrice).toFixed(2) - parseFloat(currentPrice).toFixed(2);  
 }
-
 return (numberFormat(profit, pip) * addZeroAfterOne(pip)) * volume
-
 }
 
-export const calculateLotSize = (num)=>{
-  if(num >= 0.01 && num<0.10 ){
-      return num*1000
-  }else if(num >= 0.10 && num < 1.00){
-       return num*10000
-  }else{
-      return num*100000
-  }
+export const calculateLotSize = (num, lotSize, currentPrice)=>{
+  debugger
+  return parseFloat((num * lotSize)*currentPrice).toFixed(2);
+  // if(num >= 0.01 && num<0.10 ){
+  //     return num*1000
+  // }else if(num >= 0.10 && num < 1.00){
+  //      return num*10000
+  // }else{
+  //     return num*100000
+  // }
 }
 
 export const requiredMargin = (volume,accountLeverage) =>{
@@ -192,3 +192,37 @@ export const calculateMargin = (lotSize,accountLeverage)=>{
 export const calculateEquity = (balance,grandProfit)=>{
   return parseFloat(parseFloat(balance) + parseFloat(grandProfit)).toFixed(2)
 }
+export const calculateNights = (startDate, endDate)=>{
+  
+    const endTimestamp = new Date(endDate).getTime();
+    // Set the start time for each day to 11 PM
+    const startOfDay = new Date(startDate);
+    startOfDay.setHours(23, 0, 0, 0);
+    // Calculate the number of nights
+    let nights = 0;
+    let currentTimestamp = startOfDay.getTime();
+    
+    while (currentTimestamp < endTimestamp) {
+      nights++;
+      // Move to the next day (24 hours)
+      currentTimestamp += 24 * 60 * 60 * 1000;
+      // Set the time to 11 PM for the next day
+      startOfDay.setTime(currentTimestamp);
+      startOfDay.setHours(23, 0, 0, 0);
+      currentTimestamp = startOfDay.getTime();
+    }
+  
+    return nights;
+}
+export function getCurrentDateTime() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Add leading zero if needed
+  const day = String(now.getDate()).padStart(2, '0'); // Add leading zero if needed
+  const hours = String(now.getHours()).padStart(2, '0'); // Add leading zero if needed
+  const minutes = String(now.getMinutes()).padStart(2, '0'); // Add leading zero if needed
+  const seconds = String(now.getSeconds()).padStart(2, '0'); // Add leading zero if needed
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+

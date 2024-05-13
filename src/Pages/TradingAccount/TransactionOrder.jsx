@@ -203,7 +203,7 @@ const TransactionOrder = () => {
           setIsLoading(false)
           // for update redux value
           if(method === 'balance' && type === 'withdraw'){
-            const cBal = currentTradingAccountData.balance - amount
+            const cBal = parseFloat(currentTradingAccountData.balance) - parseFloat(amount)
             const updatedAccountData = {
               ...currentTradingAccountData,
               balance: cBal,
@@ -212,7 +212,7 @@ const TransactionOrder = () => {
             dispatch(setTradingAccountGroupData(updatedAccountData))
   
           }else if(method === 'balance' && type === 'deposit'){
-            const cBal = currentTradingAccountData.balance + amount
+            const cBal = parseFloat(currentTradingAccountData.balance) + parseFloat(amount)
             const updatedAccountData = {
               ...currentTradingAccountData,
               balance: cBal,
