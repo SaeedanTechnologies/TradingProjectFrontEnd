@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 
@@ -14,6 +14,11 @@ const CustomStopLossTextField = ({
   step,
   ...rest
 }) => {
+
+  useEffect(() => {
+    setCurrentValue(value);
+}, [value]);
+
   const [currentValue, setCurrentValue] = useState(value);
   const isFirstClick = useRef(true);
 
@@ -87,10 +92,10 @@ const CustomStopLossTextField = ({
         onChange(initialFromState);
       }
     } else {
-      if(currentValue === ""){
-        setCurrentValue(0)
-      }
-      const newValue = incrementNumber(`${currentValue}`)
+      // if(currentValue === ""){
+      //   setCurrentValue(0)
+      // }
+      const newValue = incrementNumber(`${currentValue === '' ? 0 : currentValue}`)
       // const newValue = currentValue + step;
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
         setCurrentValue(newValue)
@@ -109,11 +114,11 @@ const CustomStopLossTextField = ({
         onChange(initialFromState);
       }
     } else {
-      if(currentValue === ""){
-        setCurrentValue(0)
-      }
+      // if(currentValue === ""){
+      //   setCurrentValue(0)
+      // }
       // setCurrentValue((prevValue) => {
-        const newValue = decrementNumber(`${currentValue}`)
+        const newValue = decrementNumber(`${currentValue === '' ? 0 : currentValue}`)
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
         onChange(newValue);
         setCurrentValue(newValue)
@@ -131,7 +136,7 @@ const CustomStopLossTextField = ({
       <TextField
         type="text"
         label={label}
-        value={currentValue}
+        value={value}
         inputProps={{ step, min, max, inputMode: 'numeric', pattern: '[0-9]*'}}
         InputLabelProps={{ shrink: currentValue !==null && currentValue !== '' }}
         onChange={handleChange}

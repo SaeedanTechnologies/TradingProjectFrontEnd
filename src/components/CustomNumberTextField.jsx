@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 
 const CustomNumberTextField = ({
   value,
   initialFromState,
-  checkFirst,
+  // checkFirst,
   onChange,
   label,
   fullWidth,
@@ -14,6 +14,11 @@ const CustomNumberTextField = ({
   step,
   ...rest
 }) => {
+
+  useEffect(() => {
+      setCurrentValue(value);
+  }, [value]);
+  
   const [currentValue, setCurrentValue] = useState(value);
   const isFirstClick = useRef(true);
 
@@ -54,7 +59,7 @@ const CustomNumberTextField = ({
 
   const handleChange = (event) => {
     const newValue = event.target.value;
-    if (isFirstClick.current && checkFirst) {
+    if (isFirstClick.current) {
       if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
         setCurrentValue(initialFromState);
         isFirstClick.current = false;
@@ -70,7 +75,7 @@ const CustomNumberTextField = ({
 
   const handleIncrement = () => {
     // const newValue = parseFloat(event.target.value);
-    if (isFirstClick.current && checkFirst) {
+    if (isFirstClick.current) {
       if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
         setCurrentValue(initialFromState);
         isFirstClick.current = false;
@@ -79,7 +84,11 @@ const CustomNumberTextField = ({
     } else {
       const newValue = operateWithPrecision(currentValue, step, 'add')
       // const newValue = currentValue + step;
-      if (!isNaN(newValue) && newValue >= min && newValue <= max) {
+      if (!isNaN(newValue) && newValue > max) {
+        setCurrentValue(max)
+        onChange(max);
+      }
+      if(!isNaN(newValue) && newValue >= min && newValue <= max) {
         setCurrentValue(newValue)
         onChange(newValue);
       }
@@ -90,7 +99,7 @@ const CustomNumberTextField = ({
     // const newValue = parseFloat(event.target.value);
     // const newValue = currentValue - step;
     const newValue = operateWithPrecision(currentValue, step, 'subtract')
-    if (isFirstClick.current && checkFirst) {
+    if (isFirstClick.current) {
       if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
         setCurrentValue(initialFromState);
         isFirstClick.current = false;
@@ -98,6 +107,10 @@ const CustomNumberTextField = ({
       }
     } else {
       // setCurrentValue((prevValue) => {
+        if (!isNaN(newValue) && newValue < min) {
+          setCurrentValue(min)
+          onChange(min);
+        }
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
         onChange(newValue);
         setCurrentValue(newValue)
