@@ -6,13 +6,14 @@ import {  Countries, CurrenciesList, OperationsList, TransactionTypes } from '..
 import CustomPhoneNo from '../../components/CustomPhoneNo';
 import CustomButton from '../../components/CustomButton';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg'
 import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
 import { deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
+import { GenericDelete } from '../../utils/_APICalls';
 
 
 
@@ -21,6 +22,7 @@ const TransactionOrderEntry = () => {
     const token = useSelector(({ user }) => user?.user?.token)
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
+    const dispatch = useDispatch()
 
   const {
     token: { colorBG, TableHeaderColor, Gray2  },
@@ -220,7 +222,6 @@ useEffect(() => {
 
 
    const deleteHandler = ()=>{
-    
     const Params = {
       table_name:'transaction_orders',
       table_ids: [ArrangedTransactionOrdersData[currentIndex].id]
@@ -261,6 +262,7 @@ useEffect(() => {
 
  const handleSubmit = async () => {
   let brandId;
+ 
     try {
        
       if(userRole === 'brand' )
@@ -423,6 +425,19 @@ useEffect(() => {
         
           {
               !isDisabled && <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>
+             <CustomButton
+              Text={ TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Submit' : 'Update'}
+              style={{
+                padding: '16px',
+                height: '48px',
+                width: '200px',
+                borderRadius: '8px',
+
+              }}
+              disabled={isDisabled}
+              onClickHandler={handleSubmit}
+            />
+            
             <CustomButton
               Text='Cancel'
               style={{
@@ -436,18 +451,7 @@ useEffect(() => {
               }}
               onClickHandler={()=> navigate(-1)}
             />
-            <CustomButton
-              Text={ TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Submit' : 'Update'}
-              style={{
-                padding: '16px',
-                height: '48px',
-                width: '200px',
-                borderRadius: '8px',
-
-              }}
-              disabled={isDisabled}
-              onClickHandler={handleSubmit}
-            />
+           
             </div>
           }
         

@@ -1,19 +1,16 @@
-import { Alert, AutoComplete, Space, Spin, theme } from 'antd';
+import {  Spin, theme } from 'antd';
 import React, { useEffect, useState } from 'react'
 import CustomTable from '../../components/CustomTable';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-import CustomButton from '../../components/CustomButton';
-import CustomAutocomplete from '../../components/CustomAutocomplete';
-import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
+
 import { Link, json, useNavigate } from 'react-router-dom';
 import { Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { useSelector,useDispatch } from 'react-redux';
 import { setTransactionsOrdersSelectedIDs,setTransactionOrdersData,deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
-
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 
 const TransactionOrders = () => {
-  const dispatch = useDispatch()
-  const navigate= useNavigate()
+
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
@@ -198,11 +195,11 @@ const TransactionOrders = () => {
     //   ),
     // },
   ];
-
     
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
   const [newColumns , setNewColumns] = useState(columns)
+  
 
   const [isLoading, setIsLoading] = useState(false)
   const [transactionData, setTransactionData] = useState([])
@@ -212,10 +209,9 @@ const TransactionOrders = () => {
 
 
   const fetchTransactionOrder = async (brandId,page) => {
-    
     setIsLoading(true)
-   
-    const res = await Trading_Transaction_Order(token,brandId,page)
+   debugger
+    const res = await Trading_Transaction_Order(token,brandId,page,parseInt(perPage))
     const { data: { message, payload, success } } = res
     setIsLoading(false)
     if (success) {
@@ -236,10 +232,20 @@ const TransactionOrders = () => {
     }
   }, [])
 
-   useEffect(() => {
-  const newCols = columns.filter(x => checkedList.includes(x.key));
-  setNewColumns(newCols)
+ useEffect(() => {
+        const newCols = columns.filter(x => checkedList.includes(x.key));
+        setNewColumns(newCols)
   }, [checkedList]);
+
+   useEffect(() => {
+    setIsUpdated(true)
+     if(userRole === 'brand' ){
+      fetchTransactionOrder(userBrand.public_key,CurrentPage)
+    }
+    else{
+      fetchTransactionOrder(null,CurrentPage)
+    }
+  }, [perPage])
 
   const onPageChange = (page) =>{
       if(userRole === 'brand' ){
@@ -279,7 +285,7 @@ const TransactionOrders = () => {
           <CustomTable
               direction="/transaction-orders-entry"
               formName = "Transactions Orders" 
-              columns={columns}
+              columns={newColumns}
               data={transactionData} 
               headerStyle={headerStyle}
               total={totalRecords}
@@ -295,11 +301,7 @@ const TransactionOrders = () => {
               setPerPage={setPerPage}
               SearchQuery = {Trading_Transaction_Order}
               LoadingHandler={LoadingHandler}
-
-
-
-             
-          />
+              />
         </div>
          
 

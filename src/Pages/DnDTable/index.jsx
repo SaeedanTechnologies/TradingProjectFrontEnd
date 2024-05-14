@@ -12,9 +12,11 @@ import { GenericDelete, MassCloseOrders } from "../../utils/_APICalls";
 import Swal from "sweetalert2";
 import { setSymbolSettingsSelecetdIDs } from "../../store/symbolSettingsSlice";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
+import { useSelector } from "react-redux";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
+  const userBrand = useSelector((state)=> state?.user?.user?.brand)
 
   if (!width) {
     return <th {...restProps} />;
@@ -108,15 +110,19 @@ class DnDTable extends Component {
   }
   async SearchHandler(){
   //  this.setState({isLoading: true})
+  // debugger
   this.props.LoadingHandler(true)
-   const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
-   const {data:{payload, success, message}} = res
-  //  this.setState({isLoading: false})
-  this.setState({isSearching: false})
-  this.props.LoadingHandler(false)
-   if(success){
-     this.setState({data: payload.data})
-   }
+ 
+    const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
+    const {data:{payload, success, message}} = res
+    //  this.setState({isLoading: false})
+    this.setState({isSearching: false})
+    this.props.LoadingHandler(false)
+    if(success){
+      this.setState({data: payload.data})
+    }
+ 
+  
   }
   componentDidMount() {
     this.useEffect()

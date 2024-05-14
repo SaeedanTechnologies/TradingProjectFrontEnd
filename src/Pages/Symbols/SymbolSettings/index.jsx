@@ -54,7 +54,6 @@ const Index = () => {
   };
 
   const columns = [
-    
     {
       
       title:<span className="dragHandler">Name</span>,

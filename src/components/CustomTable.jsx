@@ -51,6 +51,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           LoadingHandler={LoadingHandler}
           footer={footer}
           column_name={column_name}
+   
         />
         <div style={{ textAlign: 'right', marginTop: 16 }}>
           <Pagination
