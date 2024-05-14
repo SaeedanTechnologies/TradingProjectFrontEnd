@@ -127,18 +127,32 @@ const CandleChart = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const [tradedata, setTradeData] = useState([])
   // const [ordercount, setOrderCount] = useState(0)
-  const [graphname, setGraphName] = useState(['trading_order_by_numbers','trading_volume_by_lots','deposits'])
+  const [graphname, setGraphName] = useState(['trading_order_by_numbers', 'trading_volume_by_lots', 'deposits'])
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedRange, setSelectedRange] = useState([]);
 
-  const getTradeData = async()=> {
-    try{
+  const handleRangeChange = (dates) => {
+    console.log(dates)
+
+    // Extract start date and end date from the dates array and format them
+    const startDate = moment(dates[0].$d).format(dateFormat);
+    const endDate = moment(dates[1].$d).format(dateFormat);
+
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+    setSelectedRange(dates);
+  };
+
+
+  const getTradeData = async () => {
+    try {
       setIsLoading(true)
-      const params={
-        types:graphname
+      const params = {
+        types: graphname
       }
       const res = await getGraphsData(token, params)
       const { data: { message, payload, success, } } = res
-      console.log('TradeData',payload)
+      console.log('TradeData', payload)
       setIsLoading(false)
       // setTradeOrderData(payload.trading_order_by_numbers)
       setTradeData(payload)
@@ -150,9 +164,9 @@ const CandleChart = () => {
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     getTradeData()
-  },[])
+  }, [])
 
   const TradeOrderData = {
     chart: {
@@ -513,23 +527,25 @@ const CandleChart = () => {
                 <span className='text-lg font-semibold p-2'>Date Range:</span>
                 <Space direction="vertical" size={12} style={{ width: '100px' }}>
                   <RangePicker
-
+                  // moment().format('YYYY-MM-DD')
                     defaultValue={[moment('2019-09-03', dateFormat), moment('2019-11-22', dateFormat)]}
-                    disabled={[false, true]}
+                    // disabled={[false, true]}
+                    value={selectedRange}
+                    onChange={handleRangeChange}
                   />
                 </Space>
               </div>
             </div>
           </div>
           <div className="w-full">
-          <Spin spinning={isLoading} size="large">
-            <HighchartsReact
-              highcharts={Highcharts}
-              // options={AreaChartConfig}
-              options={TradeDepositData}
-              containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
-            />
-          </Spin>
+            <Spin spinning={isLoading} size="large">
+              <HighchartsReact
+                highcharts={Highcharts}
+                // options={AreaChartConfig}
+                options={TradeDepositData}
+                containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+              />
+            </Spin>
           </div>
         </div>
       </div>
@@ -564,14 +580,14 @@ const CandleChart = () => {
           </div>
 
           <div className="w-full">
-          <Spin spinning={isLoading} size="large">
-            <HighchartsReact
-              highcharts={Highcharts}
-              // options={BarChartConfig}
-              options={TradeOrderData}
-            // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
-            />
-          </Spin>
+            <Spin spinning={isLoading} size="large">
+              <HighchartsReact
+                highcharts={Highcharts}
+                // options={BarChartConfig}
+                options={TradeOrderData}
+              // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+              />
+            </Spin>
             {/* <HighchartsReact
           highcharts={Highcharts}
           options={BarChartConfig}
@@ -599,13 +615,13 @@ const CandleChart = () => {
 
           </div>
           <div className="w-full">
-          <Spin spinning={isLoading} size="large">
-            <HighchartsReact
-              highcharts={Highcharts}
-              options={TradeVolumeData}
-            // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
-            />
-          </Spin>
+            <Spin spinning={isLoading} size="large">
+              <HighchartsReact
+                highcharts={Highcharts}
+                options={TradeVolumeData}
+              // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+              />
+            </Spin>
           </div>
 
         </div>

@@ -27,7 +27,7 @@ const MDWEntry = () => {
   const [transactionOrders, setTransactionOrders] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error_message, setErrorMessage] = useState('');
-  const [skipaccounts, setSkipAccounts] = useState(false);
+  // const [skipaccounts, setSkipAccounts] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(null)
   const [currency, setCurrency] = useState('')
   const [amount, setAmount] = useState('')
@@ -37,7 +37,7 @@ const MDWEntry = () => {
     { label: "balance", value: "balance" },
     { label: "commission", value: "commission" },
     { label: "tax", value: "tax" },
-    { label: "Credit", value: "Credit" },
+    { label: "credit", value: "credit" },
     { label: "bonus", value: "bonus" }
   ])
   const [SelectedOperation, setSElectedOperation] = useState(null);
@@ -76,7 +76,7 @@ const MDWEntry = () => {
     setIsModalOpen(false)
   }
 
-  const handleSubmit = async (type) => {
+  const handleSubmit = async (type, skip) => {
     try {
       // setIsLoading(true)
         await TransactionOrderValidationSchema.validate({
@@ -92,7 +92,7 @@ const MDWEntry = () => {
         currency,
         name: '',
         trading_group_id: id,
-        skip: skipaccounts,
+        skip: skip,
         group: name,
         type,
         status: "requested"
@@ -106,7 +106,6 @@ const MDWEntry = () => {
         setIsLoading(false)
         CustomNotification({ type: "success", title: "Transaction Order", description: message, key: 1 })
         clearFields()
-        setSkipAccounts(false)
       }
       else {
         setIsLoading(false)
@@ -188,9 +187,8 @@ const MDWEntry = () => {
                 <CustomButton Text={"Proceed"}
                   style={{ height: "48px", width:'206px', borderRadius: "8px" }}
                   onClickHandler={() => {
-                    setSkipAccounts(true)
                     setIsModalOpen(false)
-                    handleSubmit('withdraw')
+                    handleSubmit('withdraw', true)
                   }}
                 />
               </div>
@@ -264,11 +262,11 @@ const MDWEntry = () => {
           <CustomButton
             Text={"With Draw"}
             style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E", borderRadius: "8px" }}
-            onClickHandler={() => handleSubmit('withdraw')}
+            onClickHandler={() => handleSubmit('withdraw', false)}
           />
           <CustomButton Text={"Deposit"}
             style={{ height: "48px", borderRadius: "8px" }}
-            onClickHandler={() => handleSubmit('deposit')}
+            onClickHandler={() => handleSubmit('deposit', false)}
           />
         </div>
       </div>
