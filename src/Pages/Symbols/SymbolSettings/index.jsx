@@ -157,6 +157,19 @@ const Index = () => {
      
     },
     {
+      title:<span className="dragHandler">Pip</span>,
+      dataIndex: 'pip',
+      key: '7',
+      sorter: (a, b) => a.pip.length - b.pip.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+     
+    },
+    {
       title:<span className="dragHandler">Commision</span>,
       dataIndex: 'commission',
       key: '8',

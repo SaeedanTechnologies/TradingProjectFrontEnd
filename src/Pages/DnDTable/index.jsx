@@ -12,6 +12,8 @@ import { GenericDelete, MassCloseOrders } from "../../utils/_APICalls";
 import Swal from "sweetalert2";
 import { setSymbolSettingsSelecetdIDs } from "../../store/symbolSettingsSlice";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
+import { setTradingAccountGroupData } from "../../store/tradingAccountGroupSlice";
+import { setAccountID } from "../../store/TradeSlice";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -282,6 +284,10 @@ class DnDTable extends Component {
   handleRowClick = (record) => {
     this.setState({ currentRecords: record });
       this.props.dispatch(this.props.setSelecetdIDs([record.id]))
+      if(this.props.direction === "/single-trading-accounts/details/live-order"){
+        this.props.dispatch(setTradingAccountGroupData(record))
+        this.props.dispatch(setAccountID(record.id))
+      }
       this.props.navigate(this.props.direction);
      
   };
@@ -522,7 +528,6 @@ class DnDTable extends Component {
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
-  debugger
   try{
     const Params = {
       data:{
@@ -640,6 +645,7 @@ class DnDTable extends Component {
                   deletePermissionName={this.props.deletePermissionName}
                   direction = {this.props.direction}
                   MassCloseOrdersHandler={this.MassCloseOrdersHandler}
+                  addButton = {this.props.addButton}
                 />
               ) : (
                 <CustomButton

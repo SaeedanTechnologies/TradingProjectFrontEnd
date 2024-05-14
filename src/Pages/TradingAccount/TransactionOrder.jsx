@@ -85,6 +85,13 @@ const TransactionOrder = () => {
       sortDirections: ['ascend'],
     },
     {
+      title: <span className="dragHandler">Comments</span>,
+      dataIndex: 'comment',
+      key: 'comment',
+      sorter: (a, b) => a.comment.length - b.comment.length,
+      sortDirections: ['ascend'],
+    },
+    {
       title: <span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
       key: 'amount',
@@ -284,18 +291,6 @@ const TransactionOrder = () => {
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
-
-        <CustomButton
-          Text='Add Transaction Order'
-          style={{ height: '48px', ...AddnewStyle }}
-          icon={<PlusCircleOutlined />}
-          onClickHandler={() => {
-            // dispatch(setTradeGroupsSelectedIDs([0]))
-            //  showModal(0)
-            setIsModalOpen(true);
-          }}
-        />
-
         <CustomModal
           isModalOpen={isModalOpen}
           title={'Add New Transaction Order'}
@@ -400,6 +395,18 @@ const TransactionOrder = () => {
             onPageChange={onPageChange}
             current_page={CurrentPage}
             token={token}
+            addButton={() => (
+              <CustomButton
+                Text='Add Transaction Order'
+                style={{ height: '48px', ...AddnewStyle }}
+                icon={<PlusCircleOutlined />}
+                onClickHandler={() => {
+                  // dispatch(setTradeGroupsSelectedIDs([0]))
+                  // showModal(0)
+                  setIsModalOpen(true);
+                }}
+              />
+            )}
           />
         </div>
 

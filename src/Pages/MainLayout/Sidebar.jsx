@@ -28,7 +28,7 @@ const { Sider } = Layout;
 
 
 
-const Sidebar = ({ collapsed }) => {
+const Sidebar = ({ collapsed, setCollapsed }) => {
     const token = useSelector(({ user }) => user?.user?.token)
   const [selectedKey, setSelectedKey] = useState('1');
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
@@ -68,9 +68,6 @@ const Sidebar = ({ collapsed }) => {
     }
    
   };
-
-
-
 
   const items = [
     {
@@ -220,8 +217,12 @@ const Sidebar = ({ collapsed }) => {
         }
       >
         <div className="h-screen">
+          <div className="flex flex-1 justify-end">
+          <MenuFoldOutlined style={{fontSize: "24px"}} onClick={()=> setCollapsed(!collapsed)}/>
+          </div>
           <div className="flex flex-1 items-center justify-center py-2">
             <img alt="logo" src={LOGO_CDN} className="w-[166px] h-[50px]" />
+           
           </div>
           <Menu
             theme="light"
