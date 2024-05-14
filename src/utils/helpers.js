@@ -151,9 +151,9 @@ function addZeroAfterOne(num) {
 export const calculateProfitLoss = (currentPrice, entryPrice, direction, volume,pip)=> {
 let profit = 0
 if (direction === 'buy') {
-    profit =  (parseFloat(currentPrice).toFixed(2) - parseFloat(entryPrice).toFixed(2)) ;
+    profit =  (parseFloat(currentPrice).toFixed(pip) - parseFloat(entryPrice).toFixed(pip)) ;
 } else {
-     profit= parseFloat(entryPrice).toFixed(2) - parseFloat(currentPrice).toFixed(2);  
+     profit= parseFloat(entryPrice).toFixed(pip) - parseFloat(currentPrice).toFixed(pip);  
 }
 return (numberFormat(profit, pip) * addZeroAfterOne(pip)) * volume
 }
@@ -188,8 +188,10 @@ export const calculateFreeMargin = (balance,grandProfit,lotSize,accountLeverage)
 export const calculateMargin = (lotSize,accountLeverage)=>{
  return parseFloat(parseFloat(lotSize)/parseFloat(accountLeverage)).toFixed(2)
 }
-export const calculateEquity = (balance,grandProfit)=>{
-  return parseFloat(parseFloat(balance) + parseFloat(grandProfit)).toFixed(2)
+export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
+  debugger
+  const equity = (parseFloat(balance) + parseFloat(grandProfit) + parseFloat(credit) + parseFloat(bonus)).toFixed(2);
+  return equity
 }
 export const calculateNights = (startDate, endDate)=>{
   

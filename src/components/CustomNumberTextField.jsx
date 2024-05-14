@@ -59,18 +59,27 @@ const CustomNumberTextField = ({
 
   const handleChange = (event) => {
     const newValue = event.target.value;
-    if (isFirstClick.current) {
-      if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
-        setCurrentValue(initialFromState);
-        isFirstClick.current = false;
-        onChange(initialFromState);
-      }
-    } else {
-      if (!isNaN(newValue) && newValue >= min && newValue <= max) {
-        setCurrentValue(newValue);
-        onChange(newValue);
-      }
+    const rem = parseFloat(parseFloat(newValue) % step).toFixed(2)
+    
+    if (!isNaN(newValue) && (parseFloat(newValue) === min || parseFloat(newValue) === max || rem === "0.00")) {
+      setCurrentValue(newValue);
+    }else{
+      setCurrentValue(newValue);
+      alert('invalid value')
+
     }
+    // if (isFirstClick.current) {
+    //   if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
+    //     setCurrentValue(initialFromState);
+    //     isFirstClick.current = false;
+    //     onChange(initialFromState);
+    //   }
+    // } else {
+    //   if (!isNaN(newValue) && newValue >= min && newValue <= max) {
+    //     setCurrentValue(newValue);
+    //     onChange(newValue);
+    //   }
+    // }
   };
 
   const handleIncrement = () => {

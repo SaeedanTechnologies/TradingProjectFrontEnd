@@ -645,6 +645,7 @@ class DnDTable extends Component {
                   deletePermissionName={this.props.deletePermissionName}
                   direction = {this.props.direction}
                   MassCloseOrdersHandler={this.MassCloseOrdersHandler}
+                  addButton = {this.props.addButton}
                 />
               ) : (
                 <CustomButton

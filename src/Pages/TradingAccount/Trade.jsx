@@ -48,6 +48,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
     min_vol: '',
     max_vol: ''
   });
+  const [pipVal, setPipVal] = useState(0);
   const [open_price,setOpen_price] = useState('');
   const [comment,setComment] = useState('');
   const [takeProfit,setTakeProfit] = useState('');
@@ -293,6 +294,7 @@ useEffect(() => {
       // if(feed_name === 'binance') {
         const response = await axios.get(endPoint);
         const data = response?.data;
+        
         // setManualPricing({
         //   ...pricing,
         //   openPrice: data?.bidPrice,
@@ -300,10 +302,10 @@ useEffect(() => {
         // })
         setPricing({
           ...pricing,
-          openPrice: parseFloat(data?.bidPrice).toFixed(5),
-          askPrice: parseFloat(data?.askPrice).toFixed(5)
+          openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
+          askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
         })
-        setOpen_price(parseFloat(data?.askPrice).toFixed(5))
+        setOpen_price(parseFloat(data?.askPrice))
       // }
       // else {
       //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
@@ -363,8 +365,8 @@ useEffect(() => {
           // console.log('Ask Price:', data.askPrice);
           setPricing({
             ...pricing,
-            openPrice: data?.bidPrice,
-            askPrice: data?.askPrice
+            openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
+            askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
           })
           }
         };
@@ -414,6 +416,8 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    debugger
+                    setPipVal(value.pip)
                     setVolumeRange({
                       ...volumerange,
                       min_vol: value?.vol_min,
