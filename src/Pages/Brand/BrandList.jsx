@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Space, Spin, theme } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, CaretUpOutlined,CaretDownOutlined , PlusCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
 import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
@@ -24,94 +24,7 @@ const BrandList = () => {
   
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [BrandsList, setBrandsList] = useState([])
-  const [BrandID, setBrandID] = useState(null);
-  const [visibleBrandId, setVisibleBrandId] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [showKey, setShowKey] = useState(false)
-  const [isUpdated, setIsUpdated] = useState(true)
-  const [sortDirection, setSortDirection] = useState("")
-  const [perPage, setPerPage] = useState(10)
 
-
-
-   
-  const [CurrentPage, setCurrentPage] = useState(1)
-  const [lastPage, setLastPage] = useState(1)
-  const [totalRecords, setTotalRecords] = useState(0)
-  const navigate = useNavigate()
-
-  const fetchBrands = async (page) => {
-    setIsLoading(true)
-    const mData = await Brands_List(token,page)
-    const { data: { message, payload, success } } = mData
-      setIsLoading(false)
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setTotalRecords(payload.total)
-      setIsUpdated(false)
-    if (success) {
-
-      const brandData = payload.data.map((brand)=>({
-        id:brand.id,
-        user_id:brand.user_id,
-        domain:brand.domain,
-        name:brand.name,
-        original_password: brand.user.original_password,
-        public_key: brand.public_key,
-        margin_call:brand.margin_call,
-        permissions: brand.user.permissions
-
-      }))
-
-      setBrandsList(brandData)
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setTotalRecords(payload.total)
-
-
-    }
-  }
-
-  const openPermissions = (user)=>{
-    navigate('/brand-permissions')
-    const payload = { user_id:user.user_id,permissions:user.permissions} 
-    dispatch(setBrandUser(payload))
-  }
-
-  useEffect(() => {
-    setIsUpdated(true)
-    fetchBrands(CurrentPage)
-  }, [])
-
-  const showModal = (id = null) => {
-    setBrandID(id)
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const toggleKey = (id) => {
-
-    setVisibleBrandId(id)
-    setShowKey(!showKey)
-
-  }
-
-     const onPageChange = (page) =>{
-   
-        fetchBrands(page)
-    }
-
-  const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
-  };
   const columns = [
     {
       title:<span className="dragHandler">Id</span>,
@@ -214,6 +127,105 @@ const BrandList = () => {
       
      },
   ];
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [BrandsList, setBrandsList] = useState([])
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+  const [BrandID, setBrandID] = useState(null);
+  const [visibleBrandId, setVisibleBrandId] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showKey, setShowKey] = useState(false)
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [sortDirection, setSortDirection] = useState("")
+  const [perPage, setPerPage] = useState(10)
+
+
+
+   
+  const [CurrentPage, setCurrentPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [totalRecords, setTotalRecords] = useState(0)
+  const navigate = useNavigate()
+
+  const fetchBrands = async (page) => {
+    setIsLoading(true)
+    const mData = await Brands_List(token,page)
+    const { data: { message, payload, success } } = mData
+      setIsLoading(false)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+      setIsUpdated(false)
+    if (success) {
+
+      const brandData = payload.data.map((brand)=>({
+        id:brand.id,
+        user_id:brand.user_id,
+        domain:brand.domain,
+        name:brand.name,
+        original_password: brand.user.original_password,
+        public_key: brand.public_key,
+        margin_call:brand.margin_call,
+        permissions: brand.user.permissions
+
+      }))
+
+      setBrandsList(brandData)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+
+
+    }
+  }
+
+  const openPermissions = (user)=>{
+    navigate('/brand-permissions')
+    const payload = { user_id:user.user_id,permissions:user.permissions} 
+    dispatch(setBrandUser(payload))
+  }
+
+  useEffect(() => {
+    setIsUpdated(true)
+    fetchBrands(CurrentPage)
+  }, [perPage])
+
+  useEffect(() => {
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
+    }, [checkedList]);
+
+
+  const showModal = (id = null) => {
+    setBrandID(id)
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const toggleKey = (id) => {
+
+    setVisibleBrandId(id)
+    setShowKey(!showKey)
+
+  }
+
+     const onPageChange = (page) =>{
+   
+        fetchBrands(page)
+    }
+
+  const headerStyle = {
+    background: TableHeaderColor, // Set the background color of the header
+    color: 'black', // Set the text color of the header
+  };
+
   const LoadingHandler = React.useCallback((isLoading)=>{
     setIsLoading(isLoading)
   },[])
@@ -235,7 +247,7 @@ const BrandList = () => {
         <CustomTable
             direction="/brand"
             formName = "Brand List" 
-            columns={columns}
+            columns={newColumns}
             data={BrandsList} 
             headerStyle={headerStyle}
             total={totalRecords}
@@ -249,7 +261,7 @@ const BrandList = () => {
             setSortDirection = {setSortDirection}
             perPage={perPage}
             setPerPage={setPerPage}
-            SearchQuery = {fetchBrands}
+            SearchQuery = {Brands_List}
             LoadingHandler={LoadingHandler}
           />
         <CustomModal
