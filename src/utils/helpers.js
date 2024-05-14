@@ -159,7 +159,6 @@ return (numberFormat(profit, pip) * addZeroAfterOne(pip)) * volume
 }
 
 export const calculateLotSize = (num, lotSize, currentPrice)=>{
-  debugger
   return parseFloat((num * lotSize)*currentPrice).toFixed(2);
   // if(num >= 0.01 && num<0.10 ){
   //     return num*1000

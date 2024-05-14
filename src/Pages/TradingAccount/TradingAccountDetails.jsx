@@ -41,8 +41,7 @@ const TradingAccountDetails = () => {
    const [isLoading, setIsLoading] = useState(false)
    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id)
    const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
-   const {value: accountLeverage} = LeverageList.find(x=> x.title === leverage)
-
+   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 const fetchLiveOrder = async (page) => {
 
       setIsLoading(true)
@@ -61,7 +60,6 @@ const fetchLiveOrder = async (page) => {
           const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
           const profit = parseFloat(calculateProfitLoss(x.type === "sell"? askPrice ?? 0  : bidPrice ?? 0 , parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
           totalProfit+= parseFloat(profit)
-          debugger
           const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.type === "sell"? parseFloat(askPrice)  : parseFloat(bidPrice) ).toFixed(2))
           const margin = calculateMargin(res, accountLeverage)
           const totalNights = calculateNights(x.created_at,currentDateTime)
@@ -155,12 +153,12 @@ const onChange = (key) => {
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
         <div className='flex gap-3'>
-          <img 
+          {/* <img 
            src={ARROW_BACK_CDN} 
            alt='back icon' 
            className='cursor-pointer'
            onClick={() => navigate(-1)}
-           />
+           /> */}
           <h1 className='text-3xl font-bold'>Trading Account</h1>
         </div>
        

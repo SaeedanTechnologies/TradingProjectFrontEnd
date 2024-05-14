@@ -176,20 +176,20 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
-            footer={()=> <span className='text-sm font-bold text-arial'>
-             <MinusCircleOutlined /> 
-             Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
-             Equity: {calculateEquity(balance, grandProfit)} {CurrencyName}  &nbsp;
-             {tradeOrder.length > 0  &&
-             <span> Margin: {margin}</span>}&nbsp;
-             Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
-             {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
-             
-            </span>}
             summary={() => (
               <Table.Summary fixed>
-                <Table.Summary.Row>
-                  <Table.Summary.Cell index={0} colSpan={8}>Total</Table.Summary.Cell>
+                <Table.Summary.Row className='bg-gray-300'>
+                  <Table.Summary.Cell index={0} colSpan={8}>
+                  <span className='text-sm font-bold text-arial'>
+                      <MinusCircleOutlined /> 
+                      Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
+                      Equity: {calculateEquity(balance, grandProfit)} {CurrencyName}  &nbsp;
+                      {tradeOrder.length > 0  &&
+                      <span> Margin: {margin}</span>}&nbsp;
+                      Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
+                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
+                      </span>
+                  </Table.Summary.Cell>
                   <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>
                   <Table.Summary.Cell>{grandProfit}</Table.Summary.Cell>
                 </Table.Summary.Row>
