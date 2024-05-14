@@ -1,24 +1,26 @@
 import { theme, Spin, Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, CaretDownOutlined } from '@ant-design/icons';
 
 import * as Yup from 'yup';
 
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
-import { LeverageList } from '../../../utils/constants';
+import { LeverageList, PipsValues } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
-import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
+import { ALL_Symbol_Group_List, Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
 import { GetAskBidData, GetCryptoData, GetFasciData } from '../../../utils/_ExchangeAPI'
 import { useDispatch, useSelector } from 'react-redux';
 import CustomNotification from '../../../components/CustomNotification';
-import { Autocomplete, TextField } from '@mui/material'
+import { Autocomplete, TextField,Input,InputAdornment } from '@mui/material'
 import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
 import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
 import { deleteSymbolSettingsById } from '../../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
+import CustomCheckbox from '../../../components/CustomCheckbox';
+import { numberInputStyle } from '../../TradingAccount/style';
 
 
 const FeedData = [
@@ -62,11 +64,14 @@ const SymbolSettingsEntry = () => {
     { id: 1, title: 'Yes' },
     { id: 2, title: 'No' },
   ])
+  const [selectedPip,setSelectedPip] = useState(null)
   const [Selectedenable, setSelectedEnable] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [askValue, setAskValue] = useState('')
   const [bidValue, setBidValue] = useState('')
   const [isDisabled, setIsDisabled] = useState(false)
+  const [connected, setConnected] = useState(false);
+  const [holdSwap, setHoldSwap] = useState(0)
 
 
   const validationSchema = Yup.object().shape({
@@ -86,7 +91,9 @@ const SymbolSettingsEntry = () => {
 
 
   const clearFields = () => {
+    setSymbolName('');
     setSelectedEnable(null);
+    setSelectedPip(null);
     setErrors({});
     setSymbolList([]);
     setSelectedSymbol(null);
@@ -132,65 +139,93 @@ const SymbolSettingsEntry = () => {
     }
   };
 
+    const handleCheckboxClick = (e) => {
+    setConnected(e.target.checked)
+    if(!e.target.checked){
+      setSwap('')
+      setConnected(false)
+    }else{
+       setSwap(holdSwap)
+    }
+    
+  }
+
   const fetchFeedData = async () => {
     try {
       const res = await Feed_Data_List(token);
       const { data: { message, success, payload } } = res
       setFeedNameList(payload.data);
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) {
-        fetchSymbolSettingsWRTID(SymbolList, payload.data)
-      }
-
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
   }
-  const fetchSymbolSettingsWRTID = async (SymbList, feedlist) => {
+  const fetchSymbolSettingsWRTID = async () => {
     setIsLoading(true)
     const res = await SelectSymbolSettingsWRTID(SymbolSettingIds[0], token)
     const { data: { message, payload, success } } = res
     setIsLoading(false)
-    setStatesForEditMode(payload, success, SymbList, feedlist)
+    setStatesForEditMode(payload, success)
   }
-  const setStatesForEditMode = async (payload, success, SymbList, feedlist)=>{
-    if (success) {
-      setSymbolName(payload.name)
-      const selectedGroup = SymbList?.find(x => x?.id === payload.symbel_group_id)
-      setSelectedSymbol(selectedGroup)
-      const SelectedFeedNameOption = feedlist?.find(x => x?.name === payload.feed_name)
-      if (payload.feed_name === 'binance') {
-        const res = await GetCryptoData()
-        const mData = res?.data?.symbols
-        const updatedData = mData.map((item) => {
-          return { ...item, id: item.symbol };
-        });
-        setFeedNameFetchList(updatedData)
-        const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
-        setSelectedFeedNameFetch(selectedSymb)
+  const setStatesForEditMode = async (payload, success)=>{
+    try{
+      if (success) {
+        setIsLoading(true)
+        setSymbolName(payload.name)
+        const res = await Symbol_Group_List(token);
+        const { data } = res
+        const selectedGroup = data?.payload?.data?.find(x => x?.id === payload.symbel_group_id)
+        setSelectedSymbol(selectedGroup)
+        const resp = await Feed_Data_List(token);
+        const { data : FeedList } = resp
+        const SelectedFeedNameOption = FeedList?.payload?.data?.find(x => x?.id === payload.data_feed.id)
+        if (payload.feed_name === 'binance') {
+          const res = await GetCryptoData()
+          const mData = res?.data?.symbols
+          const updatedData = mData.map((item) => {
+            return { ...item, id: item.symbol };
+          });
+          setFeedNameFetchList(updatedData)
+          const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
+          setSelectedFeedNameFetch(selectedSymb)
+          
+        }else if(payload.feed_name === 'fcsapi'){
+          const fasciResp = await GetFasciData(payload?.data_feed?.feed_login)
+          setFeedNameFetchList(fasciResp)
+          const selectedSymb = fasciResp.find(x => x.id === payload.feed_fetch_name)
+          setSelectedFeedNameFetch(selectedSymb) 
+        }
+        const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
+        setSelectedLeverage(selectedLeverageOpt)
+        setSelectedFeedName(SelectedFeedNameOption)
+        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
+        setSelectedEnable(selectedEnab)
+
+        const selectedPip = PipsValues.find(pip => pip.value === (parseFloat(payload.pip)));
+        setSelectedPip(selectedPip)
+
+        setLeverage(parseFloat(payload.leverage))
+        setLotSize(payload.lot_size);
+        setLotSteps(payload.lot_step);
+        setVolMin(payload.vol_min);
+        setVolMax(payload.vol_max);
+        setSwap(payload.swap);
+        setHoldSwap(payload.swap)
+        setCommission(payload.commission);
+        setIsLoading(false)
       }
-      const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
-      setSelectedLeverage(selectedLeverageOpt)
-      setSelectedFeedName(SelectedFeedNameOption)
-      const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
-      setSelectedEnable(selectedEnab)
-      setLeverage(parseFloat(payload.leverage))
-      setLotSize(payload.lot_size);
-      setLotSteps(payload.lot_step);
-      setVolMin(payload.vol_min);
-      setVolMax(payload.vol_max);
-      setSwap(payload.swap);
-      setCommission(payload.commission);
+    }catch(err){
+       alert(err.message)
+    }finally{
+      setIsLoading(false)
     }
   }
 
   const fetchSymbolGroups = async () => {
     try {
-      const res = await Symbol_Group_List(token);
+      const res = await ALL_Symbol_Group_List(token);
       const { data: { message, success, payload } } = res
-      setSymbolList(payload.data);
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) {
-        fetchSymbolSettingsWRTID(payload.data)
-      }
+      setSymbolList(payload);
+
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }
@@ -202,7 +237,7 @@ const SymbolSettingsEntry = () => {
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
-        setStatesForEditMode(payload, true,SymbolList, FeedNameList)
+        setStatesForEditMode(payload, true)
       }, 3000)
     }else{
       alert(`no next record found`)
@@ -215,7 +250,7 @@ const SymbolSettingsEntry = () => {
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
-        setStatesForEditMode(payload, true,SymbolList, FeedNameList)
+        setStatesForEditMode(payload, true)
       }, 3000)
       
     }
@@ -250,7 +285,9 @@ const SymbolSettingsEntry = () => {
           volMin: volMin,
           volMax: volMax,
           commission: commission,
-          enabled: Selectedenable
+          enabled: Selectedenable,
+         
+      
         }, { abortEarly: false });
 
         setErrors({});
@@ -260,11 +297,13 @@ const SymbolSettingsEntry = () => {
         name: symbolName ? symbolName : '',
         symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
         feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
+        feed_fetch_key:selectedFeedNameFetch?.group?.toLowerCase(),
         speed_max: 'abc',
         lot_size: lotSize ? lotSize : '',
         lot_step: lotSteps ? lotSteps : '',
         commission: commission ? commission : '',
         enabled: Selectedenable ? Selectedenable.title = 'Yes' ? 1 : 0 : 0,
+        pip:selectedPip.value,
         leverage: SelectedLeverage ? SelectedLeverage.value : '',
         feed_name: selectedFeedName ? selectedFeedName.module : '',
         feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
@@ -420,7 +459,7 @@ const SymbolSettingsEntry = () => {
     {
       key: '1',
       label: (
-        <button rel="noopener noreferrer" onClick={()=>{
+        <button className='w-full text-left' rel="noopener noreferrer" onClick={()=>{
           setIsDisabled(false)
         }}>   Edit </button>
       ),
@@ -428,7 +467,7 @@ const SymbolSettingsEntry = () => {
     {
       key: '2',
       label: (
-        <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
+        <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
     },
    
@@ -459,10 +498,10 @@ const SymbolSettingsEntry = () => {
           </div>
           {/* toolbar */}
           {(isDisabled && SymbolSettingIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-          {(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0)  &&
+          {(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 && isDisabled)  &&
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
-          {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
-            {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
+           <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
+            <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
             <Dropdown
               menu={{
                 items,
@@ -472,7 +511,7 @@ const SymbolSettingsEntry = () => {
               trigger={['click']}
               
             >
-              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
           </Dropdown>
           </div>
           }
@@ -489,10 +528,12 @@ const SymbolSettingsEntry = () => {
                 options={SymbolList}
                 value={SelectedSymbol}
                 disabled={isDisabled}
-                getOptionLabel={(option) => option.name ? option.name : ""}
+                getOptionLabel={(option) => option?.name ? option?.name : ""}
                 onChange={(event, value) => {
                   if (value) {
                     setSelectedSymbol(value);
+                    setSwap(value.swap)
+                    setConnected(true)
                     setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "" }))
                   } else {
                     setSelectedSymbol(null);
@@ -553,6 +594,7 @@ const SymbolSettingsEntry = () => {
                     id="grouped-demo"
                     fullWidth
                     variant="standard"
+                    disabled={isDisabled}
                     options={feedNameFetchList}
                     groupBy={(option) => option.group}
                     getOptionLabel={(option) => option.name}
@@ -616,16 +658,42 @@ const SymbolSettingsEntry = () => {
               {errors.Leverage && <span style={{ color: 'red' }}>{errors.Leverage}</span>}
             </div>
             <div>
-              <CustomTextField
+              <TextField
                 name={'swap'}
                 key={6}
                 label="Swap"
                 disabled={isDisabled}
                 type={'number'}
                 value={swap}
-                varient="standard"
+                variant="standard"
+                fullWidth
+                sx={numberInputStyle}
                 onChange={(e) => handleInputChange("swap", e.target.value)}
-              />
+                InputProps={{
+                  readOnly: connected,
+                  startAdornment:(
+                        <InputAdornment position="start">
+                            <CustomCheckbox  checked={connected} onChange={handleCheckboxClick} disabled={isDisabled} />
+                        </InputAdornment>
+                    )
+                }}
+              /> 
+                {/* <Input
+                    id="input-with-icon-adornment"
+                    placeholder='Swap'
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <CustomCheckbox label='Auto' checked={connected} onChange={handleCheckboxClick} />
+                        </InputAdornment>
+                    }
+                    label={'Swap'}
+                    fullWidth
+                    variant={'standard'}
+                    type="number"
+                    value={swap}
+                    onChange={e => handleInputChange('swap', e.target.value)}
+                /> */}
+
               {errors.swap && <span style={{ color: 'red' }}>{errors.swap}</span>}
             </div>
 
@@ -663,6 +731,9 @@ const SymbolSettingsEntry = () => {
                 label="Vol Minimum"
                 disabled={isDisabled}
                 value={volMin}
+                InputProps={{
+                  inputProps: { min: 0, max: 100 },
+                }}
                 type={'number'}
                 varient="standard"
                 onChange={(e) => handleInputChange("volMin", e.target.value)}
@@ -676,6 +747,9 @@ const SymbolSettingsEntry = () => {
                 label="Vol Maximum"
                 disabled={isDisabled}
                 value={volMax}
+                InputProps={{
+                  inputProps: { min: 0, max: 100 },
+                }}
                 type={'number'}
                 varient="standard"
                 onChange={(e) => handleInputChange("volMax", e.target.value)}
@@ -711,6 +785,25 @@ const SymbolSettingsEntry = () => {
               />
               {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
             </div>
+
+              <div>
+              <CustomAutocomplete
+                label="Pips"
+                variant="standard"
+                disabled={isDisabled}
+                options={PipsValues}
+                value={selectedPip}
+                getOptionLabel={(option) => option.label ? option.label : ""}
+                onChange={(event, value) => {
+                 
+                  setSelectedPip(value);
+                  setErrors(prevErrors => ({ ...prevErrors, enabled: "" }))
+                }}
+
+              />
+              {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
+            </div>   
+
             {askValue > 0 && <span className='text-sm text-green-500 font-semibold'>Ask Price is {askValue} and Bid Price is {bidValue}</span>}
 
 

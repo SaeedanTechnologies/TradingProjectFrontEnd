@@ -41,6 +41,7 @@ import TransactionOrder from '../Pages/TradingAccount/TransactionOrder';
 import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder';
 import NewFeedData from '../Pages/Symbols/DataFeed/NewFeedData'
 import BrandPermissions from '../Pages/BrandPermissions/BrandPermissions';
+import TradingAccountsEntry from '../Pages/TradingAccount/TradingAccountsEntry';
 
 export const router = createBrowserRouter([
   {
@@ -63,12 +64,13 @@ export const router = createBrowserRouter([
       { path: "/brand-settings", element: <BrandSettings /> },
       { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },
       { path: "/trading-accounts/:id", element: <TradingAccountEntry /> },
+      { path: "/trading-accounts-entry",element: <TradingAccountsEntry/>},
       { path: "/trading-group", element: <TradingAccountGroup /> },
-      { path: "/trading-group/:id", element: <TradingGroupEntry /> },
-      { path: "/trading-group/mb-to/:id", element: <MBTradingOrder /> },
-      { path: "/trading-group/mb-to/:id/:massid", element: <Trade /> },
-      { path: "/trading-group/mass-deposit/:id", element: <MassDipositWidthdraw /> },
-      { path: "/trading-group/mass-deposit/:id/:massid", element: <MDWEntry /> },
+      { path: "/trading-group-entry", element: <TradingGroupEntry /> },
+      { path: "/trading-group/mb-to", element: <MBTradingOrder /> },
+      { path: "/trading-group/mb-to/create", element: <Trade /> },
+      { path: "/trading-group/mass-deposit", element: <MassDipositWidthdraw /> },
+      { path: "/trading-group/mass-deposit/create", element: <MDWEntry /> },
       { path: "/single-trading-accounts", element: <SingleTradingAccount /> },
       {
         path: "/single-trading-accounts/details", element: <TradingAccountDetails />, children: [
@@ -84,7 +86,7 @@ export const router = createBrowserRouter([
       { path: "/live-orders", element: <LiveOrders /> },
       { path: "/close-orders", element: <CloseOrder /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },
-      { path: "/transaction-orders/:id", element: <TransactionOrderEntry /> },
+      { path: "/transaction-orders-entry", element: <TransactionOrderEntry /> },
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },
       { path: "/margin-calls", element: <TradingAccount direction={3} title="Margin Call Trading Account List" /> },
       { path: "/symbol-groups", element: <SymbolGroup /> },

@@ -1,39 +1,41 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
-import { DatePicker, Space } from 'antd';
+import { DatePicker, Space, Spin } from 'antd';
 import moment from 'moment';
 import CustomSelect from './CustomSelect'
 import { BarChartConfig } from '../utils/constants'
 import CandleStickChart from './CandleStickChart'
 import CustomButton from './CustomButton'
 import FILTER_CDN from '../../src/assets/images/filter-white.svg'
+import { useSelector } from 'react-redux';
+import { getGraphsData } from '../utils/_DashboardDataAPI';
 
-const AreaChartConfig = {
-  chart: {
-    type: 'area'
-  },
-  title: {
-    text: ''
-  },
-  xAxis: {
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  },
-  yAxis: {
-    title: {
-      text: ''
-    },
-    labels: {
-      formatter: function () {
-        return '$' + this.value;
-      }
-    }
-  },
-  series: [{
-    name: 'Series Name',
-    data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-  }]
-};
+// const AreaChartConfig = {
+//   chart: {
+//     type: 'area'
+//   },
+//   title: {
+//     text: ''
+//   },
+//   xAxis: {
+//     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+//   },
+//   yAxis: {
+//     title: {
+//       text: ''
+//     },
+//     labels: {
+//       formatter: function () {
+//         return '$' + this.value;
+//       }
+//     }
+//   },
+//   series: [{
+//     name: 'Series Name',
+//     data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+//   }]
+// };
 
 const options = {
   chart: {
@@ -96,7 +98,275 @@ const { RangePicker } = DatePicker;
 
 const dateFormat = 'YYYY-MM-DD';
 
+// const payLoad = [
+//   {
+//     "month": "May 2024",
+//     "order_count": 1
+//   },
+//   {
+//     "month": "June 2024",
+//     "order_count": 5
+//   },
+//   {
+//     "month": "July 2024",
+//     "order_count": 10
+//   },
+//   {
+//     "month": "August 2024",
+//     "order_count": 8
+//   },
+//   {
+//     "month": "September 2024",
+//     "order_count": 12
+//   }
+// ]
+
+
+
 const CandleChart = () => {
+  const token = useSelector(({ user }) => user?.user?.token)
+  const [tradedata, setTradeData] = useState([])
+  // const [ordercount, setOrderCount] = useState(0)
+  const [graphname, setGraphName] = useState(['trading_order_by_numbers', 'trading_volume_by_lots', 'deposits'])
+  const [isLoading, setIsLoading] = useState(false)
+  const [selectedRange, setSelectedRange] = useState([]);
+
+  const handleRangeChange = (dates) => {
+    console.log(dates)
+
+    // Extract start date and end date from the dates array and format them
+    const startDate = moment(dates[0].$d).format(dateFormat);
+    const endDate = moment(dates[1].$d).format(dateFormat);
+
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+    setSelectedRange(dates);
+  };
+
+
+  const getTradeData = async () => {
+    try {
+      setIsLoading(true)
+      const params = {
+        types: graphname
+      }
+      const res = await getGraphsData(token, params)
+      const { data: { message, payload, success, } } = res
+      console.log('TradeData', payload)
+      setIsLoading(false)
+      // setTradeOrderData(payload.trading_order_by_numbers)
+      setTradeData(payload)
+      // setTradeOrderData(payLoad)
+      // setOrderCount(payLoad.order_count)
+    }
+    catch (error) {
+      console.error('Error fetching trade data:', error);
+    }
+  }
+
+  useEffect(() => {
+    getTradeData()
+  }, [])
+
+  const TradeOrderData = {
+    chart: {
+      type: 'column',
+    },
+    responsive: {
+      rules: [{
+        condition: {
+          maxWidth: 500
+        },
+        chartOptions: {
+          legend: {
+            enabled: false
+          }
+        }
+      }]
+    },
+    title: {
+      text: '',
+      align: 'left'
+    },
+    // subtitle: {
+    //     text:
+    //         'Source: <a target="_blank" ' +
+    //         'href="https://www.indexmundi.com/agriculture/?commodity=corn">indexmundi</a>',
+    //     align: 'left'
+    // },
+    xAxis: {
+      // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      categories: tradedata?.trading_order_by_numbers?.map(item => item?.month),
+      crosshair: true,
+      accessibility: {
+        description: 'Countries'
+      }
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: 'Order Count'
+      }
+    },
+    // tooltip: {
+    //   // valueSuffix: ' (1000 MT)'
+    //   // valueSuffix: ` Order(s)`
+    // },
+    plotOptions: {
+      column: {
+        pointPadding: 0.2,
+        borderWidth: 0
+      }
+    },
+    // series: [
+    //   {
+    //     name: 'Jan',
+    //     // data: [406292, 260000, 107000, 68300, 27500, 14500]
+    //     data: [406292, 260000, 107000, 68300, 27500, 14500]
+    //   },
+    //   {
+    //     name: 'Feb',
+    //     data: [51086, 136000, 5500, 141000, 107180, 77000]
+    //   }
+    // ]
+    series: [
+      {
+        name: 'Order(s)',
+        data: tradedata?.trading_order_by_numbers?.map(item => item?.order_count)
+      },
+      // {
+      //   name: 'Feb',
+      //   data: [51086, 136000, 5500, 141000, 107180, 77000]
+      // }
+    ]
+  }
+
+  const TradeVolumeData = {
+    chart: {
+      type: 'column',
+    },
+    responsive: {
+      rules: [{
+        condition: {
+          maxWidth: 500
+        },
+        chartOptions: {
+          legend: {
+            enabled: false
+          }
+        }
+      }]
+    },
+    title: {
+      text: '',
+      align: 'left'
+    },
+    xAxis: {
+      categories: tradedata?.trading_volume_by_lots?.map(item => item?.month),
+      crosshair: true,
+      accessibility: {
+        description: 'Countries'
+      }
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: 'Volume Count'
+      }
+    },
+    tooltip: {
+      valueSuffix: ` Volume`
+    },
+    plotOptions: {
+      column: {
+        pointPadding: 0.2,
+        borderWidth: 0
+      }
+    },
+    series: [
+      {
+        name: 'Volumes',
+        data: tradedata?.trading_volume_by_lots?.map(item => parseFloat(item?.volume))
+      },
+    ]
+  }
+
+  // const TradeDepositData = {
+  //   chart: {
+  //     type: 'column',
+  //   },
+  //   responsive: {
+  //     rules: [{
+  //       condition: {
+  //         maxWidth: 500
+  //       },
+  //       chartOptions: {
+  //         legend: {
+  //           enabled: false
+  //         }
+  //       }
+  //     }]
+  //   },
+  //   title: {
+  //     text: '',
+  //     align: 'left'
+  //   },
+  //   xAxis: {
+  //     categories: tradedata?.deposits?.map(item => item?.month),
+  //     crosshair: true,
+  //     accessibility: {
+  //       description: 'Countries'
+  //     }
+  //   },
+  //   yAxis: {
+  //     min: 0,
+  //     title: {
+  //       text: 'Deposit Amount'
+  //     }
+  //   },
+  //   tooltip: {
+  //     valueSuffix: ` amount`
+  //   },
+  //   plotOptions: {
+  //     column: {
+  //       pointPadding: 0.2,
+  //       borderWidth: 0
+  //     }
+  //   },
+  //   series: [
+  //     {
+  //       name: 'Amount',
+  //       data: tradedata?.deposits?.map(item => item?.total_amount)
+  //     },
+  //   ]
+  // }
+
+  const TradeDepositData = {
+    chart: {
+      type: 'area'
+    },
+    title: {
+      text: ''
+    },
+    xAxis: {
+      categories: tradedata?.deposits?.map(item => item?.month)
+    },
+    yAxis: {
+      title: {
+        text: 'Deposit Amount'
+      },
+      labels: {
+        formatter: function () {
+          return '$' + this.value;
+        }
+      }
+    },
+    series: [{
+      name: 'Amount',
+      data: tradedata?.deposits?.map(item => item?.total_amount)
+    }]
+  };
+
   // const [chartOptions, setChartOptions] = useState({
   //     title: {
   //       text: 'Dynamic data in Highcharts Stock'
@@ -257,20 +527,25 @@ const CandleChart = () => {
                 <span className='text-lg font-semibold p-2'>Date Range:</span>
                 <Space direction="vertical" size={12} style={{ width: '100px' }}>
                   <RangePicker
-
+                  // moment().format('YYYY-MM-DD')
                     defaultValue={[moment('2019-09-03', dateFormat), moment('2019-11-22', dateFormat)]}
-                    disabled={[false, true]}
+                    // disabled={[false, true]}
+                    value={selectedRange}
+                    onChange={handleRangeChange}
                   />
                 </Space>
               </div>
             </div>
           </div>
           <div className="w-full">
-            <HighchartsReact
-              highcharts={Highcharts}
-              options={AreaChartConfig}
-              containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
-            />
+            <Spin spinning={isLoading} size="large">
+              <HighchartsReact
+                highcharts={Highcharts}
+                // options={AreaChartConfig}
+                options={TradeDepositData}
+                containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+              />
+            </Spin>
           </div>
         </div>
       </div>
@@ -305,11 +580,14 @@ const CandleChart = () => {
           </div>
 
           <div className="w-full">
-            <HighchartsReact
-              highcharts={Highcharts}
-              options={BarChartConfig}
-            // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
-            />
+            <Spin spinning={isLoading} size="large">
+              <HighchartsReact
+                highcharts={Highcharts}
+                // options={BarChartConfig}
+                options={TradeOrderData}
+              // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+              />
+            </Spin>
             {/* <HighchartsReact
           highcharts={Highcharts}
           options={BarChartConfig}
@@ -337,11 +615,13 @@ const CandleChart = () => {
 
           </div>
           <div className="w-full">
-            <HighchartsReact
-              highcharts={Highcharts}
-              options={BarChartConfig}
-            // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
-            />
+            <Spin spinning={isLoading} size="large">
+              <HighchartsReact
+                highcharts={Highcharts}
+                options={TradeVolumeData}
+              // containerProps={{ style: { height: '400px', maxWidth: '100%' } }}
+              />
+            </Spin>
           </div>
 
         </div>

@@ -18,4 +18,12 @@
   cursor: move;
   background-color: #ccc;
 }
+.ant-table-selection-column {
+  padding: 0px !important
+}
+.custom-line{
+  margin-top: 19px; 
+}
+
+
 

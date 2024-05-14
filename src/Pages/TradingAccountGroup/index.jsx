@@ -8,7 +8,7 @@ import { PlusCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/ic
 import CustomButton from '../../components/CustomButton';
 import { AddnewStyle, footerStyle, submitStyle } from '../Brand/style';
 import CustomTable from '../../components/CustomTable';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import CustomModal from '../../components/CustomModal';
 import TradingAccountModal from '../TradingAccountGroup/TradingAccountModal';
 import { DeleteTradingAccountGroup, Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
@@ -16,7 +16,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { CheckBrandPermission, CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { setTradingGroupData } from '../../store/TradingGroupData';
-
+// import { setTradeSettingsData, setTradeSettingsSelecetdIDs } from '../../store/tradeGroupsSlice';
+import {setTradeGroupsData, setTradeGroupsSelectedIDs} from '../../store/tradeGroupsSlice'
+import { setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
 
 
 
@@ -34,6 +36,7 @@ const Index = () => {
 
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleMassDepositWithdrawClick = (id, name) => {
     dispatch(setTradingGroupData({ id, name },));
@@ -46,7 +49,7 @@ const Index = () => {
   };
   const showAccountModal = (trading_accounts) => {
     setIsAccountModalOpen(true)
-    if (trading_accounts.length > 0) {
+    if (trading_accounts?.length > 0) {
       setSelectedAccountData(trading_accounts)
     } else {
       setSelectedAccountData([]);
@@ -65,16 +68,15 @@ const Index = () => {
     setIsLoading(true)
     const res = await Trading_Account_Group_List(token,brandId)
     const { data: { message, payload, success } } = res
-    // debugger;
     setIsLoading(false)
     if (success) {
-      setTradingAccountGroupList(payload.data)
+      setTradingAccountGroupList(payload?.data)
     }
   }
   useEffect(() => {
 
     if(userRole === 'brand' ){
-      fetchData(userBrand.public_key)
+      fetchData(userBrand?.public_key)
     }
     else{
       fetchData(null)
@@ -147,7 +149,7 @@ const Index = () => {
         <>
           {symbel_groups?.map((tag) => {
             return (
-              <Tag color={'green'} key={tag.id}>
+              <Tag color={'green'} key={tag?.id}>
                 {tag.name.toUpperCase()}
               </Tag>
             );
@@ -160,7 +162,10 @@ const Index = () => {
       title:<span className="dragHandler">Mass Buy/Sell Trading Order</span>,
       dataIndex: 'MBS',
       key: '4',
-      render: (text) => <Link to={'/trading-group/mb-to/0'} style={{ color: colorPrimary, fontWeight: '600' }}>View Details</Link>,
+      render: (text, record) => <span onClick={()=>{
+        dispatch(setTradeGroupsSelectedIDs(record.id))
+        navigate('/trading-group/mb-to')
+      }}  style={{ color: colorPrimary, fontWeight: '600' }}>View Details</span>,
       sorter: (a, b) => a.MBS.length - b.MBS.length,
       sortDirections: ['ascend'],
     
@@ -170,13 +175,18 @@ const Index = () => {
       dataIndex: 'MDW',
       key: '5',
       render: (_, record) => (
-        <Link
-          to={`/trading-group/mass-deposit/${record.id}`}
+        <span
+        onClick={()=>{
+          dispatch(setTradeWithdrawGroupsSelectedIDs(record.id))
+          handleMassDepositWithdrawClick(record.id, record.name)
+          navigate('/trading-group/mass-deposit')
+        }}
+          // to={`/trading-group/mass-deposit/${record.id}`}
           style={{ color: colorPrimary, fontWeight: '600' }}
-          onClick={() => handleMassDepositWithdrawClick(record.id, record.name)}
+          // onClick={() => handleMassDepositWithdrawClick(record.id, record.name)}
         >
           View Details
-        </Link>
+        </span>
       ),
       sorter: (a, b) => a.MDW.length - b.MDW.length,
       sortDirections: ['ascend'],
@@ -235,7 +245,10 @@ const Index = () => {
             Text='Add New Trading Group'
             style={{ height: '48px', ...AddnewStyle }}
             icon={<PlusCircleOutlined />}
-            onClickHandler={() => showModal(0)}
+            onClickHandler={() =>{
+              // dispatch(setTradeGroupsSelectedIDs([0]))
+               showModal(0)
+              }}
           />
          }
         </div>
@@ -245,6 +258,8 @@ const Index = () => {
           headerStyle={headerStyle}
           formName={'Trading Account Group'}
           token={token}
+          setSelecetdIDs={setTradeGroupsSelectedIDs}
+          setTableData = {setTradeGroupsData}
           editPermissionName="active_account_group_update"
           deletePermissionName="active_account_group_delete"
            />

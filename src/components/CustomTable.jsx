@@ -8,7 +8,8 @@ import { useDispatch } from 'react-redux';
 
 const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, 
-  table_name, setSortDirection, perPage, setPerPage, editPermissionName, deletePermissionName, SearchQuery,LoadingHandler}) => {
+  table_name, setSortDirection, perPage, setPerPage, editPermissionName,
+   deletePermissionName, SearchQuery,LoadingHandler, footer, column_name, summary, isPagination, addButton}) => {
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -33,6 +34,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           columns={columns}
           data={data}
           current={current_page}
+          perPage={perPage}
           total={total}
           handlePageChange={handlePageChange}
           navigate={navigate}
@@ -48,8 +50,13 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           deletePermissionName={deletePermissionName}
           SearchQuery={SearchQuery}
           LoadingHandler={LoadingHandler}
+          footer={footer}
+          column_name={column_name}
+          summary = {summary}
+          addButton={addButton}
         />
-        <div style={{ textAlign: 'right', marginTop: 16 }}>
+        {
+          direction !== "/single-trading-accounts/details/live-orders" &&  <div style={{ textAlign: 'right', marginTop: 16 }}>
           <Pagination
             current={current_page}
             total={total}
@@ -71,6 +78,8 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
             {total > 0 && `Showing ${((current_page - 1) * perPage) + 1}-${Math.min(current_page * perPage, total)} of ${total} items`}
           </span>
         </div>
+        }
+      
       </div>
     </>
   );

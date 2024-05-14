@@ -2,12 +2,15 @@
 .custom-button {
     background-color: #1CAC70; /* Blue background color */
     color: #ffffff; /* White text color */
-    padding: 8px 16px; /* Padding for the button */
+    padding: 4px 12px; /* Padding for the button */
     border: none; /* Remove button border */
     border-radius: 4px; /* Add border radius */
     cursor: pointer; /* Show pointer cursor on hover */
-    margin-top: 50px;
+    margin-left: 10px;
+    margin-top: 20px;
+    margin-right: 10px;
     box-sizing: border-box;
+    float: right;
   }
   
   /* CSS for button hover effect */

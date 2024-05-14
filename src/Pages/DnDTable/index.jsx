@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import "./index.css";
 import { Input, Spin, Table } from "antd";
 import { Resizable } from "react-resizable";
@@ -8,10 +8,12 @@ import TableActions from "./TableActions";
 import CustomNotification from "../../components/CustomNotification";
 import CustomModal from "../../components/CustomModal";
 import { Autocomplete, TextField } from "@mui/material";
-import { GenericDelete } from "../../utils/_APICalls";
+import { GenericDelete, MassCloseOrders } from "../../utils/_APICalls";
 import Swal from "sweetalert2";
 import { setSymbolSettingsSelecetdIDs } from "../../store/symbolSettingsSlice";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
+import { setTradingAccountGroupData } from "../../store/tradingAccountGroupSlice";
+import { setAccountID } from "../../store/TradeSlice";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -43,6 +45,7 @@ const ResizableTitle = (props) => {
 class DnDTable extends Component {
   constructor(props) {
     super(props);
+    this.inputRef = createRef();
     this.state = {
       columns: props.columns,
       isRearangments: false,
@@ -57,7 +60,9 @@ class DnDTable extends Component {
       data: [],
       isUpated:true,
       searchValues: {},
-      buttonCreated: false
+      buttonCreated: false, 
+      isSearching: true, 
+      isClear: false
     };
     this.setIsRearangments = this.setIsRearangments.bind(this);
     this.setIsMassEdit = this.setIsMassEdit.bind(this);
@@ -73,7 +78,9 @@ class DnDTable extends Component {
     this.setColumnsSetting = this.setColumnsSetting.bind(this)
     this.useEffect = this.useEffect.bind(this)
     this.SearchHandler = this.SearchHandler.bind(this)
+    this.MassCloseOrdersHandler = this.MassCloseOrdersHandler.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleClearSearch = this.handleClearSearch.bind(this)
 
     const that = this;
 
@@ -103,14 +110,17 @@ class DnDTable extends Component {
   }
   async SearchHandler(){
   //  this.setState({isLoading: true})
-  this.props.LoadingHandler(true)
-   const res = await this.props.SearchQuery(this.props.token, 1, 10, this.state.searchValues)
-   const {data:{payload, success, message}} = res
-  //  this.setState({isLoading: false})
-  this.props.LoadingHandler(false)
-   if(success){
-     this.setState({data: payload.data})
-   }
+    this.props.LoadingHandler(true)
+    
+    const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
+    const {data:{payload, success, message}} = res
+    
+   //  this.setState({isLoading: false})
+   this.setState({isSearching: false})
+   this.props.LoadingHandler(false)
+    if(success){
+      this.setState({data: payload.data})
+    }
   }
   componentDidMount() {
     this.useEffect()
@@ -119,23 +129,40 @@ class DnDTable extends Component {
   async useEffect(){
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
+      const hr = document.createElement('hr');
+      hr.classList.add("custom-line")
+      firstColumnHeaderCell.appendChild(hr);
       const button = document.createElement('button');
-      button.innerText = 'Search';
       button.classList.add('custom-button');
       // Add event listener to the button
       button.addEventListener('click', () => {
-        this.SearchHandler()
+        if(this.state.isSearching){ // search 
+          this.SearchHandler()
+        }else{ // clear
+          this.setState({isSearching: true})
+          this.props.LoadingHandler(true)
+          this.handleClearSearch()
+          setTimeout(()=>{
+            this.setState({ data: this.props.data });
+            this.props.LoadingHandler(false)
+          },2000)
+        }
+       
       });
     firstColumnHeaderCell.appendChild(button);
     }
     this.setState({buttonCreated: true})
     const columnsWithChildren = this.props.columns.map(column => ({
       ...column,
-      children: [
+      children: [ // inputs
           {
               title: <Input 
+              id={`search-input`}
               placeholder={`Search ${column.title.props.children}`}
+              value={this.state.searchValues[column.dataIndex]}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
+              onPressEnter={this.SearchHandler}
+              ref={this.inputRef}
               />,
               dataIndex: column.dataIndex,
               key: `${column.dataIndex}-search`,
@@ -143,7 +170,6 @@ class DnDTable extends Component {
           }
       ]
   }));
-  
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
@@ -161,9 +187,9 @@ class DnDTable extends Component {
       const res = await GetSettings(Params, this.props.token)
       const {data:{message, payload, success}} = res
       this.setState({isLoading: false})
-      
       if(payload && payload.length > 0){
         const selectedCols = JSON.parse(payload[0].value) // from db
+        
         // const filteredColumns = columnsWithChildren.filter(column =>  
         //   selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
         // );
@@ -178,7 +204,9 @@ class DnDTable extends Component {
         const mData = ColumnsData.filter(column =>
           selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
         );
+        
         if(success){
+         
           this.setState({ columns: filteredColumns, dropDownColumns: ColumnsData, selectedColumns: mData });
         }else{
           this.setState({ columns: ColumnsData, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
@@ -193,16 +221,31 @@ class DnDTable extends Component {
     } 
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps,prevState) {
     if (prevProps.columns !== this.props.columns) {
       this.setState({ columns: this.props.columns });
     }else if(prevProps.data !== this.props.data && this.state.isCompleteSelect){
-        const allRowKeys = this.props.data.map((row) => row.id);
+       const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
         this.setState({ selectedRowKeys: allRowKeys });
     }
     if(this.props?.data?.length > 0 && prevProps.data !== this.props.data){
       this.setState({ data: this.props.data });
     } 
+     if (prevProps.isSearching !== this.state.isSearching) {
+        // Update the button when isSearching state changes
+        const buttonText = this.state.isSearching ? 'Search' : 'Clear';
+        
+        const searchButton = document.querySelector('.ant-table-thead tr:first-child th:first-child button');
+        if (searchButton) {
+            searchButton.innerText = buttonText;
+            if(!this.state.isSearching){
+            searchButton.style.backgroundColor = 'red'
+            }else{
+              searchButton.style.backgroundColor = '#1CAC70' 
+            }
+        }
+    }
+   
     // else if (prevProps.data !== this.props.data) {
     //   // Update data state with new data from props
     //   this.setState({ data: this.props.data });
@@ -241,6 +284,10 @@ class DnDTable extends Component {
   handleRowClick = (record) => {
     this.setState({ currentRecords: record });
       this.props.dispatch(this.props.setSelecetdIDs([record.id]))
+      if(this.props.direction === "/single-trading-accounts/details/live-order"){
+        this.props.dispatch(setTradingAccountGroupData(record))
+        this.props.dispatch(setAccountID(record.id))
+      }
       this.props.navigate(this.props.direction);
      
   };
@@ -285,7 +332,7 @@ class DnDTable extends Component {
       isCompleteSelect: false,
     });
   }
-  handleSaveChanges() {
+  handleSaveChanges() { 
     if (this.state.isRearangments) {
       const ColumnsData = this.state.columns.map(x=>{
         return {
@@ -294,11 +341,49 @@ class DnDTable extends Component {
           title: typeof x.title === 'string' ? x.title:x.title.props.children 
         }
       })
-      debugger
       this.setColumnsSetting(ColumnsData, "Columns Rearrangement Sucessfully")
       this.setIsRearangments(false);
     }
   }
+  handleClearSearch = () => {
+    // const _test = this.inputRef
+
+    // this.inputRef.current.input.value = '';
+
+    const clearedSearchValues = {};
+    const inputRefs = Object.keys(this.state.searchValues);
+    inputRefs.forEach((key) => {
+      clearedSearchValues[key] = '';
+    });
+    this.setState({ searchValues:clearedSearchValues, isSearching: true })
+
+    // this.setState({ searchValues:clearedSearchValues, isSearching: true },()=>{
+    //   document.getElementById('search-input-Name').value = '';
+    // });
+  //   const columnsWithChildren = this.props.columns.map(column => ({
+  //     ...column,
+  //     children: [ // inputs
+  //         {
+  //             title: <Input 
+  //             id={`search-input-${column.title.props.children}`}
+  //             placeholder={`Search ${column.title.props.children}`}
+  //             value={this.state.searchValues[column.dataIndex]}
+  //             onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
+  //             onPressEnter={this.SearchHandler}
+  //             ref={this.inputRef}
+  //             />,
+  //             dataIndex: column.dataIndex,
+  //             key: `${column.dataIndex}-search`,
+  //             width: 150,
+  //         }
+  //     ]
+  // }));
+
+  // this.setState({columns: columnsWithChildren})
+    document.getElementById("search-input").value = ''
+    
+  };
+  
   onSelectAllChange(checked, selectedRows) {
     this.setState({ isSelectAll: checked });
   }
@@ -306,7 +391,8 @@ class DnDTable extends Component {
     this.setState((prevState) => ({isCompleteSelect: !prevState.isCompleteSelect}),
     ()=>{
       if (this.state.isCompleteSelect) {
-        const allRowKeys = this.props.data.map((row) => row.id);
+        const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
+
         this.setState({ selectedRowKeys: allRowKeys });
       } else {
         this.setState({ selectedRowKeys: [] })
@@ -335,6 +421,9 @@ class DnDTable extends Component {
            table_name: this.props.table_name, 
            table_ids:this.state.isCompleteSelect ? [] : this.state.selectedRowKeys
           }
+          if (this.props.column_name) {
+            Params.column_name = this.props.column_name;
+          }
          this.setState({isLoading: true})
          Swal.fire({
           title: "Are you sure?",
@@ -349,9 +438,14 @@ class DnDTable extends Component {
             const res = await GenericDelete(Params, this.props.token)
             const { data: { success, message, payload } } = res
             this.setState({isLoading: false})
-            const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
-            this.setState({data: newData})
             if (success) {
+              if(this.props.direction === "/trading-group/mass-deposit" || this.props.direction === "/trading-group/mb-to"){
+                const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item[this.props.column_name]));
+                this.setState({data: newData})
+              }else{
+                const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
+                this.setState({data: newData})
+              }
                CustomNotification({
                 type: "success",
                 title: "Deleted",
@@ -380,38 +474,121 @@ class DnDTable extends Component {
         })
       }
   }
+  async MassCloseOrdersHandler (){
+    if (this.state.selectedRowKeys.length > 0) {
+      const Params = {
+       ids: this.state.selectedRowKeys
+      }
+     this.setState({isLoading: true})
+     Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1CAC70",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Close it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await MassCloseOrders(Params, this.props.token)
+        const { data: { success, message, payload } } = res
+        this.setState({isLoading: false})
+        if (success) {
+          const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
+          this.setState({data: newData})
+           CustomNotification({
+            type: "success",
+            title: "Deleted",
+            description: message,
+            key: "a4",
+          })
+        } else {
+          CustomNotification({
+            type: "error",
+            title: "Oppssss..",
+            description: message,
+            key: "b4",
+          })
+        }
+  
+      }
+    });
+     this.setState({isLoading: false})
+
+  } else {
+    CustomNotification({
+      type: "error",
+      title: "Validation",
+      description: "Please select any record first",
+      key: "6",
+    })
+  }
+  }
   handleCancel(){
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
+  try{
     const Params = {
       data:{
       name: this.props.formName,
-      value: JSON.stringify(values)
+     
     }}
-    this.setState({isLoading: true})
-    const res = await SetSettings(Params,this.props.token )
-    const {data:{message, data, success}} = res
-    this.setState({isLoading: false})
-    if(success){
-      this.handleCancel()
-      CustomNotification({
-        type: "success",
-        title: "Success ",
-        description: message,
-        key: "arr4",
-      })
-      this.useEffect()
-      
-    }else{
-      CustomNotification({
-        type: "error",
-        title: "Oppssss... ",
-        description: message,
-        key: "arr4",
-      })
-    }
-    
+    const ColumnsData = this.state.columns.map(x=>{
+      return {
+        key: x.key, 
+        dataIndex: x.dataIndex,
+        title: typeof x.title === 'string' ? x.title:x.title.props.children 
+      }
+    })
+    this.props.LoadingHandler(true)
+  // Sort array A based on the index of keys in array B
+  // if values length is less then its means remove column , if greater means add columns , in case of remove column remove column from columns data else add column
+  if(values.length > ColumnsData.length){
+    const keysInB = new Set(ColumnsData.map(item => item.key));
+    values.forEach(item => {
+        if (!keysInB.has(item.key)) {
+          ColumnsData.push(item);
+        }
+    });
+        Params.data.value= JSON.stringify(ColumnsData)
+      }else if(values.length < ColumnsData.length){
+        const keysInValues = new Set(values.map(obj => obj.key));
+        const mData = ColumnsData.filter(item => keysInValues.has(item.key));
+        Params.data.value= JSON.stringify(mData)
+      }else{
+        Params.data.value= JSON.stringify(values)
+      }
+      this.setState({isLoading: true})
+      const res = await SetSettings(Params,this.props.token )
+      const {data:{message, data, success}} = res
+      this.setState({isLoading: false})
+      if(success){
+        this.handleCancel()
+        CustomNotification({
+          type: "success",
+          title: "Success ",
+          description: message,
+          key: "arr4",
+        })
+        
+        this.useEffect()
+        this.props.LoadingHandler(false)
+        
+      }else{
+        CustomNotification({
+          type: "error",
+          title: "Oppssss... ",
+          description: message,
+          key: "arr4",
+        })
+      }
+  }catch(err){
+    alert(err.message)
+  }finally{
+    this.props.LoadingHandler(false)
+  }
+   
   }
   render() {
     const { columns, selectedRowKeys } = this.state;
@@ -426,14 +603,13 @@ class DnDTable extends Component {
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method
       onSelectAll: this.onSelectAllChange,
-      
     };
 
     return (
       <>
         <ReactDragListView.DragColumn {...this.dragProps}>
 
-          <div className="flex justify-between gap-4">
+          <div className="flex justify-center gap-4">
             <div></div>
           {
                 this.state.isSelectAll &&
@@ -445,7 +621,15 @@ class DnDTable extends Component {
                 </h1>
               }
 
-            <div className="self-end">
+          
+
+          </div>
+          <Table
+            bordered
+            className="mt-4"
+            title={() => (
+              <div style={{ textAlign: 'right' }}>
+              <div className="self-end">
               {!(
                 this.state.isRearangments
               ) ? (
@@ -459,6 +643,9 @@ class DnDTable extends Component {
                   setPerPage={this.props.setPerPage}
                   editPermissionName={this.props.editPermissionName}
                   deletePermissionName={this.props.deletePermissionName}
+                  direction = {this.props.direction}
+                  MassCloseOrdersHandler={this.MassCloseOrdersHandler}
+                  addButton = {this.props.addButton}
                 />
               ) : (
                 <CustomButton
@@ -469,19 +656,20 @@ class DnDTable extends Component {
               )}
             </div>
 
-          </div>
-          <Table
-            bordered
+              </div>
+            )}
+            footer={this.props.footer}
             components={this.components}
             columns={combinedColumns}
             dataSource={this.state.data} 
             pagination={false}
             rowSelection={rowSelection}
             showSorterTooltip={false}
+            summary={this.props.summary}
             onChange={(pagination, filters, sorter) => {
               this.props.setSortDirection(sorter.order);
             }}  
-            rowKey="id"
+            rowKey={this.props.column_name ? this.props.column_name : "id"}
             onRow={(record) => ({
               onClick: (event) => {
                 const clickedCell = event.target.closest("td");
@@ -500,6 +688,7 @@ class DnDTable extends Component {
                 }
               },
             })}
+            scroll={{ x: 'max-content' }}
           />
         </ReactDragListView.DragColumn>
         <CustomModal
@@ -552,6 +741,7 @@ class DnDTable extends Component {
           borderColor: '#c5c5c5',
           color: '#fff'
         }}
+        onClickHandler={()=> this.setState({isAddRemove: false})}
         />
         </div>
         </CustomModal>

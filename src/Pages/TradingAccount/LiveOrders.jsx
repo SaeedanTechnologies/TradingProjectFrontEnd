@@ -1,25 +1,27 @@
-import { Space, theme, Spin } from 'antd';
+import { theme, Spin, Table } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
-import { EditOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Link, useLocation, } from 'react-router-dom';
-import { Delete_Trade_Order,  Put_Trade_Order } from '../../utils/_TradingAPICalls';
+import { MinusCircleOutlined  } from '@ant-design/icons';
+import { useLocation, } from 'react-router-dom';
+import { Put_Trade_Order, Put_Trading_Account } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import Swal from 'sweetalert2';
-import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import CustomNotification from '../../components/CustomNotification';
+import { CurrenciesList, LeverageList } from '../../utils/constants';
+import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
 
-const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage }) => {
+const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin, totalSwap }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
+  const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
+  const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
   const location = useLocation()
   const { pathname } = location
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
-
-
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
@@ -30,9 +32,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     },
     {  
       title:<span className="dragHandler">Time</span>,
-      dataIndex: 'time',
+      dataIndex: 'created_at',
       key: '2',
-      render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm')}</span>,
+      render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm:ss')}</span>,
       sorter: (a, b) => a.time.length - b.time.length,
       sortDirections: ['ascend'],
     
@@ -43,7 +45,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       key: 'type',
       sorter: (a, b) => a.time.length - b.time.length,
       sortDirections: ['ascend'],
-      render: (text) => <span style={{ color: colorPrimary }}>{text}</span>
+      render: (text)=> <span className={`${text === 'sell' ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     {
       title: <span className="dragHandler">Volume</span>,
@@ -56,14 +58,14 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       title: <span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: 'stopLoss',
-      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
+      sorter: (a, b) => a?.stopLoss.length - b?.stopLoss.length,
       sortDirections: ['ascend'],
     },
     {
       title: <span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: 'takeProfit',
-      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
+      sorter: (a, b) => a?.takeProfit.length - b?.takeProfit.length,
       sortDirections: ['ascend'],
     },
     {
@@ -74,11 +76,26 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       sortDirections: ['ascend'],
     },
     {
+      title: <span className="dragHandler">Current Price</span>,
+      dataIndex: 'currentPrice',
+      key: 'currentPrice',
+      sorter: (a, b) => a.currentPrice.length - b.currentPrice.length,
+      sortDirections: ['ascend'],
+    },
+    {
+      title: <span className="dragHandler">Swap</span>,
+      dataIndex: 'swap',
+      key: 'swap',
+      sorter: (a, b) => a.profit.length - b.profit.length,
+      sortDirections: ['ascend'],
+    },
+    {
       title: <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: 'profit',
       sorter: (a, b) => a.profit.length - b.profit.length,
       sortDirections: ['ascend'],
+      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     // {
     //   title: 'Actions',
@@ -86,14 +103,11 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     //   key: 'actions',
     //   render: (_, record) => (
     //     <Space size="middle" className='cursor-pointer'>
-    //       <Link to={`/single-trading-accounts/details/live-order/${record.id}`}><EditOutlined style={{ fontSize: "24px", color: colorPrimary }} /></Link>
     //       <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CancelLiveOrder(record.id)} />
-    //       <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order, setIsLoading, fetchLiveOrder)} />
     //     </Space >
     //   ),
     // },
   ];
-
 
   const headerStyle = {
     background: TableHeaderColor,
@@ -101,85 +115,61 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   };
 
  const onPageChange = (page) =>{
-      
       fetchLiveOrder(page)
-   
   }
-
-
-
-  const CancelLiveOrder = async (id) => {
+  // const CancelLiveOrder = async (id) => {
 
    const requiredOrder = tradeOrder.find((order)=>order.id === id)
 
+  //   setIsLoading(true)
+  //   const currentDateISO = new Date().toISOString();
+  //   // const currentDate = new Date(currentDateISO);
+  //   // const formattedDate = moment(currentDate).format('MM/DD/YYYY HH:mm');
+  //   const closeOrderData = {
+  //       order_type : 'close',
+  //       close_time: currentDateISO,
+  //       close_price : requiredOrder.open_price
 
-    setIsLoading(true)
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#1CAC70",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Close the Order!"
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-
-
-        const currentDateISO = new Date().toISOString();
-        const currentDate = new Date(currentDateISO);
-        const formattedDate = moment(currentDate).format('MM/DD/YYYY HH:mm');
-   
-    const closeOrderData = {
-        order_type : 'close',
-        close_time: formattedDate,
-        close_price : requiredOrder.open_price
-      }
-
-
-
-        // const close_time = new Date().toISOString;
-        // const paramsString = `order_type=close&close_time=${close_time}&close_price=${requiredOrder.open_price}`;
-        // const res = await Put_Trade_Order(id, paramsString, token)
-
+  //     }
+  //     try{
+  //       const res = await Put_Trade_Order(id,closeOrderData, token)
+  //       const { data: { message, payload, success } } = res
+  //       if (success) {
         
-        const res = await Put_Trade_Order(id,closeOrderData, token)
-        const { data: { message, payload, success } } = res
+  //       CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
+  //       fetchLiveOrder(page)       
+      
+  //     }
+  //     else {
+      
+  //       CustomNotification({ type: "error", title: "Live Order", description: message, key: 1 })
 
-        setIsLoading(false)
-        if (success) {
-          Swal.fire({
-            title: "Order Closed!",
-            text: message,
-            icon: "success"
-          });
-          
-          fetchLiveOrder(page)
-            
+  //     }
+  //     }catch(error){
+  //       CustomNotification({ type: "error", title: "Live Order", description: error.message, key: 1 })
 
-        } else {
-          Swal.fire({
-            title: "Opps!",
-            text: { message },
-            icon: "error"
-          });
-        }
-
-      }
-    });
-
-    setIsLoading(false)
-
-  }
-
-
+  //     }
+        
+  // }
   useEffect(() => {
-
     fetchLiveOrder(CurrentPage)
-  
- 
   }, [pathname])
-
+  useEffect(()=>{
+    const res = calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)
+    
+    if(parseFloat(res) < parseFloat(brand_margin_call)){
+      UpdateTradingAccountStatus()
+    }
+  }, [balance,grandProfit,lotSize,accountLeverage])
+  const UpdateTradingAccountStatus = async()=>{
+    const Params = {
+      status: "margin_call", 
+      margin_level_percentage:calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage),
+      equity:calculateEquity(balance, grandProfit)
+    }
+    const res = await Put_Trading_Account(id, Params, token)
+    
+  }
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -193,6 +183,25 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            summary={() => (
+              <Table.Summary fixed>
+                <Table.Summary.Row className='bg-gray-300'>
+                  <Table.Summary.Cell index={0} colSpan={9}>
+                  <span className='text-sm font-bold text-arial'>
+                      <MinusCircleOutlined /> 
+                      Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
+                      Equity: {calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName}  &nbsp;
+                      {tradeOrder.length > 0  &&
+                      <span> Margin: {margin}</span>}&nbsp;
+                      Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
+                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
+                      </span>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{grandProfit}</Table.Summary.Cell>
+                </Table.Summary.Row>
+              </Table.Summary>
+            )}
           />
       </div>
     </Spin>

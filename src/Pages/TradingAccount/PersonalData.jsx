@@ -1,33 +1,32 @@
 import { Spin, theme } from 'antd';
 import React, { useState,useEffect } from 'react'
-import { GetCurrentDate } from '../../utils/constants';
-import CustomAvatar from '../../components/CustomAvatar';
 import CustomButton from '../../components/CustomButton';
 import CustomTextField from '../../components/CustomTextField';
-import CustomPhoneNo from '../../components/CustomPhoneNo';
-import { AutocompleteDummyData } from '../../utils/constants';
-import CustomAutocomplete from '../../components/CustomAutocomplete';
 import { numberInputStyle, PDataSaveBtnStyle } from './style';
-import { Autocomplete,TextField } from '@mui/material';
 import { Get_Single_Trading_Account,Put_Trading_Account } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { notifySuccess, notifyError } from '../../utils/constants';
-
-
-
+import { GetAllBrandsCustomerList } from '../../utils/_BrandListAPI';
+import { Autocomplete,TextField } from '@mui/material'
+import CustomNotification from '../../components/CustomNotification';
+import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 
 const PersonalData = () => {
   const token = useSelector(({user})=> user?.user?.token );
+  const tradingAccountGroupData = useSelector(({tradingAccountGroup})=>tradingAccountGroup?.tradingAccountGroupData)
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const { token: { colorBG,  }} = theme.useToken();
   const [name,setName] = useState('')
   const [registration_time,setRegistration_time ] =  useState(moment().format('YYYY-MM-DD'))
   const [email,setEmail] = useState('')
   const [country, setCountry] = useState('')
   const [phone,setPhone] = useState('')
+  const [SelectedCustomerBrand,SetSelectedCustomerBrand] = useState(null)
   const [isLoading,setIsLoading] = useState(false)
   const trading_account_id = useSelector((state)=>state?.trade?.trading_account_id)
   const [errors, setErrors] = useState({});
+  const [BrandCustomerList,setBrandCustomerList] = useState([])
 
 
    const handleInputChange = (fieldName, value) => {
@@ -51,13 +50,16 @@ const PersonalData = () => {
     }
   };
   
+ 
   
 const fetchSingleTradeAccount= async()=>{
-    
       setIsLoading(true)
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res
       
+      const { data: {payload:customersList } } = await GetAllBrandsCustomerList(token, tradingAccountGroupData?.brand_public_key)
+      setBrandCustomerList(customersList)
+
 
       setIsLoading(false)
       if(success){
@@ -67,6 +69,8 @@ const fetchSingleTradeAccount= async()=>{
         setPhone(payload?.phone)
         const registeredDate = payload?.registration_time.split(" ")[0]
         setRegistration_time(registeredDate)
+        const branderCustomer = customersList?.find(x=> x.id === payload?.brand_customer_id) 
+        SetSelectedCustomerBrand(branderCustomer)
       }
 
 
@@ -91,26 +95,28 @@ const fetchSingleTradeAccount= async()=>{
     try{
         setIsLoading(true)
         setErrors({});
-        const paramsString = `name=${name}&email=${email}&country=${country}&phone=${phone}&registration_time=${registration_time}`;
+        const paramsString = `name=${name}&email=${email}&country=${country}&phone=${phone}&registration_time=${registration_time}&brand_customer_id=${SelectedCustomerBrand.id}&currency=${SelectedCustomerBrand.currency}`;
         const res = await  Put_Trading_Account(trading_account_id, paramsString, token)
        const {data: {message, payload, success}} = res
        if(success)
     {
       setIsLoading(false)
-       alert(message)
-       fetchSingleTradeAccount()
+     
+       CustomNotification({ type: "success", title: "Trading Account", description: message, key: 1 })
+      fetchSingleTradeAccount()
     }   
     else{
       setIsLoading(false)
-      alert(err.message);
+      CustomNotification({ type: "error", title: "Trading Account", description: message, key: 1 })
+     
     }    
     
     }catch(err){
-      notifyError(err.message);
       const validationErrors = {};
       err.inner.forEach(error => {
         validationErrors[error.path] = error.message;
       });
+      CustomNotification({ type: "error", title: "Trading Account", description: err.message, key: 1 })
       setErrors(validationErrors);
     }
   }
@@ -184,6 +190,37 @@ const fetchSingleTradeAccount= async()=>{
           onChange={e => handleInputChange('country', e.target.value)}
           sx={numberInputStyle}
         />
+        </div>
+
+        <div>
+        { userRole === 'brand' &&
+    <Autocomplete
+    name="Customers"
+    id="Customers"
+    variant={'standard'}
+    options={BrandCustomerList}
+    getOptionLabel={ (option) => option.name ? option.name : ""}
+    value={SelectedCustomerBrand}
+    onChange={(e, value) => {
+      if (value) {
+       
+        SetSelectedCustomerBrand(value)
+         setName(value?.name);
+          setEmail(value?.email);
+          setCountry(value?.country);
+          setPhone(value?.phone);
+
+      
+      }
+      else
+        SetSelectedCustomerBrand(null)
+    }}
+    renderInput={(params) =>
+      <TextField {...params} name="Customer" label="Select Customer" variant="standard" />
+    }
+  />
+        }   
+     
         </div>
 
           

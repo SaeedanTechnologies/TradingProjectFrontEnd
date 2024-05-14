@@ -1,9 +1,8 @@
 import React, { useEffect,useState } from 'react';
 import { Tabs, theme } from 'antd';
 import LiveOrders from './LiveOrders';
+import { Decimal } from 'decimal.js';
 import { useNavigate,useLocation,useParams } from 'react-router-dom';
-
-
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import Trade from './Trade';
 import CloseOrder from './CloseOrder';
@@ -13,7 +12,8 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { CheckBrandPermission } from "../../utils/helpers";
+import { CheckBrandPermission, calculateLotSize, calculateMargin, calculateNights, calculateProfitLoss, getCurrentDateTime, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
+import { LeverageList } from '../../utils/constants';
 
 
 const TradingAccountDetails = () => {
@@ -21,7 +21,11 @@ const TradingAccountDetails = () => {
   const [liveOrders, setLiveOrders] = useState([])
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
+  const [grandProfit, setGrandProfit] = useState(0)
+  const [grandVolumn, setGrandVolumn] = useState(0) 
+  const [grandMargin, setGrandMargin] = useState(0)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [totalSwap, setTotalSwap] = useState(0)
   const token = useSelector(({user})=> user?.user?.token )
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
@@ -35,40 +39,68 @@ const TradingAccountDetails = () => {
   const [activeTab, setActiveTab] = useState('1');
    const [tradeOrder,setTradeOrder] = useState([])
    const [isLoading, setIsLoading] = useState(false)
-     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
-
-
+   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id)
+   const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
+   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 const fetchLiveOrder = async (page) => {
+
       setIsLoading(true)
       const params ={trading_account_id,OrderTypes:['market','pending'],token,page}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
        setIsLoading(false)
       if(success){
-      
-      setTradeOrder( payload?.data)
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setTotalRecords(payload.total)
-   
+        let totalProfit = 0
+        let totalVolumn = 0
+        let totalMargin = 0
+        let _totalSwap = 0
+        const currentDateTime = getCurrentDateTime();
+        const updatedData = await Promise.all(payload.data.map(async (x) => {
+          const {askPrice, bidPrice} = await getOpenPriceFromAPI(x.symbol, x.feed_name);
+          const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
+          const open_price= parseFloat(x?.open_price).toFixed(pipVal);
+          const currentPrice = x.type === "sell"? parseFloat(askPrice).toFixed(pipVal) ?? 0  : parseFloat(bidPrice).toFixed(pipVal) ?? 0
+          const profit = parseFloat(calculateProfitLoss(currentPrice , parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
+          totalProfit+= parseFloat(profit)
+          const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.type === "sell"? parseFloat(askPrice)  : parseFloat(bidPrice) ).toFixed(2))
+          const margin = calculateMargin(res, accountLeverage)
+          const totalNights = calculateNights(x.created_at,currentDateTime)
+          const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0)
+          _totalSwap += parseFloat(Calswap ?? 0);
+          const swap = Calswap > 0 ? -Calswap : Calswap
+          totalMargin+= parseFloat(margin)
+          totalVolumn+= parseFloat(res)
+          return { ...x,swap, profit, currentPrice,open_price };
+        }));
+        setGrandProfit(totalProfit.toFixed(2));
+        setGrandVolumn(totalVolumn.toFixed(2)); 
+        setGrandMargin(totalMargin.toFixed(2)); 
+        setTotalSwap(_totalSwap.toFixed(2)); 
+        setTradeOrder( updatedData)
+        setCurrentPage(payload.current_page)
+        setLastPage(payload.last_page)
+        setTotalRecords(payload.total)
     }
     
   }
   
- 
 
   const items = [
   {
     key: '1',
     label: 'Live Orders',
-    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder}  isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} />,
+    children: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder} grandProfit={grandProfit} 
+    lotSize={grandVolumn}  isLoading={isLoading} setIsLoading={setIsLoading} 
+    CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords}
+    margin = {grandMargin} totalSwap={totalSwap}
+    />,
     path: '/single-trading-accounts/details/live-order',
     display:  CheckBrandPermission(userPermissions,userRole,'live_orders_read') ? 'show' : 'hide' 
   },
   {
     key: '2',
     label: 'Trade',
-    children: <Trade fetchLiveOrder = {fetchLiveOrder} />,
+    children: <Trade fetchLiveOrder = {fetchLiveOrder} CurrentPage={CurrentPage}  />,
     path: '/single-trading-accounts/details/symbol',
     display:  CheckBrandPermission(userPermissions,userRole,'live_orders_create') ? 'show' : 'hide' 
   },
@@ -123,12 +155,12 @@ const onChange = (key) => {
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
         <div className='flex gap-3'>
-          <img 
+          {/* <img 
            src={ARROW_BACK_CDN} 
            alt='back icon' 
            className='cursor-pointer'
            onClick={() => navigate(-1)}
-           />
+           /> */}
           <h1 className='text-3xl font-bold'>Trading Account</h1>
         </div>
        

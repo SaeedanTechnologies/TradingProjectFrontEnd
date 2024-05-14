@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Space, Spin, theme } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, CaretUpOutlined,CaretDownOutlined , PlusCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
 import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
 import CustomModal from '../../components/CustomModal'
 import BrandModal from './BrandModal';
-import { notifySuccess, notifyError } from '../../utils/constants';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import { ToastContainer } from 'react-toastify';
 import { AddnewStyle, footerStyle, submitStyle } from './style';
 import { Brands_List, DeleteBrand } from '../../utils/_APICalls';
@@ -23,12 +23,125 @@ const BrandList = () => {
   const dispatch = useDispatch();
   
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
+
+
+  const columns = [
+    {
+      title:<span className="dragHandler">Id</span>,
+      dataIndex: 'id',
+      key: '1',
+      hidden: true,
+
+      
+    },
+    {
+      title:<span className="dragHandler">Name</span>,
+      dataIndex: 'name',
+      key: '2',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+     
+      title:<span className="dragHandler">Domain</span>,
+      dataIndex: 'domain',
+      key: '3',
+      sorter: (a, b) => a.domain.length - b.domain.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    
+   
+    {
+      title:<span className="dragHandler">Password</span>,
+      dataIndex: 'original_password',
+      key: '6',
+      sorter: (a, b) => a.original_password.length - b.original_password.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    
+    {
+      
+      title:<span className="dragHandler">Authorization Key</span>,
+      dataIndex: 'public_key',
+      key: '7',
+      render: (_, record) => (
+
+        <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
+          <Typography sx={{ fontWeight:  400, fontSize: "14px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
+          {/* <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography> */}
+
+          <Space size="middle" className='cursor-pointer'>
+            {visibleBrandId === record.id ?
+              <EyeInvisibleOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => toggleKey(record)} /> :
+              <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => toggleKey(record.id)} />
+            }
+          </Space>
+        </Stack>
+      ),
+      sorter: (a, b) => a.public_key.length - b.public_key.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+ 
+      title:<span className="dragHandler">Margin Calls</span>,
+      dataIndex: 'margin_call',
+      key: '8',
+      sorter: (a, b) => a.margin_call.length - b.margin_call.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+     {
+      title:<span className="dragHandler">Actions</span>,
+      dataIndex: 'trading_accounts',
+      key: '9',
+      render: (text, record) => {
+        return (
+          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
+        )
+      },
+      
+     },
+  ];
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [BrandsList, setBrandsList] = useState([])
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
   const [BrandID, setBrandID] = useState(null);
   const [visibleBrandId, setVisibleBrandId] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [showKey, setShowKey] = useState(false)
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [sortDirection, setSortDirection] = useState("")
+  const [perPage, setPerPage] = useState(10)
+
+
 
    
   const [CurrentPage, setCurrentPage] = useState(1)
@@ -40,7 +153,11 @@ const BrandList = () => {
     setIsLoading(true)
     const mData = await Brands_List(token,page)
     const { data: { message, payload, success } } = mData
-    setIsLoading(false)
+      setIsLoading(false)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+      setIsUpdated(false)
     if (success) {
 
       const brandData = payload.data.map((brand)=>({
@@ -71,8 +188,15 @@ const BrandList = () => {
   }
 
   useEffect(() => {
+    setIsUpdated(true)
     fetchBrands(CurrentPage)
-  }, [])
+  }, [perPage])
+
+  useEffect(() => {
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
+    }, [checkedList]);
+
 
   const showModal = (id = null) => {
     setBrandID(id)
@@ -101,96 +225,10 @@ const BrandList = () => {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
-  const columns = [
-    {
-      title: 'Id',
-      dataIndex: 'id',
-      key: '1',
-      hidden: true,
 
-      
-    },
-    {
-       title:<span className="dragHandler">Name</span>,
-      dataIndex: 'name',
-      key: '2',
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['ascend'],
-    },
-    {
-     
-       title:<span className="dragHandler">Domain</span>,
-      dataIndex: 'domain',
-      key: '3',
-      sorter: (a, b) => a.domain.length - b.domain.length,
-      sortDirections: ['ascend'],
-    },
-    
-   
-    {
-      title:<span className="dragHandler">Password</span>,
-      dataIndex: 'original_password',
-      key: '6',
-      sorter: (a, b) => a.original_password.length - b.original_password.length,
-      sortDirections: ['ascend'],
-    },
-    
-    {
-      
-      title:<span className="dragHandler">Authorization Key</span>,
-      dataIndex: 'public_key',
-      key: '7',
-      render: (_, record) => (
-
-        <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
-          <Typography sx={{ fontWeight: showKey ? 400 : 700, fontSize: showKey ? "14px" : "22px" }}>{visibleBrandId === record.id ? record.public_key : '................'}</Typography>
-
-          <Space size="middle" className='cursor-pointer'>
-            {visibleBrandId === record.id ?
-              <EyeInvisibleOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => toggleKey(record)} /> :
-              <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => toggleKey(record.id)} />
-            }
-          </Space>
-        </Stack>
-      ),
-      sorter: (a, b) => a.public_key.length - b.public_key.length,
-      sortDirections: ['ascend'],
-    },
-    {
- 
-      title:<span className="dragHandler">Margin Calls</span>,
-      dataIndex: 'margin_call',
-      key: '8',
-      sorter: (a, b) => a.margin_call.length - b.margin_call.length,
-      sortDirections: ['ascend'],
-
-    },
-     {
-      title:<span className="dragHandler">Actions</span>,
-      dataIndex: 'trading_accounts',
-      key: '9',
-      render: (text, record) => {
-        return (
-          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
-        )
-      },
-      
-     },
-    // {
-    //   title: 'Actions',
-    //   dataIndex: 'type',
-    //   key: '9',
-    //   render: (_, record) => (
-    //     <Space size="middle" className='cursor-pointer'>
-    //       <EditOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => showModal(record.id)} />
-    //       <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CustomDeleteDeleteHandler(record.id, token, DeleteBrand, setIsLoading)} />
-
-    //     </Space>
-    //   ),
-    // },
-
-  ];
- 
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -209,13 +247,22 @@ const BrandList = () => {
         <CustomTable
             direction="/brand"
             formName = "Brand List" 
-            columns={columns}
+            columns={newColumns}
             data={BrandsList} 
             headerStyle={headerStyle}
             total={totalRecords}
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+
+            isUpated={isUpdated}
+           
+            table_name= "brands"
+            setSortDirection = {setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery = {Brands_List}
+            LoadingHandler={LoadingHandler}
           />
         <CustomModal
           isModalOpen={isModalOpen}

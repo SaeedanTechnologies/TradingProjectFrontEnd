@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from 'react'
-import { PlusCircleOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, EyeOutlined, DeleteOutlined,CaretUpOutlined,CaretDownOutlined } from '@ant-design/icons';
 import { Space, Spin, Tag, theme } from 'antd';
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 import { Link, useNavigate } from 'react-router-dom';
 import CustomTextField from '../../components/CustomTextField';
-import pusher from '../../pusher';
 import { Trading_Accounts_List, Delete_Trading_Account, Save_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomModal from '../../components/CustomModal';
 import { useSelector, useDispatch } from 'react-redux';
-import {CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import TradingModal from './TradingModal'
-import { setAccountID, setTradingAccountsData,setSelectedTradingAccountsIDs } from '../../store/TradeSlice';
+import { setAccountID, setSelectedTradingAccountsIDs, setTradingAccountsData } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
-import { CheckBrandPermission } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
-import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
+import { CheckBrandPermission } from '../../utils/helpers';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
+
 
 
 const Index = ({ title, direction }) => {
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
-  
   const [tradingAccountsList, setTradingAccountsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,9 +30,12 @@ const Index = ({ title, direction }) => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
+  const [searchedColumn, setSearchedColumn] = useState('');
   const [perPage, setPerPage] = useState(10)
+
 
 
   const token = useSelector(({ user }) => user?.user?.token)
@@ -46,229 +46,233 @@ const Index = ({ title, direction }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  
+  const setTradeId = (id) => {
+    dispatch(setAccountID(id))
+    
+    navigate('/single-trading-accounts/details/live-order')
+
+  }
 
   const renderColumns = [
     {
       title:<span className="dragHandler">LoginID</span>,
       dataIndex: 'loginId',
       key: '1',
-      sorter: (a, b) => a.loginId?.length - b.loginId?.length,
+      sorter: (a, b) => a.loginId.length - b.loginId.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
+
+
     },
     {
       title:<span className="dragHandler">Trading Group Id</span>,
       dataIndex: 'trading_group_id',
       key: '1',
-      sorter: (a, b) => a.trading_group_id?.length - b.trading_group_id?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.trading_group_id.length - b.trading_group_id.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
-      title:<span className="dragHandler">{userRole === 'admin' ? 'Brand' : 'Customer'}</span>,
-      dataIndex: `${userRole === 'admin' ? 'brand' : 'customer'}`,
+      title:<span className="dragHandler">Brand</span>,
+      dataIndex: 'brand',
       key: '1',
-      sorter: (a, b) => {userRole === 'admin' ? a.brand?.length - b.brand?.length : a.customer?.length - b.customer?.length},
+      sorter: (a, b) => a.brand.length - b.brand.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '1',
-      sorter: (a, b) => a.country?.length - b.country?.length,
+      sorter: (a, b) => a.country.length - b.country.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Phone No.</span>,
       dataIndex: 'phone',
       key: '1',
-      sorter: (a, b) => a.phone?.length - b.phone?.length,
+      sorter: (a, b) => a.phone.length - b.phone.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '1',
-      sorter: (a, b) => a.email?.length - b.email?.length,
+      sorter: (a, b) => a.email.length - b.email.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '1',
-      sorter: (a, b) => a.leverage?.length - b.leverage?.length,
+      sorter: (a, b) => a.leverage.length - b.leverage.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Balance</span>,
       dataIndex: 'balance',
       key: '1',
-      sorter: (a, b) => a.balance?.length - b.balance?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.balance.length - b.balance.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Credit</span>,
       dataIndex: 'credit',
       key: '1',
-      sorter: (a, b) => a.credit?.length - b.credit?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.credit.length - b.credit.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Equity</span>,
       dataIndex: 'equity',
       key: '1',
-      sorter: (a, b) => a.equity?.length - b.equity?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.equity.length - b.equity.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
 
       title:<span className="dragHandler">Margin Level</span>,
       dataIndex: 'margin_level_percentage',
       key: '1',
-      sorter: (a, b) => a.margin_level_percentage?.length - b.margin_level_percentage?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.margin_level_percentage.length - b.margin_level_percentage.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '1',
-      sorter: (a, b) => a.profit?.length - b.profit?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.profit.length - b.profit.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '1',
-      sorter: (a, b) => a.swap?.length - b.swap?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.swap.length - b.swap.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
      title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '1',
-      sorter: (a, b) => a.currency?.length - b.currency?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.currency.length - b.currency.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
 
      title:<span className="dragHandler">Registration Time</span>,
       dataIndex: 'registration_time',
       key: '1',
-      sorter: (a, b) => a.registration_time?.length - b.registration_time?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.registration_time.length - b.registration_time.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Last Access Time</span>,
       dataIndex: 'last_access_time',
       key: '1',
-      sorter: (a, b) => a.last_access_time?.length - b.last_access_time?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.last_access_time.length - b.last_access_time.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
       title:<span className="dragHandler">Last Access IP</span>,
       dataIndex: 'last_access_address_IP',
       key: '1',
-      sorter: (a, b) => a.last_access_address_IP?.length - b.last_access_address_IP?.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: (a, b) => a.last_access_address_IP.length - b.last_access_address_IP.length,
+       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      }, 
     },
     {
-      title: 'Action',
+      title: 'Actions',
       dataIndex: 'type',
       key: '9',
-      render: (_, record) => {
-        return (
+      render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
-          <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() =>{ 
-            setTradeId(record)
-
-            // dispatch(setTradingAccountGroupData(record)) 
-            }} />
+          <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => setTradeId(record.id)} />
             <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
         </Space>
-      )},
+      ),
     },
   ]
 
@@ -277,43 +281,27 @@ const Index = ({ title, direction }) => {
     color: 'black', // Set the text color of the header
   };
 
-  const setTradeId = (record) => {
-    dispatch(setTradingAccountGroupData(record))
-    dispatch(setAccountID(record.id))
-    navigate('/single-trading-accounts/details/live-order')
 
-  }
-
-    const LoadingHandler = React.useCallback((isLoading)=>{
-    setIsLoading(isLoading)
-  },[])
   
  
 
   const fetchTradingAccounts = async (brandId,page) => {
     setIsLoading(true)
-    const mData = await Trading_Accounts_List(token,brandId,page,parseInt(perPage))
-
+    const mData = await Trading_Accounts_List(token,brandId,page)
     const { data: { message, payload, success } } = mData
-  
-
     setIsLoading(false)
     if (success) {
-      const tradingAccounts = payload?.data?.map((item) => ({
+      const tradingAccounts = payload.data.map((item) => ({
         id: item.id,
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
         brand: item.brand.name,
-        customer: item.brand_customer,
         country: item.country,
         phone: item.phone,
         email: item.email,
         leverage: item.leverage,
         balance: item.balance,
         credit: item.credit,
-        bonus: item.bonus,
-        commission: item.commission,
-        tax: item.tax,
         equity: item.equity,
         margin_level_percentage: item.margin_level_percentage,
         profit: item.profit,
@@ -322,9 +310,6 @@ const Index = ({ title, direction }) => {
         registration_time: item.registration_time,
         last_access_time: item.last_access_time ? item.last_access_time : '...',
         last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
-        brand_public_key: item?.brand?.public_key,
-        brand_leverage: item?.brand?.leverage,
-        brand_margin_call: item?.brand?.margin_call,
 
       }))
       setTradingAccountsList(tradingAccounts)
@@ -415,6 +400,11 @@ const Index = ({ title, direction }) => {
   setIsLoading(false)
  
 }
+
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
 
 const [marginCall, setMarginCall] = useState([])
 const [activeGroup, setActiveGroup] = useState([])
@@ -507,7 +497,10 @@ const [activeGroup, setActiveGroup] = useState([])
     }
   }
 
+
+
   useEffect(() => {
+
   switch (direction) {
     case 1:
       if (userRole === 'brand') {
@@ -529,42 +522,7 @@ const [activeGroup, setActiveGroup] = useState([])
       } else {
         fetchMarginCalls(null, CurrentPage);
       }
-
   }
-  const channel = pusher.subscribe('trading_accounts');
-        channel.bind('update', (data) => {
-          const mData = [data]
-          console.log(data)
-          const isExist = !!marginCall.find(x => x.id === data.id);
-          debugger
-          if(data.status === 'margin_call' && !isExist ){
-            const tradingAccounts = mData?.map((item) => ({
-              id: item.id,
-              loginId: item.login_id,
-              trading_group_id: item.trading_group_id,
-              country: item.country,
-              phone: item.phone,
-              email: item.email,
-              leverage: item.leverage,
-              balance: item.balance,
-              credit: item.credit,
-              equity: item.equity,
-              margin_level_percentage: item.margin_level_percentage,
-              profit: item.profit,
-              swap: item.swap,
-              currency: item.currency,
-              registration_time: item.registration_time,
-              last_access_time: item.last_access_time ? item.last_access_time : '...',
-              last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
-            }))
-            setMarginCall(tradingAccounts)
-          }
-          
-        });
-  return () => {
-    channel.unbind('update');
-    pusher.unsubscribe('trading_accounts');
-  };
 }, [direction]);
 
 
@@ -575,11 +533,11 @@ const [activeGroup, setActiveGroup] = useState([])
 
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>{title}</h1>
-          {/* <CustomTextField
+          <CustomTextField
             label='Search'
             sx={{ width: '300px' }}
 
-          /> */}
+          />
           
     
             
@@ -587,35 +545,34 @@ const [activeGroup, setActiveGroup] = useState([])
             Text='Add New Trading Account'
             style={{ height: '48px', }}
             icon={<PlusCircleOutlined />}
-            onClickHandler={() => setIsModalOpen(true)}
+            onClickHandler={() => navigate('/trading-accounts-entry')}
           />)}
 
            
          
         </div>
         {direction === 1 && (
-          <div className='mb-6'>
           <CustomTable
-            direction="/single-trading-accounts/details/live-order"
-            formName = "Trading Accounts" 
-            columns={renderColumns}
-            data={tradingAccountsList} 
-            headerStyle={headerStyle}
-            total={totalRecords}
-            onPageChange = {onPageChange}
-            current_page={CurrentPage}
-            token = {token}
-            isUpated={isUpdated}
-            setSelecetdIDs={setSelectedTradingAccountsIDs}
-            setTableData = {setTradingAccountGroupData}
-            table_name= "trading_accounts"
-            setSortDirection = {setSortDirection}
-            perPage={parseInt(perPage)}
-            setPerPage={setPerPage}
-            SearchQuery = {Trading_Accounts_List}
-            LoadingHandler={LoadingHandler}
+          direction="/trading-accounts"
+          formName = "Trading Accounts" 
+          columns={renderColumns}
+          data={tradingAccountsList} 
+          headerStyle={headerStyle}
+          total={totalRecords}
+          onPageChange = {onPageChange}
+          current_page={CurrentPage}
+          token = {token}
+          isUpated={isUpdated}
+          setSelecetdIDs={setSelectedTradingAccountsIDs}
+          setTableData = {setTradingAccountsData}
+          table_name= "trading_accounts"
+          setSortDirection = {setSortDirection}
+          perPage={perPage}
+          setPerPage={setPerPage}
+          SearchQuery = {Trading_Accounts_List}
+          LoadingHandler={LoadingHandler}
+
         />
-        </div>
         )}
         {direction === 2 && (
         <CustomTable
@@ -649,7 +606,7 @@ const [activeGroup, setActiveGroup] = useState([])
         />
         )}
 
-        <CustomModal
+        {/* <CustomModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}
           handleCancel={handleCancel}
@@ -663,7 +620,7 @@ const [activeGroup, setActiveGroup] = useState([])
             BrandID={tradingID}
             page={CurrentPage}
           />
-        </CustomModal>
+        </CustomModal> */}
 
           
         

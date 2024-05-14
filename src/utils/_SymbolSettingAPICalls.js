@@ -10,6 +10,11 @@ export const Symbol_Group_List = async (token) => {
     return res
 }
 
+export const ALL_Symbol_Group_List = async (token) => {
+    const res = await _API(`${apiUrl}/admin/getAllSymbelGroupList`, 'get', [], token)
+    return res
+}
+
 export const Feed_Data_List = async (token) => {
     const res = await _API(`${apiUrl}/admin/data_feed`, 'get', [], token)
     return res
@@ -19,6 +24,12 @@ export const Feed_Data_List = async (token) => {
 export const All_Setting_Data = async (token, page = 1, perPage = 10, searchValues) => {
     const queryParams = new URLSearchParams(searchValues).toString();
     const apiUrlWithParams = `${apiUrl}/admin/symbel_setting?page=${page}&per_page=${perPage}&${queryParams}`;
+    const res = await _API(apiUrlWithParams, 'get', [], token);
+    return res;
+};
+
+export const AllSymbelSettingList = async (token) => {
+    const apiUrlWithParams = `${apiUrl}/admin/getAllSymbelSettingList`;
     const res = await _API(apiUrlWithParams, 'get', [], token);
     return res;
 };
@@ -67,6 +78,13 @@ export const Trading_Transaction_Order = async (token,brandId,page) => {
     if(brandId){
      url = `${apiUrl}/admin/transaction_order?brand_id=${brandId}&page=${page}`
     }
+    const res = await _API(url, 'get', [], token)
+    return res
+}
+
+export const Single_Transaction_Order = async (token,id,page) => {
+   let url = `${apiUrl}/admin/transaction_order/${id}?page=${page}`
+   
     const res = await _API(url, 'get', [], token)
     return res
 }

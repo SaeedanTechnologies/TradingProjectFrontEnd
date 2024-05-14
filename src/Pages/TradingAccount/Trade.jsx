@@ -1,7 +1,7 @@
 import { Spin, theme } from 'antd';
 import React, { useState, useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes } from '../../utils/constants';
+import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes, LeverageList } from '../../utils/constants';
 
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -10,11 +10,11 @@ import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
 import { useNavigate } from 'react-router-dom';
 import { TradeValidationSchema } from '../../utils/validations';
-import { numberInputStyle } from './style';
+import { numberInputStyle } from './style'
 import { useSelector } from 'react-redux';
-import { Get_Single_Trading_Account, Post_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Get_Single_Trading_Account, Post_Group_Trade_Order, Post_Trade_Order } from '../../utils/_TradingAPICalls';
 import { Autocomplete, TextField } from '@mui/material';
-import { All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
+import { AllSymbelSettingList, All_Setting_Data } from '../../utils/_SymbolSettingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
 import axios from 'axios';
@@ -22,28 +22,39 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
+import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
 
-const Trade = ({ fetchLiveOrder }) => {
+const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
+  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
+  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 
+  // console.log('trading_group_id',trading_group_id)
 
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
   const [symbol, setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(null);
   const [type,setType] = useState(null);
-  const [volume,setVolume] = useState(0.01);
-  const [open_price,setOpen_price] = useState(0);
+  const [volume,setVolume] = useState('');
+  const [lotstep,setLotStep] = useState('');
+  const [volumerange,setVolumeRange] = useState({
+    min_vol: '',
+    max_vol: ''
+  });
+  const [pipVal, setPipVal] = useState(0);
+  const [open_price,setOpen_price] = useState('');
   const [comment,setComment] = useState('');
-  const [takeProfit,setTakeProfit] = useState(0);
-  const [stopLoss,setStopLoss] = useState(0);
+  const [takeProfit,setTakeProfit] = useState('');
+  const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
-  const [pricing, setPricing] = useState({ openPrice: 0, askPrice: 0 });
+  const [pricing, setPricing] = useState({ openPrice: '', askPrice: '' });
   const [connected, setConnected] = useState(true);
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
@@ -54,6 +65,12 @@ const Trade = ({ fetchLiveOrder }) => {
   const [errors, setErrors] = useState({});
 
   //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
+
+  const lotSize = calculateLotSize(volume)
+  
+  const calculatedMargin = requiredMargin(volume,accountLeverage)
+
+  const Margin= calculateMargin(lotSize,accountLeverage)
 
   const handleProfitChange = (newValue) => {
     setTakeProfit(newValue);
@@ -106,6 +123,17 @@ const Trade = ({ fetchLiveOrder }) => {
     setComment('');
     setTakeProfit('');
     setStopLoss('');
+    setPricing({
+      ...pricing,
+      openPrice: '',
+      askPrice: ''
+    })
+    setVolumeRange({
+      ...volumerange,
+      min_vol: '',
+      max_vol: ''
+    })
+    setLotStep('')
     setStop_limit_price('')
   }
 
@@ -128,23 +156,38 @@ const Trade = ({ fetchLiveOrder }) => {
         type: typeReceive ? typeReceive : type.value,
         volume: String(volume),
         comment,
-        takeProfit: String(takeProfit),
-        stopLoss: String(stopLoss),
+        takeProfit: String(takeProfit === "" ? "" : takeProfit),
+        stopLoss: String(stopLoss === "" ? "" : stopLoss),
         stop_limit_price,
         trading_account_id,
         open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
         open_time: new Date().toISOString(),
         brand_id
       }
-
+      
+      const TradeGroupSymbolData = {
+        symbol: symbol.feed_fetch_name,
+        feed_name: symbol.feed_name,
+        order_type: order_type.value,
+        type: typeReceive ? typeReceive : type.value,
+        volume: String(volume),
+        comment,
+        takeProfit: String(takeProfit === "" ? "" : takeProfit),
+        stopLoss: String(stopLoss === "" ? "" : stopLoss),
+        stop_limit_price,
+        trading_group_id: trading_group_id,
+        open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
+        open_time: new Date().toISOString(),
+        // brand_id
+      }
       setIsLoading(true)
-      const res = await Post_Trade_Order(SymbolData, token)
+      const res = await (!CurrentPage ? Post_Group_Trade_Order(TradeGroupSymbolData, token) : Post_Trade_Order(SymbolData, token))
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
+        fetchData(null, connected); //to stop connection when no symbol is selected
         CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
-
-        fetchLiveOrder()
+        CurrentPage && fetchLiveOrder(CurrentPage)
         clearFields()
       }
       else {
@@ -165,23 +208,31 @@ const Trade = ({ fetchLiveOrder }) => {
   }
 
   const handleSubmit = (typeReceive) => {
-   { typeReceive === 'sell' ? 
-      (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+    {
+      // (balance > 0 && (calculatedMargin + Margin) < balance) 
+      balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
       createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
       typeReceive === 'buy' ? 
       (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
       createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
       createOrder(typeReceive)
+      :
+      createOrder(typeReceive)
+      :
+      CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
     }
+   
   }
 
   const fetchSymbolSettings = async () => {
     try {
       setIsLoading(true)
-      const res = await All_Setting_Data(token);
+      // const res = await All_Setting_Data(token);
+      const res = await AllSymbelSettingList(token);
       // debugger;
       const { data: { message, success, payload } } = res
-      setSymbolsList(payload.data)
+      // setSymbolsList(payload).data
+      setSymbolsList(payload)
 
       setIsLoading(false)
 
@@ -228,7 +279,7 @@ useEffect(() => {
     return () => {
         // Cleanup actions here (if needed)
         console.log('here')
-        fetchData('stop', connected); //to stop connection when component unmounts
+        fetchData(null, connected); //to stop connection when component unmounts
     };
 },[]);
 
@@ -237,21 +288,29 @@ useEffect(() => {
   //   setOpen_price(bidPrice);
   // };
 
-  const fetchBinancehData = async (symbol) => {
+  const fetchBinancehData = async (symbol, feed_name) => {
     try {
-      const response = await axios.get(`https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`);
-      const data = response?.data;
-      // setManualPricing({
-      //   ...pricing,
-      //   openPrice: data?.bidPrice,
-      //   askPrice: data?.askPrice
-      // })
-      setPricing({
-        ...pricing,
-        openPrice: parseFloat(data?.bidPrice).toFixed(5),
-        askPrice: parseFloat(data?.askPrice).toFixed(5)
-      })
-      setOpen_price(parseFloat(data?.askPrice).toFixed(5))
+      const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
+      // if(feed_name === 'binance') {
+        const response = await axios.get(endPoint);
+        const data = response?.data;
+        
+        // setManualPricing({
+        //   ...pricing,
+        //   openPrice: data?.bidPrice,
+        //   askPrice: data?.askPrice
+        // })
+        setPricing({
+          ...pricing,
+          openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
+          askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
+        })
+        setOpen_price(parseFloat(data?.askPrice))
+      // }
+      // else {
+      //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
+      // }
+     
     } catch (error) {
       // setError('Error fetching data');
       console.error(error);
@@ -271,48 +330,55 @@ useEffect(() => {
 
   const fetchData = (symbol, connected) => {
 
-    const onError = (error) => {
-      console.error('WebSocket error:', error);
-    };
+    // if(symbol?.feed_name === 'binance') {
 
-    const onClose = () => {
-      console.log('Previous WebSocket connection closed');
-    };
 
-    // const onStop = () => {
-    //   console.log('Previous WebSocket connection stopped manually');
-    // };
-    const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
-
-    // if((!connected && streamConnected)){
-
-    //   binanceStream.stop(onStop)
-    //   setStreamConnected(false)
-    //   return
-    // }
-
-    // setStreamConnected(true)
-
-    if (binanceStream) {
-      const onDataReceived = (data) => {
-        if(!data?.bidPrice){
-          fetchBinancehData(symbol?.feed_fetch_name)
-        }
-        else {
-        // console.log('Bid Price:', data.bidPrice);
-        // console.log('Ask Price:', data.askPrice);
-        setPricing({
-          ...pricing,
-          openPrice: data?.bidPrice,
-          askPrice: data?.askPrice
-        })
-        }
+      const onError = (error) => {
+        console.error('WebSocket error:', error);
       };
-
-      binanceStream.start(onDataReceived, onError, onClose);
-      // Optionally, stop the WebSocket connection when it's no longer needed  
-      // binanceStream.stop();
-    };
+  
+      const onClose = () => {
+        console.log('Previous WebSocket connection closed');
+      };
+  
+      // const onStop = () => {
+      //   console.log('Previous WebSocket connection stopped manually');
+      // };
+      const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
+  
+      // if((!connected && streamConnected)){
+  
+      //   binanceStream.stop(onStop)
+      //   setStreamConnected(false)
+      //   return
+      // }
+  
+      // setStreamConnected(true)
+  
+      if (binanceStream) {
+        const onDataReceived = (data) => {
+          if(!data?.bidPrice){
+            fetchBinancehData(symbol?.feed_fetch_name, symbol?.feed_name)
+          }
+          else {
+          // console.log('Bid Price:', data.bidPrice);
+          // console.log('Ask Price:', data.askPrice);
+          setPricing({
+            ...pricing,
+            openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
+            askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
+          })
+          }
+        };
+  
+        binanceStream.start(onDataReceived, onError, onClose);
+        // Optionally, stop the WebSocket connection when it's no longer needed  
+        // binanceStream.stop();
+      };
+    // }
+    // else {
+    //   CustomNotification({ type: "error", title: "Opps", description: `${symbol?.feed_name} not configured yet`, key: 1 })
+    // }
   }
 
 
@@ -331,11 +397,11 @@ useEffect(() => {
 
             <h1 className='text-3xl font-bold'>Create New Order</h1>
           </div>
-          <CustomTextField
+          {/* <CustomTextField
             label={'Search'}
             varient={'standard'}
             sx={{ width: '300px' }}
-          />
+          /> */}
         </div>
         <div className='flex'>
           <div className="flex-1 mr-2 ">
@@ -350,15 +416,31 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    debugger
+                    setPipVal(value.pip)
+                    setVolumeRange({
+                      ...volumerange,
+                      min_vol: value?.vol_min,
+                      max_vol: value?.vol_max
+                    })
+                    setLotStep(value?.lot_step)
+                    setVolume(value?.vol_min)
                     if (value) {
-                      setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
+                      if(value?.feed_name === 'binance'){
+                        setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       setSymbol(value)
-                      fetchBinancehData(value.feed_fetch_name)
+                      
+                      fetchBinancehData(value?.feed_fetch_name, value?.feed_name)
                       if (value && connected) {
                       // setSymbol(value)
                       // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       fetchData(value, connected);
                     }
+                      }
+                      else {
+                        CustomNotification({ type: "error", title: "Opps", description: `${value?.feed_name} not configured yet`, key: 1 })
+                      }
+                      
                     }
                     else
                       setSymbol(null)
@@ -423,11 +505,15 @@ useEffect(() => {
               <CustomNumberTextField
                       label="Volume"
                       value={volume}
-                      initialFromState={0.01}
+                      initialFromState={volumerange?.min_vol ? parseFloat(volumerange?.min_vol) : 0.01}
                       onChange={handleVolumeChange}
                       fullWidth
-                      min={0.01}
-                      step={0.01}
+                      // min={0.01}
+                      // max={100}
+                      min={volumerange?.min_vol ? parseFloat(volumerange?.min_vol) : 0.01}
+                      max={volumerange?.max_vol ? parseFloat(volumerange?.max_vol) : 100}
+                      step={lotstep ? parseFloat(lotstep) : 0.01}
+                      // step={0.01}
                     />
                 {/* <CustomTextField label={'Volume'} varient={'standard'} type="number" sx={numberInputStyle} value={volume} onChange={e => handleInputChange('volume', e.target.value)} /> */}
                 {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
@@ -473,9 +559,10 @@ useEffect(() => {
               <div className="flex-1">
                     <CustomStopLossTextField
                       label="Take Profit"
-                      value={Number(takeProfit)}
-                      initialFromState={Number(pricing?.askPrice ?? 0)}
-                      checkFirst={pricing?.askPrice ? true : false}
+                      value={takeProfit}
+                      initialFromState={pricing?.askPrice ? pricing?.askPrice : 0}
+                      // checkFirst={pricing?.askPrice ? true : false}
+                      checkFirst={takeProfit === '' ? true : false}
                       onChange={ handleProfitChange}
                       fullWidth
                       min={0}
@@ -486,9 +573,9 @@ useEffect(() => {
                 </div>
                 <CustomStopLossTextField
                       label="Stop Loss"
-                      value={Number(stopLoss)}
-                      initialFromState={Number(pricing?.askPrice ?? 0)}
-                      checkFirst={pricing?.askPrice ? true : false}
+                      value={stopLoss}
+                      initialFromState={pricing?.askPrice ? pricing?.askPrice : 0}
+                      checkFirst={stopLoss === '' ? true : false}
                       onChange={handleLossChange}
                       fullWidth
                       min={0}
@@ -500,7 +587,7 @@ useEffect(() => {
               {(type?.value === 'Buy Stop Limit' || type?.value === 'Sell Stop Limit') &&
                 <CustomTextField label={'Stop Limit Price'} varient={'standard'} type="number" sx={numberInputStyle} value={stop_limit_price} onChange={e => handleInputChange('stop_limit_price', e.target.value)} />}
             </div>
-            <b>Open Price: {pricing?.openPrice ? `(${pricing?.openPrice})` : ''} / Ask Price: {pricing?.askPrice ? `(${pricing?.askPrice})` : ''}</b>
+            {/* <b>Open Price: {pricing?.openPrice ? `(${pricing?.openPrice})` : ''} / Ask Price: {pricing?.askPrice ? `(${pricing?.askPrice})` : ''}</b> */}
             {/* <b> Open Price (Socket) : {pricing?.openPrice} / Ask Price (Socket) : {pricing?.askPrice}</b> <br /> <b> Open Price (Manual) : {manualpricing.openPrice} / Ask Price (Manual): {manualpricing.askPrice}</b> */}
             <div className="mb-4 grid grid-cols-1 gap-4">
               <CustomTextField label={'Comments'}
@@ -512,7 +599,7 @@ useEffect(() => {
             {order_type?.value === 'pending' ?
 
 
-              <div className="mb-4 grid grid-cols-1   gap-4">
+              <div className="mb-4 grid grid-cols-1 w-full gap-4">
                 <CustomButton
                   Text={"Place Order"}
                   style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
@@ -526,15 +613,15 @@ useEffect(() => {
                 />
               </div>
               :
-              <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mb-4 grid grid-cols-1 md:grid-cols-2 w-full gap-4">
                 <CustomButton
                   Text={`Sell ${pricing.askPrice ? `(${pricing.askPrice})` : ''}`}
-                  style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
+                  style={{ height: "48px",width:"100%", backgroundColor: "#D52B1E", borderColor: "#D52B1E" }}
                   // disabled={connected ? (stopLoss > pricing.askPrice && takeProfit < pricing.askPrice) ? false : true : (stopLoss > open_price && takeProfit < open_price) ? false : true}
                   onClickHandler={() => handleSubmit('sell')}
                 />
                 <CustomButton Text={`Buy ${pricing.openPrice ? `(${pricing.openPrice})` : ''}`}
-                  style={{ height: "48px" }}
+                  style={{ height: "48px",width:"100%" }}
                   // disabled={connected ? (stopLoss < pricing.askPrice && takeProfit > pricing.askPrice) ? false : true : (stopLoss < open_price && takeProfit > open_price) ? false : true}
                   onClickHandler={() => handleSubmit('buy')}
                 />
