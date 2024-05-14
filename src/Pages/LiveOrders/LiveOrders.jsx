@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
-import { setLiveOrdersSelectedIds,setLiveOrdersData,deleteCloseOrderById } from '../../store/TradeOrders';
+import { setLiveOrdersSelectedIds,setLiveOrdersData, } from '../../store/TradeOrders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 

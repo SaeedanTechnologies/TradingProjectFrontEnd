@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 import CustomTable from '../../components/CustomTable';
 import moment from 'moment';
 
-import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
-import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import {  Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import {  setCloseOrdersSelectedIds,setCloseOrdersData} from '../../store/TradeOrders';
 
 
 
@@ -21,6 +21,12 @@ const CloseOrder = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+
+   const [isUpdated, setIsUpdated] = useState(true)
+  const [perPage, setPerPage] = useState(10)
+  const [sortDirection, setSortDirection] = useState("")
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
 
 
   const headerStyle = {
@@ -209,6 +215,33 @@ const CloseOrder = () => {
     // },
   ];
 
+   const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+
+   useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
+
+
+     useEffect(() => {
+    setIsUpdated(true)
+
+        
+     if(userRole === 'brand' ){
+      fetchCloseOrders(userBrand.public_key,CurrentPage)
+    }
+    else{
+      fetchCloseOrders(null,CurrentPage)
+    }
+
+  }, [perPage])
+
+    const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
 
 
 
@@ -218,17 +251,28 @@ const CloseOrder = () => {
       <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
         <h1 className='text-2xl font-bold'>Close Orders</h1>
          <CustomTable
-          direction="/close-orders"
+          direction="/close-orders-entry"
           formName = "Close Orders" 
-          columns={columns}
+          columns={newColumns}
           data={closeOrders} 
           headerStyle={headerStyle}
           total={totalRecords}
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
-          editPermissionName="close_orders_update"
-          deletePermissionName="close_orders_delete"
+   
+            
+          
+          isUpated={isUpdated}
+          setSelecetdIDs={setCloseOrdersSelectedIds}
+          setTableData = {setCloseOrdersData}
+          table_name= "trade_orders"
+          setSortDirection = {setSortDirection}
+          perPage={perPage}
+          setPerPage={setPerPage}
+          SearchQuery = {Get_Trade_Order}
+          LoadingHandler={LoadingHandler}
+
         />
       </div>
     </Spin>
