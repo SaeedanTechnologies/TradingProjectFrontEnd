@@ -422,7 +422,7 @@ useEffect(() => {
               fetchBinancehData(symbol?.feed_fetch_name, pipVal)
             }
             else{
-              fetchFcsapiData(value?.feed_fetch_name, value?.feed_fetch_key, pipVal)
+              fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pipVal)
             }
           }
           else {
