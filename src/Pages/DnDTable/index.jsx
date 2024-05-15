@@ -125,7 +125,23 @@ class DnDTable extends Component {
   componentDidMount() {
     this.useEffect()
   }
- 
+  createButtonAndHR = () => {
+    const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
+    if (firstColumnHeaderCell && !this.state.buttonCreated) {
+      const hr = document.createElement('hr');
+      hr.classList.add("custom-line");
+      firstColumnHeaderCell.appendChild(hr);
+
+      const button = document.createElement('button');
+      button.classList.add('custom-button');
+      button.innerText = 'Search'; // Set initial button text
+      button.style.backgroundColor = '#1CAC70'; // Set initial button color
+      button.addEventListener('click', this.handleButtonClick);
+      firstColumnHeaderCell.appendChild(button);
+
+      this.setState({ buttonCreated: true });
+    }
+  };
   async useEffect(){
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){

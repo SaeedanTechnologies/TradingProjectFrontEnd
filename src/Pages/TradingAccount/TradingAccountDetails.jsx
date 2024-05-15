@@ -10,14 +10,15 @@ import PersonalData from './PersonalData';
 import Account from './Account';
 import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { CheckBrandPermission, calculateLotSize, calculateMargin, calculateNights, calculateProfitLoss, getCurrentDateTime, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
 import { LeverageList } from '../../utils/constants';
+import { setLiveOrdersData } from '../../store/LiveOrderSlice';
 
 
 const TradingAccountDetails = () => {
-
+  const dispatch = useDispatch()
   const [liveOrders, setLiveOrders] = useState([])
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -45,7 +46,7 @@ const TradingAccountDetails = () => {
 const fetchLiveOrder = async (page) => {
 
       setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['market','pending'],token,page}
+      const params ={trading_account_id,OrderTypes:['market'],token,page}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
        setIsLoading(false)
@@ -72,6 +73,7 @@ const fetchLiveOrder = async (page) => {
           totalVolumn+= parseFloat(res)
           return { ...x,swap, profit, currentPrice,open_price };
         }));
+        dispatch(setLiveOrdersData(updatedData));
         setGrandProfit(totalProfit.toFixed(2));
         setGrandVolumn(totalVolumn.toFixed(2)); 
         setGrandMargin(totalMargin.toFixed(2)); 

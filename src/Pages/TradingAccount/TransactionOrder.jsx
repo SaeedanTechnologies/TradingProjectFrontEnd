@@ -290,7 +290,7 @@ const TransactionOrder = () => {
 
   return (
     <Spin spinning={isLoading} size="large">
-      <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
+      <div className='rounded-lg' style={{ backgroundColor: colorBG }}>
         <CustomModal
           isModalOpen={isModalOpen}
           title={'Add New Transaction Order'}
