@@ -83,7 +83,7 @@ export const Trading_Margin_Calls = async (token, status,brandId,page) => {
 // }
 
 export const Trading_Transaction_Order = async (token,brandId, page = 1, perPage = 10,searchValues) => {
-    debugger
+    // debugger
     let url = `${apiUrl}/admin/transaction_order?page=${page}&per_page=${perPage}`
     const params = {brand_id:brandId}
     const queryParams = new URLSearchParams(params).toString();

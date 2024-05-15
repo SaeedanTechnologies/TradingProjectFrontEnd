@@ -95,8 +95,17 @@ const fetchSingleTradeAccount= async()=>{
     try{
         setIsLoading(true)
         setErrors({});
-        const paramsString = `name=${name}&email=${email}&country=${country}&phone=${phone}&registration_time=${registration_time}&brand_customer_id=${SelectedCustomerBrand.id}&currency=${SelectedCustomerBrand.currency}`;
-        const res = await  Put_Trading_Account(trading_account_id, paramsString, token)
+       const tradingAccountData = {
+                                  name,
+                                  email,
+                                  country,
+                                  phone,
+                                  registration_time,
+                                  brand_customer_id:SelectedCustomerBrand?.id,
+                                  currency:SelectedCustomerBrand?.currency
+                                  }
+       
+        const res = await  Put_Trading_Account(trading_account_id, tradingAccountData, token)
        const {data: {message, payload, success}} = res
        if(success)
     {

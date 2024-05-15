@@ -210,7 +210,7 @@ const TransactionOrders = () => {
 
   const fetchTransactionOrder = async (brandId,page) => {
     setIsLoading(true)
-   debugger
+  //  debugger
     const res = await Trading_Transaction_Order(token,brandId,page,parseInt(perPage))
     const { data: { message, payload, success } } = res
     setIsLoading(false)

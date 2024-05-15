@@ -291,6 +291,7 @@ const Index = ({ title, direction }) => {
  
 
   const fetchTradingAccounts = async (brandId,page) => {
+    // debugger
     setIsLoading(true)
     const mData = await Trading_Accounts_List(token,brandId,page,parseInt(perPage))
 
@@ -304,7 +305,7 @@ const Index = ({ title, direction }) => {
         loginId: item.login_id,
         trading_group_id: item.trading_group_id,
         brand: item.brand.name,
-        customer: item.brand_customer,
+        customer: item.brand_customer?.name,
         country: item.country,
         phone: item.phone,
         email: item.email,
