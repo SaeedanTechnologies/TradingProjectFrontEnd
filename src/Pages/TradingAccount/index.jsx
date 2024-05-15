@@ -537,7 +537,7 @@ const [activeGroup, setActiveGroup] = useState([])
           const mData = [data]
           console.log(data)
           const isExist = !!marginCall.find(x => x.id === data.id);
-          debugger
+          // debugger
           if(data.status === 'margin_call' && !isExist ){
             const tradingAccounts = mData?.map((item) => ({
               id: item.id,

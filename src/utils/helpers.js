@@ -189,7 +189,7 @@ export const calculateMargin = (lotSize,accountLeverage)=>{
  return parseFloat(parseFloat(lotSize)/parseFloat(accountLeverage)).toFixed(2)
 }
 export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
-  debugger
+  // debugger
   const equity = (parseFloat(balance) + parseFloat(grandProfit) + parseFloat(credit) + parseFloat(bonus)).toFixed(2);
   return equity
 }

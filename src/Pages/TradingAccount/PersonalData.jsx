@@ -11,6 +11,8 @@ import { GetAllBrandsCustomerList } from '../../utils/_BrandListAPI';
 import { Autocomplete,TextField } from '@mui/material'
 import CustomNotification from '../../components/CustomNotification';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
+import {Countries} from '../../utils/constants'
+
 
 const PersonalData = () => {
   const token = useSelector(({user})=> user?.user?.token );
@@ -20,8 +22,9 @@ const PersonalData = () => {
   const [name,setName] = useState('')
   const [registration_time,setRegistration_time ] =  useState(moment().format('YYYY-MM-DD'))
   const [email,setEmail] = useState('')
-  const [country, setCountry] = useState('')
+  
   const [phone,setPhone] = useState('')
+  const [SelectedCountry,SetSelectedCountry] = useState(null)
   const [SelectedCustomerBrand,SetSelectedCustomerBrand] = useState(null)
   const [isLoading,setIsLoading] = useState(false)
   const trading_account_id = useSelector((state)=>state?.trade?.trading_account_id)
@@ -41,9 +44,6 @@ const PersonalData = () => {
       case 'email':
         setEmail(value);
         break;
-          case 'country':
-        setCountry(value);
-        break;
         case 'phone':
         setPhone(value);
         break; 
@@ -53,6 +53,7 @@ const PersonalData = () => {
  
   
 const fetchSingleTradeAccount= async()=>{
+      // debugger
       setIsLoading(true)
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res
@@ -61,11 +62,13 @@ const fetchSingleTradeAccount= async()=>{
       setBrandCustomerList(customersList)
 
 
+
       setIsLoading(false)
       if(success){
         setName(payload?.name)
         setEmail(payload?.email)
-        setCountry(payload?.country)
+        const selectedCountry = Countries.find(country => country.label === payload?.country?.charAt(0).toUpperCase() + payload?.country?.slice(1))
+        SetSelectedCountry(selectedCountry)
         setPhone(payload?.phone)
         const registeredDate = payload?.registration_time.split(" ")[0]
         setRegistration_time(registeredDate)
@@ -80,7 +83,7 @@ const fetchSingleTradeAccount= async()=>{
     const clearFields = () =>{
       setName('');
       setEmail('');
-      setCountry('')
+      SetSelectedCountry(null)
       setPhone('')
       setRegistration_time('')
     }
@@ -98,7 +101,7 @@ const fetchSingleTradeAccount= async()=>{
        const tradingAccountData = {
                                   name,
                                   email,
-                                  country,
+                                  country:SelectedCountry?.label,
                                   phone,
                                   registration_time,
                                   brand_customer_id:SelectedCustomerBrand?.id,
@@ -189,45 +192,59 @@ const fetchSingleTradeAccount= async()=>{
         />
         </div>
 
+       
+
         <div>
-        <CustomTextField
-          name='Country'
-          type={'text'}
-          varient='standard'
-          label='Country'
-          value={country}
-          onChange={e => handleInputChange('country', e.target.value)}
-          sx={numberInputStyle}
-        />
+            <Autocomplete
+              name="Countries"
+                        id="Countries"
+                        variant={'standard'}
+                        options={Countries}
+                        getOptionLabel={ (option) => option.label ? option.label : ""}
+                        value={SelectedCountry}
+                        onChange={(e, value) => {
+                          if (value) {
+                          
+                            SetSelectedCountry(value)
+                          }
+                          else
+                            SetSelectedCountry(null)
+                        }}
+                        renderInput={(params) =>
+                          <TextField {...params} name="Country" label="Select Country" variant="standard" />
+                }
+              />
         </div>
+
 
         <div>
         { userRole === 'brand' &&
-    <Autocomplete
-    name="Customers"
-    id="Customers"
-    variant={'standard'}
-    options={BrandCustomerList}
-    getOptionLabel={ (option) => option.name ? option.name : ""}
-    value={SelectedCustomerBrand}
-    onChange={(e, value) => {
-      if (value) {
-       
-        SetSelectedCustomerBrand(value)
-         setName(value?.name);
-          setEmail(value?.email);
-          setCountry(value?.country);
-          setPhone(value?.phone);
+          <Autocomplete
+          name="Customers"
+          id="Customers"
+          variant={'standard'}
+          options={BrandCustomerList}
+          getOptionLabel={ (option) => option.name ? option.name : ""}
+          value={SelectedCustomerBrand}
+          onChange={(e, value) => {
+            if (value) {
+            
+              SetSelectedCustomerBrand(value)
+              setName(value?.name);
+                setEmail(value?.email);
+                const selectedCountry = Countries.find(country => country.label === value?.country.charAt(0).toUpperCase() + value?.country.slice(1))
+                SelectedCountry(selectedCountry)
+                setPhone(value?.phone);
 
-      
-      }
-      else
-        SetSelectedCustomerBrand(null)
-    }}
-    renderInput={(params) =>
-      <TextField {...params} name="Customer" label="Select Customer" variant="standard" />
-    }
-  />
+            
+            }
+            else
+              SetSelectedCustomerBrand(null)
+          }}
+          renderInput={(params) =>
+            <TextField {...params} name="Customer" label="Select Customer" variant="standard" />
+          }
+        />
         }   
      
         </div>

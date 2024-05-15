@@ -185,7 +185,7 @@ const BrandModal = ({ setIsModalOpen, fetchBrands, BrandID }) => {
         <CustomAutocomplete
           label="Select Leverage"
           name='Leverage'
-          varient="standard"
+          variant="standard"
           options={LeverageList}
           value={leverage}
           getOptionLabel={(option) => option.title ? option.title : ""}
