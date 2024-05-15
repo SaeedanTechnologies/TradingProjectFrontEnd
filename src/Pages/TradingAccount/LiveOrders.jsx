@@ -1,4 +1,4 @@
-import { theme, Spin } from 'antd';
+import { theme, Spin, Table } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
@@ -11,10 +11,10 @@ import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
 
-const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin }) => {
+const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin, totalSwap }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
-  const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
   const location = useLocation()
@@ -32,9 +32,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     },
     {  
       title:<span className="dragHandler">Time</span>,
-      dataIndex: 'time',
+      dataIndex: 'created_at',
       key: '2',
-      render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm')}</span>,
+      render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm:ss')}</span>,
       sorter: (a, b) => a.time.length - b.time.length,
       sortDirections: ['ascend'],
     
@@ -58,14 +58,14 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       title: <span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: 'stopLoss',
-      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
+      sorter: (a, b) => a?.stopLoss.length - b?.stopLoss.length,
       sortDirections: ['ascend'],
     },
     {
       title: <span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: 'takeProfit',
-      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
+      sorter: (a, b) => a?.takeProfit.length - b?.takeProfit.length,
       sortDirections: ['ascend'],
     },
     {
@@ -73,6 +73,20 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       dataIndex: 'open_price',
       key: 'open_price',
       sorter: (a, b) => a.open_price.length - b.open_price.length,
+      sortDirections: ['ascend'],
+    },
+    {
+      title: <span className="dragHandler">Current Price</span>,
+      dataIndex: 'currentPrice',
+      key: 'currentPrice',
+      sorter: (a, b) => a.currentPrice.length - b.currentPrice.length,
+      sortDirections: ['ascend'],
+    },
+    {
+      title: <span className="dragHandler">Swap</span>,
+      dataIndex: 'swap',
+      key: 'swap',
+      sorter: (a, b) => a.profit.length - b.profit.length,
       sortDirections: ['ascend'],
     },
     {
@@ -169,16 +183,25 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
-            footer={()=> <span className='text-sm font-bold text-arial'>
-             <MinusCircleOutlined /> 
-             Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
-             Equity: {calculateEquity(balance, grandProfit)} {CurrencyName}  &nbsp;
-             {tradeOrder.length > 0  &&
-             <span> Margin: {margin}</span>}&nbsp;
-             Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
-             {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
-             
-            </span>}
+            summary={() => (
+              <Table.Summary fixed>
+                <Table.Summary.Row className='bg-gray-300'>
+                  <Table.Summary.Cell index={0} colSpan={9}>
+                  <span className='text-sm font-bold text-arial'>
+                      <MinusCircleOutlined /> 
+                      Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
+                      Equity: {calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName}  &nbsp;
+                      {tradeOrder.length > 0  &&
+                      <span> Margin: {margin}</span>}&nbsp;
+                      Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
+                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
+                      </span>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{grandProfit}</Table.Summary.Cell>
+                </Table.Summary.Row>
+              </Table.Summary>
+            )}
           />
       </div>
     </Spin>

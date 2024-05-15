@@ -9,7 +9,7 @@ const RootLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Layout hasSider>
-      <Sidebar collapsed={collapsed} />
+      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <Layout
         style={{
           marginLeft: collapsed ? 80 : 250,

@@ -91,8 +91,8 @@ const SymbolGroupEntry = () => {
     setVolMin('');
     setVolMax('');
     // setTradingInterval('')
-    setTradingIntervalStartTime(null)
-    setTradingIntervalEndTime(null)
+    setTradingIntervalStartTime("")
+    setTradingIntervalEndTime("")
   }
   const handleSubmit = async()=> {
     debugger
@@ -266,8 +266,8 @@ const SymbolGroupEntry = () => {
       setVolMin(payload.vol_min);
       setVolMax(payload.vol_max);
       // setTradingInterval(payload.trading_interval);
-      setTradingIntervalStartTime(payload.trading_interval_start_time)
-      setTradingIntervalEndTime(payload.trading_interval_end_time)
+      setTradingIntervalStartTime(payload?.trading_interval_start_time)
+      setTradingIntervalEndTime(payload?.trading_interval_end_time)
       setSwap(payload.swap);
     }
   }

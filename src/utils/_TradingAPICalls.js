@@ -46,23 +46,24 @@ export const Delete_Trading_Account = async(TradingID, token)=>{
 }
 
 
-export const Get_Trade_Order = async({trading_account_id,OrderTypes,brandId,token,page})=>{
-  
+export const Get_Trade_Order = async({trading_account_id,OrderTypes=['market', 'pending'],brandId,token,page = 1, perPage= 10000, searchValues})=>{
+ 
   let apiRoute = null;
-  
-  const orderTypeQuery = OrderTypes.map(type => `order_type[]=${type}`).join('&');
-     apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&${orderTypeQuery}`
+  const queryParams = new URLSearchParams(searchValues).toString();
+  const orderTypeQuery = OrderTypes?.map(type => `order_type[]=${type}`).join('&');
+     apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&per_page=${perPage}&${orderTypeQuery}&${queryParams}`
   
   if(trading_account_id)
   {
-    apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&trading_account_id=${trading_account_id}&${orderTypeQuery}`;
+    apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&per_page=${perPage}&trading_account_id=${trading_account_id}&${orderTypeQuery}`;
   }
   if(brandId){
-    apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&brandId=${brandId}&${orderTypeQuery}`;
+    apiRoute = `${apiUrl}/admin/trade_orders/?page=${page}&per_page=${perPage}&brandId=${brandId}&${orderTypeQuery}`;
   }
     
 
   const res = await _API(apiRoute, 'get', [], token);
+  
   return res;
 }
 

@@ -20,13 +20,12 @@ const LiveOrders = () => {
   const [liveOrders, setLiveOrders] = useState([])
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
-  const [totalRecords, setTotalRecords] = useState(0)
   const [isUpdated, setIsUpdated] = useState(true)
+  const [totalRecords, setTotalRecords] = useState(0)
   const [perPage, setPerPage] = useState(10)
   const [sortDirection, setSortDirection] = useState("")
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-
 
 
   const headerStyle = {
@@ -63,12 +62,10 @@ const LiveOrders = () => {
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
-
+      setIsUpdated(false)
 
     }
-
   }
-
     const onPageChange = (page) =>{
       if(userRole === 'brand' ){
       fetchLiveOrder(userBrand.public_key,page)
@@ -78,8 +75,14 @@ const LiveOrders = () => {
     }
   }
 
+  
+    const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
   useEffect(() => {
-       
+    setIsUpdated(true)
+
     if(userRole === 'brand' ){
       fetchLiveOrder(userBrand.public_key,CurrentPage)
     }
@@ -268,10 +271,7 @@ const LiveOrders = () => {
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
   const [newColumns , setNewColumns] = useState(columns)
 
-   useEffect(() => {
-  const newCols = columns.filter(x => checkedList.includes(x.key));
-  setNewColumns(newCols)
-  }, [checkedList]);
+ 
 
    useEffect(() => {
     setIsUpdated(true)
@@ -286,9 +286,14 @@ const LiveOrders = () => {
 
   }, [perPage])
 
-  const LoadingHandler = React.useCallback((isLoading)=>{
-    setIsLoading(isLoading)
-  },[])
+
+    useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
+
+
+
 
 
   return (

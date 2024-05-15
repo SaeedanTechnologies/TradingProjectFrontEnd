@@ -42,13 +42,19 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const [symbol, setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(null);
   const [type,setType] = useState(null);
-  const [volume,setVolume] = useState(0.01);
-  const [open_price,setOpen_price] = useState(0);
+  const [volume,setVolume] = useState('');
+  const [lotstep,setLotStep] = useState('');
+  const [volumerange,setVolumeRange] = useState({
+    min_vol: '',
+    max_vol: ''
+  });
+  const [pipVal, setPipVal] = useState(0);
+  const [open_price,setOpen_price] = useState('');
   const [comment,setComment] = useState('');
   const [takeProfit,setTakeProfit] = useState('');
   const [stopLoss,setStopLoss] = useState('');
   const [stop_limit_price,setStop_limit_price] = useState('')
-  const [pricing, setPricing] = useState({ openPrice: 0, askPrice: 0 });
+  const [pricing, setPricing] = useState({ openPrice: '', askPrice: '' });
   const [connected, setConnected] = useState(true);
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
@@ -112,11 +118,22 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
     setSymbol(null);
     setOrder_type(null);
     setType(null);
-    setVolume(0.01);
+    setVolume('');
     setOpen_price('');
     setComment('');
     setTakeProfit('');
     setStopLoss('');
+    setPricing({
+      ...pricing,
+      openPrice: '',
+      askPrice: ''
+    })
+    setVolumeRange({
+      ...volumerange,
+      min_vol: '',
+      max_vol: ''
+    })
+    setLotStep('')
     setStop_limit_price('')
   }
 
@@ -168,8 +185,8 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
+        fetchData(null, connected); //to stop connection when no symbol is selected
         CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
-
         CurrentPage && fetchLiveOrder(CurrentPage)
         clearFields()
       }
@@ -262,7 +279,7 @@ useEffect(() => {
     return () => {
         // Cleanup actions here (if needed)
         console.log('here')
-        fetchData('stop', 'feed_name', connected); //to stop connection when component unmounts
+        fetchData(null, connected); //to stop connection when component unmounts
     };
 },[]);
 
@@ -274,9 +291,10 @@ useEffect(() => {
   const fetchBinancehData = async (symbol, feed_name) => {
     try {
       const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
-      if(feed_name === 'binance') {
+      // if(feed_name === 'binance') {
         const response = await axios.get(endPoint);
         const data = response?.data;
+        
         // setManualPricing({
         //   ...pricing,
         //   openPrice: data?.bidPrice,
@@ -284,14 +302,14 @@ useEffect(() => {
         // })
         setPricing({
           ...pricing,
-          openPrice: parseFloat(data?.bidPrice).toFixed(5),
-          askPrice: parseFloat(data?.askPrice).toFixed(5)
+          openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
+          askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
         })
-        setOpen_price(parseFloat(data?.askPrice).toFixed(5))
-      }
-      else {
-        CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
-      }
+        setOpen_price(parseFloat(data?.askPrice))
+      // }
+      // else {
+      //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
+      // }
      
     } catch (error) {
       // setError('Error fetching data');
@@ -312,7 +330,9 @@ useEffect(() => {
 
   const fetchData = (symbol, connected) => {
 
-    if(symbol?.feed_name === 'binance') {
+    // if(symbol?.feed_name === 'binance') {
+
+
       const onError = (error) => {
         console.error('WebSocket error:', error);
       };
@@ -345,8 +365,8 @@ useEffect(() => {
           // console.log('Ask Price:', data.askPrice);
           setPricing({
             ...pricing,
-            openPrice: data?.bidPrice,
-            askPrice: data?.askPrice
+            openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
+            askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
           })
           }
         };
@@ -355,10 +375,10 @@ useEffect(() => {
         // Optionally, stop the WebSocket connection when it's no longer needed  
         // binanceStream.stop();
       };
-    }
-    else {
-      CustomNotification({ type: "error", title: "Opps", description: `${symbol?.feed_name} not configured yet`, key: 1 })
-    }
+    // }
+    // else {
+    //   CustomNotification({ type: "error", title: "Opps", description: `${symbol?.feed_name} not configured yet`, key: 1 })
+    // }
   }
 
 
@@ -396,15 +416,31 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    debugger
+                    setPipVal(value.pip)
+                    setVolumeRange({
+                      ...volumerange,
+                      min_vol: value?.vol_min,
+                      max_vol: value?.vol_max
+                    })
+                    setLotStep(value?.lot_step)
+                    setVolume(value?.vol_min)
                     if (value) {
-                      setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
+                      if(value?.feed_name === 'binance'){
+                        setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       setSymbol(value)
+                      
                       fetchBinancehData(value?.feed_fetch_name, value?.feed_name)
                       if (value && connected) {
                       // setSymbol(value)
                       // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       fetchData(value, connected);
                     }
+                      }
+                      else {
+                        CustomNotification({ type: "error", title: "Opps", description: `${value?.feed_name} not configured yet`, key: 1 })
+                      }
+                      
                     }
                     else
                       setSymbol(null)
@@ -469,12 +505,15 @@ useEffect(() => {
               <CustomNumberTextField
                       label="Volume"
                       value={volume}
-                      initialFromState={0.01}
+                      initialFromState={volumerange?.min_vol ? parseFloat(volumerange?.min_vol) : 0.01}
                       onChange={handleVolumeChange}
                       fullWidth
-                      min={0.01}
-                      max={100}
-                      step={0.01}
+                      // min={0.01}
+                      // max={100}
+                      min={volumerange?.min_vol ? parseFloat(volumerange?.min_vol) : 0.01}
+                      max={volumerange?.max_vol ? parseFloat(volumerange?.max_vol) : 100}
+                      step={lotstep ? parseFloat(lotstep) : 0.01}
+                      // step={0.01}
                     />
                 {/* <CustomTextField label={'Volume'} varient={'standard'} type="number" sx={numberInputStyle} value={volume} onChange={e => handleInputChange('volume', e.target.value)} /> */}
                 {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
@@ -521,8 +560,9 @@ useEffect(() => {
                     <CustomStopLossTextField
                       label="Take Profit"
                       value={takeProfit}
-                      initialFromState={pricing?.askPrice ?? 0}
-                      checkFirst={pricing?.askPrice ? true : false}
+                      initialFromState={pricing?.askPrice ? pricing?.askPrice : 0}
+                      // checkFirst={pricing?.askPrice ? true : false}
+                      checkFirst={takeProfit === '' ? true : false}
                       onChange={ handleProfitChange}
                       fullWidth
                       min={0}
@@ -534,8 +574,8 @@ useEffect(() => {
                 <CustomStopLossTextField
                       label="Stop Loss"
                       value={stopLoss}
-                      initialFromState={pricing?.askPrice ?? 0}
-                      checkFirst={pricing?.askPrice ? true : false}
+                      initialFromState={pricing?.askPrice ? pricing?.askPrice : 0}
+                      checkFirst={stopLoss === '' ? true : false}
                       onChange={handleLossChange}
                       fullWidth
                       min={0}

@@ -14,6 +14,7 @@ import {TextField,InputAdornment} from '@mui/material'
 import { numberInputStyle } from '../TradingAccount/style';
 import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
 import { TransactionOrderValidationSchema } from '../../utils/validations';
+import CustomModal from '../../components/CustomModal';
 
 
 const MDWEntry = () => {
@@ -24,6 +25,9 @@ const MDWEntry = () => {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
   const [transactionOrders, setTransactionOrders] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error_message, setErrorMessage] = useState('');
+  // const [skipaccounts, setSkipAccounts] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(null)
   const [currency, setCurrency] = useState('')
   const [amount, setAmount] = useState('')
@@ -33,7 +37,7 @@ const MDWEntry = () => {
     { label: "balance", value: "balance" },
     { label: "commission", value: "commission" },
     { label: "tax", value: "tax" },
-    { label: "Credit", value: "Credit" },
+    { label: "credit", value: "credit" },
     { label: "bonus", value: "bonus" }
   ])
   const [SelectedOperation, setSElectedOperation] = useState(null);
@@ -68,7 +72,11 @@ const MDWEntry = () => {
     }
   };
 
-  const handleSubmit = async (type) => {
+  const closeWithdrawOrder = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleSubmit = async (type, skip) => {
     try {
       // setIsLoading(true)
         await TransactionOrderValidationSchema.validate({
@@ -84,23 +92,15 @@ const MDWEntry = () => {
         currency,
         name: '',
         trading_group_id: id,
+        skip: skip,
         group: name,
         type,
         status: "requested"
 
       }
       setIsLoading(true)
-      Swal.fire({
-        title: "Are you sure?",
-        text: type === "withdraw" ? "you want to widthdraw" : "you want to deposit",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#1CAC70",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "yes proceed it",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const res = await Save_Group_Order(TransactionOrderGroupData, id, token)
+
+      const res = await Save_Group_Order(TransactionOrderGroupData, id, token)
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
@@ -110,12 +110,26 @@ const MDWEntry = () => {
       else {
         setIsLoading(false)
         CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
+        setIsModalOpen(true)
+        setErrorMessage(payload?.balance)
       }
     
-        }else{
-          setIsLoading(false)
-        }
-      });
+
+      // Swal.fire({
+      //   title: "Are you sure?",
+      //   text: type === "withdraw" ? "you want to widthdraw" : "you want to deposit",
+      //   icon: "warning",
+      //   showCancelButton: true,
+      //   confirmButtonColor: "#1CAC70",
+      //   cancelButtonColor: "#d33",
+      //   confirmButtonText: "yes proceed it",
+      // }).then(async (result) => {
+      //   if (result.isConfirmed) {
+       
+      //   }else{
+      //     setIsLoading(false)
+      //   }
+      // });
 
     } catch (err) {
       CustomNotification({ type: "error", title: "Transaction Order", description: err.message, key: 1 });
@@ -148,10 +162,37 @@ const MDWEntry = () => {
 
    useEffect(() => {
     fetchSingleTradeAccount()
+    setSelectedMethod({ label: "balance", value: "balance" })
   }, [])
 
   return (
     <Spin spinning={isLoading} size="large">
+      <CustomModal
+          isModalOpen={isModalOpen}
+          title={'Mass Deposit/Withdraw'}
+          // handleOk={handleOk}
+          handleCancel={closeWithdrawOrder}
+          footer={[]}
+          width={400}
+
+        >
+          {error_message}<br />
+          Do You still want to Proceed?
+          <div className="mb-4 flex justify-center gap-4 mt-4">
+                <CustomButton
+                  Text={"Cancel"}
+                  style={{ height: "48px", width:'206px', backgroundColor: "#D52B1E", borderColor: "#D52B1E", borderRadius: "8px" }}
+                  onClickHandler={() => setIsModalOpen(false)}
+                />
+                <CustomButton Text={"Proceed"}
+                  style={{ height: "48px", width:'206px', borderRadius: "8px" }}
+                  onClickHandler={() => {
+                    setIsModalOpen(false)
+                    handleSubmit('withdraw', true)
+                  }}
+                />
+              </div>
+        </CustomModal>
     <div className='p-8' style={{ backgroundColor: colorBG }}>
       <div className='flex gap-3'>
         <img
@@ -221,11 +262,11 @@ const MDWEntry = () => {
           <CustomButton
             Text={"With Draw"}
             style={{ height: "48px", backgroundColor: "#D52B1E", borderColor: "#D52B1E", borderRadius: "8px" }}
-            onClickHandler={() => handleSubmit('withdraw')}
+            onClickHandler={() => handleSubmit('withdraw', false)}
           />
           <CustomButton Text={"Deposit"}
             style={{ height: "48px", borderRadius: "8px" }}
-            onClickHandler={() => handleSubmit('deposit')}
+            onClickHandler={() => handleSubmit('deposit', false)}
           />
         </div>
       </div>
