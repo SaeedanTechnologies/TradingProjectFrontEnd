@@ -1,5 +1,6 @@
 import axios from "axios"
 import { _API } from "./_API"
+import CustomNotification from "../components/CustomNotification"
 
 
 export const GetCryptoData = async () => {
@@ -7,7 +8,6 @@ export const GetCryptoData = async () => {
     return res
 }
 export const GetFasciData = async (access_key) => {
-
 
   const formatData = (data, group) => {
     return data.map(item => ({
@@ -18,14 +18,30 @@ export const GetFasciData = async (access_key) => {
   }
  
       try {
+        let forexData=[];
+        let cryptoData=[];
+        let stockData=[];
+
         const forexResponse = await axios.get(`https://fcsapi.com/api-v3/forex/list?type=forex&access_key=${access_key}`);
-        const forexData = await forexResponse.data.response;
+        if(forexResponse.data.status){
+           forexData = await forexResponse.data.response;
+        }else{
+          CustomNotification({ type: "error", title: "Opps", description: `forex ${forexResponse.data.msg}`, key: 1 })
+        }
 
         const cryptoResponse = await axios.get(`https://fcsapi.com/api-v3/crypto/list?type=crypto&access_key=${access_key}`);
-        const cryptoData = await cryptoResponse.data.response;
+        if(cryptoResponse.data.status){
+          cryptoData = await cryptoResponse.data.response;
+       }else{
+         CustomNotification({ type: "error", title: "Opps", description: `crypto ${cryptoResponse.data.msg}`, key: 1 })
+       }
 
         const stockResponse = await axios.get(`https://fcsapi.com/api-v3/stock/list?country=United-states&access_key=${access_key}`);
-        const stockData = await stockResponse.data.response;
+        if(stockResponse.data.status){
+          stockData = await stockResponse.data.response;
+       }else{
+         CustomNotification({ type: "error", title: "Opps", description: `stock ${stockResponse.data.msg}`, key: 1 })
+       } 
 
         // Format the data into options array with appropriate structure
          const formattedForexData = formatData(forexData, 'Forex');

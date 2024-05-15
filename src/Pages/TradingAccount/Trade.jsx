@@ -23,6 +23,7 @@ import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
+import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 
 const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -185,7 +186,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
-        fetchData(null, connected); //to stop connection when no symbol is selected
+        fetchData(null, connected, 0); //to stop connection when no symbol is selected
         CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
         CurrentPage && fetchLiveOrder(CurrentPage)
         clearFields()
@@ -279,7 +280,7 @@ useEffect(() => {
     return () => {
         // Cleanup actions here (if needed)
         console.log('here')
-        fetchData(null, connected); //to stop connection when component unmounts
+        fetchData(null, connected, 0); //to stop connection when component unmounts
     };
 },[]);
 
@@ -288,13 +289,14 @@ useEffect(() => {
   //   setOpen_price(bidPrice);
   // };
 
-  const fetchBinancehData = async (symbol, feed_name) => {
+
+  const fetchBinancehData = async (symbol, pip) => {
     try {
       const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
+
       // if(feed_name === 'binance') {
         const response = await axios.get(endPoint);
         const data = response?.data;
-        
         // setManualPricing({
         //   ...pricing,
         //   openPrice: data?.bidPrice,
@@ -302,10 +304,36 @@ useEffect(() => {
         // })
         setPricing({
           ...pricing,
-          openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
-          askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
+          openPrice: parseFloat(data?.bidPrice).toFixed(pip),
+          askPrice: parseFloat(data?.askPrice).toFixed(pip)
         })
-        setOpen_price(parseFloat(data?.askPrice))
+        setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
+      // }
+      // else {
+      //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
+      // }
+     
+    } catch (error) {
+      // setError('Error fetching data');
+      console.error(error);
+    }
+  };
+
+  const fetchFcsapiData = async (symbol, key, pip) => {
+    try {
+      const endPoint1= `https://fcsapi.com/api-v3/${key}/latest?id=${symbol?.toLowerCase()}&access_key=lg8vMu3Zi5mq8YOMQiXYgV`
+
+      // if(feed_name === 'binance') {
+        const response = await axios.get(endPoint1);
+        const data = response?.data;
+        console.log(data)
+
+        setPricing({
+          ...pricing,
+          openPrice: parseFloat(data?.response[0]?.o).toFixed(pip),
+          askPrice: parseFloat(data?.response[0]?.c).toFixed(pip)
+        })
+        setOpen_price(parseFloat(data?.response[0]?.c).toFixed(pip))
       // }
       // else {
       //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
@@ -320,15 +348,45 @@ useEffect(() => {
   const handleCheckboxClick = (e) => {
     setConnected(e.target.checked)
     if(symbol){
-      fetchData(symbol, e.target.checked)
+      fetchData(symbol, e.target.checked, pipVal)
     }
+    // if(symbol?.feed_name === 'binance'){
+    //   fetchData(symbol, e.target.checked, pipVal)
+    // }
+    // if(symbol?.feed_name === 'fcsapi'){
+    //   fetchData(symbol, e.target.checked, pipVal)
+    // }
     // if(!e.target.checked){
     //   setOpen_price(pricing.askPrice)
     // }
   }
 
+  const fetchFcsapiSocketData = (currencyIds, pip) => {
+    const onDataReceived = (data) => {
+      // Handle received data here
+      console.log('Received Fcsapi data:', data);
+  };
 
-  const fetchData = (symbol, connected) => {
+  // Define onError callback function
+  const onError = (error) => {
+      // Handle WebSocket error here
+      console.error('WebSocket error:', error);
+  };
+
+  // Call the function to establish the WebSocket connection
+  const { start, stop } = establishWebSocketConnection('lg8vMu3Zi5mq8YOMQiXYgV', currencyIds, onDataReceived, onError);
+
+  // Start the WebSocket connection when the component mounts
+  start();
+
+  // Stop the WebSocket connection when the component unmounts
+  // return () => {
+  //     stop();
+  // };
+  }
+
+
+  const fetchData = (symbol, connected, pip) => {
 
     // if(symbol?.feed_name === 'binance') {
 
@@ -344,7 +402,7 @@ useEffect(() => {
       // const onStop = () => {
       //   console.log('Previous WebSocket connection stopped manually');
       // };
-      const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
+      const binanceStream = BinanceBidAsk(symbol, connected);
   
       // if((!connected && streamConnected)){
   
@@ -358,16 +416,26 @@ useEffect(() => {
       if (binanceStream) {
         const onDataReceived = (data) => {
           if(!data?.bidPrice){
-            fetchBinancehData(symbol?.feed_fetch_name, symbol?.feed_name)
+            if(symbol?.feed_name === 'binance'){
+              fetchBinancehData(symbol?.feed_fetch_name, pipVal)
+            }
+            else{
+              fetchFcsapiData(value?.feed_fetch_name, value?.feed_fetch_key, pipVal)
+            }
           }
           else {
           // console.log('Bid Price:', data.bidPrice);
           // console.log('Ask Price:', data.askPrice);
-          setPricing({
+          if(symbol?.feed_name === 'binance'){
+            setPricing({
             ...pricing,
-            openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
-            askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
+            openPrice: parseFloat(data?.bidPrice).toFixed(pip),
+            askPrice: parseFloat(data?.askPrice).toFixed(pip)
           })
+          }
+          else {
+            console.log('Fcsapi Data here')
+          }
           }
         };
   
@@ -388,12 +456,12 @@ useEffect(() => {
       <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
         <div className='flex gap-3 justify-between'>
           <div className='flex gap-3 w-full'>
-            <img
+            {/* <img
               src={ARROW_BACK_CDN}
               alt='back icon'
               className='cursor-pointer'
               onClick={() => navigate(-1)}
-            />
+            /> */}
 
             <h1 className='text-3xl font-bold'>Create New Order</h1>
           </div>
@@ -416,8 +484,7 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    debugger
-                    setPipVal(value.pip)
+                    setPipVal(value?.pip)
                     setVolumeRange({
                       ...volumerange,
                       min_vol: value?.vol_min,
@@ -426,17 +493,23 @@ useEffect(() => {
                     setLotStep(value?.lot_step)
                     setVolume(value?.vol_min)
                     if (value) {
+                    setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
+                    setSymbol(value)
                       if(value?.feed_name === 'binance'){
-                        setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
-                      setSymbol(value)
                       
-                      fetchBinancehData(value?.feed_fetch_name, value?.feed_name)
+                      fetchBinancehData(value?.feed_fetch_name, value?.pip)
                       if (value && connected) {
                       // setSymbol(value)
                       // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
-                      fetchData(value, connected);
+                      fetchData(value, connected, value?.pip);
                     }
                       }
+                      else if (value?.feed_name === 'fcsapi'){
+                        // fetchData(null, connected, 0); //to stop connection when binance symbol is not selected
+                        fetchData(value, connected, value?.pip);
+                        fetchFcsapiData(value?.feed_fetch_name, value?.feed_fetch_key, value?.pip)
+                      }
+
                       else {
                         CustomNotification({ type: "error", title: "Opps", description: `${value?.feed_name} not configured yet`, key: 1 })
                       }

@@ -62,7 +62,7 @@ const fetchLiveOrder = async (page) => {
           const currentPrice = x.type === "sell"? parseFloat(askPrice).toFixed(pipVal) ?? 0  : parseFloat(bidPrice).toFixed(pipVal) ?? 0
           const profit = parseFloat(calculateProfitLoss(currentPrice , parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
           totalProfit+= parseFloat(profit)
-          const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.type === "sell"? parseFloat(askPrice)  : parseFloat(bidPrice) ).toFixed(2))
+          const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.open_price ).toFixed(2))
           const margin = calculateMargin(res, accountLeverage)
           const totalNights = calculateNights(x.created_at,currentDateTime)
           const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0)
