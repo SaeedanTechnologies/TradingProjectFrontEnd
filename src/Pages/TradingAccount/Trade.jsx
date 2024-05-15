@@ -23,6 +23,7 @@ import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
+import CandleStickChart from '../../components/CandleStickChart';
 
 const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -594,7 +595,7 @@ useEffect(() => {
                 value={comment}
                 onChange={e => handleInputChange('comment', e.target.value)}
                 multiline={true}
-                rows={4} />
+                rows={1} />
             </div>
             {order_type?.value === 'pending' ?
 
@@ -630,7 +631,7 @@ useEffect(() => {
           </div>
           <div className="flex-1 ml-2 ">
             <div className="mb-4">
-
+                  <CandleStickChart />
               {/* <BinanceBidAsk symbol={"BTCUSD"}/> */}
             </div>
             {/* Your chart content */}

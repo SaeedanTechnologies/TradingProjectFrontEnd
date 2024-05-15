@@ -56,3 +56,8 @@ export const MassCloseOrders = async(Params, token)=>{
   const res = await  _API(`${apiUrl}/admin/massCloseOrders`,'post',Params,token)
   return res
 }
+
+export const UpdateMultiTradeOrder = async(Params, token)=>{
+  const res = await  _API(`${apiUrl}/admin/update_multi_trade_order`,'post',Params,token)
+  return res
+}
