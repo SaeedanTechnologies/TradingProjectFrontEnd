@@ -60,27 +60,31 @@ const CloseOrder = () => {
 
 
   const onPageChange = (page) =>{
-   
-     fetchCloseOrder(page)      
-  
+     fetchCloseOrder(page)  
     }
-
-
   const columns = [
     {
-      title:<span className="dragHandler">Open Time</span>,
+      title:<span className="dragHandler">Symbol</span>,
+      dataIndex: 'symbol',
+      key: '5',
+      sorter: (a, b) => a.symbol.length - b.symbol.length,
+      sortDirections: ['ascend'],
+
+    },
+    {
+      title:<span className="dragHandler">Time</span>,
       dataIndex: 'open_time',
       key: '1',
       sorter: (a, b) => a.open_time.length - b.open_time.length,
       sortDirections: ['ascend'],
     },
-    {
-      title:<span className="dragHandler">Order No</span>,
-      dataIndex: 'order_no',
-      key: '2',
-      sorter: (a, b) => a.order_no.length - b.order_no.length,
-      sortDirections: ['ascend'],
-    },
+    // {
+    //   title:<span className="dragHandler">Order No</span>,
+    //   dataIndex: 'order_no',
+    //   key: '2',
+    //   sorter: (a, b) => a.order_no.length - b.order_no.length,
+    //   sortDirections: ['ascend'],
+    // },
     {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
@@ -97,21 +101,6 @@ const CloseOrder = () => {
 
     },
     {
-      title:<span className="dragHandler">Symbol</span>,
-      dataIndex: 'symbol',
-      key: '5',
-      sorter: (a, b) => a.symbol.length - b.symbol.length,
-      sortDirections: ['ascend'],
-
-    },
-    {
-      title:<span className="dragHandler">Open Price</span>,
-      dataIndex: 'open_price',
-      key: '6',
-      sorter: (a, b) => a.open_price.length - b.open_price.length,
-      sortDirections: ['ascend'],
-    },
-    {
       title:<span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: '7',
@@ -123,6 +112,13 @@ const CloseOrder = () => {
       dataIndex: 'takeProfit',
       key: '8',
       sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
+      sortDirections: ['ascend'],
+    },
+    {
+      title:<span className="dragHandler">Open Price</span>,
+      dataIndex: 'open_price',
+      key: '6',
+      sorter: (a, b) => a.open_price.length - b.open_price.length,
       sortDirections: ['ascend'],
     },
     {
@@ -139,13 +135,13 @@ const CloseOrder = () => {
       sorter: (a, b) => a.close_price.length - b.close_price.length,
       sortDirections: ['ascend'],
     },
-    {
-      title:<span className="dragHandler">Reason</span>,
-      dataIndex: 'reason',
-      key: '11',
-      sorter: (a, b) => a.reason.length - b.reason.length,
-      sortDirections: ['ascend'],
-    },
+    // {
+    //   title:<span className="dragHandler">Reason</span>,
+    //   dataIndex: 'reason',
+    //   key: '11',
+    //   sorter: (a, b) => a.reason.length - b.reason.length,
+    //   sortDirections: ['ascend'],
+    // },
     {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
@@ -172,8 +168,6 @@ const CloseOrder = () => {
     // },
   ];
   
-  
-  
   const headerStyle = {
     background: TableHeaderColor, 
     color: 'black', 
@@ -192,8 +186,6 @@ const CloseOrder = () => {
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{backgroundColor: colorBG}}>
-        
-
         <CustomTable
             direction="/single-trading-accounts/details/close-order"
             formName = "Close Orders" 

@@ -154,7 +154,8 @@ const SymbolSettingsEntry = () => {
     try {
       const res = await Feed_Data_List(token);
       const { data: { message, success, payload } } = res
-      setFeedNameList(payload.data);
+      const updatedFeeds = payload?.data?.filter(x=> x.enabled === "1")
+      setFeedNameList(updatedFeeds);
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
     }

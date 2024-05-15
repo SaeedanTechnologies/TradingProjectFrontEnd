@@ -10,10 +10,12 @@ import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
+import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin, totalSwap }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
+  const liveOrdersData = useSelector(({liveOrder})=> liveOrder.liveorder)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
@@ -161,6 +163,22 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       UpdateTradingAccountStatus()
     }
   }, [balance,grandProfit,lotSize,accountLeverage])
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        if(liveOrdersData.length > 0){
+          const Params  = {orders:liveOrdersData}
+          const res = await UpdateMultiTradeOrder(Params, token);
+        }
+       
+      } catch (error) {
+        console.error('Error calling API:', error);
+      }
+    }, 30000); // Interval set to 1000ms (1 second)
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
   const UpdateTradingAccountStatus = async()=>{
     const Params = {
       status: "margin_call", 

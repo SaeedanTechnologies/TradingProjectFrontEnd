@@ -192,14 +192,12 @@ const LiveOrders = () => {
   },[])
   useEffect(() => {
     setIsUpdated(true)
-
     if(userRole === 'brand' ){
       fetchLiveOrder(userBrand.public_key,CurrentPage)
     }
     else{
       fetchLiveOrder(null,CurrentPage)
     }
-
   }, [])
   return (
     <Spin spinning={isLoading} size="large">
