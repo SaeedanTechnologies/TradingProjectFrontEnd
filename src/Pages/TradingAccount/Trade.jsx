@@ -363,29 +363,27 @@ useEffect(() => {
     // }
   }
 
-  const fetchFcsapiSocketData = (currencyIds, pip) => {
-    const onDataReceived = (data) => {
-      // Handle received data here
-      console.log('Received Fcsapi data:', data);
-  };
+  // const fetchFcsapiSocketData = (api_key, currencyIds, pip) => {
+  //       // Define callback functions
+  //   const onDataReceived = (data) => {
+  //     console.log('Data received:', data);
+  //   };
 
-  // Define onError callback function
-  const onError = (error) => {
-      // Handle WebSocket error here
-      console.error('WebSocket error:', error);
-  };
+  //   const onError = (error) => {
+  //     console.error('WebSocket error:', error);
+  //   };
 
-  // Call the function to establish the WebSocket connection
-  const { start, stop } = establishWebSocketConnection('lg8vMu3Zi5mq8YOMQiXYgV', currencyIds, onDataReceived, onError);
+  //   const onClose = () => {
+  //     console.log('WebSocket connection closed.');
+  //   };
 
-  // Start the WebSocket connection when the component mounts
-  start();
+  //   // Call establishWebSocketConnection with callbacks
+  //   const closeWebSocketConnection = establishWebSocketConnection(api_key, currencyIds, onDataReceived, onError, onClose);
 
-  // Stop the WebSocket connection when the component unmounts
-  // return () => {
-  //     stop();
-  // };
-  }
+  //   // Close the WebSocket connection when needed
+  //     // closeWebSocketConnection();
+
+  // }
 
 
   const fetchData = (symbol, connected, pip) => {
@@ -507,8 +505,9 @@ useEffect(() => {
                     }
                       }
                       else if (value?.feed_name === 'fcsapi'){
-                        // fetchData(null, connected, 0); //to stop connection when binance symbol is not selected
-                        fetchData(value, connected, value?.pip);
+                        fetchData(null, connected, 0); //to stop connection when binance symbol is not selected
+                        // fetchData(value, connected, value?.pip);
+                        // fetchFcsapiSocketData('lg8vMu3Zi5mq8YOMQiXYgV' ,value?.feed_fetch_name, value?.pip)
                         fetchFcsapiData(value?.feed_fetch_name, value?.feed_fetch_key, value?.pip)
                       }
 

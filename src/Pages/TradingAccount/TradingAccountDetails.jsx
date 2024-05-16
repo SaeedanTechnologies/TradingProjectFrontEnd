@@ -156,12 +156,12 @@ const onChange = (key) => {
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
         <div className='flex gap-3'>
-          {/* <img 
+          <img 
            src={ARROW_BACK_CDN} 
            alt='back icon' 
            className='cursor-pointer'
            onClick={() => navigate(-1)}
-           /> */}
+           />
           <h1 className='text-3xl font-bold'>Trading Account</h1>
         </div>
        
