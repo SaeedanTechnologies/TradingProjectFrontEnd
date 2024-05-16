@@ -180,6 +180,10 @@ const Index = () => {
     // },
   ];
 
+  const [newColumns , setNewColumns] = useState(columns)
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+
   
 
 const FetchData = async (page) =>{
@@ -237,15 +241,21 @@ const DeleteHandler = async (id)=>{
     FetchData(page)
   }
 
-  const LoadingHandler = React.useCallback((isLoading)=>{
-    setIsLoading(isLoading)
-  },[])
-
-
 useEffect(() => {
   setIsUpdated(true)
   FetchData(CurrentPage)
 }, [perPage])
+
+
+ useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
+
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
 
   return (
     <Spin spinning={isLoading} size="large">
@@ -271,7 +281,7 @@ useEffect(() => {
       <CustomTable
           direction="/symbol-groups-entry"
           formName = "Symbol Groups" 
-          columns={columns}
+          columns={newColumns}
           data={SymbolList} 
           headerStyle={headerStyle}
           total={totalRecords}
@@ -287,7 +297,9 @@ useEffect(() => {
           setPerPage={setPerPage}
           SearchQuery = {Symbol_Group_List}
           LoadingHandler={LoadingHandler}
+          
 
+          
         />
       </div>
        

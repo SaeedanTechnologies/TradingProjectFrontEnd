@@ -291,6 +291,7 @@ const Index = ({ title, direction }) => {
  
 
   const fetchTradingAccounts = async (brandId,page) => {
+    // debugger
     setIsLoading(true)
     const mData = await Trading_Accounts_List(token,brandId,page,parseInt(perPage))
 
@@ -537,7 +538,7 @@ const [activeGroup, setActiveGroup] = useState([])
           const mData = [data]
           console.log(data)
           const isExist = !!marginCall.find(x => x.id === data.id);
-          debugger
+          // debugger
           if(data.status === 'margin_call' && !isExist ){
             const tradingAccounts = mData?.map((item) => ({
               id: item.id,

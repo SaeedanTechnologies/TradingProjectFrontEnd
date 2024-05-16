@@ -52,7 +52,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           LoadingHandler={LoadingHandler}
           footer={footer}
           column_name={column_name}
-          summary = {summary}
+           summary = {summary}
           addButton={addButton}
         />
         {

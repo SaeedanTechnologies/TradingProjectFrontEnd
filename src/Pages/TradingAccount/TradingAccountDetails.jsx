@@ -44,7 +44,6 @@ const TradingAccountDetails = () => {
    const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
    const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 const fetchLiveOrder = async (page) => {
-
       setIsLoading(true)
       const params ={trading_account_id,OrderTypes:['market'],token,page}
       const mData = await Get_Trade_Order(params)

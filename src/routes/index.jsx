@@ -42,6 +42,9 @@ import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder';
 import NewFeedData from '../Pages/Symbols/DataFeed/NewFeedData'
 import BrandPermissions from '../Pages/BrandPermissions/BrandPermissions';
 import TradingAccountsEntry from '../Pages/TradingAccount/TradingAccountsEntry';
+import LiveOrdersEntery from '../Pages/LiveOrders/LiveOrdersEntery';
+import CloseOrdersEntery from '../Pages/CloseOrder/CloseOrderEntery';
+
 
 export const router = createBrowserRouter([
   {
@@ -84,7 +87,9 @@ export const router = createBrowserRouter([
       },
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
       { path: "/live-orders", element: <LiveOrders /> },
+      { path:"/live-orders-entry", element:<LiveOrdersEntery/>},
       { path: "/close-orders", element: <CloseOrder /> },
+      { path:"/close-orders-entry",element:<CloseOrdersEntery/>},
       { path: "/transaction-orders", element: <TransactionOrders /> },
       { path: "/transaction-orders-entry", element: <TransactionOrderEntry /> },
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },
