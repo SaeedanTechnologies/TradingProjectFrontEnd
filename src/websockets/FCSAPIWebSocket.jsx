@@ -1,36 +1,45 @@
-import { w3cwebsocket as W3CWebSocket } from 'websocket';
+import io from 'socket.io-client';
 
-const establishWebSocketConnection = (apiKey, currencyIds) => {
-    const socket = new W3CWebSocket('wss://fcsapi.com');
+const establishWebSocketConnection = (api_key, currencyIds, onDataReceived, onError, onClose) => {
+    console.log('Connecting to WebSocket server...');
+    // Connect to the WebSocket server
+    // const socket = io.connect('wss://fcsapi.com/', { transports: ['websocket'],
+    // path : "/v3/" });
+    const socket = io.connect('wss://fcsapi.com', { transports: ['websocket'], timeout: 5000});
+    // const socket = io.connect('wss://fcsapi.com', { timeout: 5000   }); // 5000 milliseconds (adjust as needed)
+    console.log(socket)
+debugger
+    // Handle connection errors
+    socket.on('connect_error', (error) => {
+        console.error('WebSocket connection error:', error);
+        onError(error);
+    });
 
-    socket.onerror = function(error) {
-        console.error('WebSocket error:', error);
-    };
-
-    socket.onopen = function() {
-        // Verify Your API key on server
-        socket.send(JSON.stringify({ type: 'heartbeat', api_key: 'lg8vMu3Zi5mq8YOMQiXYgV' }));
-
-        // Connect Ids on server
-        socket.send(JSON.stringify({ type: 'real_time_join', currency_ids: currencyIds }));
-    };
-
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.type === 'data_received') {
-            // Data contains: Price, ASK price, BID price
-            console.log(data);
-            // Add your logic to handle the received data
-        }
-    };
-
-    socket.onclose = function() {
+    // Handle disconnection
+    socket.on('disconnect', () => {
         console.log('WebSocket connection closed.');
-    };
+        onClose();
+    });
 
-    return () => {
-        socket.close();
-    };
+    // Handle successful connection
+    socket.on('connect', () => {
+        console.log('WebSocket connected.');
+        // Verify API key and join currency IDs
+        socket.emit('heartbeat', api_key);
+        socket.emit('real_time_join', currencyIds);
+    });
+
+    // Handle received data
+    socket.on('data_received', (data) => {
+        // Data contains: Price, ASK price, BID price
+        console.log(data);
+        onDataReceived(data);
+    });
+
+    // Return function to close the WebSocket connection
+    // return () => {
+    //     socket.disconnect();
+    // };
 };
 
 export default establishWebSocketConnection;

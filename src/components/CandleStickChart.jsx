@@ -127,7 +127,7 @@ const CandleStickChart = () => {
     };
   }, []); // Empty dependency array to run the effect only once on mount
 
-  return <div id="stock-chart-container" style={{height:"400px",width:"100%",minWidth:"200px"}}/>;
+  return <div id="stock-chart-container" style={{height:"525px",width:"100%",minWidth:"200px"}}/>;
 };
 
 export default CandleStickChart;
