@@ -110,7 +110,9 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       icon: <FileDoneOutlined />,
       children: [
         { key: '6', label: 'Live Orders', display: CheckBrandPermission(userPermissions,userRole,'live_orders_read') ? 'show' : 'hide'  },
-        { key: '7', label: 'Close Orders',display: CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide'  }
+        { key: '7', label: 'Close Orders',display: CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide'  },
+        { key: '20', label: 'Pending Orders',display: CheckBrandPermission(userPermissions,userRole,'pending_orders_read') ? 'show' : 'hide'  }
+
       ],
       label: 'Trading Orders',
          display: 'show' 
@@ -167,6 +169,9 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
         break;
       case "7":
         navigate("/close-orders");
+        break;
+      case "20":
+        navigate("/pending-orders");
         break;
       case "8":
         navigate("/transaction-orders");

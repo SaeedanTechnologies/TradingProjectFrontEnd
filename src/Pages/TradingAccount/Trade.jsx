@@ -34,7 +34,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   } = theme.useToken();
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
-  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
+  const trading_group_id = useSelector(({group}) => group?.tradingGroupData?.id)
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 
@@ -59,6 +59,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const [stop_limit_price,setStop_limit_price] = useState('')
   const [pricing, setPricing] = useState({ openPrice: '', askPrice: '' });
   const [connected, setConnected] = useState(true);
+  const [lot_size, setLotSize] = useState('')
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
@@ -211,19 +212,28 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   }
 
   const handleSubmit = (typeReceive) => {
-    {
-      // (balance > 0 && (calculatedMargin + Margin) < balance) 
-      balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
-      createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
-      typeReceive === 'buy' ? 
-      (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
-      createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
-      createOrder(typeReceive)
-      :
-      createOrder(typeReceive)
-      :
-      CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
-    }
+      const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
+      const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
+      const margin = calculateMargin(res, accountLeverage)
+      if(margin > balance || balance === 0){
+      CustomNotification({ 
+        type: "error", 
+        title: "Validation", 
+        description: 'Margin must be less than your balance', 
+        key: 1 
+      })
+      }else{
+        balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+        createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
+        typeReceive === 'buy' ? 
+        (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
+        createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
+        createOrder(typeReceive)
+        :
+        createOrder(typeReceive)
+        :
+        CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
+      }
    
   }
 
@@ -486,6 +496,8 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    
+                    setLotSize(value?.lot_size)
                     setPipVal(value?.pip)
                     setVolumeRange({
                       ...volumerange,
@@ -705,7 +717,7 @@ useEffect(() => {
           </div>
           <div className="flex-1 ml-2 ">
             <div className="mb-4">
-                  <CandleStickChart />
+                  <CandleStickChart symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
               {/* <BinanceBidAsk symbol={"BTCUSD"}/> */}
             </div>
             {/* Your chart content */}

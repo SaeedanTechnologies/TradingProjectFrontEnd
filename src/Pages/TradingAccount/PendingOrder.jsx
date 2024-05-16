@@ -78,13 +78,6 @@ const PendingOrder = () => {
       sorter: (a, b) => a.open_time.length - b.open_time.length,
       sortDirections: ['ascend'],
     },
-    // {
-    //   title:<span className="dragHandler">Order No</span>,
-    //   dataIndex: 'order_no',
-    //   key: '2',
-    //   sorter: (a, b) => a.order_no.length - b.order_no.length,
-    //   sortDirections: ['ascend'],
-    // },
     {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
@@ -120,52 +113,7 @@ const PendingOrder = () => {
       key: '6',
       sorter: (a, b) => a.open_price.length - b.open_price.length,
       sortDirections: ['ascend'],
-    },
-    // {
-    //   title:<span className="dragHandler">Close Time</span>,
-    //   dataIndex: 'close_time',
-    //   key: '9',
-    //   sorter: (a, b) => a.close_time.length - b.close_time.length,
-    //   sortDirections: ['ascend'],
-    // },
-    // {
-    //   title:<span className="dragHandler">Close Price</span>,
-    //   dataIndex: 'close_price',
-    //   key: '10',
-    //   sorter: (a, b) => a.close_price.length - b.close_price.length,
-    //   sortDirections: ['ascend'],
-    // },
-    // {
-    //   title:<span className="dragHandler">Reason</span>,
-    //   dataIndex: 'reason',
-    //   key: '11',
-    //   sorter: (a, b) => a.reason.length - b.reason.length,
-    //   sortDirections: ['ascend'],
-    // },
-    // {
-    //   title:<span className="dragHandler">Swap</span>,
-    //   dataIndex: 'swap',
-    //   key: '12',
-    //   sorter: (a, b) => a.swap.length - b.swap.length,
-    //   sortDirections: ['ascend'],
-    // },
-    // {
-    //   title:<span className="dragHandler">Profit</span>,
-    //   dataIndex: 'profit',
-    //   key: '13',
-    //   sorter: (a, b) => a.profit.length - b.profit.length,
-    //   sortDirections: ['ascend'],
-    // },
-    // {
-    //   title: 'Actions',
-    //   dataIndex: 'actions',
-    //   key: '14',
-    //   render: (_, record) => (
-    //     <Space size="middle" className='cursor-pointer'>
-    //       <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }}  onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchPendingOrder)} /> 
-    //     </Space>
-    //   ),
-    // },
+    }
   ];
   
   const headerStyle = {

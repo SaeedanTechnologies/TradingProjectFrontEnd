@@ -186,7 +186,7 @@ class DnDTable extends Component {
           }
       ]
   }));
-  debugger
+  
   console.log(columnsWithChildren)
   this.setState({columns: columnsWithChildren})
     try{
@@ -619,6 +619,7 @@ class DnDTable extends Component {
         onResize: this.handleResize(index),
       }),
     }));
+    
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method

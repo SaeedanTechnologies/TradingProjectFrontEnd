@@ -176,11 +176,11 @@ const TransactionOrder = () => {
     // handle sumbit
     let isApplicable = true;
 
-    if (method === "balance" && type === 'withdraw') {
-      isApplicable = parseFloat(currentTradingAccountData.balance) >= amount;
+    if ( type === 'withdraw') {
+      isApplicable = parseFloat(currentTradingAccountData[method]) >= amount;
       if (!isApplicable) {
-        setIsModalOpen(false)
-        CustomNotification({ type: "error", title: "Transaction Order", description: "Insufficient Balance", key: 1 });
+        // setIsModalOpen(false)
+        CustomNotification({ type: "error", title: "Transaction Order", description: "Insufficient "+method, key: 1 });
         return;
       }
     }
@@ -214,21 +214,19 @@ const TransactionOrder = () => {
         setIsLoading(false)
         setIsModalOpen(false)
         // for update redux value
-        if (method === 'balance' && type === 'withdraw') {
-          const cBal = parseFloat(currentTradingAccountData.balance) - parseFloat(amount)
+        if (type === 'withdraw') {
+          const cBal = parseFloat(currentTradingAccountData[method]) - parseFloat(amount)
           const updatedAccountData = {
             ...currentTradingAccountData,
-            balance: cBal,
-            equity: cBal
+            [method]: cBal,
           };
           dispatch(setTradingAccountGroupData(updatedAccountData))
 
-        } else if (method === 'balance' && type === 'deposit') {
-          const cBal = parseFloat(currentTradingAccountData.balance) + parseFloat(amount)
+        } else if (type === 'deposit') {
+          const cBal = parseFloat(currentTradingAccountData[method]) + parseFloat(amount)
           const updatedAccountData = {
             ...currentTradingAccountData,
-            balance: cBal,
-            equity: cBal
+            [method]: cBal,
           };
           dispatch(setTradingAccountGroupData(updatedAccountData))
         }
@@ -238,12 +236,12 @@ const TransactionOrder = () => {
       }
       else {
         setIsLoading(false)
-        setIsModalOpen(false)
+        // setIsModalOpen(false)
         CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
       }
 
     } catch (err) {
-      setIsModalOpen(false)
+      // setIsModalOpen(false)
       CustomNotification({ type: "error", title: "Transaction Order", description: err.message, key: 1 })
       const validationErrors = {};
       err.inner.forEach(error => {

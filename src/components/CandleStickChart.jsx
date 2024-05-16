@@ -112,6 +112,7 @@ const CandleStickChart = () => {
   
     options.series[0].data = [
       [1317888000000, 372.5101, 375, 372.2, 372.52],
+      [13178880000, 372.5101, 375, 372.2, 372.52],
       // Add more data here...
     ];
   

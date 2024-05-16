@@ -26,14 +26,14 @@ const BrandList = () => {
 
 
   const columns = [
-    {
-      title:<span className="dragHandler">Id</span>,
-      dataIndex: 'id',
-      key: '1',
-      hidden: true,
+    // {
+    //   title:<span className="dragHandler">Id</span>,
+    //   dataIndex: 'id',
+    //   key: '1',
+    //   hidden: true,
 
       
-    },
+    // },
     {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
@@ -131,7 +131,7 @@ const BrandList = () => {
     },
      {
       title:<span className="dragHandler">Actions</span>,
-      dataIndex: 'trading_accounts',
+      dataIndex: 'trading_accounts', 
       key: '8',
       render: (text, record) => {
         return (
@@ -143,7 +143,7 @@ const BrandList = () => {
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [BrandsList, setBrandsList] = useState([])
+  const [BrandsList, setBrandsList] = useState([]) 
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
   const [newColumns , setNewColumns] = useState(columns)
@@ -167,6 +167,7 @@ const BrandList = () => {
     setIsLoading(true)
     const mData = await Brands_List(token,page)
     const { data: { message, payload, success } } = mData
+    
       setIsLoading(false)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
