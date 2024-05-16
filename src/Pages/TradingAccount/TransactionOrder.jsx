@@ -42,11 +42,11 @@ const TransactionOrder = () => {
   const [comment, setComment] = useState('')
   const [brandId, setBrandId] = useState(-1)
   const [OperationsList, setOperationList] = useState([
-    { "label": "balance", "value": "balance" },
-    { "label": "commission", "value": "commission" },
-    { "label": "tax", "value": "tax" },
-    { "label": "Credit", "value": "Credit" },
-    { "label": "bonus", "value": "bonus" }
+    { "label": "Balance", "value": "balance" },
+    { "label": "Commission", "value": "commission" },
+    { "label": "Tax", "value": "tax" },
+    { "label": "Credit", "value": "credit" },
+    { "label": "Bonus", "value": "bonus" }
   ])
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)

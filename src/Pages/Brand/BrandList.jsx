@@ -64,7 +64,7 @@ const BrandList = () => {
     {
       title:<span className="dragHandler">Password</span>,
       dataIndex: 'original_password',
-      key: '6',
+      key: '4',
       sorter: (a, b) => a.original_password.length - b.original_password.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -78,7 +78,7 @@ const BrandList = () => {
       
       title:<span className="dragHandler">Authorization Key</span>,
       dataIndex: 'public_key',
-      key: '7',
+      key: '5',
       render: (_, record) => (
 
         <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
@@ -105,8 +105,22 @@ const BrandList = () => {
  
       title:<span className="dragHandler">Margin Calls</span>,
       dataIndex: 'margin_call',
-      key: '8',
+      key: '6',
       sorter: (a, b) => a.margin_call.length - b.margin_call.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    {
+ 
+      title:<span className="dragHandler">Leverage</span>,
+      dataIndex: 'leverage',
+      key: '7',
+      sorter: (a, b) => a.leverage.length - b.leverage.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -118,7 +132,7 @@ const BrandList = () => {
      {
       title:<span className="dragHandler">Actions</span>,
       dataIndex: 'trading_accounts',
-      key: '9',
+      key: '8',
       render: (text, record) => {
         return (
           <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
@@ -168,9 +182,11 @@ const BrandList = () => {
         original_password: brand.user.original_password,
         public_key: brand.public_key,
         margin_call:brand.margin_call,
+        leverage: brand.leverage,
         permissions: brand.user.permissions
 
       }))
+      debugger
 
       setBrandsList(brandData)
       setCurrentPage(payload.current_page)

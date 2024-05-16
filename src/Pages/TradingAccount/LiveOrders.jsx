@@ -209,6 +209,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
                       <MinusCircleOutlined /> 
                       Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
                       Equity: {calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName}  &nbsp;
+                      Credit: {parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
                       {tradeOrder.length > 0  &&
                       <span> Margin: {margin}</span>}&nbsp;
                       Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
