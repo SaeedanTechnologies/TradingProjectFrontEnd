@@ -85,6 +85,13 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       sortDirections: ['ascend'],
     },
     {
+      title: <span className="dragHandler">Comment</span>,
+      dataIndex: 'comment',
+      key: 'comment',
+      sorter: (a, b) => a.comment.length - b.comment.length,
+      sortDirections: ['ascend'],
+    },
+    {
       title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: 'swap',
@@ -99,6 +106,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       sortDirections: ['ascend'],
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
+   
     // {
     //   title: 'Actions',
     //   dataIndex: 'actions',
@@ -183,7 +191,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     const Params = {
       status: "margin_call", 
       margin_level_percentage:calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage),
-      equity:calculateEquity(balance, grandProfit)
+      equity:calculateEquity(balance, grandProfit, credit, bonus)
     }
     const res = await Put_Trading_Account(id, Params, token)
     
@@ -204,15 +212,17 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
-                  <Table.Summary.Cell index={0} colSpan={9}>
+                  <Table.Summary.Cell index={0} colSpan={10}>
                   <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
                       Equity: {calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName}  &nbsp;
+                      Credit: {parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
+                      Bonus: {parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
                       {tradeOrder.length > 0  &&
                       <span> Margin: {margin}</span>}&nbsp;
-                      Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
-                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
+                      Free Margin {calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus),margin)} &nbsp;
+                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus),margin)} %</span>}
                       </span>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>

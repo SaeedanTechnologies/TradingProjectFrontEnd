@@ -44,6 +44,8 @@ import BrandPermissions from '../Pages/BrandPermissions/BrandPermissions';
 import TradingAccountsEntry from '../Pages/TradingAccount/TradingAccountsEntry';
 import LiveOrdersEntery from '../Pages/LiveOrders/LiveOrdersEntery';
 import CloseOrdersEntery from '../Pages/CloseOrder/CloseOrderEntery';
+import PendingOrder from '../Pages/TradingAccount/PendingOrder';
+import AllPendingOrder from '../Pages/PendingOrder/PendingOrder';
 
 
 export const router = createBrowserRouter([
@@ -80,6 +82,7 @@ export const router = createBrowserRouter([
           { path: "live-order", element: <LiveOrders /> },
           { path: "symbol", element: <Trade /> },
           { path: "close-order", element: <CloseOrder /> },
+          { path: "pending-order", element: <PendingOrder /> },
           { path: "personal-data", element: <PersonalData /> },
           { path: "account-security", element: <Account /> },
           { path: "transaction-order", element: <TransactionOrder /> },
@@ -90,6 +93,7 @@ export const router = createBrowserRouter([
       { path:"/live-orders-entry", element:<LiveOrdersEntery/>},
       { path: "/close-orders", element: <CloseOrder /> },
       { path:"/close-orders-entry",element:<CloseOrdersEntery/>},
+      { path: "/pending-orders", element: <AllPendingOrder /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },
       { path: "/transaction-orders-entry", element: <TransactionOrderEntry /> },
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },

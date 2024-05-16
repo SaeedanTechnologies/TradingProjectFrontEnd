@@ -186,6 +186,8 @@ class DnDTable extends Component {
           }
       ]
   }));
+  
+  console.log(columnsWithChildren)
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
@@ -213,6 +215,7 @@ class DnDTable extends Component {
         columnsWithChildren.forEach(column => {
           columnMap[column.dataIndex] = column;
         });
+        console.log(selectedCols)
         const filteredColumns = selectedCols.map(selectedColumn => {
           const column = columnMap[selectedColumn.dataIndex];
           return column;
@@ -288,7 +291,6 @@ class DnDTable extends Component {
   }
 
   handleResize = (index) => (e, { size }) => {
-    debugger;
     this.setState(({ columns }) => {
       const nextColumns = [...columns];
       nextColumns[index] = {
@@ -300,7 +302,6 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
-    debugger;
     this.setState({ currentRecords: record });
       // this.props.dispatch(this.props.setSelecetdIDs([record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
@@ -618,6 +619,7 @@ class DnDTable extends Component {
         onResize: this.handleResize(index),
       }),
     }));
+    
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method

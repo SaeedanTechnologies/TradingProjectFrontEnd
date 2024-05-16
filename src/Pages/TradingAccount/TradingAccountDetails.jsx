@@ -15,6 +15,7 @@ import moment from 'moment';
 import { CheckBrandPermission, calculateLotSize, calculateMargin, calculateNights, calculateProfitLoss, getCurrentDateTime, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
 import { LeverageList } from '../../utils/constants';
 import { setLiveOrdersData } from '../../store/LiveOrderSlice';
+import PendingOrder from './PendingOrder';
 
 
 const TradingAccountDetails = () => {
@@ -107,27 +108,34 @@ const fetchLiveOrder = async (page) => {
   },
   {
     key: '3',
+    label: 'Pending Order',
+    children: <PendingOrder />,
+    path: "/single-trading-accounts/details/pending-order",
+    display:  CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide' 
+  },
+  {
+    key: '4',
     label: 'Close Order',
     children: <CloseOrder />,
     path: "/single-trading-accounts/details/close-order",
     display:  CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide' 
   },
   {
-    key: '4',
+    key: '5',
     label: 'Personal Data',
     children: <PersonalData />,
     path: "/single-trading-accounts/details/personal-data",
     display:  'show' 
   },
   {
-    key: '5',
+    key: '6',
     label: 'Account and Security',
     children: <Account />,
     path: "/single-trading-accounts/details/account-security",
     display:   'show' 
   },
   {
-    key: '6',
+    key: '7',
     label: 'Transaction Orders',
     children: <TransactionOrder />,
     path: "/single-trading-accounts/details/transaction-order",

@@ -174,16 +174,11 @@ export const requiredMargin = (volume,accountLeverage) =>{
   return (volume * lotsize) / accountLeverage
 }
 
-export const calculateMarginCallPer  = (balance,grandProfit,lotSize,accountLeverage)=>{
- return parseFloat(
-  (
-  (parseFloat(balance) + parseFloat(grandProfit))
-  /
-  ((parseFloat(lotSize).toFixed(2))/parseFloat(accountLeverage).toFixed(2))
-).toFixed(2)*100).toFixed(2)
+export const calculateMarginCallPer  = (equity, margin)=>{
+ return parseFloat((equity/margin)*100).toFixed(2)
 }
-export const calculateFreeMargin = (balance,grandProfit,lotSize,accountLeverage) =>{
-  return parseFloat((parseFloat(balance) + parseFloat(grandProfit)) - (parseFloat(lotSize)/parseFloat(accountLeverage))).toFixed(2)
+export const calculateFreeMargin = (equity, margin) =>{
+  return parseFloat((parseFloat(equity) - parseFloat(margin))).toFixed(2)
 }
 export const calculateMargin = (lotSize,accountLeverage)=>{
  return parseFloat(parseFloat(lotSize)/parseFloat(accountLeverage)).toFixed(2)
