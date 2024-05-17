@@ -72,7 +72,7 @@ const columns = [
   {
     title: <span className="dragHandler">Symbol</span>,
     dataIndex: 'name',
-    key: '5',
+    key: '6',
     sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
