@@ -111,8 +111,8 @@ class DnDTable extends Component {
   //  this.setState({isLoading: true})
  
     this.props.LoadingHandler(true)
+    const  res = await this.props.SearchQuery(this.props.token ,this.props.current_page, this.props.perPage, this.state.searchValues)
     
-    const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
     const {data:{payload, success, message}} = res
     
    //  this.setState({isLoading: false})
@@ -302,8 +302,8 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
-    this.setState({ currentRecords: record });
-      // this.props.dispatch(this.props.setSelecetdIDs([record.id]))
+      this.setState({ currentRecords: record });
+      this.props.dispatch(this.props.setSelecetdIDs([record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
         this.props.dispatch(setTradingAccountGroupData(record))
         this.props.dispatch(setAccountID(record.id))
@@ -548,6 +548,7 @@ class DnDTable extends Component {
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
+  debugger
   try{
     const Params = {
       data:{

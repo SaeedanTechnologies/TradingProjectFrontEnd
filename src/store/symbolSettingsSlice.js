@@ -22,6 +22,16 @@ export const symbolSettingsSlice = createSlice({
         });
       state.symbolSettingsData = newData;
     }, 
+    updateSymbolSettings: (state, action) => {
+      const updatedData = action.payload;
+      const index = state.symbolSettingsData.findIndex(item => item.id === updatedData.id);
+      if (index !== -1) {
+        state.symbolSettingsData[index] = {
+          ...state.symbolSettingsData[index],
+          ...updatedData,
+        };
+      }
+    },
     deleteSymbolSettingsById: (state, action) => {
       const idToDelete = action.payload;
       state.symbolSettingsData = state.symbolSettingsData.filter(item => item.id !== idToDelete);
@@ -29,6 +39,6 @@ export const symbolSettingsSlice = createSlice({
   },
 })
 
-export const {setSymbolSettingsSelecetdIDs, setSymbolSettingsData, deleteSymbolSettingsById } = symbolSettingsSlice.actions
+export const {setSymbolSettingsSelecetdIDs, setSymbolSettingsData, deleteSymbolSettingsById, updateSymbolSettings } = symbolSettingsSlice.actions
 
 export default symbolSettingsSlice.reducer
