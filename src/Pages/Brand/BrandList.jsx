@@ -16,7 +16,7 @@ import { Stack, Typography } from '@mui/material';
 
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
-import { setBrandUser  } from '../../store/BrandsSlice';
+import { setBrandSelectedIDs, setBrandUser  } from '../../store/BrandsSlice';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -37,7 +37,7 @@ const BrandList = () => {
     {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
-      key: '2',
+      key: '1',
       sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -50,7 +50,7 @@ const BrandList = () => {
      
       title:<span className="dragHandler">Domain</span>,
       dataIndex: 'domain',
-      key: '3',
+      key: '2',
       sorter: (a, b) => a.domain.length - b.domain.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -64,7 +64,7 @@ const BrandList = () => {
     {
       title:<span className="dragHandler">Password</span>,
       dataIndex: 'original_password',
-      key: '4',
+      key: '3',
       sorter: (a, b) => a.original_password.length - b.original_password.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -78,7 +78,7 @@ const BrandList = () => {
       
       title:<span className="dragHandler">Authorization Key</span>,
       dataIndex: 'public_key',
-      key: '5',
+      key: '4',
       render: (_, record) => (
 
         <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
@@ -105,7 +105,7 @@ const BrandList = () => {
  
       title:<span className="dragHandler">Margin Calls</span>,
       dataIndex: 'margin_call',
-      key: '6',
+      key: '5',
       sorter: (a, b) => a.margin_call.length - b.margin_call.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -119,7 +119,7 @@ const BrandList = () => {
  
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
-      key: '7',
+      key: '6',
       sorter: (a, b) => a.leverage.length - b.leverage.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -130,15 +130,16 @@ const BrandList = () => {
 
     },
      {
-      title:<span className="dragHandler">Actions</span>,
+      title:<span className="dragHandler">Action</span>,
       dataIndex: 'trading_accounts', 
-      key: '8',
-      render: (text, record) => {
-        return (
+      key: '7',
+      render: (text, record) => (
+        // {
+        // return (
           <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
-        )
-      },
-      
+      //   )
+      // },
+      )
      },
   ];
 
@@ -256,15 +257,20 @@ const BrandList = () => {
               Text='Add New Brand'
               style={AddnewStyle}
               icon={<PlusCircleOutlined />}
-              onClickHandler={() => showModal(0)}
+              onClickHandler={() => 
+                {
+                dispatch(setBrandSelectedIDs([0]))
+                navigate('/brand-entry')
+                }// showModal(0)
+              }
             />
           </div>
         </div>
       
         <CustomTable
-            direction="/brand"
+            direction="/brand-entry"
             formName = "Brand List" 
-            columns={newColumns}
+            columns={columns}
             data={BrandsList} 
             headerStyle={headerStyle}
             total={totalRecords}
@@ -281,7 +287,7 @@ const BrandList = () => {
             SearchQuery = {Brands_List}
             LoadingHandler={LoadingHandler}
           />
-        <CustomModal
+        {/* <CustomModal
           isModalOpen={isModalOpen}
           handleOk={handleOk}
           handleCancel={handleCancel}
@@ -295,7 +301,7 @@ const BrandList = () => {
             fetchBrands={fetchBrands}
             BrandID={BrandID}
           />
-        </CustomModal>
+        </CustomModal> */}
       </div>
       <ToastContainer />
     </Spin>

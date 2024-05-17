@@ -46,6 +46,7 @@ import LiveOrdersEntery from '../Pages/LiveOrders/LiveOrdersEntery';
 import CloseOrdersEntery from '../Pages/CloseOrder/CloseOrderEntery';
 import PendingOrder from '../Pages/TradingAccount/PendingOrder';
 import AllPendingOrder from '../Pages/PendingOrder/PendingOrder';
+import BrandEntry from '../Pages/Brand/BrandEntry';
 
 
 export const router = createBrowserRouter([
@@ -65,6 +66,7 @@ export const router = createBrowserRouter([
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/dashboard-reports", element: <Reports /> },
       { path: "/brand", element: <BrandList /> },
+      { path: "/brand-entry", element: <BrandEntry /> },
       { path: "/brand-permissions", element: <BrandPermissions /> },
       { path: "/brand-settings", element: <BrandSettings /> },
       { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },

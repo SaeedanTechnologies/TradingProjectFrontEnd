@@ -359,7 +359,7 @@ useEffect(() => {
 
   const handleCheckboxClick = (e) => {
     setConnected(e.target.checked)
-    if(symbol){
+    if(symbol?.feed_name === 'binance'){
       fetchData(symbol, e.target.checked, pipVal)
     }
     // if(symbol?.feed_name === 'binance'){
