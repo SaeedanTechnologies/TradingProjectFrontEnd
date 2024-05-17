@@ -144,6 +144,7 @@ class DnDTable extends Component {
     }
   };
   async useEffect(){
+    debugger
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
       const hr = document.createElement('hr');
@@ -310,7 +311,6 @@ class DnDTable extends Component {
         this.props.dispatch(setAccountID(record.id))
       }
       this.props.navigate(this.props.direction);
-     
   };
 
   setIsRearangments(newValue) {
@@ -475,7 +475,6 @@ class DnDTable extends Component {
               })
             } else {
               const errorMsg = getValidationMsg(message, payload)
-              debugger
               if(errorMsg) 
                 CustomNotification({
                   type: "error",
@@ -559,7 +558,7 @@ class DnDTable extends Component {
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
-  debugger
+  
   try{
     const Params = {
       data:{
@@ -715,7 +714,8 @@ class DnDTable extends Component {
                     tableHeader.querySelector(
                       `th:nth-child(${columnIndex + 1})`
                     ).textContent;
-                  if (columnName !== "Action" && columnName !== "") {
+                    
+                  if (columnName !== "Action" && columnName !== "Search"  && columnName !== "Authorization Key") {
                     this.handleRowClick(record);
                   }
                 }
