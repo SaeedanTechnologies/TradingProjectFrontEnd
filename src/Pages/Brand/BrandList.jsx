@@ -188,7 +188,7 @@ const BrandList = () => {
         permissions: brand.user.permissions
 
       }))
-      debugger
+      
 
       setBrandsList(brandData)
       setCurrentPage(payload.current_page)

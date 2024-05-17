@@ -69,7 +69,7 @@ const Index = () => {
     },
     {
       
-      title:<span className="dragHandler">Data Feed Name</span>,
+      title:<span className="dragHandler">Data Feed</span>,
       dataIndex: 'data_feed_name',
       key: '2',
       sorter: (a, b) => a.data_feed_name.length - b.data_feed_name.length,
@@ -82,7 +82,7 @@ const Index = () => {
     },
     {
       
-      title:<span className="dragHandler">Symbol Group Name</span>,
+      title:<span className="dragHandler">Symbol Group</span>,
       dataIndex: 'symbel_group_name',
       key: '3',
       sorter: (a, b) => a.symbel_group_name.length - b.symbel_group_name.length,

@@ -68,7 +68,6 @@ const Index = () => {
     setIsLoading(true)
     const res = await Trading_Account_Group_List(token,brandId)
     const { data: { message, payload, success } } = res
-    debugger
     setIsLoading(false)
     if (success) {
       setTradingAccountGroupList(payload?.data)
@@ -129,6 +128,13 @@ const Index = () => {
     {
       title:<span className="dragHandler">Group Name</span>,
       dataIndex: 'name',
+      key: '1',
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend'],
+    },
+    {
+      title:<span className="dragHandler">Brand Name</span>,
+      dataIndex: 'brand_name',
       key: '1',
       sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['ascend'],
