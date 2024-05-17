@@ -4,7 +4,7 @@ import CustomTable from '../../components/CustomTable';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 
 import { Link, json, useNavigate } from 'react-router-dom';
-import { Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
+import { Search_Transaction_Ordcer, Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { useSelector,useDispatch } from 'react-redux';
 import { setTransactionsOrdersSelectedIDs,setTransactionOrdersData,deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
@@ -215,7 +215,6 @@ const TransactionOrders = () => {
     const { data: { message, payload, success } } = res
     setIsLoading(false)
     if (success) {
-      
       setCurrentPage(payload.current_page)
       setTransactionData(payload.data)
       setLastPage(payload.last_page)
@@ -299,8 +298,9 @@ const TransactionOrders = () => {
               setSortDirection = {setSortDirection}
               perPage={perPage}
               setPerPage={setPerPage}
-              SearchQuery = {Trading_Transaction_Order}
+              SearchQuery = {Search_Transaction_Ordcer}
               LoadingHandler={LoadingHandler}
+              // brandId={userRole === 'brand' ? userBrand.public_key : null}
               />
         </div>
          

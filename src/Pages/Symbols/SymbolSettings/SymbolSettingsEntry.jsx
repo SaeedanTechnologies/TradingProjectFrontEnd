@@ -17,7 +17,7 @@ import CustomNotification from '../../../components/CustomNotification';
 import { Autocomplete, TextField,Input,InputAdornment } from '@mui/material'
 import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
 import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
-import { deleteSymbolSettingsById } from '../../../store/symbolSettingsSlice';
+import { deleteSymbolSettingsById, updateSymbolSettings } from '../../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
 import CustomCheckbox from '../../../components/CustomCheckbox';
 import { numberInputStyle } from '../../TradingAccount/style';
@@ -172,9 +172,9 @@ const SymbolSettingsEntry = () => {
       if (success) {
         setIsLoading(true)
         setSymbolName(payload.name)
-        const res = await Symbol_Group_List(token);
+        const res = await ALL_Symbol_Group_List(token);
         const { data } = res
-        const selectedGroup = data?.payload?.data?.find(x => x?.id === payload.symbel_group_id)
+        const selectedGroup = data?.payload?.find(x => x?.id === payload.symbel_group_id)
         setSelectedSymbol(selectedGroup)
         const resp = await Feed_Data_List(token);
         const { data : FeedList } = resp
@@ -260,9 +260,9 @@ const SymbolSettingsEntry = () => {
   useEffect(() => {
     fetchSymbolGroups();
     fetchFeedData();
-    if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0) { // save
+    if (SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) === 0) { // save
       setIsDisabled(false)
-    } else if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) { // single edit
+    } else if (SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) !== 0) { // single edit
       const cIndex = ArrangedSymbolSettingsData.findIndex(item => parseInt(item.id) === parseInt(SymbolSettingIds[0]))
       setCurrentIndex(cIndex)
       setIsDisabled(true)
@@ -386,6 +386,7 @@ const SymbolSettingsEntry = () => {
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
+          dispatch(updateSymbolSettings(payload))
           CustomNotification({
             type: 'success',
             title: 'success',
@@ -436,13 +437,13 @@ const SymbolSettingsEntry = () => {
     setAskValue(askPrice)
     setBidValue(bidPrice)
   }
-  const deleteHandler = ()=>{
+  const deleteHandler = async()=>{
     const Params = {
       table_name:'symbel_settings',
       table_ids: [ArrangedSymbolSettingsData[currentIndex].id]
     }
     
-    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
+   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
     dispatch(deleteSymbolSettingsById(ArrangedSymbolSettingsData[currentIndex].id))
     if(ArrangedSymbolSettingsData.length === 0 || ArrangedSymbolSettingsData === undefined || ArrangedSymbolSettingsData === null){
        navigate("/symbol-settings")

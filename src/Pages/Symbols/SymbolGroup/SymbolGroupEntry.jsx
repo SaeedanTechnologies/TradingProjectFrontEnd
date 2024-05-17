@@ -2,7 +2,7 @@ import { Spin, theme,Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, EllipsisOutlined, EditOutlined } from '@ant-design/icons';
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
@@ -13,8 +13,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GenericEdit,GenericDelete } from '../../../utils/_APICalls';
 import CustomNotification from '../../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../../utils/helpers';
-import { deleteSymbolGroupById } from '../../../store/symbolGroupsSlice';
+import { deleteSymbolGroupById, updateSymbolGroups } from '../../../store/symbolGroupsSlice';
 import CustomDateRangePicker from '../../../components/CustomDateRange';
+import { updateSymbolSettings } from '../../../store/symbolSettingsSlice';
 
 
 const SymbolGroupEntry = () => {
@@ -190,6 +191,7 @@ const SymbolGroupEntry = () => {
         const {data: {message, payload, success}} = res
         setIsLoading(false)
         if(success){
+          dispatch(updateSymbolGroups(payload))
             CustomNotification({
             type: 'success',
             title: 'success',
@@ -272,15 +274,12 @@ const SymbolGroupEntry = () => {
     }
   }
 
-
-
- const deleteHandler = ()=>{
+ const deleteHandler = async()=>{
     const Params = {
       table_name:'symbel_groups',
       table_ids: [ArrangedSymbolGroupsData[currentIndex].id]
     }
-    
-    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
+   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
     dispatch(deleteSymbolGroupById(ArrangedSymbolGroupsData[currentIndex].id))
     if(ArrangedSymbolGroupsData.length === 0 || ArrangedSymbolGroupsData === undefined || ArrangedSymbolGroupsData === null){
        navigate("/symbol-groups")
@@ -290,8 +289,6 @@ const SymbolGroupEntry = () => {
       else
       handlePrevious()
     }
-    
-
   }
 
   const items = [
@@ -531,7 +528,7 @@ const SymbolGroupEntry = () => {
               borderColor: '#c5c5c5',
               color: '#fff'
             }}
-            onClickHandler={()=> navigate(-1)}
+            onClickHandler={()=> setIsDisabled(true)}
           />
           
 
