@@ -13,6 +13,7 @@ import Swal from "sweetalert2";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
 import { setTradingAccountGroupData } from "../../store/tradingAccountGroupSlice";
 import { setAccountID } from "../../store/TradeSlice";
+import { getValidationMsg } from "../../utils/helpers";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -473,6 +474,16 @@ class DnDTable extends Component {
                 key: "a4",
               })
             } else {
+              const errorMsg = getValidationMsg(message, payload)
+              debugger
+              if(errorMsg) 
+                CustomNotification({
+                  type: "error",
+                  title: "Oppssss..",
+                  description: errorMsg,
+                  key: "b4",
+                })
+              else
               CustomNotification({
                 type: "error",
                 title: "Oppssss..",

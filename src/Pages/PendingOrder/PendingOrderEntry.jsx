@@ -177,14 +177,6 @@ const PendingOrderEntry = () => {
     setBrand_id(payload?.brand_id)
 
     }
-
-    
-
-
-    
-
-
-
   }
 
   useEffect(()=>{
@@ -256,7 +248,7 @@ const PendingOrderEntry = () => {
               description: 'Close Order Updated Successfully',
               key: 2
             })
-            navigate('/close-orders')
+            navigate('/pending-orders')
           } else {
             setIsLoading(false)
             CustomNotification({
@@ -350,8 +342,8 @@ const handleLossChange = (newValue) => {
               onClick={() => navigate("/close-orders")}
             />
             {
-              isDisabled ? <h1 className='text-2xl font-semibold'>Preview Close Orders</h1> :
-                <h1 className='text-2xl font-semibold'>{CloseOrdersRowsIds?.length === 1 && parseInt(CloseOrdersRowsIds[0]) === 0 ? 'Add Close Order' : 'Edit Close Order'}</h1>
+              isDisabled ? <h1 className='text-2xl font-semibold'>Preview Pending Orders</h1> :
+                <h1 className='text-2xl font-semibold'>{CloseOrdersRowsIds?.length === 1 && parseInt(CloseOrdersRowsIds[0]) === 0 ? 'Add Pending Order' : 'Edit Pending Order'}</h1>
             }
           </div>
           {/* toolbar */}

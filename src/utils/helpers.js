@@ -221,4 +221,9 @@ export function getCurrentDateTime() {
 
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
+export const getValidationMsg = (msg, payload)=>{
+  if(msg === "validation_error"){
+    return payload.table_ids[0]
+  }
+}
 
