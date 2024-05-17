@@ -17,7 +17,8 @@ export const brandsSlice = createSlice({
       state.selectedRowsIds = action.payload
   },
   setBrandData: (state, action)=>{
-    let newData = [...state.brandData];
+    debugger
+    let newData = [...state.brandData ?? []];
       action.payload.forEach(newItem => {
         // Check if newItem's ID already exists in array c
         const isDuplicate = newData.some(item => item.id === newItem.id);
@@ -28,16 +29,16 @@ export const brandsSlice = createSlice({
       });
     state.brandData = newData;
   }, 
-  updateBrandsData: (state, action) => {
-    const updatedData = action.payload;
-    const index = state.brandData.findIndex(item => item.id === updatedData.id);
-    if (index !== -1) {
-      state.brandData[index] = {
-        ...state.brandData[index],
-        ...updatedData,
-      };
-    }
-  },
+  // updateBrandsData: (state, action) => {
+  //   const updatedData = action.payload;
+  //   const index = state.brandData.findIndex(item => item.id === updatedData.id);
+  //   if (index !== -1) {
+  //     state.brandData[index] = {
+  //       ...state.brandData[index],
+  //       ...updatedData,
+  //     };
+  //   }
+  // },
   deleteBrandById: (state, action) => {
     const idToDelete = action.payload;
     state.brandData = state.brandData.filter(item => item.id !== idToDelete);

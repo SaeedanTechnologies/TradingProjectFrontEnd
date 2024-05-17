@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CustomTextField from '../../components/CustomTextField';
 import { footerStyle, submitStyle } from './style';
 import CustomButton from '../../components/CustomButton';
-import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, CaretDownOutlined } from '@ant-design/icons';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { GenericDelete, GenericEdit, GetSingleBrand, SaveBrands, UpdateBrand } from '../../utils/_APICalls';
@@ -30,7 +30,7 @@ const BrandEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const [name, setName] = useState('');
   const [domain, setDomain] = useState('');
-// //   const [disabledDomain, setDisabledDomain] = useState(false);
+  const [disabledDomain, setDisabledDomain] = useState(true);
   const [marginCall, setMarginCall] = useState('');
   const [leverage, setLeverage] = useState('');
   const [errors, setErrors] = useState({}); 
@@ -76,6 +76,15 @@ const BrandEntry = () => {
     setMarginCall('')
     setLeverage('')
   }
+
+  const cancleHandler= ()=>{
+    if(isDisabled){
+      navigate('/brand')
+
+    }else{
+      setIsDisabled(true)
+    }
+}
 
   const handleSubmit = async () => {
     try {
@@ -123,7 +132,6 @@ const BrandEntry = () => {
         const { data: { message, success, payload } } = res;
         if (success)
         {
-            // clearFields();
             CustomNotification({
               type: 'success',
               title: 'success',
@@ -153,7 +161,7 @@ const BrandEntry = () => {
             notifySuccess(message)
         //   setIsModalOpen(false)
         //   fetchBrands()
-          clearFields()
+        //   clearFields()
           setIsDisabled(true)
         } else {
           notifyError(message)
@@ -244,10 +252,10 @@ const BrandEntry = () => {
   ];
 
   useEffect(() => {
-    debugger
     clearFields()
-    if(BrandIds?.length === 1 && parseInt(BrandIds[0]) === 0){ // update case
+    if(BrandIds?.length === 1 && parseInt(BrandIds[0]) === 0){ 
         setIsDisabled(false)
+        setDisabledDomain(false)
       }
       else if (BrandIds?.length === 1 && parseInt(BrandIds[0]) !== 0){
         const cIndex = ArrangedBrandData.findIndex(item => parseInt(item.id) === parseInt(BrandIds[0]))
@@ -261,7 +269,6 @@ const BrandEntry = () => {
     //   fetchDataWRTID()
     // } 
     else {
-    //   setDisabledDomain(false)
       setIsDisabled(true)
     }
   }, [])
@@ -316,7 +323,7 @@ const BrandEntry = () => {
               trigger={['click']}
               
             >
-              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
           </Dropdown>
           </div>
           }
@@ -341,8 +348,8 @@ const BrandEntry = () => {
           label="Domain"
           varient="standard"
           type="text"
-        //   disabled={disabledDomain}
-          disabled={isDisabled}
+          disabled={disabledDomain}
+        //   disabled={isDisabled}
           value={domain}
           onChange={e => handleInputChange('domain', e.target.value)}
         />
@@ -422,7 +429,7 @@ const BrandEntry = () => {
               borderColor: '#c5c5c5',
               color: '#fff'
             }}
-            onClickHandler={()=> navigate(-1)}
+            onClickHandler={cancleHandler}
           />
           
 

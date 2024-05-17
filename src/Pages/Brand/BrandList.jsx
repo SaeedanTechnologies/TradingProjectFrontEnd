@@ -16,7 +16,7 @@ import { Stack, Typography } from '@mui/material';
 
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
-import { setBrandSelectedIDs, setBrandUser  } from '../../store/BrandsSlice';
+import { setBrandData, setBrandSelectedIDs, setBrandUser  } from '../../store/BrandsSlice';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -277,9 +277,9 @@ const BrandList = () => {
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
-
             isUpated={isUpdated}
-           
+            setSelecetdIDs={setBrandSelectedIDs}
+            setTableData = {setBrandData}
             table_name= "brands"
             setSortDirection = {setSortDirection}
             perPage={perPage}
