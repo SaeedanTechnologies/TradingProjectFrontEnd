@@ -47,6 +47,7 @@ import CloseOrdersEntery from '../Pages/CloseOrder/CloseOrderEntery';
 import PendingOrder from '../Pages/TradingAccount/PendingOrder';
 import AllPendingOrder from '../Pages/PendingOrder/PendingOrder';
 import BrandEntry from '../Pages/Brand/BrandEntry';
+import PendingOrderEntry from '../Pages/PendingOrder/PendingOrderEntry';
 
 
 export const router = createBrowserRouter([
@@ -96,6 +97,7 @@ export const router = createBrowserRouter([
       { path: "/close-orders", element: <CloseOrder /> },
       { path:"/close-orders-entry",element:<CloseOrdersEntery/>},
       { path: "/pending-orders", element: <AllPendingOrder /> },
+      { path: "/pending-orders-entry", element: <PendingOrderEntry /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },
       { path: "/transaction-orders-entry", element: <TransactionOrderEntry /> },
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },

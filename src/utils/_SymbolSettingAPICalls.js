@@ -83,7 +83,7 @@ export const Trading_Margin_Calls = async (token, status,brandId,page) => {
 // }
 
 export const Trading_Transaction_Order = async (token,brandId, page = 1, perPage = 10,searchValues) => {
-    // debugger
+    
     let url = `${apiUrl}/admin/transaction_order?page=${page}&per_page=${perPage}`
     const params = {brand_id:brandId}
     const queryParams = new URLSearchParams(params).toString();
@@ -94,6 +94,13 @@ export const Trading_Transaction_Order = async (token,brandId, page = 1, perPage
     const res = await _API(url, 'get', [], token);
     return res;
 };
+export const Search_Transaction_Ordcer = async(token, page = 1, perPage = 10,searchValues)=>{
+      
+    const queryParams = new URLSearchParams(searchValues).toString();
+    const apiUrlWithParams = `${apiUrl}/admin/transaction_order?page=${page}&per_page=${perPage}&${queryParams}`;
+    const res = await _API(apiUrlWithParams, 'get', [], token);
+    return res;
+}
 
 export const Update_Trading_Transaction_Order = async (brandId,transactionOrderID,transactionOrderData, token) => {
     

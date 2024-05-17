@@ -392,7 +392,7 @@ const PendingOrder = () => {
       <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
         <h1 className='text-2xl font-bold'>Pending Orders</h1>
          <CustomTable
-        //   direction="/pending-orders-entry"
+          direction="/pending-orders-entry"
           formName = "Pending Orders" 
           columns={newColumns}
           data={pendingOrders} 
