@@ -17,7 +17,7 @@ export const brandsSlice = createSlice({
       state.selectedRowsIds = action.payload
   },
   setBrandData: (state, action)=>{
-    debugger
+    
     let newData = [...state.brandData ?? []];
       action.payload.forEach(newItem => {
         // Check if newItem's ID already exists in array c
