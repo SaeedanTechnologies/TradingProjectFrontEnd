@@ -83,9 +83,9 @@ const Index = () => {
     {
       
       title:<span className="dragHandler">Symbol Group</span>,
-      dataIndex: 'symbel_group_name',
+      dataIndex: 'group_name',
       key: '3',
-      sorter: (a, b) => a.symbel_group_name.length - b.symbel_group_name.length,
+      sorter: (a, b) => a.group_name.length - b.group_name.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -211,7 +211,7 @@ const Index = () => {
       dataIndex: 'enabled',
       key: '12',
       sorter: (a, b) => a.enabled.length - b.enabled.length,
-      render:(text)=> <span>{text === "1" ? "Yes" : "No"}</span>, 
+      // render:(text)=><span>{text ==1 ? "Yes" : "No"}</span>, 
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -232,11 +232,14 @@ const Index = () => {
       setIsLoading(true)
       const res = await All_Setting_Data(token, page, parseInt(perPage));
       const { data: { message, success, payload } } = res
-      debugger
+      const transformedData = payload.data.map(item => ({
+        ...item,
+        enabled: item.enabled === "1" ? 'Yes' : 'No'
+      }));
       setIsLoading(false)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
-      setAllSetting(payload.data);
+      setAllSetting(transformedData);
       setTotalRecords(payload.total)
       setIsUpdated(false)
     } catch (error) {

@@ -4,14 +4,44 @@ export const tradingAccountGroup = createSlice({
     name: 'tradingAccountGroup',
     initialState: {
         tradingAccountGroupData: null,
+        AllTradingAccountGroupData: []
     },
     reducers: {
         setTradingAccountGroupData: (state, action) => {
             state.tradingAccountGroupData = action.payload
         },
+        // setTradingAccountGroupSelectedIDs: (state,action) => {
+        //     state.selectedRowsIds = action.payload
+        // },
+        // setAllTradingAccountGroupData: (state, action)=>{
+        //   let newData = [...state.AllTradingAccountGroupData];
+        //     action.payload.forEach(newItem => {
+        //       // Check if newItem's ID already exists in array c
+        //       const isDuplicate = newData.some(item => item.id === newItem.id);
+        //       // If not a duplicate, push it to array c
+        //       if (!isDuplicate) {
+        //         newData.push(newItem);
+        //       }
+        //     });
+        //   state.AllTradingAccountGroupData = newData;
+        // },
+        // updateTradingAccountGroupData: (state, action) => {
+        //     const updatedData = action.payload;
+        //     const index = state.AllTradingAccountGroupData.findIndex(item => item.id === updatedData.id);
+        //     if (index !== -1) {
+        //       state.AllTradingAccountGroupData[index] = {
+        //         ...state.AllTradingAccountGroupData[index],
+        //         ...updatedData,
+        //       };
+        //     }
+        //   },
+        // deleteTradingAccountGroupById: (state, action) => {
+        //   const idToDelete = action.payload;
+        //   state.AllTradingAccountGroupData = state.AllTradingAccountGroupData.filter(item => item.id !== idToDelete);
+        // }
     },
 })
 
-export const { setTradingAccountGroupData } = tradingAccountGroup.actions
+export const { setTradingAccountGroupData} = tradingAccountGroup.actions
 
 export default tradingAccountGroup.reducer

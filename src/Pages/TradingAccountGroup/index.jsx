@@ -42,11 +42,7 @@ const Index = () => {
     dispatch(setTradingGroupData({ id, name },));
   };
 
-  const showModal = (id = null) => {
-    setTradingGroupID(id)
-    setIsModalOpen(true);
-
-  };
+ 
   const showAccountModal = (trading_accounts) => {
     setIsAccountModalOpen(true)
     if (trading_accounts?.length > 0) {
@@ -61,9 +57,7 @@ const Index = () => {
   const handleOk = () => {
     setIsModalOpen(false);
   };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+
   const fetchData = async (brandId) => {
     setIsLoading(true)
     const res = await Trading_Account_Group_List(token,brandId)
@@ -74,7 +68,7 @@ const Index = () => {
     }
   }
   useEffect(() => {
-
+   
     if(userRole === 'brand' ){
       fetchData(userBrand?.public_key)
     }
@@ -134,7 +128,7 @@ const Index = () => {
     },
     {
       title:<span className="dragHandler">Brand Name</span>,
-      dataIndex: 'brand_name',
+      dataIndex: 'brands_name',
       key: '1',
       sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['ascend'],
@@ -242,10 +236,7 @@ const Index = () => {
 
   return (
     <Spin spinning={isLoading} size="large">
-
       <div className='p-8' style={{ backgroundColor: colorBG }}>
-        
-
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
           {CheckBrandPermission(userPermissions,userRole,'trading_account_group_create') && <CustomButton
@@ -253,24 +244,25 @@ const Index = () => {
             style={{ height: '48px', ...AddnewStyle }}
             icon={<PlusCircleOutlined />}
             onClickHandler={() =>{
-              // dispatch(setTradeGroupsSelectedIDs([0]))
-               showModal(0)
-              }}
+              dispatch(setTradeGroupsSelectedIDs([0]))
+              navigate('/trading-group-entry')
+            }}
           />
          }
         </div>
         <CustomTable 
-          columns={columns} 
-          data={TradingAccounGroupList} 
-          headerStyle={headerStyle}
-          formName={'Trading Account Group'}
-          token={token}
-          setSelecetdIDs={setTradeGroupsSelectedIDs}
-          setTableData = {setTradeGroupsData}
-          editPermissionName="active_account_group_update"
-          deletePermissionName="active_account_group_delete"
+            direction="/trading-group-entry"
+            columns={columns} 
+            data={TradingAccounGroupList} 
+            headerStyle={headerStyle}
+            formName={'Trading Account Group'}
+            token={token}
+            setSelecetdIDs={setTradeGroupsSelectedIDs}
+            setTableData = {setTradeGroupsData}
+            editPermissionName="active_account_group_update"
+            deletePermissionName="active_account_group_delete"
            />
-        <CustomModal
+        {/* <CustomModalp
           isModalOpen={isModalOpen}
           handleOk={handleOk}
           handleCancel={handleCancel}
@@ -284,7 +276,7 @@ const Index = () => {
             fetchData={fetchData}
             TradingGroupID={TradingGroupID}
           />
-        </CustomModal>
+        </CustomModalp> */}
         <CustomModal
           isModalOpen={isAccountModalOpen}
           title={'Selected Accounts'}

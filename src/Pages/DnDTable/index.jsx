@@ -144,7 +144,6 @@ class DnDTable extends Component {
     }
   };
   async useEffect(){
-    debugger
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
       const hr = document.createElement('hr');
@@ -715,7 +714,7 @@ class DnDTable extends Component {
                       `th:nth-child(${columnIndex + 1})`
                     ).textContent;
                     
-                  if (columnName !== "Action" && columnName !== "Search"  && columnName !== "Authorization Key") {
+                  if (columnName !== "Action" && columnName !== "Search"  && columnName !== "Authorization Key" && columnName !== "Mass Buy/Sell Trading Order" && columnName !== "Mass deposit/widthdraw" && columnName !== "Trading Accounts") {
                     this.handleRowClick(record);
                   }
                 }
