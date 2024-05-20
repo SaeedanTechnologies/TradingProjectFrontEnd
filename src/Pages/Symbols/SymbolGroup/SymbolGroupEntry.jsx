@@ -96,7 +96,7 @@ const SymbolGroupEntry = () => {
     setTradingIntervalEndTime("")
   }
   const handleSubmit = async()=> {
-    debugger
+    
     try{
    
       if(SymbolGroupsIds.length < 2)

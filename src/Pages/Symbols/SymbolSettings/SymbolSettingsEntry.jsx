@@ -232,6 +232,7 @@ const SymbolSettingsEntry = () => {
     }
   };
   const handleNext = () => {
+    
     if (currentIndex < ArrangedSymbolSettingsData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedSymbolSettingsData[currentIndex + 1];
@@ -245,6 +246,7 @@ const SymbolSettingsEntry = () => {
     }
   };
   const handlePrevious = () => {
+    
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedSymbolSettingsData[currentIndex - 1];
