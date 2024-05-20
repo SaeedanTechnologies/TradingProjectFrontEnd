@@ -121,6 +121,7 @@ export const getOpenPrice = (symbol) => {
 export const getOpenPriceFromAPI= async(symbol, feedName)=> {
   try {
     if(feedName === 'binance'){
+
       const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
       const data = await response.json();
       const {askPrice, bidPrice} = data

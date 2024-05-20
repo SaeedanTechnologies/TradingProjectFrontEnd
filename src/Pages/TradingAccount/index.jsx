@@ -328,7 +328,7 @@ const Index = ({ title, direction }) => {
         brand_margin_call: item?.brand?.margin_call,
 
       }))
-      debugger
+      // debugger
       setTradingAccountsList(tradingAccounts)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
