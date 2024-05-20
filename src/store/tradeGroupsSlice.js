@@ -25,10 +25,20 @@ export const tradeGroupsSlice = createSlice({
     deleteTradeGroupById: (state, action) => {
       const idToDelete = action.payload;
       state.tradeGroupsData = state.tradeGroupsData.filter(item => item.id !== idToDelete);
-    }
+    },
+    updateTradeGroupData: (state, action) => {
+      const updatedData = action.payload;
+      const index = state.tradeGroupsData.findIndex(item => item.id === updatedData.id);
+      if (index !== -1) {
+        state.tradeGroupsData[index] = {
+          ...state.tradeGroupsData[index],
+          ...updatedData,
+        };
+      }
+    },
   },
 })
 
-export const {setTradeGroupsSelectedIDs, setTradeGroupsData, deleteTradeGroupById } = tradeGroupsSlice.actions
+export const {setTradeGroupsSelectedIDs, setTradeGroupsData, deleteTradeGroupById, updateTradeGroupData } = tradeGroupsSlice.actions
 
 export default tradeGroupsSlice.reducer

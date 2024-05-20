@@ -717,6 +717,21 @@ useEffect(() => {
           <div className="flex-1 ml-2 ">
             <div className="mb-4">
                   <CandleStickChart symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
+                  {Symbol.length > 0 && <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
+                      <div className='flex justify-between'>
+                      <span >1 Lots</span>
+                      <span>1000 units</span>
+                      </div>
+                      <div className='flex justify-between'>
+                      <span >Pips Value</span>
+                      <span>USDT 0.01</span>
+                      </div>
+                      <div className='flex justify-between'>
+                      <span >Required Margin</span>
+                      <span>USDT 967.143</span>
+                      </div>
+                    
+                  </div>}
               {/* <BinanceBidAsk symbol={"BTCUSD"}/> */}
             </div>
             {/* Your chart content */}
