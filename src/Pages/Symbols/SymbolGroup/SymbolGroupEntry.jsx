@@ -16,6 +16,7 @@ import { CustomBulkDeleteHandler } from '../../../utils/helpers';
 import { deleteSymbolGroupById, updateSymbolGroups } from '../../../store/symbolGroupsSlice';
 import CustomDateRangePicker from '../../../components/CustomDateRange';
 import { updateSymbolSettings } from '../../../store/symbolSettingsSlice';
+import TimePicker from '../../../components/TimePicker';
 
 
 const SymbolGroupEntry = () => {
@@ -34,8 +35,17 @@ const SymbolGroupEntry = () => {
   
   const [VolMax, setVolMax] = useState('')
   // const [TradingInterval, setTradingInterval] = useState('')
-  const [trading_interval_start_time, setTradingIntervalStartTime] = useState('')
-  const [trading_interval_end_time, setTradingIntervalEndTime] = useState('')
+  // const [trading_interval_start_time, setTradingIntervalStartTime] = useState('')
+  // const [trading_interval_end_time, setTradingIntervalEndTime] = useState('')
+  const [trading_time, setTradingTime] = useState({
+    Monday: { start: '00:00', end: '00:00' },
+    Tuesday: { start: '00:00', end: '00:00' },
+    Wednesday: { start: '00:00', end: '00:00' },
+    Thursday: { start: '00:00', end: '00:00' },
+    Friday: { start: '00:00', end: '00:00' },
+    Saturday: { start: '00:00', end: '00:00' },
+    Sunday: { start: '00:00', end: '00:00' },
+  });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
@@ -83,6 +93,13 @@ const SymbolGroupEntry = () => {
         break;
     }
   };
+
+  const handleSave = (data) => {
+    // Do something with the data, such as sending it to the server
+    console.log('Saved data:', data);
+    setTradingTime(JSON.stringify(data));
+  };
+
   const clearFields = () =>{
     setSymbolGroupName('');
     setSelectedLeverage(null)
@@ -92,8 +109,9 @@ const SymbolGroupEntry = () => {
     setVolMin('');
     setVolMax('');
     // setTradingInterval('')
-    setTradingIntervalStartTime("")
-    setTradingIntervalEndTime("")
+    // setTradingIntervalStartTime("")
+    // setTradingIntervalEndTime("")
+    setTradingTime('')
   }
   const handleSubmit = async()=> {
     
@@ -122,8 +140,9 @@ const SymbolGroupEntry = () => {
         vol_min: VolMin,
         vol_max: VolMax,
         // trading_interval: TradingInterval,
-        trading_interval_start_time: trading_interval_start_time,
-        trading_interval_end_time: trading_interval_end_time,
+        trading_interval: trading_time,
+        // trading_interval_start_time: trading_interval_start_time,
+        // trading_interval_end_time: trading_interval_end_time,
         swap: Swap
       }
     
@@ -268,8 +287,9 @@ const SymbolGroupEntry = () => {
       setVolMin(payload.vol_min);
       setVolMax(payload.vol_max);
       // setTradingInterval(payload.trading_interval);
-      setTradingIntervalStartTime(payload?.trading_interval_start_time)
-      setTradingIntervalEndTime(payload?.trading_interval_end_time)
+      // setTradingIntervalStartTime(payload?.trading_interval_start_time)
+      // setTradingIntervalEndTime(payload?.trading_interval_end_time)
+      setTradingTime(JSON.parse(payload?.trading_interval))
       setSwap(payload.swap);
     }
   }
@@ -497,7 +517,8 @@ const SymbolGroupEntry = () => {
           onChange={e => handleInputChange('TradingInterval', e.target.value)}
         />
          {errors.TradingInterval && <span style={{ color: 'red' }}>{errors.TradingInterval}</span>} */}
-         <CustomDateRangePicker onChange={handleTimeChange} start_time={trading_interval_start_time} end_time={trading_interval_end_time} isDisabled={isDisabled} />
+         {/* <CustomDateRangePicker onChange={handleTimeChange} start_time={trading_interval_start_time} end_time={trading_interval_end_time} isDisabled={isDisabled} /> */}
+         <TimePicker  defaultTimes={trading_time} isDisabled={isDisabled} onSave={handleSave}  />
         </div>
        
       </div>
