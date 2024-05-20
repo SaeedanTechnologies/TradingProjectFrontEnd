@@ -56,7 +56,7 @@ const TransactionOrder = () => {
   const columns = [
     {
       title: <span className="dragHandler">Time</span>,
-      dataIndex: 'Time',
+      dataIndex: 'created_at',
       key: '1',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
       sorter: (a, b) => a.Time.length - b.Time.length,
