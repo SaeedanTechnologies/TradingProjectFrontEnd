@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { LeftOutlined, RightOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import CustomTextField from '../../components/CustomTextField';
-import { PendingOrderTypes,  TradeOrderTypes } from '../../utils/constants';
+import { PendingOrderTypes,LiveOrderTypes, TradeOrderTypes } from '../../utils/constants';
 import CustomButton from '../../components/CustomButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { Autocomplete, TextField,InputAdornment } from '@mui/material'
@@ -44,6 +44,7 @@ const LiveOrdersEntery = () => {
     const [stopLoss,setStopLoss] = useState('');
     const [comment,setComment] = useState('');
     const [brand_id,setBrand_id] = useState('')
+    const [trading_account_id,setTrading_account_id] = useState(0)
 
 
 
@@ -157,23 +158,23 @@ const LiveOrdersEntery = () => {
     const { data: {  payload:SymbolsList } } = await AllSymbelSettingList(token);
     setSymbolsList(SymbolsList)
 
-
     const res = await Get_Single_Trade_Order(LiveOrdersRowsIds[0], token)
     const { data: { message, payload, success } } = res
 
     setIsLoading(false)
     if (success) {
-    const selectedSymbolList =  symbolsList?.find((x)=> x.name === payload?.symbol)
+    const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
     setSymbol(selectedSymbolList);
     setOpen_price(payload.open_price);
     const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
     setOrder_type(selectedOrderType);
-    const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
+    const selectedType = LiveOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
     setVolume(payload?.volume);
     setTakeProfit(payload?.takeProfit);
     setStopLoss(payload?.stopLoss);
     setComment(payload?.comment);
+    setTrading_account_id(payload?.trading_account_id)
     setBrand_id(payload?.brand_id)
 
     }
@@ -188,7 +189,7 @@ const LiveOrdersEntery = () => {
   }
 
   useEffect(()=>{
-    
+   
      if (LiveOrdersRowsIds.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save
       setIsDisabled(false)
     } else if (LiveOrdersRowsIds.length === 1 && parseInt(LiveOrdersRowsIds[0]) !== 0) { // single edit
@@ -202,28 +203,25 @@ const LiveOrdersEntery = () => {
   },[])
 
   const handleSubmit = async () => {
+
+     const SymbolData = {
+        symbol: symbol.name,
+        feed_name: symbol.feed_name,
+        order_type: order_type.value,
+        type:  type.value,
+        volume: String(volume),
+        comment,
+        takeProfit: String(takeProfit === "" ? "" : takeProfit),
+        stopLoss: String(stopLoss === "" ? "" : stopLoss),
+        trading_account_id,
+        brand_id
+      }
+
+
+      
     
     try {
-    
-
-     const SymbolGroupData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
-        name: symbolName ? symbolName : '',
-        symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
-        feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
-        feed_fetch_key:selectedFeedNameFetch?.group?.toLowerCase(),
-        speed_max: 'abc',
-        lot_size: lotSize ? lotSize : '',
-        lot_step: lotSteps ? lotSteps : '',
-        commission: commission ? commission : '',
-        enabled: Selectedenable ? Selectedenable.title = 'Yes' ? 1 : 0 : 0,
-        pip:selectedPip.value,
-        leverage: SelectedLeverage ? SelectedLeverage.value : '',
-        feed_name: selectedFeedName ? selectedFeedName.module : '',
-        feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
-        swap: swap ? swap : '',
-        vol_min: volMin ? volMin : '',
-        vol_max: volMax ? volMax : '',
-      };
+       
       if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save 
         setIsLoading(true)
         const res = await SymbolSettingPost(SymbolGroupData, token);
@@ -243,7 +241,7 @@ const LiveOrdersEntery = () => {
         const Params = {
           table_name: 'trade_orders',
           table_ids: LiveOrdersRowsIds,
-          ...SymbolGroupData
+          ...SymbolData
         }
         const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;

@@ -35,7 +35,7 @@ const LiveOrders = () => {
 
   const fetchLiveOrder = async (brandId,page) => {
     setIsLoading(true)
-    const params = { OrderTypes: ['market', 'pending'], token,brandId,page}
+    const params = { OrderTypes: ['market'], token,brandId,page}
     const mData = await Get_Trade_Order(params,page)
     const { data: { message, payload, success } } = mData
     

@@ -245,6 +245,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       // debugger;
       const { data: { message, success, payload } } = res
       // setSymbolsList(payload).data
+
       setSymbolsList(payload)
 
       setIsLoading(false)
@@ -545,7 +546,7 @@ useEffect(() => {
                   label={'Type'}
                   options={TradeOrderTypes}
                   value={order_type}
-                  getOptionLabel={(option) => option.label ? option.label : ""}
+                  getOptionLabel={(option) => option?.label ? option?.label : ""}
                   onChange={(e, value) => {
                     if (value) {
 
@@ -572,7 +573,7 @@ useEffect(() => {
                     label={'Type'}
                     options={PendingOrderTypes}
                     value={type}
-                    getOptionLabel={(option) => option.label ? option.label : ""}
+                    getOptionLabel={(option) => option?.label ? option?.label : ""}
                     onChange={(e, value) => {
                       if (value) {
                         setType(value)

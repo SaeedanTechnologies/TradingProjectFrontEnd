@@ -6,7 +6,9 @@ export const tradeOrdersSlice = createSlice({
         selectedLiveOrdersRowsIds: null,
         liveOrdersData: [],
         selectedCloseOrdersRowsIds: null,
-        closeOrdersData: []
+        closeOrdersData: [],
+        selectedPendingOrdersRowsIds:null,
+        pendingOrdersData:[],
 },
   reducers: {
     setLiveOrdersSelectedIds: (state,action) => {
@@ -47,9 +49,31 @@ export const tradeOrdersSlice = createSlice({
       const idToDelete = action.payload;
       state.closeOrdersData = state.closeOrdersData.filter(order => order.id !== idToDelete);
     },
+     setPendingOrdersSelectedIds: (state,action) => {
+        state.selectedPendingOrdersRowsIds = action.payload
+    },
+    setPendingOrdersData: (state, action)=>{
+      debugger
+      let newData = [...state.pendingOrdersData];
+        action.payload.forEach(newItem => {
+          // Check if newItem's ID already exists in array c
+          const isDuplicate = newData.some(item => item.id === newItem.id);
+          // If not a duplicate, push it to array c
+          if (!isDuplicate) {
+            newData.push(newItem);
+          }
+        });
+      state.pendingOrdersData =  [...newData];
+    },
+     deletePendingOrderById: (state, action) => {
+      const idToDelete = action.payload;
+      state.pendingOrdersData = state.pendingOrdersData.filter(order => order.id !== idToDelete);
+    },
+
+
   },
 })
 
-export const {setLiveOrdersSelectedIds, setLiveOrdersData, deleteLiveOrderById,setCloseOrdersSelectedIds,setCloseOrdersData,deleteCloseOrderById } = tradeOrdersSlice.actions
+export const {setLiveOrdersSelectedIds, setLiveOrdersData, deleteLiveOrderById,setCloseOrdersSelectedIds,setCloseOrdersData,deleteCloseOrderById,setPendingOrdersData,setPendingOrdersSelectedIds,deletePendingOrderById } = tradeOrdersSlice.actions
 
 export default tradeOrdersSlice.reducer

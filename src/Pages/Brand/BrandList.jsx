@@ -131,15 +131,9 @@ const BrandList = () => {
     },
      {
       title:<span className="dragHandler">Action</span>,
-      dataIndex: 'trading_accounts', 
+      dataIndex: 'permissions', 
       key: '7',
-      render: (text, record) => (
-        // {
-        // return (
-          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
-      //   )
-      // },
-      )
+      render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
      },
   ];
 
@@ -177,20 +171,20 @@ const BrandList = () => {
     if (success) {
 
       const brandData = payload.data.map((brand)=>({
-        id:brand.id,
-        user_id:brand.user_id,
-        domain:brand.domain,
-        name:brand.name,
-        original_password: brand.user.original_password,
-        public_key: brand.public_key,
-        margin_call:brand.margin_call,
-        leverage: brand.leverage,
-        permissions: brand.user.permissions
-
+        id:brand?.id,
+        user_id:brand?.user_id,
+        domain:brand?.domain,
+        name:brand?.name,
+        original_password: brand?.user?.original_password,
+        public_key: brand?.public_key,
+        margin_call:brand?.margin_call,
+        leverage: brand?.leverage,
+        permissions: brand?.user?.permissions
       }))
       
 
       setBrandsList(brandData)
+      // debugger
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
@@ -270,7 +264,7 @@ const BrandList = () => {
         <CustomTable
             direction="/brand-entry"
             formName = "Brand List" 
-            columns={columns}
+            columns={newColumns}
             data={BrandsList} 
             headerStyle={headerStyle}
             total={totalRecords}
