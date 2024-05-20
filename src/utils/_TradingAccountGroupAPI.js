@@ -22,6 +22,7 @@ export const SaveTradingAccountGroups = async(TradingAccountGroupData, token)=>{
 }
 export const UpdateTradingAccountGroups = async(TradingGroupID,TradingGroupData, token)=>{
   const queryParams = new URLSearchParams(TradingGroupData).toString();
+  debugger
   const url = `${apiUrl}/admin/trading_account_groups/${TradingGroupID}?${queryParams}`;
   const res = await _API(url, 'put', null, token);
   return res 

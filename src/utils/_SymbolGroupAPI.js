@@ -15,10 +15,13 @@ export const UpdateSymbolGroups = async (SymbolID, SymbolGroupData, token) => {
 
 }
 
-export const Symbol_Group_List = async (token,page=1,perPage=10) => {
-  const res = await _API(`${apiUrl}/admin/symbel_group?page=${page}&per_page=${perPage}`, 'get', [], token)
-  return res
-}
+
+export const Symbol_Group_List = async (token, page = 1, perPage = 10, searchValues) => {
+    const queryParams = new URLSearchParams(searchValues).toString();
+    const apiUrlWithParams = `${apiUrl}/admin/symbel_group?page=${page}&per_page=${perPage}&${queryParams}`;
+    const res = await _API(apiUrlWithParams, 'get', [], token);
+    return res;
+};
 
 export const SelectSymbolWRTID = async (id, token) => {
   const res = await _API(`${apiUrl}/admin/symbel_group/${id}`, 'get', [], token)

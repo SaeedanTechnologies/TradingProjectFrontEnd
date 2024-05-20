@@ -13,7 +13,14 @@ const BinanceBidAsk = (symbol, connected) => {
     return null;
   }
 
-  const WS_URL = `wss://fstream.binance.com/stream?streams=${symbol?.toLowerCase()}@bookTicker`;
+  let WS_URL;
+
+  if(symbol?.feed_name === 'binance'){
+    WS_URL = `wss://fstream.binance.com/stream?streams=${symbol?.feed_fetch_name?.toLowerCase()}@bookTicker`;
+  }
+  else{
+    WS_URL = `wss://fcsapi.com/`;
+  }
 
   if (typeof WebSocket === 'undefined') {
     console.error('WebSocket is not supported in this environment.');
@@ -30,7 +37,7 @@ const BinanceBidAsk = (symbol, connected) => {
   }
 
   // Check if the symbol has changed or if there's no existing connection
-  if (symbol !== currentSymbol) {
+  if (symbol?.feed_name === 'binance' ? symbol?.feed_fetch_name : symbol?.feed_fetch_key !== currentSymbol) {
     if (client && client.readyState === WebSocket.OPEN) {
       client.close();
       console.log(`Closing previous WebSocket connection for symbol: ${currentSymbol}`);
@@ -38,22 +45,48 @@ const BinanceBidAsk = (symbol, connected) => {
   }
 
   client = new W3CWebSocket(WS_URL);
-  currentSymbol = symbol;
-  console.log('Creating new WebSocket connection for symbol:', symbol);
+  currentSymbol = symbol?.feed_name === 'binance' ? symbol?.feed_fetch_name : symbol?.feed_fetch_key;
+  console.log('Creating new WebSocket connection for symbol:', symbol?.feed_name === 'binance' ? symbol?.feed_fetch_name : symbol?.feed_fetch_key);
 
   const onDataReceived = (callback) => {
-    if (!client.onmessage) {
+    if(symbol?.feed_name === 'binance'){
+      if (!client.onmessage) {
       callback({ bidPrice: null, askPrice: null });
     }
     client.onmessage = (message) => {
       try {
         const parsedMessage = JSON.parse(message.data);
+
         const { b, a } = parsedMessage.data;
+        console.table([a,b])
         callback({ bidPrice:b, askPrice: a });
       } catch (error) {
         console.error('Error parsing message:', error);
       }
     };
+    }
+    else{
+      if (!client.onmessage) {
+        callback({ bidPrice: null, askPrice: null });
+      }
+      client.onmessage = (message) => {
+        try {
+          const parsedMessage = JSON.parse(message.data);
+          // const { b, a } = parsedMessage.data;
+          console.log(parsedMessage)
+          // callback({ bidPrice:b, askPrice: a });
+        } catch (error) {
+          console.error('Error parsing message:', error);
+        }
+        // const data = JSON.parse(e.data);
+        // if (data.type === 'data_received') {
+        //     // Data contains: Price, ASK price, BID price
+        //     console.log(data);
+        //     // Add your logic to handle the received data
+        // }
+    };
+    }
+    
   };
 
   const onError = (callback) => {
@@ -78,10 +111,23 @@ const BinanceBidAsk = (symbol, connected) => {
   };
 
   const connect = () => {
-    client.onopen = () => {
-      console.log(`Connected to new Binance stream for symbol: ${currentSymbol}`);
+    if(symbol?.feed_name === 'binance'){
+      client.onopen = () => {
+            console.log(`Connected to new Binance stream for symbol: ${currentSymbol}`);
+          };
+    }
+    else{
+      client.onopen = () => {
+        console.log(`WebSocket connection established for ${symbol?.feed_name}.`);
+        // Verify Your API key on server
+        client.send(JSON.stringify({ type: 'heartbeat', api_key: 'lg8vMu3Zi5mq8YOMQiXYgV' }));
+  
+        // Connect Ids on server
+        client.send(JSON.stringify({ type: 'real_time_join', currency_ids: symbol?.feed_fetch_key }));
     };
+    }
   };
+  
 
   const start = (dataCallback, errorCallback, closeCallback) => {
     connect();

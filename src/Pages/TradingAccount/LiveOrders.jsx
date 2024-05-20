@@ -10,10 +10,12 @@ import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
+import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin, totalSwap }) => {
  
   const token = useSelector(({ user }) => user?.user?.token)
+  const liveOrdersData = useSelector(({liveOrder})=> liveOrder.liveorder)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
@@ -83,6 +85,13 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       sortDirections: ['ascend'],
     },
     {
+      title: <span className="dragHandler">Comment</span>,
+      dataIndex: 'comment',
+      key: 'comment',
+      sorter: (a, b) => a.comment.length - b.comment.length,
+      sortDirections: ['ascend'],
+    },
+    {
       title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: 'swap',
@@ -97,6 +106,7 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       sortDirections: ['ascend'],
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
+   
     // {
     //   title: 'Actions',
     //   dataIndex: 'actions',
@@ -161,11 +171,27 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       UpdateTradingAccountStatus()
     }
   }, [balance,grandProfit,lotSize,accountLeverage])
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      try {
+        if(liveOrdersData.length > 0){
+          const Params  = {orders:liveOrdersData}
+          const res = await UpdateMultiTradeOrder(Params, token);
+        }
+       
+      } catch (error) {
+        console.error('Error calling API:', error);
+      }
+    }, 30000); // Interval set to 1000ms (1 second)
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
   const UpdateTradingAccountStatus = async()=>{
     const Params = {
       status: "margin_call", 
       margin_level_percentage:calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage),
-      equity:calculateEquity(balance, grandProfit)
+      equity:calculateEquity(balance, grandProfit, credit, bonus)
     }
     const res = await Put_Trading_Account(id, Params, token)
     
@@ -186,15 +212,17 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
-                  <Table.Summary.Cell index={0} colSpan={9}>
+                  <Table.Summary.Cell index={0} colSpan={10}>
                   <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
                       Equity: {calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName}  &nbsp;
+                      Credit: {parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
+                      Bonus: {parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
                       {tradeOrder.length > 0  &&
                       <span> Margin: {margin}</span>}&nbsp;
-                      Free Margin {calculateFreeMargin(balance,grandProfit,lotSize,accountLeverage)} &nbsp;
-                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)} %</span>}
+                      Free Margin {calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus),margin)} &nbsp;
+                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus),margin)} %</span>}
                       </span>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>

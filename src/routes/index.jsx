@@ -42,6 +42,13 @@ import EditLiveOrder from '../Pages/TradingAccount/EditLiveOrder';
 import NewFeedData from '../Pages/Symbols/DataFeed/NewFeedData'
 import BrandPermissions from '../Pages/BrandPermissions/BrandPermissions';
 import TradingAccountsEntry from '../Pages/TradingAccount/TradingAccountsEntry';
+import LiveOrdersEntery from '../Pages/LiveOrders/LiveOrdersEntery';
+import CloseOrdersEntery from '../Pages/CloseOrder/CloseOrderEntery';
+import PendingOrder from '../Pages/TradingAccount/PendingOrder';
+import AllPendingOrder from '../Pages/PendingOrder/PendingOrder';
+import BrandEntry from '../Pages/Brand/BrandEntry';
+import PendingOrderEntry from '../Pages/PendingOrder/PendingOrderEntry';
+
 
 export const router = createBrowserRouter([
   {
@@ -60,6 +67,7 @@ export const router = createBrowserRouter([
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/dashboard-reports", element: <Reports /> },
       { path: "/brand", element: <BrandList /> },
+      { path: "/brand-entry", element: <BrandEntry /> },
       { path: "/brand-permissions", element: <BrandPermissions /> },
       { path: "/brand-settings", element: <BrandSettings /> },
       { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },
@@ -77,6 +85,7 @@ export const router = createBrowserRouter([
           { path: "live-order", element: <LiveOrders /> },
           { path: "symbol", element: <Trade /> },
           { path: "close-order", element: <CloseOrder /> },
+          { path: "pending-order", element: <PendingOrder /> },
           { path: "personal-data", element: <PersonalData /> },
           { path: "account-security", element: <Account /> },
           { path: "transaction-order", element: <TransactionOrder /> },
@@ -84,7 +93,11 @@ export const router = createBrowserRouter([
       },
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
       { path: "/live-orders", element: <LiveOrders /> },
+      { path:"/live-orders-entry", element:<LiveOrdersEntery/>},
       { path: "/close-orders", element: <CloseOrder /> },
+      { path:"/close-orders-entry",element:<CloseOrdersEntery/>},
+      { path: "/pending-orders", element: <AllPendingOrder /> },
+      { path: "/pending-orders-entry", element: <PendingOrderEntry /> },
       { path: "/transaction-orders", element: <TransactionOrders /> },
       { path: "/transaction-orders-entry", element: <TransactionOrderEntry /> },
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },

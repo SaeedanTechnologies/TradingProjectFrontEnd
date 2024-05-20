@@ -3,7 +3,7 @@ import { footerStyle, submitStyle } from './style';
 import CustomButton from '../../components/CustomButton';
 import { Save_Trading_Account } from '../../utils/_TradingAPICalls';
 import { ToastContainer } from 'react-toastify';
-import { CurrenciesList } from '../../utils/constants';
+import { CurrenciesList,Countries } from '../../utils/constants';
 import CustomNotification from '../../components/CustomNotification';
 import { Spin } from 'antd';
 import CustomTextField from '../../components/CustomTextField';
@@ -23,6 +23,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
   const [brandList, setBrandList] = useState([])
   const [brandCustomerList, setBrandCustomerList] = useState([])
   const [tradingAccountGroupList, setTradingAccountGroupList] = useState([])
+  const [SelectedCountry,SetSelectedCountry] = useState(null)
 
   const getBrandsList = async () => {
     setIsLoading(true)
@@ -72,7 +73,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
 
 
   const initialValues = {
-    country: "",
+    country: null,
     phone: "",
     email: "",
     // balance: "",
@@ -98,7 +99,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
   const Control = [
 
     {
-      id: 14,
+      id: 1,
       control: 'CustomAutocomplete',
       name: 'Brands',
       label: 'Brands',
@@ -126,7 +127,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       }
     },
     {
-      id: 20,
+      id: 2,
       control: 'CustomAutocomplete',
       display: 'show',
       name: 'Leverage',
@@ -154,7 +155,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     },
 
     {
-      id: 5, control: 'CustomTextField', display: 'show', label: 'Email', required: true, varient: 'standard', value: tradingAccount.email, onChange: (e) => {
+      id: 3, control: 'CustomTextField', display: 'show', label: 'Email', required: true, varient: 'standard', value: tradingAccount.email, onChange: (e) => {
         setTradingAccount(prevData => ({
           ...prevData,
           email: e.target.value
@@ -162,7 +163,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       }
     },
     {
-      id: 12,
+      id: 4,
       control: 'CustomTextField',
       display: 'show',
       name: 'Phone',
@@ -176,24 +177,37 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
         }));
       }
     },
+  
     {
-      id: 3,
-      control: 'CustomTextField',
+      id: 5,
+      control: 'CustomAutocomplete',
       display: 'show',
       name: 'Country',
       label: 'Country',
+      required: true,
       varient: 'standard',
+      options: Countries,
       value: tradingAccount.country,
-      onChange: (e) => {
-        setTradingAccount(prevData => ({
-          ...prevData,
-          country: e.target.value
-        }));
+      getOptionLabel: (option) => option.label ? option.label : "",
+      onChange: (e, value) => {
+        if (value) {
+          setErrors(prevErrors => ({ ...prevErrors, country: "" }))
+          setTradingAccount(prevData => ({
+            ...prevData,
+            country: value
+          }))
+        }
+        else {
+          setTradingAccount(prevData => ({
+            ...prevData,
+            country: null
+          }))
+        }
       }
     },
 
     // {
-    //   id: 7, control: 'CustomTextField', display: 'show', label: 'Balance', varient: 'standard', value: tradingAccount.balance, onChange: (e) => {
+    //   id: 6, control: 'CustomTextField', display: 'show', label: 'Balance', varient: 'standard', value: tradingAccount.balance, onChange: (e) => {
 
     //     setTradingAccount(prevData => ({
     //       ...prevData,
@@ -211,7 +225,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       }
     },
     // {
-    //   id: 18, control: 'CustomTextField', display: 'show', label: 'Swap', required: true, varient: 'standard', value: tradingAccount.swap, onChange: (e) => {
+    //   id: 8, control: 'CustomTextField', display: 'show', label: 'Swap', required: true, varient: 'standard', value: tradingAccount.swap, onChange: (e) => {
 
     //     setTradingAccount(prevData => ({
     //       ...prevData,
@@ -220,7 +234,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     //   }
     // },
     {
-      id: 13,
+      id: 9,
       control: 'CustomAutocomplete',
       name: 'Currency',
       display: 'show',
@@ -247,7 +261,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       }
     },
     {
-      id: 1,
+      id: 10,
       control: 'CustomAutocomplete',
       name: 'Customer',
       display: userRole !== 'admin' ? 'show' : 'hide',
@@ -273,7 +287,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       }
     },
     {
-      id: 4,
+      id: 11,
       control: 'CustomAutocomplete',
       name: 'Trading Group',
       display: 'show',
@@ -319,6 +333,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
 
       const formPayload = {
         ...tradingAccount,
+        country:tradingAccount?.country?.label,
         brand_id:userRole === 'admin' ? selectedBrand.public_key :userBrand.public_key,
         margin_level_percentage:userRole === 'admin' ? selectedBrand.margin_call :userBrand.margin_call,
         leverage: tradingAccount.leverage?.value,

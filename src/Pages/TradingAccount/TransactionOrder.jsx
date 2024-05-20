@@ -42,11 +42,11 @@ const TransactionOrder = () => {
   const [comment, setComment] = useState('')
   const [brandId, setBrandId] = useState(-1)
   const [OperationsList, setOperationList] = useState([
-    { "label": "balance", "value": "balance" },
-    { "label": "commission", "value": "commission" },
-    { "label": "tax", "value": "tax" },
-    { "label": "Credit", "value": "Credit" },
-    { "label": "bonus", "value": "bonus" }
+    { "label": "Balance", "value": "balance" },
+    { "label": "Commission", "value": "commission" },
+    { "label": "Tax", "value": "tax" },
+    { "label": "Credit", "value": "credit" },
+    { "label": "Bonus", "value": "bonus" }
   ])
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
@@ -56,7 +56,7 @@ const TransactionOrder = () => {
   const columns = [
     {
       title: <span className="dragHandler">Time</span>,
-      dataIndex: 'Time',
+      dataIndex: 'created_at',
       key: '1',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
       sorter: (a, b) => a.Time.length - b.Time.length,
@@ -176,11 +176,11 @@ const TransactionOrder = () => {
     // handle sumbit
     let isApplicable = true;
 
-    if (method === "balance" && type === 'withdraw') {
-      isApplicable = parseFloat(currentTradingAccountData.balance) >= amount;
+    if ( type === 'withdraw') {
+      isApplicable = parseFloat(currentTradingAccountData[method]) >= amount;
       if (!isApplicable) {
-        setIsModalOpen(false)
-        CustomNotification({ type: "error", title: "Transaction Order", description: "Insufficient Balance", key: 1 });
+        // setIsModalOpen(false)
+        CustomNotification({ type: "error", title: "Transaction Order", description: "Insufficient "+method, key: 1 });
         return;
       }
     }
@@ -214,21 +214,19 @@ const TransactionOrder = () => {
         setIsLoading(false)
         setIsModalOpen(false)
         // for update redux value
-        if (method === 'balance' && type === 'withdraw') {
-          const cBal = parseFloat(currentTradingAccountData.balance) - parseFloat(amount)
+        if (type === 'withdraw') {
+          const cBal = parseFloat(currentTradingAccountData[method]) - parseFloat(amount)
           const updatedAccountData = {
             ...currentTradingAccountData,
-            balance: cBal,
-            equity: cBal
+            [method]: cBal,
           };
           dispatch(setTradingAccountGroupData(updatedAccountData))
 
-        } else if (method === 'balance' && type === 'deposit') {
-          const cBal = parseFloat(currentTradingAccountData.balance) + parseFloat(amount)
+        } else if (type === 'deposit') {
+          const cBal = parseFloat(currentTradingAccountData[method]) + parseFloat(amount)
           const updatedAccountData = {
             ...currentTradingAccountData,
-            balance: cBal,
-            equity: cBal
+            [method]: cBal,
           };
           dispatch(setTradingAccountGroupData(updatedAccountData))
         }
@@ -238,12 +236,12 @@ const TransactionOrder = () => {
       }
       else {
         setIsLoading(false)
-        setIsModalOpen(false)
+        // setIsModalOpen(false)
         CustomNotification({ type: "error", title: "Transaction Order", description: message, key: 1 })
       }
 
     } catch (err) {
-      setIsModalOpen(false)
+      // setIsModalOpen(false)
       CustomNotification({ type: "error", title: "Transaction Order", description: err.message, key: 1 })
       const validationErrors = {};
       err.inner.forEach(error => {
@@ -290,7 +288,7 @@ const TransactionOrder = () => {
 
   return (
     <Spin spinning={isLoading} size="large">
-      <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
+      <div className='rounded-lg' style={{ backgroundColor: colorBG }}>
         <CustomModal
           isModalOpen={isModalOpen}
           title={'Add New Transaction Order'}

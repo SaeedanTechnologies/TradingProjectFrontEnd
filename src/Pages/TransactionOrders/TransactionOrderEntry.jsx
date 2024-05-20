@@ -2,17 +2,19 @@ import { theme, Spin, Dropdown } from 'antd';
 import React, { useState,useEffect } from 'react'
 import CustomTextField from '../../components/CustomTextField'
 import CustomAutocomplete from '../../components/CustomAutocomplete'
-import { AutocompleteDummyData, Countries, CurrenciesList, OperationsList, TransactionTypes } from '../../utils/constants';
+import {  Countries, CurrenciesList, OperationsList, TransactionTypes } from '../../utils/constants';
 import CustomPhoneNo from '../../components/CustomPhoneNo';
 import CustomButton from '../../components/CustomButton';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg'
-import { Single_Transaction_Order, Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
-import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
+import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
 import { deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
+import { GenericDelete } from '../../utils/_APICalls';
+
 
 
 const TransactionOrderEntry = () => {
@@ -20,6 +22,7 @@ const TransactionOrderEntry = () => {
     const token = useSelector(({ user }) => user?.user?.token)
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
+    const dispatch = useDispatch()
 
   const {
     token: { colorBG, TableHeaderColor, Gray2  },
@@ -35,22 +38,26 @@ const TransactionOrderEntry = () => {
   const [SelectedMethod,setSelectedMethod] = useState(null)
   const [amount,setAmount] = useState('')
   const [comment,setComment] = useState('')
- 
+  const [phone,setPhone]= useState('')
+  const [errors, setErrors] = useState({});
+
   const [isDisabled, setIsDisabled] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [transactionData,setTransactionData ] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [ CurrentPage,setCurrentPage] = useState(1)
 
+
    const TransactionOrdersIds = useSelector(({ transactionOrders }) => transactionOrders.selectedRowsIds)
   const TransactionOrdersData = useSelector(({transactionOrders})=> transactionOrders.transactionOrdersData)
   const ArrangedTransactionOrdersData= TransactionOrdersData.slice().sort((a, b) => a.id - b.id);
 
+  
 
   const Control = [
   
-      {id: 7, control:'CustomTextField',  label:'Email', varient: 'standard'  },
-      {id: 6,  control:'CustomTextField',label:'Phone',varient:'standard', type:'number'}, 
+      {id: 7, control:'CustomTextField',  label:'Email', varient: 'standard',value :email  },
+      {id: 6,  control:'CustomTextField',label:'Phone',varient:'standard', type:'number',value:phone}, 
      {
        id: 5, 
        control:'CustomAutocomplete',
@@ -58,6 +65,7 @@ const TransactionOrderEntry = () => {
        label:'Country', 
        varient: 'standard',
        options:Countries,
+       value:SelectedCountry,
        getOptionLabel:(option) => option.label ? option.label : "",
        onChange:(e,value) =>{
          if(value){
@@ -75,6 +83,7 @@ const TransactionOrderEntry = () => {
       label:'Type', 
       varient: 'standard',
       options:TransactionTypes,
+      value:SelectedType,
       getOptionLabel:(option) => option.label ? option.label : "",
       onChange:(e,value) =>{
         if(value){
@@ -91,7 +100,8 @@ const TransactionOrderEntry = () => {
       name:'Method',   
       label:'Method', 
       varient: 'standard',
-      options:CurrenciesList,
+      options:OperationsList,
+      value:SelectedMethod,
       getOptionLabel:(option) => option.label ? option.label : "",
       onChange:(e,value) =>{
         if(value){
@@ -102,7 +112,7 @@ const TransactionOrderEntry = () => {
         } 
         }   
     },
-    {id: 11, control:'CustomTextField',  label:'Amount', varient: 'standard'  },
+    {id: 11, control:'CustomTextField',  label:'Amount', varient: 'standard',value: amount },
     {
       id: 12, 
       control:'CustomAutocomplete',
@@ -110,6 +120,7 @@ const TransactionOrderEntry = () => {
       label:'Curency', 
       varient: 'standard',
       options:CurrenciesList,
+      value: SelectedCurrency,
       getOptionLabel:(option) => option.label ? option.label : "",
       onChange:(e,value) =>{
         if(value){
@@ -120,7 +131,7 @@ const TransactionOrderEntry = () => {
         } 
         }   
     },
-    {id: 13, control:'CustomTextField',  label:'Comment', varient: 'standard'  },
+    {id: 13, control:'CustomTextField',  label:'Comment', varient: 'standard',value:comment  },
  ]
  const ComponentMap = {
   CustomTextField: CustomTextField,
@@ -129,26 +140,9 @@ const TransactionOrderEntry = () => {
 };
 
 
- const clearFields = () => {
-    setSelectedEnable(null);
-    setErrors({});
-    setSymbolList([]);
-    setSelectedSymbol(null);
-    setFeedValues(FeedData);
-    setSelectedFeedName('');
-    setSelectedFeedNameFetch(null)
-    setSelectedLeverage(null);
-    setSwap('');
-    setLotSize('');
-    setLotSteps('');
-    setVolMin('');
-    setVolMax('');
-    setCommission('');
-  };
 
 const fetchTransactionOrder = async (page) => {
     setIsLoading(true)
-
     const res = await Single_Transaction_Order(token,TransactionOrdersIds[0],parseInt(page) )
     const { data: { message, payload, success } } = res
     setIsLoading(false)
@@ -157,7 +151,6 @@ const fetchTransactionOrder = async (page) => {
   }
 
  const setStatesForEditMode = async (payload, success)=>{
-   
       if (success) {
         setIsLoading(true)
         const country = Countries.find((country)=>country.label === payload.country)
@@ -166,6 +159,7 @@ const fetchTransactionOrder = async (page) => {
         const currency = CurrenciesList.find((currency)=>currency.value === payload.currency)
 
         setEmail(payload.email)
+        setPhone(payload.phone)
         setSelectedCountry(country)
         setSelectedMethod(method)
         setAmount(payload.amount)
@@ -181,13 +175,14 @@ const fetchTransactionOrder = async (page) => {
 
 useEffect(() => {
     if (TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0) { // save
-      setIsDisabled(false)
+       setIsDisabled(false)
     } else if (TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) !== 0) { // single edit
       const cIndex = ArrangedTransactionOrdersData.findIndex(item => parseInt(item.id) === parseInt(TransactionOrdersIds[0]))
       setCurrentIndex(cIndex)
       setIsDisabled(true)
+        
 
-      fetchTransactionOrder(CurrentPage)
+      fetchTransactionOrder(1)
  
     
     } else { // mass edit
@@ -227,7 +222,6 @@ useEffect(() => {
 
 
    const deleteHandler = ()=>{
-    debugger
     const Params = {
       table_name:'transaction_orders',
       table_ids: [ArrangedTransactionOrdersData[currentIndex].id]
@@ -266,97 +260,49 @@ useEffect(() => {
    
   ];
 
-const handleSubmit = async () => {
+ const handleSubmit = async () => {
+  let brandId;
+ 
     try {
-      if (SymbolSettingIds.length < 2) {
-        await validationSchema.validate({
-          symbolName: symbolName,
-          feed_name: selectedFeedName,
-          feed_name_fetch: selectedFeedNameFetch,
-          Leverage: SelectedLeverage,
-          swap: swap,
-          lotSize: lotSize,
-          lotSteps: lotSteps,
-          volMin: volMin,
-          volMax: volMax,
-          commission: commission,
-          enabled: Selectedenable
-        }, { abortEarly: false });
-
-        setErrors({});
+       
+      if(userRole === 'brand' )
+      {
+        brandId = userBrand.public_key
       }
+      else
+      {
+        brandId = null
+      }
+      
+     const transactionOrderData = { 
+        email,
+        phone,
+        country:SelectedCountry?.label,
+        type:setSelectedType?.value,
+        currency:SelectedCurrency?.value,
+        method:setSelectedMethod?.value,
+        amount,
+        comment
 
-     const SymbolGroupData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
-        name: symbolName ? symbolName : '',
-        symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
-        feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
-        speed_max: 'abc',
-        lot_size: lotSize ? lotSize : '',
-        lot_step: lotSteps ? lotSteps : '',
-        commission: commission ? commission : '',
-        enabled: Selectedenable ? Selectedenable.title = 'Yes' ? 1 : 0 : 0,
-        leverage: SelectedLeverage ? SelectedLeverage.value : '',
-        feed_name: selectedFeedName ? selectedFeedName.module : '',
-        feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
-        swap: swap ? swap : '',
-        vol_min: volMin ? volMin : '',
-        vol_max: volMax ? volMax : '',
       };
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0) { // save 
-        setIsLoading(true)
-        const res = await SymbolSettingPost(SymbolGroupData, token);
-        const { data: { message, success, payload } } = res;
-        setIsLoading(false)
-        if (success) {
-          clearFields();
-          CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: 'Symbol Setting Created Successfully',
-            key: 2
-          })
-          // navigate('/symbol-settings')
-        } else {
-          setIsLoading(false)
-          if (payload) {
-            const { feed_fetch_name } = payload
-            Selectedenable.title = 'Yes' ? 'Yes' : 'No',
-              CustomNotification({
-                type: 'error',
-                title: message,
-                description: feed_fetch_name[0],
-                key: 1
-              })
-          } else {
-            CustomNotification({
-              type: 'Opsss...',
-              title: message,
-              description: message,
-              key: 2
-            })
-          }
-        }
-
-      } else if (SymbolSettingIds.length >= 2) {
+       if (TransactionOrdersIds.length >= 2) {
         setIsLoading(true)
         const Params = {
-          table_name: 'symbel_settings',
-          table_ids: SymbolSettingIds,
-          ...SymbolGroupData
+          table_name: 'transaction_orders',
+          table_ids: TransactionOrdersIds,
+          ...transactionOrderData
         }
         const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (res !== undefined) {
           if (success) {
-            clearFields();
             CustomNotification({
               type: 'success',
               title: 'success',
-              description: 'Symbol Setting Updated Successfully',
+              description: 'Transaction Order Updated Successfully',
               key: 2
             })
-            navigate('/symbol-settings')
           } else {
             setIsLoading(false)
             CustomNotification({
@@ -371,18 +317,16 @@ const handleSubmit = async () => {
       }
       else {
         setIsLoading(true)
-        const res = await UpdateSymbolSettings(SymbolSettingIds[0], SymbolGroupData, token);
+        const res = await Update_Trading_Transaction_Order(brandId,TransactionOrdersIds[0], transactionOrderData, token);
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
-          clearFields();
           CustomNotification({
             type: 'success',
             title: 'success',
-            description: 'Symbol Setting Updated Successfully',
+            description: 'Transaction Order is Updated Successfully',
             key: 2
           })
-          // navigate('/symbol-settings')
            setIsDisabled(true)
         } else {
           setIsLoading(false)
@@ -457,16 +401,18 @@ const handleSubmit = async () => {
                   variant={val.varient} 
                   label={val.label}
                   options={val.options}
+                  value= {val.value}
                   disabled={isDisabled}
                   getOptionLabel={(option) => val.getOptionLabel(option)}
                   onChange={(e,value) => val.onChange(e,value)} 
                   />
                   ):(
-                    <ComponentToRender
+                  <ComponentToRender
                   name={val.name} 
                   varient={val.varient} 
                   label={val.label}
                   disabled={isDisabled}
+                  value= {val.value}
                   options={val.options}
                   getOptionLabel={(option) => val.getOptionLabel(option)}
                   onChange={(e,value) => val.onChange(e,value)} 
@@ -479,6 +425,19 @@ const handleSubmit = async () => {
         
           {
               !isDisabled && <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>
+             <CustomButton
+              Text={ TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Submit' : 'Update'}
+              style={{
+                padding: '16px',
+                height: '48px',
+                width: '200px',
+                borderRadius: '8px',
+
+              }}
+              disabled={isDisabled}
+              onClickHandler={handleSubmit}
+            />
+            
             <CustomButton
               Text='Cancel'
               style={{
@@ -492,18 +451,7 @@ const handleSubmit = async () => {
               }}
               onClickHandler={()=> navigate(-1)}
             />
-            <CustomButton
-              Text={ TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Submit' : 'Update'}
-              style={{
-                padding: '16px',
-                height: '48px',
-                width: '200px',
-                borderRadius: '8px',
-
-              }}
-              disabled={isDisabled}
-              onClickHandler={handleSubmit}
-            />
+           
             </div>
           }
         

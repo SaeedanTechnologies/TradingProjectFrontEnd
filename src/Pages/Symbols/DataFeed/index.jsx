@@ -23,7 +23,7 @@ const Index = () => {
       const res = await GetDataFeeds(token)
       const { data: { payload, message, success } } = res
       setIsLoading(false)
-      // debugger
+      debugger
       if (success) {
         setDataFeedList(payload.data)
       }
@@ -64,7 +64,7 @@ const Index = () => {
           />
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-6'>
-          {DataFeedList.map(val => <FeedCard id={val.id} feedName={val.name} feedServer={val.feed_server} fetchData={fetchData} />)}
+          {DataFeedList.map(val => <FeedCard id={val.id} feedName={val.name} feedServer={val.feed_server} enabled={val.enabled} fetchData={fetchData} />)}
         </div>
       </div>
     </Spin>

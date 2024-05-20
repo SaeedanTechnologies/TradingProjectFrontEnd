@@ -664,8 +664,15 @@ export const BrandIdAutocompleteDummyData = [
 
 export const TradeOrderTypes = [
 
-  { label: 'Pending Order', value: "pending" },
-  { label: 'Market Order', value: "market" },
+  { label: 'Pending Order', value: 'pending' },
+  { label: 'Market Order', value: 'market' },
+  {label:'Close Order', value:'close'}
+
+]
+
+export const LiveOrderTypes = [
+    { label: 'buy', value: "buy" },
+    { label: 'sell', value: "sell" },
 
 ]
 
@@ -720,6 +727,7 @@ export const CurrenciesList = [
 
 export const PipsValues = [
       {label:"0",value:0},
+      {label:"1",value:1},
       {label:"2",value:2},
       {label:"3",value:3},
       {label:"4",value:4},

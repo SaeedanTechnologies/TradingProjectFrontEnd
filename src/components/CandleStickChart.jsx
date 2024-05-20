@@ -112,6 +112,7 @@ const CandleStickChart = () => {
   
     options.series[0].data = [
       [1317888000000, 372.5101, 375, 372.2, 372.52],
+      [13178880000, 372.5101, 375, 372.2, 372.52],
       // Add more data here...
     ];
   
@@ -127,7 +128,7 @@ const CandleStickChart = () => {
     };
   }, []); // Empty dependency array to run the effect only once on mount
 
-  return <div id="stock-chart-container" style={{height:"400px",width:"100%",minWidth:"200px"}}/>;
+  return <div id="stock-chart-container" style={{height:"300px",width:"100%",minWidth:"200px"}}/>;
 };
 
 export default CandleStickChart;

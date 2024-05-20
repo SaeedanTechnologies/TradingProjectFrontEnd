@@ -54,7 +54,6 @@ const Index = () => {
   };
 
   const columns = [
-    
     {
       
       title:<span className="dragHandler">Name</span>,
@@ -69,9 +68,35 @@ const Index = () => {
       },
     },
     {
+      
+      title:<span className="dragHandler">Data Feed</span>,
+      dataIndex: 'data_feed_name',
+      key: '2',
+      sorter: (a, b) => a.data_feed_name.length - b.data_feed_name.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      
+      title:<span className="dragHandler">Symbol Group</span>,
+      dataIndex: 'group_name',
+      key: '3',
+      sorter: (a, b) => a.group_name.length - b.group_name.length,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
-      key: '2',
+      key: '4',
       sorter: (a, b) => {
         // Split the ratio values and parse them as numbers
         const ratioA = a.leverage.split(':').map(Number);
@@ -94,7 +119,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
-      key: '3',
+      key: '5',
       sorter: (a, b) => a.swap.length - b.swap.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -107,7 +132,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
-      key: '4',
+      key: '6',
       sorter: (a, b) => a.lot_size.length - b.lot_size.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -120,7 +145,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
-      key: '5',
+      key: '7',
       sorter: (a, b) => a.lot_step.length - b.lot_step.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -133,7 +158,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
-      key: '6',
+      key: '8',
       sorter: (a, b) => a.vol_min.length - b.vol_min.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -146,7 +171,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
-      key: '7',
+      key: '9',
       sorter: (a, b) => a.vol_max.length - b.vol_max.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -159,7 +184,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Pip</span>,
       dataIndex: 'pip',
-      key: '7',
+      key: '10',
       sorter: (a, b) => a.pip.length - b.pip.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -172,7 +197,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Commision</span>,
       dataIndex: 'commission',
-      key: '8',
+      key: '11',
       sorter: (a, b) => a.commission.length - b.commission.length,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -180,8 +205,19 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-     
-
+    },
+    {
+      title:<span className="dragHandler">Enabled</span>,
+      dataIndex: 'enabled',
+      key: '12',
+      sorter: (a, b) => a.enabled.length - b.enabled.length,
+      // render:(text)=><span>{text ==1 ? "Yes" : "No"}</span>, 
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
 
   ];
@@ -196,10 +232,14 @@ const Index = () => {
       setIsLoading(true)
       const res = await All_Setting_Data(token, page, parseInt(perPage));
       const { data: { message, success, payload } } = res
+      const transformedData = payload.data.map(item => ({
+        ...item,
+        enabled: item.enabled === "1" ? 'Yes' : 'No'
+      }));
       setIsLoading(false)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
-      setAllSetting(payload.data);
+      setAllSetting(transformedData);
       setTotalRecords(payload.total)
       setIsUpdated(false)
     } catch (error) {

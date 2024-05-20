@@ -4,12 +4,14 @@ import trade from "./TradeSlice";
 import symbolSettings from "./symbolSettingsSlice";
 import symbolGroups from "./symbolGroupsSlice"
 import transactionOrders from './transactionOrdersSlice'
+import tradeOrders  from './TradeOrders'
 import storage from 'redux-persist/lib/storage'
 import group from './TradingGroupData'
 import brands from './BrandsSlice'
 import tradeGroups from "./tradeGroupsSlice";
 import tradingAccountGroup from "./tradingAccountGroupSlice";
 import tradeWithdrawGroups from "./tradeGroupsWithdrawSlice";
+import liveOrder from "./LiveOrderSlice";
 
 const createRootReducer = asyncReducers => {
   const appReducer = combineReducers({
@@ -19,7 +21,9 @@ const createRootReducer = asyncReducers => {
       symbolSettings,
       symbolGroups,
       brands,
+      liveOrder,
       transactionOrders,
+      tradeOrders,
       tradeGroups,
       tradingAccountGroup,
       tradeWithdrawGroups,

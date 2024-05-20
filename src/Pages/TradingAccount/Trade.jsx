@@ -24,6 +24,9 @@ import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
 
+import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
+import CandleStickChart from '../../components/CandleStickChart';
+
 const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
   const {
@@ -31,7 +34,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   } = theme.useToken();
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
-  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
+  const trading_group_id = useSelector(({group}) => group?.tradingGroupData?.id)
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 
@@ -56,6 +59,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const [stop_limit_price,setStop_limit_price] = useState('')
   const [pricing, setPricing] = useState({ openPrice: '', askPrice: '' });
   const [connected, setConnected] = useState(true);
+  const [lot_size, setLotSize] = useState('')
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
@@ -185,7 +189,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
-        fetchData(null, connected); //to stop connection when no symbol is selected
+        fetchData(null, connected, 0); //to stop connection when no symbol is selected
         CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
         CurrentPage && fetchLiveOrder(CurrentPage)
         clearFields()
@@ -208,19 +212,28 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   }
 
   const handleSubmit = (typeReceive) => {
-    {
-      // (balance > 0 && (calculatedMargin + Margin) < balance) 
-      balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
-      createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
-      typeReceive === 'buy' ? 
-      (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
-      createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
-      createOrder(typeReceive)
-      :
-      createOrder(typeReceive)
-      :
-      CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
-    }
+      const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
+      const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
+      const margin = calculateMargin(res, accountLeverage)
+      if(margin > balance || balance === 0){
+      CustomNotification({ 
+        type: "error", 
+        title: "Validation", 
+        description: 'Margin must be less than your balance', 
+        key: 1 
+      })
+      }else{
+        balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+        createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
+        typeReceive === 'buy' ? 
+        (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
+        createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
+        createOrder(typeReceive)
+        :
+        createOrder(typeReceive)
+        :
+        CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
+      }
    
   }
 
@@ -232,6 +245,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       // debugger;
       const { data: { message, success, payload } } = res
       // setSymbolsList(payload).data
+
       setSymbolsList(payload)
 
       setIsLoading(false)
@@ -279,7 +293,7 @@ useEffect(() => {
     return () => {
         // Cleanup actions here (if needed)
         console.log('here')
-        fetchData(null, connected); //to stop connection when component unmounts
+        fetchData(null, connected, 0); //to stop connection when component unmounts
     };
 },[]);
 
@@ -288,13 +302,14 @@ useEffect(() => {
   //   setOpen_price(bidPrice);
   // };
 
-  const fetchBinancehData = async (symbol, feed_name) => {
+
+  const fetchBinancehData = async (symbol, pip) => {
     try {
       const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
+
       // if(feed_name === 'binance') {
         const response = await axios.get(endPoint);
         const data = response?.data;
-        
         // setManualPricing({
         //   ...pricing,
         //   openPrice: data?.bidPrice,
@@ -302,10 +317,36 @@ useEffect(() => {
         // })
         setPricing({
           ...pricing,
-          openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
-          askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
+          openPrice: parseFloat(data?.bidPrice).toFixed(pip),
+          askPrice: parseFloat(data?.askPrice).toFixed(pip)
         })
-        setOpen_price(parseFloat(data?.askPrice))
+        setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
+      // }
+      // else {
+      //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
+      // }
+     
+    } catch (error) {
+      // setError('Error fetching data');
+      console.error(error);
+    }
+  };
+
+  const fetchFcsapiData = async (symbol, key, pip) => {
+    try {
+      const endPoint1= `https://fcsapi.com/api-v3/${key}/latest?id=${symbol?.toLowerCase()}&access_key=lg8vMu3Zi5mq8YOMQiXYgV`
+
+      // if(feed_name === 'binance') {
+        const response = await axios.get(endPoint1);
+        const data = response?.data;
+        console.log(data)
+
+        setPricing({
+          ...pricing,
+          openPrice: parseFloat(data?.response[0]?.o).toFixed(pip),
+          askPrice: parseFloat(data?.response[0]?.c).toFixed(pip)
+        })
+        setOpen_price(parseFloat(data?.response[0]?.c).toFixed(pip))
       // }
       // else {
       //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
@@ -319,16 +360,44 @@ useEffect(() => {
 
   const handleCheckboxClick = (e) => {
     setConnected(e.target.checked)
-    if(symbol){
-      fetchData(symbol, e.target.checked)
+    if(symbol?.feed_name === 'binance'){
+      fetchData(symbol, e.target.checked, pipVal)
     }
+    // if(symbol?.feed_name === 'binance'){
+    //   fetchData(symbol, e.target.checked, pipVal)
+    // }
+    // if(symbol?.feed_name === 'fcsapi'){
+    //   fetchData(symbol, e.target.checked, pipVal)
+    // }
     // if(!e.target.checked){
     //   setOpen_price(pricing.askPrice)
     // }
   }
 
+  // const fetchFcsapiSocketData = (api_key, currencyIds, pip) => {
+  //       // Define callback functions
+  //   const onDataReceived = (data) => {
+  //     console.log('Data received:', data);
+  //   };
 
-  const fetchData = (symbol, connected) => {
+  //   const onError = (error) => {
+  //     console.error('WebSocket error:', error);
+  //   };
+
+  //   const onClose = () => {
+  //     console.log('WebSocket connection closed.');
+  //   };
+
+  //   // Call establishWebSocketConnection with callbacks
+  //   const closeWebSocketConnection = establishWebSocketConnection(api_key, currencyIds, onDataReceived, onError, onClose);
+
+  //   // Close the WebSocket connection when needed
+  //     // closeWebSocketConnection();
+
+  // }
+
+
+  const fetchData = (symbol, connected, pip) => {
 
     // if(symbol?.feed_name === 'binance') {
 
@@ -344,7 +413,7 @@ useEffect(() => {
       // const onStop = () => {
       //   console.log('Previous WebSocket connection stopped manually');
       // };
-      const binanceStream = BinanceBidAsk(symbol?.feed_fetch_name, connected);
+      const binanceStream = BinanceBidAsk(symbol, connected);
   
       // if((!connected && streamConnected)){
   
@@ -358,16 +427,26 @@ useEffect(() => {
       if (binanceStream) {
         const onDataReceived = (data) => {
           if(!data?.bidPrice){
-            fetchBinancehData(symbol?.feed_fetch_name, symbol?.feed_name)
+            if(symbol?.feed_name === 'binance'){
+              fetchBinancehData(symbol?.feed_fetch_name, pipVal)
+            }
+            else{
+              fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pipVal)
+            }
           }
           else {
           // console.log('Bid Price:', data.bidPrice);
           // console.log('Ask Price:', data.askPrice);
-          setPricing({
+          if(symbol?.feed_name === 'binance'){
+            setPricing({
             ...pricing,
-            openPrice: parseFloat(data?.bidPrice).toFixed(pipVal),
-            askPrice: parseFloat(data?.askPrice).toFixed(pipVal)
+            openPrice: parseFloat(data?.bidPrice).toFixed(pip),
+            askPrice: parseFloat(data?.askPrice).toFixed(pip)
           })
+          }
+          else {
+            console.log('Fcsapi Data here')
+          }
           }
         };
   
@@ -388,12 +467,12 @@ useEffect(() => {
       <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
         <div className='flex gap-3 justify-between'>
           <div className='flex gap-3 w-full'>
-            <img
+            {/* <img
               src={ARROW_BACK_CDN}
               alt='back icon'
               className='cursor-pointer'
               onClick={() => navigate(-1)}
-            />
+            /> */}
 
             <h1 className='text-3xl font-bold'>Create New Order</h1>
           </div>
@@ -416,8 +495,9 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    debugger
-                    setPipVal(value.pip)
+                    
+                    setLotSize(value?.lot_size)
+                    setPipVal(value?.pip)
                     setVolumeRange({
                       ...volumerange,
                       min_vol: value?.vol_min,
@@ -426,17 +506,24 @@ useEffect(() => {
                     setLotStep(value?.lot_step)
                     setVolume(value?.vol_min)
                     if (value) {
+                    setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
+                    setSymbol(value)
                       if(value?.feed_name === 'binance'){
-                        setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
-                      setSymbol(value)
                       
-                      fetchBinancehData(value?.feed_fetch_name, value?.feed_name)
+                      fetchBinancehData(value?.feed_fetch_name, value?.pip)
                       if (value && connected) {
                       // setSymbol(value)
                       // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
-                      fetchData(value, connected);
+                      fetchData(value, connected, value?.pip);
                     }
                       }
+                      else if (value?.feed_name === 'fcsapi'){
+                        fetchData(null, connected, 0); //to stop connection when binance symbol is not selected
+                        // fetchData(value, connected, value?.pip);
+                        // fetchFcsapiSocketData('lg8vMu3Zi5mq8YOMQiXYgV' ,value?.feed_fetch_name, value?.pip)
+                        fetchFcsapiData(value?.feed_fetch_name, value?.feed_fetch_key, value?.pip)
+                      }
+
                       else {
                         CustomNotification({ type: "error", title: "Opps", description: `${value?.feed_name} not configured yet`, key: 1 })
                       }
@@ -459,7 +546,7 @@ useEffect(() => {
                   label={'Type'}
                   options={TradeOrderTypes}
                   value={order_type}
-                  getOptionLabel={(option) => option.label ? option.label : ""}
+                  getOptionLabel={(option) => option?.label ? option?.label : ""}
                   onChange={(e, value) => {
                     if (value) {
 
@@ -486,7 +573,7 @@ useEffect(() => {
                     label={'Type'}
                     options={PendingOrderTypes}
                     value={type}
-                    getOptionLabel={(option) => option.label ? option.label : ""}
+                    getOptionLabel={(option) => option?.label ? option?.label : ""}
                     onChange={(e, value) => {
                       if (value) {
                         setType(value)
@@ -594,7 +681,7 @@ useEffect(() => {
                 value={comment}
                 onChange={e => handleInputChange('comment', e.target.value)}
                 multiline={true}
-                rows={4} />
+                rows={1} />
             </div>
             {order_type?.value === 'pending' ?
 
@@ -630,7 +717,22 @@ useEffect(() => {
           </div>
           <div className="flex-1 ml-2 ">
             <div className="mb-4">
-
+                  <CandleStickChart symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
+                  {Symbol.length > 0 && <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
+                      <div className='flex justify-between'>
+                      <span >1 Lots</span>
+                      <span>1000 units</span>
+                      </div>
+                      <div className='flex justify-between'>
+                      <span >Pips Value</span>
+                      <span>USDT 0.01</span>
+                      </div>
+                      <div className='flex justify-between'>
+                      <span >Required Margin</span>
+                      <span>USDT 967.143</span>
+                      </div>
+                    
+                  </div>}
               {/* <BinanceBidAsk symbol={"BTCUSD"}/> */}
             </div>
             {/* Your chart content */}

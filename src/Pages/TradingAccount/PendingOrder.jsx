@@ -9,22 +9,22 @@ import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICall
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 
 
-const CloseOrder = () => {
+const PendingOrder = () => {
   
 
   const token = useSelector(({user})=> user?.user?.token )
   const {token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const [isLoading,setIsLoading] = useState(false)
-  const [closeOrders,setCloseOrders] = useState([])
+  const [pendingOrder,setPendingOrder] = useState([])
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
 
-    const fetchCloseOrder = async (page) => {
+    const fetchPendingOrder = async (page) => {
       setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['close'],token,page}
+      const params ={trading_account_id,OrderTypes:['pending'],token,page}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
       
@@ -53,14 +53,14 @@ const CloseOrder = () => {
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
 
-      setCloseOrders(orders)
+      setPendingOrder(orders)
     }
     
   }
 
 
   const onPageChange = (page) =>{
-     fetchCloseOrder(page)  
+     fetchPendingOrder(page)  
     }
   const columns = [
     {
@@ -78,13 +78,6 @@ const CloseOrder = () => {
       sorter: (a, b) => a.open_time.length - b.open_time.length,
       sortDirections: ['ascend'],
     },
-    // {
-    //   title:<span className="dragHandler">Order No</span>,
-    //   dataIndex: 'order_no',
-    //   key: '2',
-    //   sorter: (a, b) => a.order_no.length - b.order_no.length,
-    //   sortDirections: ['ascend'],
-    // },
     {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
@@ -120,52 +113,7 @@ const CloseOrder = () => {
       key: '6',
       sorter: (a, b) => a.open_price.length - b.open_price.length,
       sortDirections: ['ascend'],
-    },
-    {
-      title:<span className="dragHandler">Close Time</span>,
-      dataIndex: 'close_time',
-      key: '9',
-      sorter: (a, b) => a.close_time.length - b.close_time.length,
-      sortDirections: ['ascend'],
-    },
-    {
-      title:<span className="dragHandler">Close Price</span>,
-      dataIndex: 'close_price',
-      key: '10',
-      sorter: (a, b) => a.close_price.length - b.close_price.length,
-      sortDirections: ['ascend'],
-    },
-    // {
-    //   title:<span className="dragHandler">Reason</span>,
-    //   dataIndex: 'reason',
-    //   key: '11',
-    //   sorter: (a, b) => a.reason.length - b.reason.length,
-    //   sortDirections: ['ascend'],
-    // },
-    {
-      title:<span className="dragHandler">Swap</span>,
-      dataIndex: 'swap',
-      key: '12',
-      sorter: (a, b) => a.swap.length - b.swap.length,
-      sortDirections: ['ascend'],
-    },
-    {
-      title:<span className="dragHandler">Profit</span>,
-      dataIndex: 'profit',
-      key: '13',
-      sorter: (a, b) => a.profit.length - b.profit.length,
-      sortDirections: ['ascend'],
-    },
-    // {
-    //   title: 'Actions',
-    //   dataIndex: 'actions',
-    //   key: '14',
-    //   render: (_, record) => (
-    //     <Space size="middle" className='cursor-pointer'>
-    //       <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }}  onClick={()=> CustomDeleteDeleteHandler(record.id, token, Delete_Trade_Order,setIsLoading,fetchCloseOrder)} /> 
-    //     </Space>
-    //   ),
-    // },
+    }
   ];
   
   const headerStyle = {
@@ -179,7 +127,7 @@ const CloseOrder = () => {
 
   useEffect(()=>{
 
-         fetchCloseOrder(CurrentPage)
+         fetchPendingOrder(CurrentPage)
   
   },[])
 
@@ -187,10 +135,10 @@ const CloseOrder = () => {
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{backgroundColor: colorBG}}>
         <CustomTable
-            direction="/single-trading-accounts/details/close-order"
-            formName = "Close Orders" 
+            direction="/single-trading-accounts/details/Pending-order"
+            formName = "Pending Orders" 
             columns={columns}
-            data={closeOrders} 
+            data={pendingOrder} 
             headerStyle={headerStyle}
             total={totalRecords}
             onPageChange = {onPageChange}
@@ -202,4 +150,4 @@ const CloseOrder = () => {
   )
 }
 
-export default CloseOrder
+export default PendingOrder

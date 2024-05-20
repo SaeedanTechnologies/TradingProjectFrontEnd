@@ -10,14 +10,16 @@ import PersonalData from './PersonalData';
 import Account from './Account';
 import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { CheckBrandPermission, calculateLotSize, calculateMargin, calculateNights, calculateProfitLoss, getCurrentDateTime, getOpenPrice, getOpenPriceFromAPI, numberFormat } from "../../utils/helpers";
 import { LeverageList } from '../../utils/constants';
+import { setLiveOrdersData } from '../../store/LiveOrderSlice';
+import PendingOrder from './PendingOrder';
 
 
 const TradingAccountDetails = () => {
-
+  const dispatch = useDispatch()
   const [liveOrders, setLiveOrders] = useState([])
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -43,9 +45,9 @@ const TradingAccountDetails = () => {
    const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
    const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
 const fetchLiveOrder = async (page) => {
-
       setIsLoading(true)
-      const params ={trading_account_id,OrderTypes:['market','pending'],token,page}
+      debugger
+      const params ={trading_account_id,OrderTypes:['market'],token,page}
       const mData = await Get_Trade_Order(params)
       const {data:{message, payload, success}} = mData
        setIsLoading(false)
@@ -55,14 +57,15 @@ const fetchLiveOrder = async (page) => {
         let totalMargin = 0
         let _totalSwap = 0
         const currentDateTime = getCurrentDateTime();
+      
         const updatedData = await Promise.all(payload.data.map(async (x) => {
-          const {askPrice, bidPrice} = await getOpenPriceFromAPI(x.symbol, x.feed_name);
+             const {askPrice, bidPrice} = await getOpenPriceFromAPI(x.symbol, x.feed_name);
           const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
           const open_price= parseFloat(x?.open_price).toFixed(pipVal);
           const currentPrice = x.type === "sell"? parseFloat(askPrice).toFixed(pipVal) ?? 0  : parseFloat(bidPrice).toFixed(pipVal) ?? 0
           const profit = parseFloat(calculateProfitLoss(currentPrice , parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
           totalProfit+= parseFloat(profit)
-          const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.type === "sell"? parseFloat(askPrice)  : parseFloat(bidPrice) ).toFixed(2))
+          const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.open_price ).toFixed(2))
           const margin = calculateMargin(res, accountLeverage)
           const totalNights = calculateNights(x.created_at,currentDateTime)
           const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0)
@@ -71,7 +74,9 @@ const fetchLiveOrder = async (page) => {
           totalMargin+= parseFloat(margin)
           totalVolumn+= parseFloat(res)
           return { ...x,swap, profit, currentPrice,open_price };
+         
         }));
+        dispatch(setLiveOrdersData(updatedData));
         setGrandProfit(totalProfit.toFixed(2));
         setGrandVolumn(totalVolumn.toFixed(2)); 
         setGrandMargin(totalMargin.toFixed(2)); 
@@ -106,27 +111,34 @@ const fetchLiveOrder = async (page) => {
   },
   {
     key: '3',
+    label: 'Pending Order',
+    children: <PendingOrder />,
+    path: "/single-trading-accounts/details/pending-order",
+    display:  CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide' 
+  },
+  {
+    key: '4',
     label: 'Close Order',
     children: <CloseOrder />,
     path: "/single-trading-accounts/details/close-order",
     display:  CheckBrandPermission(userPermissions,userRole,'close_orders_read') ? 'show' : 'hide' 
   },
   {
-    key: '4',
+    key: '5',
     label: 'Personal Data',
     children: <PersonalData />,
     path: "/single-trading-accounts/details/personal-data",
     display:  'show' 
   },
   {
-    key: '5',
+    key: '6',
     label: 'Account and Security',
     children: <Account />,
     path: "/single-trading-accounts/details/account-security",
     display:   'show' 
   },
   {
-    key: '6',
+    key: '7',
     label: 'Transaction Orders',
     children: <TransactionOrder />,
     path: "/single-trading-accounts/details/transaction-order",
@@ -155,12 +167,12 @@ const onChange = (key) => {
   return (
     <div className='p-8' style={{backgroundColor: colorBG}}>
         <div className='flex gap-3'>
-          {/* <img 
+          <img 
            src={ARROW_BACK_CDN} 
            alt='back icon' 
            className='cursor-pointer'
            onClick={() => navigate(-1)}
-           /> */}
+           />
           <h1 className='text-3xl font-bold'>Trading Account</h1>
         </div>
        

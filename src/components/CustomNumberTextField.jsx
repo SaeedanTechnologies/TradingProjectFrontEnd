@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
+import CustomNotification from './CustomNotification';
 
 const CustomNumberTextField = ({
   value,
@@ -20,6 +21,7 @@ const CustomNumberTextField = ({
   }, [value]);
   
   const [currentValue, setCurrentValue] = useState(value);
+  const [error, setError] = useState('');
   const isFirstClick = useRef(true);
 
   // Function to perform arithmetic operations (addition or subtraction) with a specified precision
@@ -59,14 +61,19 @@ const CustomNumberTextField = ({
 
   const handleChange = (event) => {
     const newValue = event.target.value;
+    // const even = parseFloat(parseFloat(newValue) % 2).toFixed(2)
     const rem = parseFloat(parseFloat(newValue) % step).toFixed(2)
     
-    if (!isNaN(newValue) && (parseFloat(newValue) === min || parseFloat(newValue) === max || rem === "0.00")) {
+    if (!isNaN(newValue) && (parseFloat(newValue) === max || (parseFloat(newValue) >= min && parseFloat(newValue) <= max && parseFloat(rem) === min))) {
       setCurrentValue(newValue);
-    }else{
+      onChange(newValue)
+      setError('');
+    }
+    else {
       setCurrentValue(newValue);
-      alert('invalid value')
-
+      // alert('invalid value')
+      setError(`${newValue} is an Invalid Value`);
+      CustomNotification({ type: "error", title: "Live Order", description: `${newValue} is an Invalid Value`, key: 1 })
     }
     // if (isFirstClick.current) {
     //   if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
@@ -100,6 +107,7 @@ const CustomNumberTextField = ({
       if(!isNaN(newValue) && newValue >= min && newValue <= max) {
         setCurrentValue(newValue)
         onChange(newValue);
+        setError('');
       }
     }
   }
@@ -123,6 +131,7 @@ const CustomNumberTextField = ({
       if (!isNaN(newValue) && newValue >= min && newValue <= max) {
         onChange(newValue);
         setCurrentValue(newValue)
+        setError('');
         // return newValue;
       }
       // else {
@@ -142,6 +151,8 @@ const CustomNumberTextField = ({
         onChange={handleChange}
         variant="standard"
         fullWidth={fullWidth}
+        error={!!error}
+        helperText={error}
         {...rest}
       />
       <div style={{

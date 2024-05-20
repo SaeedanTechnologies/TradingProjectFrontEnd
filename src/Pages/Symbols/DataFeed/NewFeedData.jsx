@@ -13,7 +13,8 @@ import { GetAskBidData, GetCryptoData } from '../../../utils/_ExchangeAPI'
 import { useSelector } from 'react-redux';
 import { SelectFeedDataById, UpdateDataFeed, feedDataPost, getFeedServer } from '../../../utils/_DataFeedAPI'
 import CustomNotification from '../../../components/CustomNotification';
-
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 const NewFeedDaata = () => {
     const token = useSelector(({ user }) => user?.user?.token)
@@ -34,6 +35,7 @@ const NewFeedDaata = () => {
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false)
     const [selectedFeed, setSelectedFeed] = useState(null)
+    const [isEnabled, setIsEnabled] = useState(true)
 
 
     const handleInputChange = (fieldName, value) => {
@@ -83,7 +85,7 @@ const NewFeedDaata = () => {
                             feed_login: payload.feed_login
                         }
                     ]
-                    debugger
+                    setIsEnabled(parseInt(payload.enabled) ? true : false)
                     setFields(currentField)
                 }
 
@@ -112,9 +114,11 @@ const NewFeedDaata = () => {
         try {
             const allFeedData = {
                 name: name,
-                module: selectedFeed && selectedFeed.module ? selectedFeed.module : null,
-                feed_server: selectedFeed && selectedFeed.feed_server ? selectedFeed.feed_server : null,
+                module: selectedFeed && selectedFeed.module ? selectedFeed.module : '',
+                feed_server: selectedFeed && selectedFeed.feed_server ? selectedFeed.feed_server : '',
+                enabled: isEnabled ? 1 : 0
             };
+            debugger
             if (parseInt(id) === 0) {
                 if (!feed_login) {
                     setErrors(prevErrors => ({ ...prevErrors, feed_login: 'Feed login is required' }));
@@ -206,8 +210,6 @@ const NewFeedDaata = () => {
                             />
                             {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
                         </div>
-
-
                         {parseInt(id) === 0 && (
                             <CustomAutocomplete
                                 name="FeedName"
@@ -242,6 +244,16 @@ const NewFeedDaata = () => {
                                 </div>
                             ))}
                         </div>
+
+                        <FormControlLabel 
+                            control={
+                            <Switch 
+                            checked={isEnabled} 
+                            onChange={(e)=> setIsEnabled(e.target.checked)} />
+                            }
+                            label="Is Enabled"  
+                            sx={{mt:3}}
+                        />
 
                     </div>
                     <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>

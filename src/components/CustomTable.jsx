@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, 
   table_name, setSortDirection, perPage, setPerPage, editPermissionName,
-   deletePermissionName, SearchQuery,LoadingHandler, footer, column_name, summary, isPagination, addButton}) => {
+   deletePermissionName, SearchQuery,LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId}) => {
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -52,8 +52,9 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           LoadingHandler={LoadingHandler}
           footer={footer}
           column_name={column_name}
-          summary = {summary}
+           summary = {summary}
           addButton={addButton}
+          brandId={brandId}
         />
         {
           direction !== "/single-trading-accounts/details/live-orders" &&  <div style={{ textAlign: 'right', marginTop: 16 }}>

@@ -10,10 +10,10 @@ import CustomModal from "../../components/CustomModal";
 import { Autocomplete, TextField } from "@mui/material";
 import { GenericDelete, MassCloseOrders } from "../../utils/_APICalls";
 import Swal from "sweetalert2";
-import { setSymbolSettingsSelecetdIDs } from "../../store/symbolSettingsSlice";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
 import { setTradingAccountGroupData } from "../../store/tradingAccountGroupSlice";
 import { setAccountID } from "../../store/TradeSlice";
+import { getValidationMsg } from "../../utils/helpers";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -110,9 +110,10 @@ class DnDTable extends Component {
   }
   async SearchHandler(){
   //  this.setState({isLoading: true})
+ 
     this.props.LoadingHandler(true)
+    const  res = await this.props.SearchQuery(this.props.token ,this.props.current_page, this.props.perPage, this.state.searchValues)
     
-    const res = await this.props.SearchQuery(this.props.token, this.props.current_page, this.props.perPage, this.state.searchValues)
     const {data:{payload, success, message}} = res
     
    //  this.setState({isLoading: false})
@@ -125,7 +126,23 @@ class DnDTable extends Component {
   componentDidMount() {
     this.useEffect()
   }
- 
+  createButtonAndHR = () => {
+    const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
+    if (firstColumnHeaderCell && !this.state.buttonCreated) {
+      const hr = document.createElement('hr');
+      hr.classList.add("custom-line");
+      firstColumnHeaderCell.appendChild(hr);
+
+      const button = document.createElement('button');
+      button.classList.add('custom-button');
+      button.innerText = 'Search'; // Set initial button text
+      button.style.backgroundColor = '#1CAC70'; // Set initial button color
+      button.addEventListener('click', this.handleButtonClick);
+      firstColumnHeaderCell.appendChild(button);
+
+      this.setState({ buttonCreated: true });
+    }
+  };
   async useEffect(){
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
@@ -170,6 +187,8 @@ class DnDTable extends Component {
           }
       ]
   }));
+  
+  console.log(columnsWithChildren)
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
@@ -197,6 +216,7 @@ class DnDTable extends Component {
         columnsWithChildren.forEach(column => {
           columnMap[column.dataIndex] = column;
         });
+        console.log(selectedCols)
         const filteredColumns = selectedCols.map(selectedColumn => {
           const column = columnMap[selectedColumn.dataIndex];
           return column;
@@ -267,6 +287,7 @@ class DnDTable extends Component {
   };
 
   onSelectChange(newSelectedRowKeys) {
+    
     this.setState({ selectedRowKeys: newSelectedRowKeys });
   }
 
@@ -282,14 +303,13 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
-    this.setState({ currentRecords: record });
+      this.setState({ currentRecords: record });
       this.props.dispatch(this.props.setSelecetdIDs([record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
         this.props.dispatch(setTradingAccountGroupData(record))
         this.props.dispatch(setAccountID(record.id))
       }
       this.props.navigate(this.props.direction);
-     
   };
 
   setIsRearangments(newValue) {
@@ -453,6 +473,15 @@ class DnDTable extends Component {
                 key: "a4",
               })
             } else {
+              const errorMsg = getValidationMsg(message, payload)
+              if(errorMsg) 
+                CustomNotification({
+                  type: "error",
+                  title: "Oppssss..",
+                  description: errorMsg,
+                  key: "b4",
+                })
+              else
               CustomNotification({
                 type: "error",
                 title: "Oppssss..",
@@ -528,6 +557,7 @@ class DnDTable extends Component {
    this.setState({isAddRemove: false})
   }
  async setColumnsSetting(values, msg){
+  
   try{
     const Params = {
       data:{
@@ -599,6 +629,7 @@ class DnDTable extends Component {
         onResize: this.handleResize(index),
       }),
     }));
+    
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys,
       onChange: this.onSelectChange, // Make sure you define onSelectChange method
@@ -682,7 +713,8 @@ class DnDTable extends Component {
                     tableHeader.querySelector(
                       `th:nth-child(${columnIndex + 1})`
                     ).textContent;
-                  if (columnName !== "Action" && columnName !== "") {
+                    
+                  if (columnName !== "Action" && columnName !== "Search"  && columnName !== "Authorization Key" && columnName !== "Mass Buy/Sell Trading Order" && columnName !== "Mass deposit/widthdraw" && columnName !== "Trading Accounts") {
                     this.handleRowClick(record);
                   }
                 }
