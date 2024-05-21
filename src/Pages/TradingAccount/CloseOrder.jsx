@@ -187,8 +187,8 @@ const CloseOrder = () => {
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{backgroundColor: colorBG}}>
         <CustomTable
-            direction="/single-trading-accounts/details/close-order"
-            formName = "Close Orders" 
+            direction="/single-trading-accounts/details/close-order-entry"
+            formName = "Trading Close Orders" 
             columns={columns}
             data={closeOrders} 
             headerStyle={headerStyle}

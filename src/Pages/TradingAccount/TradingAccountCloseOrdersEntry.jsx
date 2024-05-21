@@ -13,11 +13,11 @@ import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant
 import CustomNotification from '../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
 import { deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
-import {GenericEdit, GenericDelete } from '../../utils/_APICalls';
+import { GenericDelete } from '../../utils/_APICalls';
 
 
 
-const TransactionOrderEntry = () => {
+const TradingAccountTransactionOrderEntry = () => {
 
     const token = useSelector(({ user }) => user?.user?.token)
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
@@ -285,7 +285,7 @@ useEffect(() => {
         comment
 
       };
-       
+       if (TransactionOrdersIds.length >= 2) {
         setIsLoading(true)
         const Params = {
           table_name: 'transaction_orders',
@@ -314,8 +314,31 @@ useEffect(() => {
           }
         }
 
-      
-      
+      }
+      else {
+        setIsLoading(true)
+        const res = await Update_Trading_Transaction_Order(brandId,TransactionOrdersIds[0], transactionOrderData, token);
+        const { data: { message, success, payload } } = res;
+        setIsLoading(false)
+        if (success) {
+          CustomNotification({
+            type: 'success',
+            title: 'success',
+            description: 'Transaction Order is Updated Successfully',
+            key: 2
+          })
+           setIsDisabled(true)
+        } else {
+          setIsLoading(false)
+          CustomNotification({
+            type: 'error',
+            title: 'error',
+            description: message,
+            key: `abc`
+          })
+        }
+
+      }
 
     } catch (err) {
       const validationErrors = {};
@@ -438,4 +461,4 @@ useEffect(() => {
   )
 }
 
-export default TransactionOrderEntry
+export default TradingAccountTransactionOrderEntry

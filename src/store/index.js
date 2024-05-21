@@ -12,6 +12,7 @@ import tradeGroups from "./tradeGroupsSlice";
 import tradingAccountGroup from "./tradingAccountGroupSlice";
 import tradeWithdrawGroups from "./tradeGroupsWithdrawSlice";
 import liveOrder from "./LiveOrderSlice";
+import  tradingAccountList  from "./TradingAccountSlice";
 
 const createRootReducer = asyncReducers => {
   const appReducer = combineReducers({
@@ -27,6 +28,7 @@ const createRootReducer = asyncReducers => {
       tradeGroups,
       tradingAccountGroup,
       tradeWithdrawGroups,
+      tradingAccountList,
       ...asyncReducers
   });
   

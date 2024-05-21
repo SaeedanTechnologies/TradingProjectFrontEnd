@@ -110,7 +110,7 @@ class DnDTable extends Component {
   }
   async SearchHandler(){
   //  this.setState({isLoading: true})
- 
+    // debugger
     this.props.LoadingHandler(true)
     const  res = await this.props.SearchQuery(this.props.token ,this.props.current_page, this.props.perPage, this.state.searchValues)
     

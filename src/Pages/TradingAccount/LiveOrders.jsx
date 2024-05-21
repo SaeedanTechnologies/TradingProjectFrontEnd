@@ -2,15 +2,20 @@ import { theme, Spin, Table } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
-import { MinusCircleOutlined  } from '@ant-design/icons';
+import { SearchOutlined,PlusCircleOutlined, CaretUpOutlined, CaretDownOutlined,MinusCircleOutlined } from '@ant-design/icons';
+
 import { useLocation, } from 'react-router-dom';
-import { Put_Trade_Order, Put_Trading_Account } from '../../utils/_TradingAPICalls';
+import { Put_Trade_Order, Put_Trading_Account,Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
 import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
+import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountSlice';
+
+
 
 const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin, totalSwap }) => {
  
@@ -21,6 +26,10 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
   const location = useLocation()
   const { pathname } = location
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [perPage, setPerPage] = useState(10)
+  const [sortDirection, setSortDirection] = useState("")
+
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
@@ -30,7 +39,12 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       dataIndex: 'symbol',
       key: '1',
       sorter: (a, b) => a.symbol.length - b.symbol.length,
-      sortDirections: ['ascend'],
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {  
       title:<span className="dragHandler">Time</span>,
@@ -38,15 +52,24 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       key: '2',
       render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm:ss')}</span>,
       sorter: (a, b) => a.time.length - b.time.length,
-      sortDirections: ['ascend'],
-    
+     sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: 'type',
       sorter: (a, b) => a.time.length - b.time.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
       render: (text)=> <span className={`${text === 'sell' ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     {
@@ -54,56 +77,96 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       dataIndex: 'volume',
       key: 'volume',
       sorter: (a, b) => a.volume.length - b.volume.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: 'stopLoss',
       sorter: (a, b) => a?.stopLoss.length - b?.stopLoss.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: 'takeProfit',
       sorter: (a, b) => a?.takeProfit.length - b?.takeProfit.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: 'open_price',
       sorter: (a, b) => a.open_price.length - b.open_price.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Current Price</span>,
       dataIndex: 'currentPrice',
       key: 'currentPrice',
       sorter: (a, b) => a.currentPrice.length - b.currentPrice.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: 'comment',
       sorter: (a, b) => a.comment.length - b.comment.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: 'swap',
       sorter: (a, b) => a.profit.length - b.profit.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: 'profit',
       sorter: (a, b) => a.profit.length - b.profit.length,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
    
@@ -119,6 +182,11 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     // },
   ];
 
+   const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+  
+
   const headerStyle = {
     background: TableHeaderColor,
     color: 'black',
@@ -127,6 +195,10 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
  const onPageChange = (page) =>{
       fetchLiveOrder(page)
   }
+
+   const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
   // const CancelLiveOrder = async (id) => {
 
    const requiredOrder = tradeOrder.find((order)=>order.id === id)
@@ -187,6 +259,11 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     return () => clearInterval(intervalId);
   }, []);
 
+  useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
+
   const UpdateTradingAccountStatus = async()=>{
     const Params = {
       status: "margin_call", 
@@ -200,15 +277,20 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
          <CustomTable
-            direction="/single-trading-accounts/details/live-orders"
-            formName = "Live Orders" 
-            columns={columns}
+            direction="/single-trading-accounts/details/live-order-entry"
+            formName = "Trading Live Orders" 
+            columns={newColumns}
             data={tradeOrder} 
             headerStyle={headerStyle}
-            total={totalRecords}
-            onPageChange = {onPageChange}
-            current_page={CurrentPage}
+            // total={totalRecords}
+            // onPageChange = {onPageChange}
+            // current_page={CurrentPage}
             token = {token}
+            // isUpated={isUpdated}
+            setSelecetdIDs={setLiveOrdersSelectedIds}
+            setTableData = {setLiveOrdersData}
+            table_name= "trade_orders"
+            setSortDirection = {setSortDirection}
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
@@ -230,7 +312,9 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
                 </Table.Summary.Row>
               </Table.Summary>
             )}
-          />
+            SearchQuery = {Get_Trade_Order}
+            LoadingHandler={LoadingHandler}
+            />
       </div>
     </Spin>
   )

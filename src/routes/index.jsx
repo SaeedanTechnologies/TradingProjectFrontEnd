@@ -48,6 +48,10 @@ import PendingOrder from '../Pages/TradingAccount/PendingOrder';
 import AllPendingOrder from '../Pages/PendingOrder/PendingOrder';
 import BrandEntry from '../Pages/Brand/BrandEntry';
 import PendingOrderEntry from '../Pages/PendingOrder/PendingOrderEntry';
+import TradingAccountLiveOrdersEntry from '../Pages/TradingAccount/TradingAccountLiveOrdersEntry';
+import TradingAccountPendingOrdersEntry from '../Pages/TradingAccount/TradingAccountPendingOrderEntry';
+import TradingAccountCloseOrdersEntry from '../Pages/TradingAccount/TradingAccountCloseOrdersEntry'
+import TradingAccountTransactionOrdersEntry from '../Pages/TradingAccount/TradingAccountTransactionOrdersEntry';
 
 
 export const router = createBrowserRouter([
@@ -85,14 +89,20 @@ export const router = createBrowserRouter([
           { path: "live-order", element: <LiveOrders /> },
           { path: "symbol", element: <Trade /> },
           { path: "close-order", element: <CloseOrder /> },
+          // { path: "close-order-entry",element:<TradingAccountCloseOrdersEntry/> },
           { path: "pending-order", element: <PendingOrder /> },
+          // { path: "pending-order-entry",element:<TradingAccountPendingOrdersEntry/> },
           { path: "personal-data", element: <PersonalData /> },
           { path: "account-security", element: <Account /> },
           { path: "transaction-order", element: <TransactionOrder /> },
+         
         ]
       },
+       {path: "/single-trading-accounts/details/transaction-order-entry",element:<TradingAccountTransactionOrdersEntry/>},
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
+      { path:"/single-trading-accounts/details/live-order-entry",element:<TradingAccountLiveOrdersEntry/>},
       { path: "/live-orders", element: <LiveOrders /> },
+
       { path:"/live-orders-entry", element:<LiveOrdersEntery/>},
       { path: "/close-orders", element: <CloseOrder /> },
       { path:"/close-orders-entry",element:<CloseOrdersEntery/>},

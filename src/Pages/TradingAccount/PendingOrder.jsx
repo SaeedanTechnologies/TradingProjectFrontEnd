@@ -135,8 +135,8 @@ const PendingOrder = () => {
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{backgroundColor: colorBG}}>
         <CustomTable
-            direction="/single-trading-accounts/details/Pending-order"
-            formName = "Pending Orders" 
+            direction="/single-trading-accounts/details/pending-order-entry"
+            formName = "Trading Pending Orders" 
             columns={columns}
             data={pendingOrder} 
             headerStyle={headerStyle}

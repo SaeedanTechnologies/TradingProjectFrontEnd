@@ -19,7 +19,7 @@ import { CheckBrandPermission } from "../../utils/helpers";
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import { AddnewStyle } from '../Brand/style';
 import CustomModal from '../../components/CustomModal';
-
+import { setTransactionsOrdersSelectedIDs,setTransactionOrdersData } from '../../store/TradingAccountSlice';
 
 const TransactionOrder = () => {
 
@@ -53,6 +53,12 @@ const TransactionOrder = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [SelectedMethod, setSelectedMethod] = useState([])
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [sortDirection, setSortDirection] = useState("")
+  const [perPage, setPerPage] = useState(10)
+
+
   const columns = [
     {
       title: <span className="dragHandler">Time</span>,
@@ -100,33 +106,20 @@ const TransactionOrder = () => {
     },
 
   ];
-  const data = [
-    {
-      key: '1',
-      Time: '10:00 AM',
-      Deal: 'Deal 1',
-      Type: 'Type 1',
-      Amount: '$1000',
-    },
-    {
-      key: '2',
-      Time: '11:30 AM',
-      Deal: 'Deal 2',
-      Type: 'Type 2',
-      Amount: '$2000',
-    },
-    {
-      key: '3',
-      Time: '1:45 PM',
-      Deal: 'Deal 3',
-      Type: 'Type 3',
-      Amount: '$1500',
-    },
-  ];
+
+   const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+  
+ 
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
+
+   const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
 
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
@@ -171,6 +164,11 @@ const TransactionOrder = () => {
 
     fetchTransactionOrder(page)
   }
+
+   useEffect(() => {
+        const newCols = columns.filter(x => checkedList.includes(x.key));
+        setNewColumns(newCols)
+  }, [checkedList]);
 
   const handleSubmit = async (type) => {
     // handle sumbit
@@ -384,16 +382,25 @@ const TransactionOrder = () => {
           {/* <CustomTable columns={columns} data={transactionOrders} headerStyle={headerStyle} /> */}
 
           <CustomTable
-            direction="/single-trading-accounts/details/transaction-order"
-            formName="Transaction Order"
-            columns={columns}
+            direction="/single-trading-accounts/details/transaction-order-entry"
+            formName="Trading Transaction Order"
+            columns={newColumns}
             data={transactionOrders}
             headerStyle={headerStyle}
             total={totalRecords}
             onPageChange={onPageChange}
             current_page={CurrentPage}
             token={token}
-            addButton={() => (
+            isUpated={isUpdated}
+            setSelecetdIDs={setTransactionsOrdersSelectedIDs}
+            setTableData = {setTransactionOrdersData}
+            table_name= "transaction_orders"
+            setSortDirection = {setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery = {Get_Transaction_Orders}
+            LoadingHandler={LoadingHandler}
+             addButton={() => (
               <CustomButton
                 Text='Add Transaction Order'
                 style={{ height: '48px', ...AddnewStyle }}

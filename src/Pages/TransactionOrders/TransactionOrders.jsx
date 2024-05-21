@@ -7,7 +7,8 @@ import { Link, json, useNavigate } from 'react-router-dom';
 import { Search_Transaction_Ordcer, Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { useSelector,useDispatch } from 'react-redux';
 import { setTransactionsOrdersSelectedIDs,setTransactionOrdersData,deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
-import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png' 
+
 
 const TransactionOrders = () => {
 
@@ -210,7 +211,6 @@ const TransactionOrders = () => {
 
   const fetchTransactionOrder = async (brandId,page) => {
     setIsLoading(true)
-  //  debugger
     const res = await Trading_Transaction_Order(token,brandId,page,parseInt(perPage))
     const { data: { message, payload, success } } = res
     setIsLoading(false)

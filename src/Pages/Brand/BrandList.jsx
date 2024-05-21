@@ -131,7 +131,7 @@ const BrandList = () => {
     },
      {
       title:<span className="dragHandler">Action</span>,
-      dataIndex: 'permissions', 
+      dataIndex: 'trading_account', 
       key: '7',
       render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
      },
