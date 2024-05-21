@@ -7,7 +7,7 @@ import moment from 'moment';
 import Swal from 'sweetalert2';
 import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
-
+import { setPendingOrdersSelectedIds,setPendingOrdersData } from '../../store/TradingAccountSlice';
 
 const PendingOrder = () => {
   
@@ -19,8 +19,11 @@ const PendingOrder = () => {
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
   const [CurrentPage, setCurrentPage] = useState(1)
+  const [isUpdated, setIsUpdated] = useState(true)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [perPage, setPerPage] = useState(10)
+  const [sortDirection, setSortDirection] = useState("")
 
     const fetchPendingOrder = async (page) => {
       setIsLoading(true)
@@ -116,13 +119,24 @@ const PendingOrder = () => {
     }
   ];
   
+    const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+  
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+
   const headerStyle = {
     background: TableHeaderColor, 
     color: 'black', 
   };
 
  
-
+  useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
 
 
   useEffect(()=>{
@@ -137,13 +151,20 @@ const PendingOrder = () => {
         <CustomTable
             direction="/single-trading-accounts/details/pending-order-entry"
             formName = "Trading Pending Orders" 
-            columns={columns}
+            columns={newColumns}
             data={pendingOrder} 
             headerStyle={headerStyle}
             total={totalRecords}
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            isUpated={isUpdated}
+            setSelecetdIDs={setPendingOrdersSelectedIds}
+            setTableData = {setPendingOrdersData}
+            table_name= "trade_orders"
+            setSortDirection = {setSortDirection}
+            SearchQuery = {Get_Trade_Order}
+            LoadingHandler={LoadingHandler}
           />
       </div>
     </Spin>

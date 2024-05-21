@@ -12,9 +12,8 @@ import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Tra
 import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
-import { deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
-import { GenericDelete } from '../../utils/_APICalls';
-
+import { GenericDelete,GenericEdit } from '../../utils/_APICalls';
+import { deleteCloseOrderById } from '../../store/TradingAccountSlice';
 
 
 const TradingAccountTransactionOrderEntry = () => {
@@ -48,8 +47,8 @@ const TradingAccountTransactionOrderEntry = () => {
   const [ CurrentPage,setCurrentPage] = useState(1)
 
 
-   const TransactionOrdersIds = useSelector(({ transactionOrders }) => transactionOrders.selectedRowsIds)
-  const TransactionOrdersData = useSelector(({transactionOrders})=> transactionOrders.transactionOrdersData)
+   const TransactionOrdersIds = useSelector(({ tradingAccountList }) => tradingAccountList.selectedCloseOrdersRowsIds)
+  const TransactionOrdersData = useSelector(({ tradingAccountList })=> tradingAccountList.CloseOrdersData)
   const ArrangedTransactionOrdersData= TransactionOrdersData.slice().sort((a, b) => a.id - b.id);
 
   
@@ -142,7 +141,7 @@ const TradingAccountTransactionOrderEntry = () => {
 
 
 const fetchTransactionOrder = async (page) => {
-    setIsLoading(true)
+  setIsLoading(true)
     const res = await Single_Transaction_Order(token,TransactionOrdersIds[0],parseInt(page) )
     const { data: { message, payload, success } } = res
     setIsLoading(false)
@@ -228,9 +227,9 @@ useEffect(() => {
     }
     
     CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteTransactionOrderById(ArrangedTransactionOrdersData[currentIndex].id))
+    dispatch(deleteCloseOrderById(ArrangedTransactionOrdersData[currentIndex].id))
     if(ArrangedTransactionOrdersData.length === 0 || ArrangedTransactionOrdersData === undefined || ArrangedTransactionOrdersData === null){
-       navigate("/transaction-orders")
+       navigate("/single-trading-accounts/details/close-order")
     }else{
       if(currentIndex < ArrangedTransactionOrdersData.length)
       handleNext()
@@ -285,7 +284,7 @@ useEffect(() => {
         comment
 
       };
-       if (TransactionOrdersIds.length >= 2) {
+       
         setIsLoading(true)
         const Params = {
           table_name: 'transaction_orders',
@@ -300,7 +299,7 @@ useEffect(() => {
             CustomNotification({
               type: 'success',
               title: 'success',
-              description: 'Transaction Order Updated Successfully',
+              description: 'Close Order Updated Successfully',
               key: 2
             })
           } else {
@@ -314,31 +313,8 @@ useEffect(() => {
           }
         }
 
-      }
-      else {
-        setIsLoading(true)
-        const res = await Update_Trading_Transaction_Order(brandId,TransactionOrdersIds[0], transactionOrderData, token);
-        const { data: { message, success, payload } } = res;
-        setIsLoading(false)
-        if (success) {
-          CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: 'Transaction Order is Updated Successfully',
-            key: 2
-          })
-           setIsDisabled(true)
-        } else {
-          setIsLoading(false)
-          CustomNotification({
-            type: 'error',
-            title: 'error',
-            description: message,
-            key: `abc`
-          })
-        }
-
-      }
+      
+     
 
     } catch (err) {
       const validationErrors = {};
@@ -359,11 +335,11 @@ useEffect(() => {
                 src={ARROW_BACK_CDN}
                 alt='back icon'
                 className='cursor-pointer'
-                onClick={() => navigate("/transaction-orders")}
+                onClick={() => navigate("/single-trading-accounts/details/close-order")}
               />
               {
-                isDisabled ? <h1 className='text-2xl font-semibold'>Transaction Order</h1> :
-                  <h1 className='text-2xl font-semibold'>{TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Add Transaction Order' : 'Edit Transaction Order'}</h1>
+                isDisabled ? <h1 className='text-2xl font-semibold'>Close Order</h1> :
+                  <h1 className='text-2xl font-semibold'>{TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Add Close Order' : 'Edit Close Order'}</h1>
               }
             </div>
             {/* toolbar */}

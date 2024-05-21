@@ -17,7 +17,7 @@ import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
-import { deleteCloseOrderById } from '../../store/TradeOrders';
+import { deletePendingOrderById } from '../../store/TradeOrders';
 
 
 
@@ -286,9 +286,9 @@ const handleLossChange = (newValue) => {
     }
     
     CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteCloseOrderById(ArrangedPendingOrdersData[currentIndex].id))
+    dispatch(deletePendingOrderById(ArrangedPendingOrdersData[currentIndex].id))
     if(ArrangedPendingOrdersData.length === 0 || ArrangedPendingOrdersData === undefined || ArrangedPendingOrdersData === null){
-       navigate("/close-orders")
+       navigate("/pending-orders")
     }else{
       if(currentIndex < ArrangedPendingOrdersData.length)
       handleNext()
@@ -318,7 +318,7 @@ const handleLossChange = (newValue) => {
   ];
   const cancleHandler= ()=>{
     if(isDisabled){
-      navigate('/close-orders')
+      navigate('/pending-orders')
 
     }else{
       setIsDisabled(true)

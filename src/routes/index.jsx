@@ -90,16 +90,17 @@ export const router = createBrowserRouter([
           { path: "live-order", element: <LiveOrders /> },
           { path: "symbol", element: <Trade /> },
           { path: "close-order", element: <CloseOrder /> },
-          // { path: "close-order-entry",element:<TradingAccountCloseOrdersEntry/> },
+        
           { path: "pending-order", element: <PendingOrder /> },
-          // { path: "pending-order-entry",element:<TradingAccountPendingOrdersEntry/> },
           { path: "personal-data", element: <PersonalData /> },
           { path: "account-security", element: <Account /> },
           { path: "transaction-order", element: <TransactionOrder /> },
          
         ]
       },
-       {path: "/single-trading-accounts/details/transaction-order-entry",element:<TradingAccountTransactionOrdersEntry/>},
+      { path: "/single-trading-accounts/details/pending-order-entry",element:<TradingAccountPendingOrdersEntry/> },
+      { path: "/single-trading-accounts/details/close-order-entry",element:<TradingAccountCloseOrdersEntry/> },
+      { path: "/single-trading-accounts/details/transaction-order-entry",element:<TradingAccountTransactionOrdersEntry/>},
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
       { path:"/single-trading-accounts/details/live-order-entry",element:<TradingAccountLiveOrdersEntry/>},
       { path: "/live-orders", element: <LiveOrders /> },

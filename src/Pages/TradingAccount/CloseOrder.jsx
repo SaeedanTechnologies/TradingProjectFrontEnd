@@ -7,6 +7,8 @@ import moment from 'moment';
 import Swal from 'sweetalert2';
 import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { setCloseOrdersSelectedIds,setCloseOrdersData } from '../../store/TradingAccountSlice';
+
 
 
 const CloseOrder = () => {
@@ -21,6 +23,9 @@ const CloseOrder = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [perPage, setPerPage] = useState(10)
+  const [sortDirection, setSortDirection] = useState("")
 
     const fetchCloseOrder = async (page) => {
       setIsLoading(true)
@@ -168,12 +173,24 @@ const CloseOrder = () => {
     // },
   ];
   
+
+    const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+  
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+
   const headerStyle = {
     background: TableHeaderColor, 
     color: 'black', 
   };
 
- 
+   useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
 
 
 
@@ -189,13 +206,20 @@ const CloseOrder = () => {
         <CustomTable
             direction="/single-trading-accounts/details/close-order-entry"
             formName = "Trading Close Orders" 
-            columns={columns}
+            columns={newColumns}
             data={closeOrders} 
             headerStyle={headerStyle}
             total={totalRecords}
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            isUpated={isUpdated}
+            setSelecetdIDs={setCloseOrdersSelectedIds}
+            setTableData = {setCloseOrdersData}
+            table_name= "trade_orders"
+            setSortDirection = {setSortDirection}
+            SearchQuery = {Get_Trade_Order}
+            LoadingHandler={LoadingHandler}
           />
       </div>
     </Spin>
