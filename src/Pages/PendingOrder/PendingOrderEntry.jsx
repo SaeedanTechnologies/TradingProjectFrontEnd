@@ -24,9 +24,9 @@ import { deleteCloseOrderById } from '../../store/TradeOrders';
 
 const PendingOrderEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
-  const CloseOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedCloseOrdersRowsIds )
-  const CloseOrdersData = useSelector(({tradeOrders})=> tradeOrders.closeOrdersData)
-  const ArrangedCloseOrdersData = CloseOrdersData.slice().sort((a, b) => a.id - b.id);
+  const PendingOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedPendingOrdersRowsIds )
+  const PendingOrdersData = useSelector(({tradeOrders})=> tradeOrders.pendingOrdersData)
+  const ArrangedPendingOrdersData = PendingOrdersData.slice().sort((a, b) => a.id - b.id);
   
   const {
     token: { colorBG },} = theme.useToken();
@@ -44,6 +44,7 @@ const PendingOrderEntry = () => {
     const [stopLoss,setStopLoss] = useState('');
     const [comment,setComment] = useState('');
     const [brand_id,setBrand_id] = useState('')
+    const [trading_account_id,setTrading_account_id] = useState(0)
 
 
 
@@ -72,12 +73,7 @@ const PendingOrderEntry = () => {
   
   const [isDisabled, setIsDisabled] = useState(false)
   const [connected, setConnected] = useState(false);
-
- 
-
-
-
-
+  
   const fetchBinancehData = async (symbol, feed_name) => {
     try {
       const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
@@ -102,7 +98,6 @@ const PendingOrderEntry = () => {
     }
   };
 
-
   const setStatesForEditMode = async (payload, success)=>{
       if (success) {
         setIsLoading(true)
@@ -125,9 +120,9 @@ const PendingOrderEntry = () => {
 
   
   const handleNext = () => {
-    if (currentIndex < ArrangedCloseOrdersData.length - 1) {
+    if (currentIndex < ArrangedPendingOrdersData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
-      const payload = ArrangedCloseOrdersData[currentIndex + 1];
+      const payload = ArrangedPendingOrdersData[currentIndex + 1];
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
@@ -140,7 +135,7 @@ const PendingOrderEntry = () => {
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
-      const payload = ArrangedCloseOrdersData[currentIndex - 1];
+      const payload = ArrangedPendingOrdersData[currentIndex - 1];
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
@@ -158,7 +153,7 @@ const PendingOrderEntry = () => {
     setSymbolsList(SymbolsList)
 
 
-    const res = await Get_Single_Trade_Order(CloseOrdersRowsIds[0], token)
+    const res = await Get_Single_Trade_Order(PendingOrdersRowsIds[0], token)
     const { data: { message, payload, success } } = res
 
     setIsLoading(false)
@@ -175,16 +170,17 @@ const PendingOrderEntry = () => {
     setStopLoss(payload?.stopLoss);
     setComment(payload?.comment);
     setBrand_id(payload?.brand_id)
+    setTrading_account_id(payload?.trading_account_id)
 
     }
   }
 
   useEffect(()=>{
     
-     if (CloseOrdersRowsIds.length === 1 && parseInt(CloseOrdersRowsIds[0]) === 0) { // save
+     if (PendingOrdersRowsIds.length === 1 && parseInt(PendingOrdersRowsIds[0]) === 0) { // save
       setIsDisabled(false)
-    } else if (CloseOrdersRowsIds.length === 1 && parseInt(CloseOrdersRowsIds[0]) !== 0) { // single edit
-      const cIndex = ArrangedCloseOrdersData.findIndex(item => parseInt(item.id) === parseInt(CloseOrdersRowsIds[0]))
+    } else if (PendingOrdersRowsIds.length === 1 && parseInt(PendingOrdersRowsIds[0]) !== 0) { // single edit
+      const cIndex = ArrangedPendingOrdersData.findIndex(item => parseInt(item.id) === parseInt(PendingOrdersRowsIds[0]))
       setCurrentIndex(cIndex)
       setIsDisabled(true)
       fetchSingleTradeOrder()
@@ -194,15 +190,15 @@ const PendingOrderEntry = () => {
   },[])
 
   const handleSubmit = async () => {
-    
+    debugger
     try {
     
-        const SymbolData = {
-        symbol: symbol.name,
-        feed_name: symbol.feed_name,
-        order_type: order_type.value,
-        type:  type.value,
-        volume: String(volume),
+        const PendingData = {
+        symbol: symbol.name ? symbol.name : '',
+        feed_name: symbol.feed_name ? symbol.feed_name : '',
+        order_type: order_type.value ? order_type.value :'',
+        type:  type.value ? type.value : '',
+        volume: String(volume) ? String(volume) : '',
         comment,
         takeProfit: String(takeProfit === "" ? "" : takeProfit),
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
@@ -214,16 +210,16 @@ const PendingOrderEntry = () => {
 
         
 
-      if (CloseOrdersRowsIds?.length === 1 && parseInt(CloseOrdersRowsIds[0]) === 0) { // save 
+      if (PendingOrdersRowsIds?.length === 1 && parseInt(PendingOrdersRowsIds[0]) === 0) { // save 
         setIsLoading(true)
-        const res = await SymbolSettingPost(SymbolGroupData, token);
+        const res = await SymbolSettingPost(PendingData, token);
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
           CustomNotification({
             type: 'success',
             title: 'success',
-            description: 'Close Order is  Created Successfully',
+            description: 'Pending Order is  Created Successfully',
             key: 2
           })
         }
@@ -232,8 +228,8 @@ const PendingOrderEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
-          table_ids: CloseOrdersRowsIds,
-          ...SymbolGroupData
+          table_ids: PendingOrdersRowsIds,
+          ...PendingData
         }
         const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;
@@ -243,7 +239,7 @@ const PendingOrderEntry = () => {
             CustomNotification({
               type: 'success',
               title: 'success',
-              description: 'Close Order Updated Successfully',
+              description: 'Pending Order Updated Successfully',
               key: 2
             })
             navigate('/pending-orders')
@@ -286,15 +282,15 @@ const handleLossChange = (newValue) => {
   const deleteHandler = ()=>{
     const Params = {
       table_name:'trade_orders',
-      table_ids: [ArrangedCloseOrdersData[currentIndex].id]
+      table_ids: [ArrangedPendingOrdersData[currentIndex].id]
     }
     
     CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteCloseOrderById(ArrangedCloseOrdersData[currentIndex].id))
-    if(ArrangedCloseOrdersData.length === 0 || ArrangedCloseOrdersData === undefined || ArrangedCloseOrdersData === null){
+    dispatch(deleteCloseOrderById(ArrangedPendingOrdersData[currentIndex].id))
+    if(ArrangedPendingOrdersData.length === 0 || ArrangedPendingOrdersData === undefined || ArrangedPendingOrdersData === null){
        navigate("/close-orders")
     }else{
-      if(currentIndex < ArrangedCloseOrdersData.length)
+      if(currentIndex < ArrangedPendingOrdersData.length)
       handleNext()
       else
       handlePrevious()
@@ -337,16 +333,16 @@ const handleLossChange = (newValue) => {
               src={ARROW_BACK_CDN}
               alt='back icon'
               className='cursor-pointer'
-              onClick={() => navigate("/close-orders")}
+              onClick={() => navigate("/pending-orders")}
             />
             {
               isDisabled ? <h1 className='text-2xl font-semibold'>Preview Pending Orders</h1> :
-                <h1 className='text-2xl font-semibold'>{CloseOrdersRowsIds?.length === 1 && parseInt(CloseOrdersRowsIds[0]) === 0 ? 'Add Pending Order' : 'Edit Pending Order'}</h1>
+                <h1 className='text-2xl font-semibold'>{PendingOrdersRowsIds?.length === 1 && parseInt(PendingOrdersRowsIds[0]) === 0 ? 'Add Pending Order' : 'Edit Pending Order'}</h1>
             }
           </div>
           {/* toolbar */}
-          {(isDisabled && CloseOrdersRowsIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-          {(CloseOrdersRowsIds?.length === 1 && parseInt(CloseOrdersRowsIds[0]) !== 0 && isDisabled)  &&
+          {(isDisabled && PendingOrdersRowsIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
+          {(PendingOrdersRowsIds?.length === 1 && parseInt(PendingOrdersRowsIds[0]) !== 0 && isDisabled)  &&
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
             <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
@@ -529,7 +525,7 @@ const handleLossChange = (newValue) => {
           {
             !isDisabled &&  <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
             <CustomButton
-              Text={ CloseOrdersRowsIds?.length === 1 && parseInt(CloseOrdersRowsIds[0]) === 0 ? 'Submit' : 'Update'}
+              Text={ PendingOrdersRowsIds?.length === 1 && parseInt(PendingOrdersRowsIds[0]) === 0 ? 'Submit' : 'Update'}
               style={{
                 padding: '16px',
                 height: '48px',

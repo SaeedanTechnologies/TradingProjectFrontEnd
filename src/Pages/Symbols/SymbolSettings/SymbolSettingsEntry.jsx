@@ -290,8 +290,6 @@ const SymbolSettingsEntry = () => {
           volMax: volMax,
           commission: commission,
           enabled: Selectedenable,
-         
-      
         }, { abortEarly: false });
 
         setErrors({});

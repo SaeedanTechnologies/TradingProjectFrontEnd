@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import CustomTable from '../../components/CustomTable';
 import moment from 'moment';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-import {  Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import {  Get_Trade_Order, Search_Close_Order } from '../../utils/_TradingAPICalls';
 import {  setCloseOrdersSelectedIds,setCloseOrdersData} from '../../store/TradeOrders';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 
@@ -94,30 +94,30 @@ const CloseOrder = () => {
   const columns = [
 
 
-    {
-      title:<span className="dragHandler">LoginID</span>,
-      dataIndex: 'loginId',
-      key: '1',
-      sorter: (a, b) => a.loginId.length - b.loginId.length,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
-    {
-      title:<span className="dragHandler">OrderID</span>,
-      dataIndex: 'orderId',
-      key: '2',
-      sorter: (a, b) => a.orderId.length - b.orderId.length,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+    // {
+    //   title:<span className="dragHandler">LoginID</span>,
+    //   dataIndex: 'loginId',
+    //   key: '1',
+    //   sorter: (a, b) => a.loginId.length - b.loginId.length,
+    //   sortDirections: ['ascend', 'descend'],
+    //   sortIcon: (sortDir) => {
+    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+    //   },
+    // },
+    // {
+    //   title:<span className="dragHandler">OrderID</span>,
+    //   dataIndex: 'orderId',
+    //   key: '2',
+    //   sorter: (a, b) => a.orderId.length - b.orderId.length,
+    //   sortDirections: ['ascend', 'descend'],
+    //   sortIcon: (sortDir) => {
+    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+    //   },
+    // },
 
     {
       title:<span className="dragHandler">Symbol</span>,
@@ -359,7 +359,7 @@ const CloseOrder = () => {
           setSortDirection = {setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
-          SearchQuery = {Get_Trade_Order}
+          SearchQuery = {Search_Close_Order}
           LoadingHandler={LoadingHandler}
 
         />
