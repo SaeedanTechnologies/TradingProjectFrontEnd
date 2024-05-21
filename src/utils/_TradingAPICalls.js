@@ -2,16 +2,25 @@ import { _API } from "./_API";
 
 const apiUrl = import.meta.env.VITE_TRADING_BASE_URL;
 
-export const Trading_Accounts_List = async(token,brandId,page = 1, perPage = 10) =>{
-  let url  = `${apiUrl}/admin/trading_accounts?page=${page}&per_page=${perPage}`
+export const Trading_Accounts_List = async(token,brandId,page = 1, perPage = 10, searchValues) =>{
+  const queryParams = new URLSearchParams(searchValues).toString();
+  let url  = `${apiUrl}/admin/trading_accounts?page=${page}&per_page=${perPage}&${queryParams}`
 
   if(brandId){
   
-    url  =  `${apiUrl}/admin/trading_accounts?page=${page}&per_page=${perPage}&brand_id=${brandId}`
+    url  =  `${apiUrl}/admin/trading_accounts?page=${page}&per_page=${perPage}&brand_id=${brandId}&${queryParams}`
    
   }
   const mBrands = await _API(url,'get',[],token)
    return mBrands
+}
+
+export const Search_Trading_Accounts_List = async(token, page = 1, perPage = 10,searchValues)=>{
+      
+  const queryParams = new URLSearchParams(searchValues).toString();
+  const apiUrlWithParams = `${apiUrl}/admin/trading_accounts?page=${page}&per_page=${perPage}&${queryParams}`;
+  const res = await _API(apiUrlWithParams, 'get', [], token);
+  return res;
 }
 
 export const Save_Trading_Account = async(TradingAccountData, token)=>{
