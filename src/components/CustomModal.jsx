@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'antd';
-const CustomModal = ({title,isModalOpen,handleOk,handleCancel, children, footer, width}) => {
+const CustomModal = ({title,isModalOpen,handleOk,handleCancel, children, footer, width, maskClosable}) => {
   return (
     <>
       <Modal 
@@ -10,6 +10,7 @@ const CustomModal = ({title,isModalOpen,handleOk,handleCancel, children, footer,
         onCancel={handleCancel}
         footer={footer}
         width={width}
+        maskClosable={maskClosable}
         >
         {children}
       </Modal>

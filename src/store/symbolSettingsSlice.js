@@ -10,18 +10,10 @@ export const symbolSettingsSlice = createSlice({
     setSymbolSettingsSelecetdIDs: (state,action) => {
         state.selectedRowsIds = action.payload
     },
-    setSymbolSettingsData: (state, action)=>{
-      let newData = [...state.symbolSettingsData];
-        action.payload.forEach(newItem => {
-          // Check if newItem's ID already exists in array c
-          const isDuplicate = newData.some(item => item.id === newItem.id);
-          // If not a duplicate, push it to array c
-          if (!isDuplicate) {
-            newData.push(newItem);
-          }
-        });
-      state.symbolSettingsData = newData;
-    }, 
+    setSymbolSettingsData: (state, action) => {
+       state.symbolSettingsData = action.payload
+    },
+    
     updateSymbolSettings: (state, action) => {
       const updatedData = action.payload;
       const index = state.symbolSettingsData.findIndex(item => item.id === updatedData.id);

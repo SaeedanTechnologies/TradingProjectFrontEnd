@@ -612,7 +612,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           <CustomTable
             direction="/single-trading-accounts/details/live-order"
             formName = "Trading Accounts" 
-            columns={newColumns}
+            columns={renderColumns}
             data={tradingAccountsList} 
             headerStyle={headerStyle}
             total={totalRecords}
@@ -635,7 +635,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
         <CustomTable
           direction="/active-accounts"
           formName = "Active Accounts" 
-          columns={newColumns}
+          columns={renderColumns}
           data={activeGroup} 
           headerStyle={headerStyle}
           total={totalRecords}
@@ -660,7 +660,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
         <CustomTable
           direction="/margin-calls"
           formName = "Margin Calls" 
-          columns={newColumns}
+          columns={renderColumns}
           data={marginCall} 
           headerStyle={headerStyle}
           total={totalRecords}

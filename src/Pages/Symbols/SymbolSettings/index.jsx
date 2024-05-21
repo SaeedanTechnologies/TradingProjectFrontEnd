@@ -236,6 +236,7 @@ const Index = () => {
         ...item,
         enabled: item.enabled === "1" ? 'Yes' : 'No'
       }));
+      // setSymbolSettingsData(payload.data)
       setIsLoading(false)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)

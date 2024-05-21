@@ -2,20 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Slider, IconButton } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Import the time icon
 import './TimePicker.css'; // Import CSS file
 
-function TimePicker({defaultTimes, isDisabled, onSave }) {
+function TimePicker({ defaultTimes, isDisabled, onSave }) {
   const [selectedDay, setSelectedDay] = useState('');
-//   const [times, setTimes] = useState({
-//     Monday: { start: '00:00', end: '00:00' },
-//     Tuesday: { start: '00:00', end: '00:00' },
-//     Wednesday: { start: '00:00', end: '00:00' },
-//     Thursday: { start: '00:00', end: '00:00' },
-//     Friday: { start: '00:00', end: '00:00' },
-//     Saturday: { start: '00:00', end: '00:00' },
-//     Sunday: { start: '00:00', end: '00:00' },
-//   });
-  const [times, setTimes] = useState(defaultTimes); // Set default times from props
+  const [times, setTimes] = useState(defaultTimes);
   const [showPopup, setShowPopup] = useState(false);
   const [timeRange, setTimeRange] = useState([0, 1440]);
   const [isTimeChanged, setIsTimeChanged] = useState(false);
@@ -23,11 +15,15 @@ function TimePicker({defaultTimes, isDisabled, onSave }) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   useEffect(() => {
-    setIsTimeChanged(false); // Reset the flag when the popup closes
+    setIsTimeChanged(false);
   }, [showPopup]);
 
   useEffect(() => {
-    setIsTimeChanged(true); // Set the flag indicating time change whenever timeRange changes
+    setTimes(defaultTimes);
+  }, [defaultTimes]);
+
+  useEffect(() => {
+    setIsTimeChanged(true);
   }, [timeRange]);
 
   const marks = Array.from(Array(25).keys()).map((value) => ({
@@ -71,7 +67,7 @@ function TimePicker({defaultTimes, isDisabled, onSave }) {
       [selectedDay]: { start: startTimeString, end: endTimeString }
     });
     setShowPopup(false);
-    onSave(times); // Pass the latest times data to the parent component
+    onSave({ ...times, [selectedDay]: { start: startTimeString, end: endTimeString } });
   };
 
   const handleStartTimeChange = (increment) => {
@@ -89,7 +85,7 @@ function TimePicker({defaultTimes, isDisabled, onSave }) {
   };
 
   return (
-    <div>
+    <div style={{ pointerEvents: isDisabled ? 'none' : '', opacity: isDisabled ? 0.5 : 1 }}>
       <table>
         <thead>
           <tr>
@@ -101,9 +97,12 @@ function TimePicker({defaultTimes, isDisabled, onSave }) {
         <tbody>
           {days.map((day, index) => (
             <tr key={index}>
-              <td onClick={() => handleDayClick(day)}>{day}</td>
-              <td>{times[day].start}</td>
-              <td>{times[day].end}</td>
+              <td onClick={() => handleDayClick(day)}>
+                <AccessTimeIcon style={{ marginRight: '5px' }} /> {/* Icon with some gap */}
+                {day}
+              </td>
+              <td>{times[day]?.start}</td>
+              <td>{times[day]?.end}</td>
             </tr>
           ))}
         </tbody>

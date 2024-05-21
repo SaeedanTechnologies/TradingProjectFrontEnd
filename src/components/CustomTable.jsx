@@ -19,6 +19,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
   useEffect(()=>{
     if(setTableData){
       if(data?.length > 0){
+        
         dispatch(setTableData(data))
       }
     }
@@ -51,6 +52,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           SearchQuery={SearchQuery}
           LoadingHandler={LoadingHandler}
           footer={footer}
+          setTableData={setTableData}
           column_name={column_name}
            summary = {summary}
           addButton={addButton}

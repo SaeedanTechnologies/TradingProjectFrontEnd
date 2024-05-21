@@ -295,24 +295,25 @@ const SymbolSettingsEntry = () => {
         setErrors({});
       }
 
-     const SymbolGroupData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
-        name: symbolName ? symbolName : '',
-        symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
-        feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
-        feed_fetch_key:selectedFeedNameFetch?.group?.toLowerCase(),
+      const SymbolGroupData = {
+        name: symbolName || '',
+        symbel_group_id: SelectedSymbol?.id || '',
+        feed_fetch_name: selectedFeedNameFetch?.id || '',
+        feed_fetch_key: selectedFeedNameFetch?.group?.toLowerCase() || '',
         speed_max: 'abc',
-        lot_size: lotSize ? lotSize : '',
-        lot_step: lotSteps ? lotSteps : '',
-        commission: commission ? commission : '',
-        enabled: Selectedenable ? Selectedenable.title = 'Yes' ? 1 : 0 : 0,
-        pip:selectedPip.value,
-        leverage: SelectedLeverage ? SelectedLeverage.value : '',
-        feed_name: selectedFeedName ? selectedFeedName.module : '',
-        feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
-        swap: swap ? swap : '',
-        vol_min: volMin ? volMin : '',
-        vol_max: volMax ? volMax : '',
+        lot_size: lotSize || '',
+        lot_step: lotSteps || '',
+        commission: commission || '',
+        enabled: Selectedenable ? (Selectedenable.title === 'Yes' ? 1 : 0) : 0,
+        pip: selectedPip?.value || '',
+        leverage: SelectedLeverage?.value || '',
+        feed_name: selectedFeedName?.module || '',
+        feed_server: selectedFeedName?.feed_server || '',
+        swap: swap || '',
+        vol_min: volMin || '',
+        vol_max: volMax || ''
       };
+      
       if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0) { // save 
         setIsLoading(true)
         const res = await SymbolSettingPost(SymbolGroupData, token);
@@ -453,8 +454,6 @@ const SymbolSettingsEntry = () => {
       else
       handlePrevious()
     }
-    
-
   }
   const items = [
     

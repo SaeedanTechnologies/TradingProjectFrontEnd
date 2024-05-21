@@ -11,6 +11,14 @@ export const Trading_Account_Group_List = async(token,brandId) =>{
    return res
 }
 
+export const Search_Trading_Account_Group_List = async(token, page = 1, perPage = 10,searchValues)=>{
+      
+  const queryParams = new URLSearchParams(searchValues).toString();
+  const apiUrlWithParams = `${apiUrl}/admin/trading_account_groups?page=${page}&per_page=${perPage}&${queryParams}`;
+  const res = await _API(apiUrlWithParams, 'get', [], token);
+  return res;
+}
+
 export const ALL_Trading_Account_Group_List = async(token) =>{
   const res = await _API(`${apiUrl}/admin/getAllTradingGroupList`,'get',[],token)
    return res

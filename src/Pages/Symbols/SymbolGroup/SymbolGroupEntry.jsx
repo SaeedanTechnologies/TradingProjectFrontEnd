@@ -50,6 +50,9 @@ const SymbolGroupEntry = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [showPicker, setShowPicker] = useState(false);
+
+  
 
    const SymbolGroupsIds = useSelector(({ symbolGroups }) => symbolGroups.selectedRowsIds)
     const SymbolGroupsData = useSelector(({symbolGroups})=> symbolGroups.symbolGroupsData)
@@ -97,7 +100,11 @@ const SymbolGroupEntry = () => {
   const handleSave = (data) => {
     // Do something with the data, such as sending it to the server
     console.log('Saved data:', data);
-    setTradingTime(JSON.stringify(data));
+    setTradingTime(data);
+  };
+
+  const togglePicker = () => {
+    setShowPicker(!showPicker);
   };
 
   const clearFields = () =>{
@@ -111,7 +118,15 @@ const SymbolGroupEntry = () => {
     // setTradingInterval('')
     // setTradingIntervalStartTime("")
     // setTradingIntervalEndTime("")
-    setTradingTime('')
+    setTradingTime({
+          Monday: { start: '00:00', end: '00:00' },
+          Tuesday: { start: '00:00', end: '00:00' },
+          Wednesday: { start: '00:00', end: '00:00' },
+          Thursday: { start: '00:00', end: '00:00' },
+          Friday: { start: '00:00', end: '00:00' },
+          Saturday: { start: '00:00', end: '00:00' },
+          Sunday: { start: '00:00', end: '00:00' },
+        })
   }
   const handleSubmit = async()=> {
     
@@ -140,7 +155,7 @@ const SymbolGroupEntry = () => {
         vol_min: VolMin,
         vol_max: VolMax,
         // trading_interval: TradingInterval,
-        trading_interval: trading_time,
+        trading_interval: JSON.stringify(trading_time),
         // trading_interval_start_time: trading_interval_start_time,
         // trading_interval_end_time: trading_interval_end_time,
         swap: Swap
@@ -354,17 +369,18 @@ const SymbolGroupEntry = () => {
       const {data: {message, payload, success}} = res
       setIsLoading(false)
       if(success){
-        const selectedOption = LeverageList.find(x=> x.title === payload.leverage)
-        setSelectedLeverage(selectedOption)
-        setSymbolGroupName(payload.name)
-        setLotSize(payload.lot_size);
-        setLotStep(payload.lot_step);
-        setVolMin(payload.vol_min);
-        setVolMax(payload.vol_max);
-        // setTradingInterval(payload.trading_interval);
-        setTradingIntervalStartTime(payload.trading_interval_start_time)
-        setTradingIntervalEndTime(payload.trading_interval_end_time)
-        setSwap(payload.swap);
+        setStatesForEditMode(payload,success,LeverageList)
+        // const selectedOption = LeverageList.find(x=> x.title === payload.leverage)
+        // setSelectedLeverage(selectedOption)
+        // setSymbolGroupName(payload.name)
+        // setLotSize(payload.lot_size);
+        // setLotStep(payload.lot_step);
+        // setVolMin(payload.vol_min);
+        // setVolMax(payload.vol_max);
+        // setTradingTime(JSON.parse(payload?.trading_interval));
+        // // setTradingIntervalStartTime(payload.trading_interval_start_time)
+        // // setTradingIntervalEndTime(payload.trading_interval_end_time)
+        // setSwap(payload.swap);
       }
 
     }
@@ -506,7 +522,8 @@ const SymbolGroupEntry = () => {
         />
         {errors.VolMax && <span style={{ color: 'red' }}>{errors.VolMax}</span>}
         </div>
-        <div className='pt-0'>
+        <div className= {!isDisabled ? 'mt-0' : 'mt-5'}>
+        
         {/* <CustomTextField
           name='TradingInterval'
           type={'number'}
@@ -518,8 +535,51 @@ const SymbolGroupEntry = () => {
         />
          {errors.TradingInterval && <span style={{ color: 'red' }}>{errors.TradingInterval}</span>} */}
          {/* <CustomDateRangePicker onChange={handleTimeChange} start_time={trading_interval_start_time} end_time={trading_interval_end_time} isDisabled={isDisabled} /> */}
-         <TimePicker  defaultTimes={trading_time} isDisabled={isDisabled} onSave={handleSave}  />
+         <button onClick={togglePicker} style={{
+          marginBottom: '10px',
+          cursor: 'pointer',
+          // backgroundColor: '#007bff', // Blue background color
+          // color: 'white', // Text color
+          padding: '10px 20px', // Padding
+          borderRadius: '5px', // Rounded corners
+          display: 'inline-block', // Make the div a block element
+          // transition: 'background-color 0.3s', // Add transition effect on hover
+          // // Add hover effect
+          // ':hover': {
+          //   backgroundColor: '#0056b3', // Darker blue on hover
+          // }
+        }}>
+           {isDisabled ? ' Show Trading Interval' :  'Select Trading Interval'}
+          </button>
+          {showPicker && (
+            <>
+            <div className='m-2 '  style={{
+            // position: 'absolute',
+            // top: '50%',
+            // left: '50%',
+            // transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '12px',
+            borderRadius: '5px',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add shadow for a raised effect
+          }}>
+          <TimePicker  defaultTimes={trading_time} isDisabled={isDisabled} onSave={handleSave}  />
         </div>
+          <button onClick={togglePicker}  style={{
+              backgroundColor: 'rgb(197, 197, 197)', // Red background color
+              color: 'white', // Text color
+              padding: '10px 20px', // Padding
+              border: 'none', // Remove border
+              borderRadius: '5px', // Rounded corners
+              cursor: 'pointer',
+              // transition: 'background-color 0.3s', // Add transition effect on hover
+            }}>Close</button>
+            </>
+        
+      )}
+         
+        </div>
+        
        
       </div>
         {
