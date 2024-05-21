@@ -131,7 +131,7 @@ const BrandList = () => {
     },
      {
       title:<span className="dragHandler">Action</span>,
-      dataIndex: 'permissions', 
+      dataIndex: 'permission', 
       key: '7',
       render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
      },
@@ -264,7 +264,7 @@ const BrandList = () => {
         <CustomTable
             direction="/brand-entry"
             formName = "Brand List" 
-            columns={newColumns}
+            columns={columns}
             data={BrandsList} 
             headerStyle={headerStyle}
             total={totalRecords}
