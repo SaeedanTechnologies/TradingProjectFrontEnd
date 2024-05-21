@@ -658,7 +658,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
        )}
         {direction === 3 && (
         <CustomTable
-          // direction="/margin-calls-entry"
+          direction="/margin-calls"
           formName = "Margin Calls" 
           columns={newColumns}
           data={marginCall} 

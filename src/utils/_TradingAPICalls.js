@@ -75,7 +75,13 @@ export const Get_Trade_Order = async({trading_account_id,OrderTypes=['market', '
   
   return res;
 }
-
+export const Search_Live_Order = async(token, page = 1, perPage = 10,searchValues)=>{
+      debugger
+  const queryParams = new URLSearchParams(searchValues).toString();
+  const apiUrlWithParams = `${apiUrl}/admin/trade_orders?page=${page}&per_page=${perPage}&order_type[]='market'&${queryParams}`;
+  const res = await _API(apiUrlWithParams, 'get', [], token);
+  return res;
+}
 export const Get_Single_Trade_Order = async(id,token)=>{
 
   const res = await _API(`${apiUrl}/admin/trade_orders/${id}`, 'get', [], token);

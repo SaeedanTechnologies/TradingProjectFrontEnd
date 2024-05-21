@@ -3,7 +3,7 @@ import { Space, theme, Spin } from 'antd';
 import CustomTable from '../../components/CustomTable';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Delete_Trade_Order, Get_Trade_Order, Search_Live_Order } from '../../utils/_TradingAPICalls';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { setLiveOrdersSelectedIds,setLiveOrdersData, } from '../../store/TradeOrders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
@@ -273,8 +273,6 @@ const LiveOrders = () => {
 
    useEffect(() => {
     setIsUpdated(true)
-
-        
     if(userRole === 'brand' ){
       fetchLiveOrder(userBrand.public_key,CurrentPage)
     }
@@ -289,11 +287,6 @@ const LiveOrders = () => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
   setNewColumns(newCols)
   }, [checkedList]);
-
-
-
-
-
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
@@ -316,7 +309,7 @@ const LiveOrders = () => {
           setSortDirection = {setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
-          SearchQuery = {Get_Trade_Order}
+          SearchQuery = {Search_Live_Order}
           LoadingHandler={LoadingHandler}
         />
       </div>

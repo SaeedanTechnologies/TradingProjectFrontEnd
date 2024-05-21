@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 
 
 const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler,addButton }) =>{
+  
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
@@ -23,7 +24,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
-    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName)  && {
+    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && direction !== "/active-accounts" && direction !== "/margin-calls"  && {
       key: '3',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
