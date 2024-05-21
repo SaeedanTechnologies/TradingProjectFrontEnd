@@ -5,8 +5,8 @@ import { useSelector } from 'react-redux';
 import CustomTable from '../../components/CustomTable';
 import moment from 'moment';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-import {  Get_Trade_Order } from '../../utils/_TradingAPICalls';
-import {  setCloseOrdersSelectedIds,setCloseOrdersData} from '../../store/TradeOrders';
+import {  Get_Trade_Order, Search_Pending_Order } from '../../utils/_TradingAPICalls';
+import {  setCloseOrdersSelectedIds,setCloseOrdersData, setPendingOrdersData, setPendingOrdersSelectedIds} from '../../store/TradeOrders';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 
 const PendingOrder = () => {
@@ -27,6 +27,7 @@ const PendingOrder = () => {
   const [sortDirection, setSortDirection] = useState("")
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
+  
 
 
   const headerStyle = {
@@ -348,12 +349,8 @@ const PendingOrder = () => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
   setNewColumns(newCols)
   }, [checkedList]);
-
-
      useEffect(() => {
     setIsUpdated(true)
-
-        
      if(userRole === 'brand' ){
       fetchPendingOrders(userBrand.public_key,CurrentPage)
     }
@@ -402,13 +399,13 @@ const PendingOrder = () => {
           current_page={CurrentPage}
           token = {token}
           isUpated={isUpdated}
-          setSelecetdIDs={setCloseOrdersSelectedIds}
-          setTableData = {setCloseOrdersData}
+          setSelecetdIDs={setPendingOrdersSelectedIds}
+          setTableData = {setPendingOrdersData}
           table_name= "trade_orders"
           setSortDirection = {setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
-          SearchQuery = {Get_Trade_Order}
+          SearchQuery = {Search_Pending_Order}
           LoadingHandler={LoadingHandler}
 
         />

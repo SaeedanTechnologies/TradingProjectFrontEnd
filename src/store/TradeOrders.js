@@ -53,7 +53,6 @@ export const tradeOrdersSlice = createSlice({
         state.selectedPendingOrdersRowsIds = action.payload
     },
     setPendingOrdersData: (state, action)=>{
-      debugger
       let newData = [...state.pendingOrdersData];
         action.payload.forEach(newItem => {
           // Check if newItem's ID already exists in array c

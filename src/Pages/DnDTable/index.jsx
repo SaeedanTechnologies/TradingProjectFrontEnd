@@ -175,7 +175,7 @@ class DnDTable extends Component {
           {
               title: <Input 
               id={`search-input`}
-              placeholder={`Search ${column.title.props.children}`}
+              placeholder={`Search ${column?.title?.props?.children}`}
               value={this.state.searchValues[column.dataIndex]}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
               onPressEnter={this.SearchHandler}
@@ -195,7 +195,7 @@ class DnDTable extends Component {
         return {
           key: x.key, 
           dataIndex: x.dataIndex,
-          title: typeof x.title === 'string' ? x.title:x.title.props.children 
+          title: typeof x.title === 'string' ? x.title:x?.title?.props?.children 
         }
       })
       const Params = {
@@ -358,7 +358,7 @@ class DnDTable extends Component {
         return {
           key: x.key, 
           dataIndex: x.dataIndex,
-          title: typeof x.title === 'string' ? x.title:x.title.props.children 
+          title: typeof x.title === 'string' ? x.title:x?.title?.props?.children 
         }
       })
       this.setColumnsSetting(ColumnsData, "Columns Rearrangement Sucessfully")
@@ -568,7 +568,7 @@ class DnDTable extends Component {
       return {
         key: x.key, 
         dataIndex: x.dataIndex,
-        title: typeof x.title === 'string' ? x.title:x.title.props.children 
+        title: typeof x.title === 'string' ? x.title:x?.title?.props?.children 
       }
     })
     this.props.LoadingHandler(true)

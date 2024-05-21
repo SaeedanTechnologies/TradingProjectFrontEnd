@@ -44,7 +44,7 @@ const CloseOrderEntery = () => {
     const [stopLoss,setStopLoss] = useState('');
     const [comment,setComment] = useState('');
     const [brand_id,setBrand_id] = useState('')
-
+    const [trading_account_id,setTrading_account_id] = useState(0)
 
 
 
@@ -104,6 +104,7 @@ const CloseOrderEntery = () => {
 
 
   const setStatesForEditMode = async (payload, success)=>{
+    debugger
       if (success) {
         setIsLoading(true)
         const selectedSymbolList =  symbolsList?.find((x)=> x.name === payload?.symbol)
@@ -163,7 +164,7 @@ const CloseOrderEntery = () => {
 
     setIsLoading(false)
     if (success) {
-    const selectedSymbolList =  symbolsList?.find((x)=> x.name === payload?.symbol)
+    const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
     setSymbol(selectedSymbolList);
     setOpen_price(payload.open_price);
     const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -175,14 +176,10 @@ const CloseOrderEntery = () => {
     setStopLoss(payload?.stopLoss);
     setComment(payload?.comment);
     setBrand_id(payload?.brand_id)
+    setTrading_account_id(payload?.trading_account_id)
+
 
     }
-
-    
-
-
-    
-
 
 
   }
@@ -204,29 +201,21 @@ const CloseOrderEntery = () => {
   const handleSubmit = async () => {
     
     try {
-    
-
-     const SymbolGroupData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
-        name: symbolName ? symbolName : '',
-        symbel_group_id: SelectedSymbol ? SelectedSymbol.id : '',
-        feed_fetch_name: selectedFeedNameFetch ? selectedFeedNameFetch.id : '',
-        feed_fetch_key:selectedFeedNameFetch?.group?.toLowerCase(),
-        speed_max: 'abc',
-        lot_size: lotSize ? lotSize : '',
-        lot_step: lotSteps ? lotSteps : '',
-        commission: commission ? commission : '',
-        enabled: Selectedenable ? Selectedenable.title = 'Yes' ? 1 : 0 : 0,
-        pip:selectedPip.value,
-        leverage: SelectedLeverage ? SelectedLeverage.value : '',
-        feed_name: selectedFeedName ? selectedFeedName.module : '',
-        feed_server: selectedFeedName ? selectedFeedName.feed_server : '',
-        swap: swap ? swap : '',
-        vol_min: volMin ? volMin : '',
-        vol_max: volMax ? volMax : '',
+     const CloseData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
+      symbol: symbol?.name ? symbol?.name : '',
+      feed_name: symbol?.feed_name ? symbol?.feed_name : '',
+      order_type: order_type?.value ? order_type?.value : '',
+      // type:  type.value,
+      volume: String(volume) ? String(volume) : '',
+      comment,
+      takeProfit: String(takeProfit === "" ? "" : takeProfit),
+      stopLoss: String(stopLoss === "" ? "" : stopLoss),
+      trading_account_id,
+      brand_id
       };
       if (CloseOrdersRowsIds?.length === 1 && parseInt(CloseOrdersRowsIds[0]) === 0) { // save 
         setIsLoading(true)
-        const res = await SymbolSettingPost(SymbolGroupData, token);
+        const res = await SymbolSettingPost(CloseData, token);
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
@@ -243,7 +232,7 @@ const CloseOrderEntery = () => {
         const Params = {
           table_name: 'trade_orders',
           table_ids: CloseOrdersRowsIds,
-          ...SymbolGroupData
+          ...CloseData
         }
         const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;
