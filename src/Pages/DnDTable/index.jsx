@@ -465,6 +465,7 @@ class DnDTable extends Component {
               }else{
                 const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
                 this.setState({data: newData})
+                this.props.setTableData(newData)
               }
                CustomNotification({
                 type: "success",
@@ -728,6 +729,7 @@ class DnDTable extends Component {
           isModalOpen={this.state.isAddRemove}
           footer={[]}
           width={600}
+          maskClosable={false}
           handleCancel={this.handleCancel}
         >
         <Autocomplete
