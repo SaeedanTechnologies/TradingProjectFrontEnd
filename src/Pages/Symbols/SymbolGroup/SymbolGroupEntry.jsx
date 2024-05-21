@@ -522,7 +522,8 @@ const SymbolGroupEntry = () => {
         />
         {errors.VolMax && <span style={{ color: 'red' }}>{errors.VolMax}</span>}
         </div>
-        <div className= {isDisabled ? 'mt-2' : 'mt-0'}>
+        <div className= {!isDisabled ? 'mt-0' : 'mt-5'}>
+        
         {/* <CustomTextField
           name='TradingInterval'
           type={'number'}
@@ -537,8 +538,8 @@ const SymbolGroupEntry = () => {
          <button onClick={togglePicker} style={{
           marginBottom: '10px',
           cursor: 'pointer',
-          backgroundColor: '#007bff', // Blue background color
-          color: 'white', // Text color
+          // backgroundColor: '#007bff', // Blue background color
+          // color: 'white', // Text color
           padding: '10px 20px', // Padding
           borderRadius: '5px', // Rounded corners
           display: 'inline-block', // Make the div a block element
@@ -565,7 +566,7 @@ const SymbolGroupEntry = () => {
           <TimePicker  defaultTimes={trading_time} isDisabled={isDisabled} onSave={handleSave}  />
         </div>
           <button onClick={togglePicker}  style={{
-              backgroundColor: '#dc3545', // Red background color
+              backgroundColor: 'rgb(197, 197, 197)', // Red background color
               color: 'white', // Text color
               padding: '10px 20px', // Padding
               border: 'none', // Remove border
