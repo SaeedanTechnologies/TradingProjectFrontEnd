@@ -2,6 +2,8 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import user from "./UserSlice";
 import trade from "./TradeSlice";
 import symbolSettings from "./symbolSettingsSlice";
+import marginCalls from "./marginCallsSlice"
+import activeAccount from "./activeAccountSlice"
 import symbolGroups from "./symbolGroupsSlice"
 import transactionOrders from './transactionOrdersSlice'
 import tradeOrders  from './TradeOrders'
@@ -19,6 +21,8 @@ const createRootReducer = asyncReducers => {
       group,
       trade,
       symbolSettings,
+      marginCalls,
+      activeAccount,
       symbolGroups,
       brands,
       liveOrder,

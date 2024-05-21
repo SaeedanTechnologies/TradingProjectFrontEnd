@@ -48,6 +48,7 @@ import PendingOrder from '../Pages/TradingAccount/PendingOrder';
 import AllPendingOrder from '../Pages/PendingOrder/PendingOrder';
 import BrandEntry from '../Pages/Brand/BrandEntry';
 import PendingOrderEntry from '../Pages/PendingOrder/PendingOrderEntry';
+import MarginCallEntry from '../Pages/TradingAccount/MarginCallEntry';
 
 
 export const router = createBrowserRouter([
@@ -102,6 +103,7 @@ export const router = createBrowserRouter([
       { path: "/transaction-orders-entry", element: <TransactionOrderEntry /> },
       { path: "/active-accounts", element: <TradingAccount title={"Active Trading Account List"} direction={2} /> },
       { path: "/margin-calls", element: <TradingAccount direction={3} title="Margin Call Trading Account List" /> },
+      { path: "/margin-calls-entry", element: <MarginCallEntry direction={3} title="Margin Call Trading Account List" /> },
       { path: "/symbol-groups", element: <SymbolGroup /> },
       { path: "/symbol-groups-entry", element: <SymbolGroupEntry /> },
       { path: "/symbol-settings", element: <SymbolSettings /> },
