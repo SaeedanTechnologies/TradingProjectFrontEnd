@@ -187,7 +187,7 @@ class DnDTable extends Component {
           }
       ]
   }));
-  debugger
+  
   console.log(columnsWithChildren)
   this.setState({columns: columnsWithChildren})
     try{
