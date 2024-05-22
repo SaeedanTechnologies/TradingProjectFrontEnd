@@ -39,7 +39,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
       key: '1',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => a?.id - b?.id,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -51,7 +51,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '3',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.name,b.name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -64,7 +64,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Group</span>,
       dataIndex: 'group',
       key: '4',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.group,b.group),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -78,7 +78,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '5',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.country,b.country),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -90,7 +90,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Phone Number</span>,
       dataIndex: 'phone',
       key: '6',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => a?.phone - b?.phone,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -102,7 +102,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '7',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.email,b.email),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -114,7 +114,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'created_at',
       key: '8',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.created_at,b.created_at),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -126,7 +126,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '9',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.type,b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -140,7 +140,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Method</span>,
       dataIndex: 'method',
       key: '10',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.method,b.method),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -152,7 +152,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: '11',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.comment,b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -164,7 +164,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
       key: '12',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => a?.amount - b?.amount,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -176,7 +176,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '13',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.currency,b.currency),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

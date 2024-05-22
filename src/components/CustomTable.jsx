@@ -78,7 +78,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
             // yhn b bhj dena
           />
            <span style={{ marginLeft: 8 }}>
-            {total > 0 && `Showing ${((current_page - 1) * perPage) + 1}-${Math.min(current_page * perPage, total)} of ${total} items`}
+            {total > 0 && `Showing ${(total / perPage) <= 1 ? 1 : ((current_page - 1) * perPage) + 1}-${Math.min(current_page * perPage, total)} of ${total} items`}
           </span>
         </div>
         }
