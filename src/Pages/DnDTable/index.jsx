@@ -464,6 +464,7 @@ class DnDTable extends Component {
             const { data: { success, message, payload } } = res
             this.setState({isLoading: false})
             if (success) {
+              this.props?.setTotalRecords(this.props?.total - this.state?.selectedRowKeys?.length)
               if(this.props.direction === "/trading-group/mass-deposit" || this.props.direction === "/trading-group/mb-to"){
                 const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item[this.props.column_name]));
                 this.setState({data: newData})

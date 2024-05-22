@@ -309,13 +309,13 @@ const SymbolGroupEntry = () => {
     }
   }; 
 
-  const handleTimeChange = (start_time, end_time) => {
-    console.log('Formatted start time:', start_time);
-    console.log('Formatted end time:', end_time);
-    // Do something with the formatted start and end times
-    setTradingIntervalStartTime(start_time)
-    setTradingIntervalEndTime(end_time)
-};
+//   const handleTimeChange = (start_time, end_time) => {
+//     console.log('Formatted start time:', start_time);
+//     console.log('Formatted end time:', end_time);
+//     // Do something with the formatted start and end times
+//     setTradingIntervalStartTime(start_time)
+//     setTradingIntervalEndTime(end_time)
+// };
   
   const setStatesForEditMode = async (payload, success, LeverageList)=>{
     if (success) {
