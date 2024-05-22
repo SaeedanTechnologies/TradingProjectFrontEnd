@@ -78,7 +78,7 @@ export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading,su
 
 export const ColumnSorter = (a,b)=>{
      
-      return a.toString().localeCompare(b.toString());
+      return a?.toString().localeCompare(b?.toString());
 }
 
 export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{

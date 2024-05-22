@@ -14,7 +14,6 @@ import CustomModal from '../../components/CustomModal';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 
 const Account = () => {
-    
   const token = useSelector(({user})=> user?.user?.token )
   const dispatch = useDispatch()
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
@@ -269,5 +268,4 @@ const ChkBoxesControl = [
     </Spin>
   )
 }
-
 export default Account
