@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GenericEdit,GenericDelete } from '../../../utils/_APICalls';
 import CustomNotification from '../../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../../utils/helpers';
-import { deleteSymbolGroupById, updateSymbolGroups } from '../../../store/symbolGroupsSlice';
+import { deleteSymbolGroupById, setSymbolGroupsSelectedIDs, updateSymbolGroups } from '../../../store/symbolGroupsSlice';
 import CustomDateRangePicker from '../../../components/CustomDateRange';
 import { updateSymbolSettings } from '../../../store/symbolSettingsSlice';
 import TimePicker from '../../../components/TimePicker';
@@ -148,17 +148,17 @@ const SymbolGroupEntry = () => {
       setErrors({});
      }
       const SymbolGroupData = {
-        name : symbolGroupName,
-        leverage: SelectedLeverage.value,
-        lot_size: LotSize,
-        lot_step: LotStep,
-        vol_min: VolMin,
-        vol_max: VolMax,
+        name : symbolGroupName || "",
+        leverage: SelectedLeverage?.value|| null,
+        lot_size: LotSize|| "",
+        lot_step: LotStep|| "",
+        vol_min: VolMin|| "",
+        vol_max: VolMax|| "",
         // trading_interval: TradingInterval,
-        trading_interval: JSON.stringify(trading_time),
+        trading_interval: JSON.stringify(trading_time)||null,
         // trading_interval_start_time: trading_interval_start_time,
         // trading_interval_end_time: trading_interval_end_time,
-        swap: Swap
+        swap: Swap||""
       }
     
    
@@ -190,7 +190,7 @@ const SymbolGroupEntry = () => {
       else if(SymbolGroupsIds.length >= 2){
         setIsLoading(true)
          const Params = {
-          table_name: 'symbol_groups',
+          table_name: 'symbel_groups',
           table_ids: SymbolGroupsIds,
           ...SymbolGroupData
         }
@@ -257,9 +257,13 @@ const SymbolGroupEntry = () => {
   }
 
  const handlePrevious = () => {
-    if (currentIndex > 0) {
+    // debugger
+    if (currentIndex > 0) 
+    {
+    
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedSymbolGroupsData[currentIndex - 1];
+      dispatch(setSymbolGroupsSelectedIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
@@ -267,19 +271,42 @@ const SymbolGroupEntry = () => {
       }, 3000)
       
     }
+    else
+    {
+    
+      CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Previous record found',
+            key: 2
+          })
+    
+    }
   };
 
+ 
+
   const handleNext = () => {
-    if (currentIndex < ArrangedSymbolGroupsData.length - 1) {
+    if (currentIndex < ArrangedSymbolGroupsData.length - 1) 
+    {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedSymbolGroupsData[currentIndex + 1];
+      dispatch(setSymbolGroupsSelectedIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true,LeverageList)
       }, 3000)
-    }else{
-      alert(`no next record found`)
+    }
+    else
+    {
+      
+       CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Next record found',
+            key: 2
+          })
     }
   }; 
 
@@ -312,17 +339,20 @@ const SymbolGroupEntry = () => {
  const deleteHandler = async()=>{
     const Params = {
       table_name:'symbel_groups',
-      table_ids: [ArrangedSymbolGroupsData[currentIndex].id]
+      table_ids: [ArrangedSymbolGroupsData[currentIndex]?.id]
     }
    await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteSymbolGroupById(ArrangedSymbolGroupsData[currentIndex].id))
+    dispatch(deleteSymbolGroupById(ArrangedSymbolGroupsData[currentIndex]?.id))
     if(ArrangedSymbolGroupsData.length === 0 || ArrangedSymbolGroupsData === undefined || ArrangedSymbolGroupsData === null){
        navigate("/symbol-groups")
-    }else{
-      if(currentIndex < ArrangedSymbolGroupsData.length)
-      handleNext()
-      else
-      handlePrevious()
+    }
+    else{
+        if(currentIndex < ArrangedSymbolGroupsData.length){
+          handleNext()
+        }
+        else{
+          handlePrevious()
+        }
     }
   }
 

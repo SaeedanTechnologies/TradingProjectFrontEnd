@@ -17,11 +17,10 @@ import CustomNotification from '../../../components/CustomNotification';
 import { Autocomplete, TextField,Input,InputAdornment } from '@mui/material'
 import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
 import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
-import { deleteSymbolSettingsById, updateSymbolSettings } from '../../../store/symbolSettingsSlice';
+import { deleteSymbolSettingsById, setSymbolSettingsSelecetdIDs, updateSymbolSettings } from '../../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
 import CustomCheckbox from '../../../components/CustomCheckbox';
 import { numberInputStyle } from '../../TradingAccount/style';
-
 
 const FeedData = [
   { feed_name: "First", server: 'First server' },
@@ -232,17 +231,22 @@ const SymbolSettingsEntry = () => {
     }
   };
   const handleNext = () => {
-    
     if (currentIndex < ArrangedSymbolSettingsData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedSymbolSettingsData[currentIndex + 1];
+      dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
     }else{
-      alert(`no next record found`)
+     CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Next record found',
+            key: 2
+          })
     }
   };
   const handlePrevious = () => {
@@ -250,6 +254,7 @@ const SymbolSettingsEntry = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedSymbolSettingsData[currentIndex - 1];
+      dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
@@ -257,6 +262,15 @@ const SymbolSettingsEntry = () => {
       }, 3000)
       
     }
+    else{
+        CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Previous record found',
+            key: 2
+          })
+    }
+    
   };
 
   useEffect(() => {

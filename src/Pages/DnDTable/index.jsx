@@ -108,11 +108,14 @@ class DnDTable extends Component {
       ignoreSelector: "react-resizable-handle",
     };
   }
+
+
+
   async SearchHandler(){
   //  this.setState({isLoading: true})
  
     this.props.LoadingHandler(true)
-    const  res = await this.props.SearchQuery(this.props.token ,this.props.current_page, this.props.perPage, this.state.searchValues)
+    const  res = await this.props.SearchQuery(this.props.token ,this.props.current, this.props.perPage, this.state.searchValues)
     
     const {data:{payload, success, message}} = res
     
@@ -272,6 +275,8 @@ class DnDTable extends Component {
     // } 
   
   }
+
+
   handleInputChange = (dataIndex, value) => {
     this.setState(prevState => ({
         searchValues: {

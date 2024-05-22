@@ -11,6 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { setSymbolGroupsSelectedIDs,setSymbolGroupsData } from '../../../store/symbolGroupsSlice';
+import { ColumnSorter } from '../../../utils/helpers';
 
 const Index = () => {
   const dispatch = useDispatch()
@@ -39,20 +40,19 @@ const Index = () => {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '1',
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
-   
     },
     {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '2',
-      sorter: (a, b) => a.leverage.length - b.leverage.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -64,7 +64,7 @@ const Index = () => {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '3',
-      sorter: (a, b) => a.swap.length - b.swap.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -76,8 +76,8 @@ const Index = () => {
       title:<span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
       key: '4',
-      sorter: (a, b) => a.lot_size.length - b.lot_size.length,
-       sortDirections: ['ascend', 'descend'],
+      sorter:(a, b) =>  ColumnSorter(a,b),
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
@@ -88,7 +88,7 @@ const Index = () => {
       title:<span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
       key: '5',
-      sorter: (a, b) => a.lot_step.length - b.lot_step.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -100,7 +100,7 @@ const Index = () => {
       title:<span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
       key: '6',
-      sorter: (a, b) => a.vol_min.length - b.vol_min.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -112,7 +112,7 @@ const Index = () => {
       title:<span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
       key: '7',
-      sorter: (a, b) => a.vol_max.length - b.vol_max.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -187,6 +187,7 @@ const Index = () => {
   
 
 const FetchData = async (page) =>{
+  // debugger
     setIsLoading(true)
     const res = await Symbol_Group_List(token,page,parseInt(perPage))
   const {data:{message, payload, success}} = res

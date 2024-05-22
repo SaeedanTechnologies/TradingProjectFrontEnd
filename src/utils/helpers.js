@@ -65,6 +65,8 @@ export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading )=
             description: message,
             key: "a4",
           })
+
+
         } else {
           CustomNotification({
             type: "error",
@@ -79,6 +81,12 @@ export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading )=
     
 
   }
+}
+
+export const ColumnSorter = (a,b)=>{
+      const valA = a.name;
+      const valB = b.name;
+      return valA.toString().localeCompare(valB.toString());
 }
 
 export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{

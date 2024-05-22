@@ -11,16 +11,8 @@ export const symbolGroupsSlice = createSlice({
         state.selectedRowsIds = action.payload
     },
     setSymbolGroupsData: (state, action)=>{
-      let newData = [...state.symbolGroupsData];
-        action.payload.forEach(newItem => {
-          // Check if newItem's ID already exists in array c
-          const isDuplicate = newData.some(item => item.id === newItem.id);
-          // If not a duplicate, push it to array c
-          if (!isDuplicate) {
-            newData.push(newItem);
-          }
-        });
-      state.symbolGroupsData = newData;
+    
+      state.symbolGroupsData = action.payload.sort((a, b) => a.id - b.id);
     }, 
     updateSymbolGroups: (state, action) => {
       const updatedData = action.payload;

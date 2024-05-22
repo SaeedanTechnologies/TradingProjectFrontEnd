@@ -19,7 +19,6 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
   useEffect(()=>{
     if(setTableData){
       if(data?.length > 0){
-        
         dispatch(setTableData(data))
       }
     }
