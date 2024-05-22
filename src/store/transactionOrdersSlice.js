@@ -11,17 +11,18 @@ export const transactionOrdersSlice = createSlice({
         state.selectedRowsIds = action.payload
     },
     setTransactionOrdersData: (state, action)=>{
-      let newData = [...state.transactionOrdersData];
-        action.payload.forEach(newItem => {
-          // Check if newItem's ID already exists in array c
-          const isDuplicate = newData.some(item => item.id === newItem.id);
-          // If not a duplicate, push it to array c
-          if (!isDuplicate) {
-            newData.push(newItem);
-          }
-        });
-      state.transactionOrdersData = newData;
-    }, 
+      state.transactionOrdersData = action.payload.sort((a, b) => a.id - b.id);
+    },
+    updateTransactionOrders: (state, action) => {
+      const updatedData = action.payload;
+      const index = state.transactionOrdersData.findIndex(item => item.id === updatedData.id);
+      if (index !== -1) {
+        state.transactionOrdersData[index] = {
+          ...state.transactionOrdersData[index],
+          ...updatedData,
+        };
+      }
+    },
     deleteTransactionOrderById: (state, action) => {
       const idToDelete = action.payload;
       state.symbolSettingsData = state.transactionOrdersData.filter(order => order.id !== idToDelete);
@@ -29,6 +30,6 @@ export const transactionOrdersSlice = createSlice({
   },
 })
 
-export const {setTransactionsOrdersSelectedIDs, setTransactionOrdersData, deleteTransactionOrderById } = transactionOrdersSlice.actions
+export const {setTransactionsOrdersSelectedIDs, setTransactionOrdersData, updateTransactionOrders, deleteTransactionOrderById } = transactionOrdersSlice.actions
 
 export default transactionOrdersSlice.reducer

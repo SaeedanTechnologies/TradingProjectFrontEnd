@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import CustomTable from '../../components/CustomTable';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 
+import { ColumnSorter } from '../../utils/helpers';
 import { Link, json, useNavigate } from 'react-router-dom';
 import { Search_Transaction_Ordcer, Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { useSelector,useDispatch } from 'react-redux';
@@ -38,7 +39,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
       key: '1',
-      sorter: (a, b) => a?.id?.length - b?.id?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -50,7 +51,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '3',
-      sorter: (a, b) => a?.name?.length - b?.name?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -63,7 +64,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Group</span>,
       dataIndex: 'group',
       key: '4',
-      sorter: (a, b) => a?.group?.length - b?.group?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -77,7 +78,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '5',
-      sorter: (a, b) => a?.country?.length - b?.country?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -89,7 +90,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Phone Number</span>,
       dataIndex: 'phone',
       key: '6',
-      sorter: (a, b) => a?.phone?.length - b?.phone?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -101,7 +102,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '7',
-      sorter: (a, b) => a?.email?.length - b?.email?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -113,7 +114,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'created_at',
       key: '8',
-      sorter: (a, b) => a?.created_at?.length - b?.created_at?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -125,7 +126,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '9',
-      sorter: (a, b) => a?.type?.length - b?.type?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -139,7 +140,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Method</span>,
       dataIndex: 'method',
       key: '10',
-      sorter: (a, b) => a?.method?.length - b?.method?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -151,7 +152,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: '11',
-      sorter: (a, b) => a?.comment?.length - b?.comment?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -163,7 +164,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
       key: '12',
-      sorter: (a, b) => a?.amount?.length - b?.amount?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -175,7 +176,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '13',
-      sorter: (a, b) => a?.currency?.length - b?.currency?.length,
+      sorter:(a, b) =>  ColumnSorter(a,b),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -288,6 +289,7 @@ const TransactionOrders = () => {
               data={transactionData} 
               headerStyle={headerStyle}
               total={totalRecords}
+              setTotalRecords={setTotalRecords}
               onPageChange = {onPageChange}
               current_page={CurrentPage}
               token = {token}
