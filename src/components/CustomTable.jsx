@@ -54,7 +54,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           setTableData={setTableData}
           setTotalRecords={setTotalRecords}
           column_name={column_name}
-           summary = {summary}
+          summary = {summary}
           addButton={addButton}
           brandId={brandId}
         />

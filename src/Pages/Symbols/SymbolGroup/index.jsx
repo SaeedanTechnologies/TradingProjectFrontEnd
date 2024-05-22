@@ -40,7 +40,7 @@ const Index = () => {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '1',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  ColumnSorter(a.name,b.name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -52,7 +52,17 @@ const Index = () => {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '2',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => {
+        // Split the ratio values and parse them as numbers
+        const ratioA = a.leverage.split(':').map(Number);
+        const ratioB = b.leverage.split(':').map(Number);
+        
+        // Compare the ratio values
+        if (ratioA[0] === ratioB[0]) {
+          return ratioA[1] - ratioB[1];
+        }
+        return ratioA[0] - ratioB[0];
+      },
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -64,7 +74,7 @@ const Index = () => {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '3',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => a?.swap - b?.swap,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -76,7 +86,7 @@ const Index = () => {
       title:<span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
       key: '4',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) =>  a?.lot_size - b?.lot_size,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -88,7 +98,7 @@ const Index = () => {
       title:<span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
       key: '5',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => a?.lot_step - b?.lot_step,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -100,7 +110,7 @@ const Index = () => {
       title:<span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
       key: '6',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => a?.vol_min - b?.vol_min,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -112,7 +122,7 @@ const Index = () => {
       title:<span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
       key: '7',
-      sorter:(a, b) =>  ColumnSorter(a,b),
+      sorter:(a, b) => a?.vol_max - b?.vol_max,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
