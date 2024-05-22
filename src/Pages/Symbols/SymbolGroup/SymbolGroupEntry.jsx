@@ -160,8 +160,6 @@ const SymbolGroupEntry = () => {
         // trading_interval_end_time: trading_interval_end_time,
         swap: Swap||""
       }
-    
-   
       if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){
        setIsLoading(true)
        const res = await SaveSymbolGroups(SymbolGroupData, token)
@@ -199,6 +197,7 @@ const SymbolGroupEntry = () => {
         const { data: { message, success, payload } } = res;
         if (success)
         {
+          dispatch(updateSymbolGroups(payload))
             // clearFields();
             CustomNotification({
               type: 'success',
@@ -225,7 +224,7 @@ const SymbolGroupEntry = () => {
         const {data: {message, payload, success}} = res
         setIsLoading(false)
         if(success){
-          dispatch(updateSymbolGroups(payload))
+          dispatch(updateSymbolGroups([payload]))
             CustomNotification({
             type: 'success',
             title: 'success',
@@ -341,20 +340,31 @@ const SymbolGroupEntry = () => {
       table_name:'symbel_groups',
       table_ids: [ArrangedSymbolGroupsData[currentIndex]?.id]
     }
-   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteSymbolGroupById(ArrangedSymbolGroupsData[currentIndex]?.id))
-    if(ArrangedSymbolGroupsData.length === 0 || ArrangedSymbolGroupsData === undefined || ArrangedSymbolGroupsData === null){
-       navigate("/symbol-groups")
-    }
-    else{
-        if(currentIndex < ArrangedSymbolGroupsData.length){
-          handleNext()
-        }
-        else{
-          handlePrevious()
-        }
-    }
+       const onSuccessCallBack = (message)=>{
+           CustomNotification({
+            type: "success",
+            title: "Deleted",
+            description: message,
+            key: "a4",
+          })
+         dispatch(deleteSymbolGroupById(ArrangedSymbolGroupsData[currentIndex]?.id))
+          if(ArrangedSymbolGroupsData.length === 0 || ArrangedSymbolGroupsData === undefined || ArrangedSymbolGroupsData === null){
+            navigate("/symbol-groups")
+          }
+          else{
+              if(currentIndex < ArrangedSymbolGroupsData.length){
+                handleNext()
+              }
+              else{
+                handlePrevious()
+              }
+          }
   }
+   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading,onSuccessCallBack)
+
+  
+
+}
 
   const items = [
     

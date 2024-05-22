@@ -13,16 +13,17 @@ export const symbolSettingsSlice = createSlice({
     setSymbolSettingsData: (state, action) => {
        state.symbolSettingsData = action.payload.sort((a, b) => a.id - b.id)
     },
-    
-    updateSymbolSettings: (state, action) => {
-      const updatedData = action.payload;
-      const index = state.symbolSettingsData.findIndex(item => item.id === updatedData.id);
-      if (index !== -1) {
-        state.symbolSettingsData[index] = {
-          ...state.symbolSettingsData[index],
-          ...updatedData,
-        };
-      }
+     updateSymbolSettings : (state, action) => {
+          const updatedDataArray = action.payload; // assuming payload is an array of objects
+          updatedDataArray.forEach(updatedData => {
+            const index = state.symbolSettingsData.findIndex(item => item.id === updatedData.id);
+            if (index !== -1) {
+              state.symbolSettingsData[index] = {
+                ...state.symbolSettingsData[index],
+                ...updatedData,
+              };
+            }
+          });
     },
     deleteSymbolSettingsById: (state, action) => {
       const idToDelete = action.payload;

@@ -283,6 +283,7 @@ const Index = () => {
           data={allSetting} 
           headerStyle={headerStyle}
           total={totalRecords}
+          setTotalRecords={setTotalRecords}
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}

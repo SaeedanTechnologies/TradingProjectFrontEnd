@@ -289,6 +289,7 @@ useEffect(() => {
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          setTotalRecords={setTotalRecords}
           isUpated={isUpdated}
           setSelecetdIDs={setSymbolGroupsSelectedIDs}
           setTableData = {setSymbolGroupsData}

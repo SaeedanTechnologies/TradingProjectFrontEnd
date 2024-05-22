@@ -375,6 +375,7 @@ const SymbolSettingsEntry = () => {
         setIsLoading(false)
         if (res !== undefined) {
           if (success) {
+              dispatch(updateSymbolSettings(payload))
             clearFields();
             CustomNotification({
               type: 'success',
@@ -401,7 +402,7 @@ const SymbolSettingsEntry = () => {
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
         if (success) {
-          dispatch(updateSymbolSettings(payload))
+          dispatch(updateSymbolSettings([payload]))
           CustomNotification({
             type: 'success',
             title: 'success',
@@ -457,18 +458,30 @@ const SymbolSettingsEntry = () => {
       table_name:'symbel_settings',
       table_ids: [ArrangedSymbolSettingsData[currentIndex].id]
     }
-    
-   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteSymbolSettingsById(ArrangedSymbolSettingsData[currentIndex].id))
-    if(ArrangedSymbolSettingsData.length === 0 || ArrangedSymbolSettingsData === undefined || ArrangedSymbolSettingsData === null){
-       navigate("/symbol-settings")
-    }else{
-      if(currentIndex < ArrangedSymbolSettingsData.length)
-      handleNext()
-      else
-      handlePrevious()
+
+    const onSuccessCallBack = (message)=>{
+           CustomNotification({
+            type: "success",
+            title: "Deleted",
+            description: message,
+            key: "a4",
+          })
+          dispatch(deleteSymbolSettingsById(ArrangedSymbolSettingsData[currentIndex].id))
+        if(ArrangedSymbolSettingsData.length === 0 || ArrangedSymbolSettingsData === undefined || ArrangedSymbolSettingsData === null){
+          navigate("/symbol-settings")
+        }else{
+          if(currentIndex < ArrangedSymbolSettingsData.length)
+          handleNext()
+          else
+          handlePrevious()
+        }
     }
+    
+   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading,onSuccessCallBack )
+    
   }
+
+
   const items = [
     
     {

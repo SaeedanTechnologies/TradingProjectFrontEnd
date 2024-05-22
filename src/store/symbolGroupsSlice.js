@@ -14,16 +14,20 @@ export const symbolGroupsSlice = createSlice({
     
       state.symbolGroupsData = action.payload.sort((a, b) => a.id - b.id);
     }, 
-    updateSymbolGroups: (state, action) => {
-      const updatedData = action.payload;
-      const index = state.symbolGroupsData.findIndex(item => item.id === updatedData.id);
-      if (index !== -1) {
-        state.symbolGroupsData[index] = {
-          ...state.symbolGroupsData[index],
-          ...updatedData,
-        };
-      }
+   
+     updateSymbolGroups : (state, action) => {
+          const updatedDataArray = action.payload; // assuming payload is an array of objects
+          updatedDataArray.forEach(updatedData => {
+            const index = state.symbolGroupsData.findIndex(item => item.id === updatedData.id);
+            if (index !== -1) {
+              state.symbolGroupsData[index] = {
+                ...state.symbolGroupsData[index],
+                ...updatedData,
+              };
+            }
+          });
     },
+
     deleteSymbolGroupById: (state, action) => {
       const idToDelete = action.payload;
       state.symbolGroupsData = state.symbolGroupsData.filter(item => item.id !== idToDelete);

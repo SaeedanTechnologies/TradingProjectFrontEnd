@@ -40,7 +40,7 @@ export const CustomDeleteDeleteHandler = async (id, token, _API,setIsLoading,fet
 
 }
 
-export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading )=>{
+export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading,successCallBack )=>{
   if(Params.table_ids.length > 0){
     setLoading(true)
     Swal.fire({
@@ -59,14 +59,7 @@ export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading )=
         setLoading(false)
         
         if (success) {
-           CustomNotification({
-            type: "success",
-            title: "Deleted",
-            description: message,
-            key: "a4",
-          })
-
-
+          successCallBack(message)
         } else {
           CustomNotification({
             type: "error",
