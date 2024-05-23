@@ -15,11 +15,13 @@ import { CustomBulkDeleteHandler } from '../../utils/helpers';
 import { deleteTransactionOrderById, setTransactionsOrdersSelectedIDs, updateTransactionOrders } from '../../store/transactionOrdersSlice';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
 import { TransactionOrderEntryValidationSchema } from '../../utils/validations';
+import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 
 
 const TransactionOrderEntry = () => {
 
     const token = useSelector(({ user }) => user?.user?.token)
+    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const dispatch = useDispatch()
@@ -32,6 +34,9 @@ const TransactionOrderEntry = () => {
 
   const navigate = useNavigate()
   const [email ,setEmail] = useState(null)
+  const [name ,setName] = useState(null)
+  const [SelectedGroup, setSelectedGroup] = useState([])
+  const [tradingAccountGroupList,setTradingAccountGroupList] = useState([])
   const [SelectedCountry, setSelectedCountry] = useState(null)
   const [SelectedType,setSelectedType] = useState([])
   const [SelectedCurrency, setSelectedCurrency] = useState(null)
@@ -50,16 +55,35 @@ const TransactionOrderEntry = () => {
    const TransactionOrdersIds = useSelector(({ transactionOrders }) => transactionOrders.selectedRowsIds)
   const TransactionOrdersData = useSelector(({transactionOrders})=> transactionOrders.transactionOrdersData)
   const ArrangedTransactionOrdersData= TransactionOrdersData.slice().sort((a, b) => a.id - b.id);
-
   
 
   const Control = [
   
       {
+        id: 1,
+         control:'CustomTextField',
+          label:'Name',
+          name:'name',
+         varient: 'standard',
+         shrink: true,
+        value :name,
+        onChange:(e,value) =>{
+        if(e.target.value){
+            setName(e.target.value)
+            setErrors(prevErrors => ({ ...prevErrors, name: "" }))
+        }
+        else{
+          setName(null)
+          setErrors(prevErrors => ({ ...prevErrors, name: "Name is required" }))
+        } 
+        }     
+      },
+      {
         id: 7,
          control:'CustomTextField',
           label:'Email',
           name:'email',
+          shrink: true,
          varient: 'standard',
         value :email,
         onChange:(e,value) =>{
@@ -128,6 +152,25 @@ const TransactionOrderEntry = () => {
             setSelectedType(null)
         } 
         }   
+    },
+    {
+      id: 14, 
+      control:'CustomAutocomplete',
+      name:'SelectedGroup',   
+      label:'Select Group', 
+      varient: 'standard',
+      options:tradingAccountGroupList,
+      value:SelectedGroup,
+      getOptionLabel: (option) => option.name ? option.name : "",
+      onChange:(e,value) =>{
+        if(value){
+            setSelectedGroup(value)
+            setErrors(prevErrors => ({ ...prevErrors, SelectedGroup: "" }))
+        }
+        else{
+            setSelectedGroup(null)
+        } 
+        }
     },
     {
       id: 10, 
@@ -210,25 +253,35 @@ const TransactionOrderEntry = () => {
 
 
 const fetchTransactionOrder = async (page) => {
+  setIsLoading(true)
+  const group_response = await ALL_Trading_Account_Group_List(token)
+    const {data: { payload : groupList, success : suc}} = group_response
+    setIsLoading(false)
+    if(suc){
+      setTradingAccountGroupList(groupList)
+    }
     setIsLoading(true)
     const res = await Single_Transaction_Order(token,TransactionOrdersIds[0],parseInt(page) )
     const { data: { message, payload, success } } = res
     setIsLoading(false)
-    setStatesForEditMode(payload, success)
+    setStatesForEditMode(payload, success, groupList)
  
   }
 
- const setStatesForEditMode = async (payload, success)=>{
+ const setStatesForEditMode = async (payload, success, groupList)=>{
       if (success) {
         setIsLoading(true)
         const country = Countries.find((country)=>country.label === payload?.country)
         const type= TransactionTypes.find((transaction)=>transaction.value === payload?.type)
         const method = OperationsList.find((operation)=>operation.value === payload?.method)
         const currency = CurrenciesList.find((currency)=>currency.value === payload?.currency)
+        const group = groupList.find((group)=>group?.name === payload?.group)
 
         setEmail(payload?.email)
-        setPhone(payload?.phone)
+        setName(payload?.name)
         setSelectedCountry(country)
+        setPhone(payload?.phone)
+        setSelectedGroup(group)
         setSelectedMethod(method)
         setAmount(payload?.amount)
         setSelectedType(type)
@@ -268,7 +321,7 @@ useEffect(() => {
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
-        setStatesForEditMode(payload, true)
+        setStatesForEditMode(payload, true, tradingAccountGroupList)
       }, 3000)
     }else
     {
@@ -290,7 +343,7 @@ useEffect(() => {
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
-        setStatesForEditMode(payload, true)
+        setStatesForEditMode(payload, true, tradingAccountGroupList)
       }, 3000)
       
     }
@@ -375,8 +428,10 @@ else
           SelectedMethod: SelectedMethod,
           amount: amount,
           email: email,
+          name: name,
           phone: phone,
           SelectedType: SelectedType,
+          SelectedGroup: SelectedGroup,
           SelectedCurrency: SelectedCurrency,
           SelectedCountry: SelectedCountry,
           comment: comment,
@@ -387,9 +442,11 @@ else
 
      const transactionOrderData = { 
         email:email,
+        name: name,
         phone:phone,
         country:SelectedCountry?.label,
         type:SelectedType?.value,
+        group:SelectedGroup?.name,
         currency:SelectedCurrency?.value,
         method:SelectedMethod?.value,
         amount: amount,
@@ -499,6 +556,7 @@ else
                   name={val.name} 
                   varient={val.varient} 
                   label={val.label}
+                  shrink={val.shrink}
                   disabled={isDisabled}
                   value= {val.value}
                   options={val.options}
