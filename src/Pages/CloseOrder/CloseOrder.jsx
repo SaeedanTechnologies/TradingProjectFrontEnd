@@ -36,7 +36,6 @@ const CloseOrder = () => {
     color: 'black', // Set the text color of the header
   };
   const fetchCloseOrders = async (brandId,page) => {
-
     setIsLoading(true)
     const params = { OrderTypes: ['close'], token,brandId,page }
     const mData = await Get_Trade_Order(params)
@@ -45,14 +44,14 @@ const CloseOrder = () => {
       id: order.id,
       trading_account_loginId: order.trading_account_loginId,
       symbol: order.symbol,
-      open_time:  moment(order.open_time).format('D MMMM YYYY h:mm A'),
-      close_time: moment(order.close_time).format('D MMMM YYYY h:mm A') ,
+      open_time: order.open_time ? moment(order.open_time).format('D MMMM YYYY h:mm A') : '...',
+      close_time: order.close_time?  moment(order.close_time).format('D MMMM YYYY h:mm A'): '...' ,
       type: order.type,
       volume: order.volume,
       open_price: order.open_price,
       close_price: order.close_price,
-      stopLoss: order.stopLoss,
-      takeProfit: order.takeProfit,
+      stopLoss: order.stopLoss|| '...' ,
+      takeProfit: order.takeProfit || '...',
       reason: order.reason ? order.reason : '...',
       swap: order.swap ? order.swap : '...',
       profit: order.profit ? order.profit : '...',

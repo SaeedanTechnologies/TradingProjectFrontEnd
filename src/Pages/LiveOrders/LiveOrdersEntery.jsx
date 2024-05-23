@@ -218,7 +218,6 @@ const LiveOrdersEntery = () => {
   },[])
 
   const handleSubmit = async () => {
-    debugger
      const SymbolData = {
         symbol: symbol?.name || '',
         feed_name: symbol?.feed_name||'',
