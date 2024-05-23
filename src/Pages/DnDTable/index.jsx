@@ -115,15 +115,15 @@ class DnDTable extends Component {
  
     this.props.LoadingHandler(true)
     const  res = await this.props.SearchQuery(this.props.token ,currentPage, this.props.perPage, this.state.searchValues)
-    
     const {data:{payload, success, message}} = res
-    this.props.setCurrentPage(payload.current_page)
-    this.props.setTotalRecords(payload.total)
-    this.props.setLastPage(payload.last_page)
-   //  this.setState({isLoading: false})
-   this.props.LoadingHandler(false)
+    //  this.setState({isLoading: false})
     if(success){
+      this.props.LoadingHandler(false)
+      this.props.setCurrentPage(payload.current_page)
+      this.props.setTotalRecords(payload.total)
+      this.props.setLastPage(payload.last_page)
       this.setState({data: payload.data})
+      this.props.dispatch(this.props.setTableData(payload.data))
     }
   }
   componentDidMount() {
@@ -218,6 +218,7 @@ class DnDTable extends Component {
         columnsWithChildren.forEach(column => {
           columnMap[column.dataIndex] = column;
         });
+        
         console.log(selectedCols)
         const filteredColumns = selectedCols.map(selectedColumn => {
           const column = columnMap[selectedColumn.dataIndex];
@@ -298,6 +299,7 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
+    debugger;
       this.setState({ currentRecords: record });
       this.props.dispatch(this.props.setSelecetdIDs([record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
@@ -435,7 +437,7 @@ class DnDTable extends Component {
                 this.SearchHandler(this.props.current)
                 // const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
                 // this.setState({data: newData})
-                this.props.setTableData(newData)
+                // this.props.setTableData(newData)
               }
                CustomNotification({
                 type: "success",

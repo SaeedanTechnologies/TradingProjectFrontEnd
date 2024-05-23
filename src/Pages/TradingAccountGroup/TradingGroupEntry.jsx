@@ -77,26 +77,32 @@ const TradingGroupEntry = () => {
     setSelectedBrand(null)
   }
   const deleteHandler = async()=>{
+    // debugger;
     const Params = {
       table_name:'trading_groups',
-      table_ids: [ArrangedTradingGroupData[currentIndex].id]
+      table_ids: [ArrangedTradingGroupData[currentIndex]?.id]
     }
     const onSuccessCallBack = (message) => {
+      // debugger;
       CustomNotification({
         type: "success",
         title: "Deleted",
         description: message,
         key: "a4",
       })
-      dispatch(deleteTradeGroupById(ArrangedTradingGroupData[currentIndex].id))
-      if(ArrangedTradingGroupData.length === 0 || ArrangedTradingGroupData === undefined || ArrangedTradingGroupData === null){
+      dispatch(deleteTradeGroupById(ArrangedTradingGroupData[currentIndex]?.id))
+      if(ArrangedTradingGroupData?.length === 0 || ArrangedTradingGroupData === undefined || ArrangedTradingGroupData === null){
          navigate("/trading-group")
          navigate(0)
       }else{
-        if(currentIndex < ArrangedTradingGroupData.length)
-        handleNext()
+        if(currentIndex < ArrangedTradingGroupData?.length - 1)
+          {
+            handleNext()
+          }
         else
-        handlePrevious()
+        {
+          handlePrevious()
+        }
       }
     }
     
@@ -262,7 +268,7 @@ const TradingGroupEntry = () => {
         }
 
       }
-      else if(TradingAccountGroupsIds.length >= 2){
+      else{
         setIsLoading(true)
         const Params = {
           table_name: 'trading_groups',
@@ -293,31 +299,7 @@ const TradingGroupEntry = () => {
           })
         }
       }
-       else { // update
-        setIsLoading(true)
-        const res = await updateTradeGroupData(TradingAccountGroupsIds[0],TradingGroupData, token)
-        const { data: { message, payload, success } } = res
-        setIsLoading(false)    
-        if (success) {
-          dispatch(updateTradeGroupData([payload]))
-          CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: 'Trading Group Updated Successfully',
-            key: 2
-          })
-           setIsDisabled(true)
-        } else {
-          setIsLoading(false)
-          CustomNotification({
-            type: 'error',
-            title: 'error',
-            description: message,
-            key: `abc`
-          })
-        }
-
-      }
+      
 
     } catch (err) {
       const validationErrors = {};
