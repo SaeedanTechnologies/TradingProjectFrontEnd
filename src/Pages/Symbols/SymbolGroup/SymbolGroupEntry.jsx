@@ -160,32 +160,6 @@ const SymbolGroupEntry = () => {
         // trading_interval_end_time: trading_interval_end_time,
         swap: Swap||""
       }
-      if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){
-       setIsLoading(true)
-       const res = await SaveSymbolGroups(SymbolGroupData, token)
-       const {data: {message, payload, success}} = res
-       setIsLoading(false)
-       if(success){
-          CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: message,
-            key: 2
-          })
-        clearFields()
-        // navigate('/symbol-groups')
-      }else{
-      setIsLoading(false)
-      CustomNotification({
-            type: 'error',
-            title: 'error',
-            description: message,
-            key: 2
-          })
-      }
-       
-      }
-      else if(SymbolGroupsIds.length >= 2){
         setIsLoading(true)
          const Params = {
           table_name: 'symbel_groups',
@@ -217,35 +191,6 @@ const SymbolGroupEntry = () => {
               key: `abc`
             })
         }
-      }
-      else{ //update case 
-        setIsLoading(true)
-        const res = await UpdateSymbolGroups(SymbolGroupsIds[0],SymbolGroupData, token)
-        const {data: {message, payload, success}} = res
-        setIsLoading(false)
-        if(success){
-          dispatch(updateSymbolGroups([payload]))
-            CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: message,
-            key: 2
-          })
-          // navigate('/symbol-groups')
-        
-        
-           setIsDisabled(true)
-
-        }else{
-          CustomNotification({
-              type: 'error',
-              title: 'error',
-              description: message,
-              key: 2
-            })
-        }
-      }
-    
     }catch(err){
       const validationErrors = {};
       err.inner.forEach(error => {
@@ -348,7 +293,7 @@ const SymbolGroupEntry = () => {
             navigate("/symbol-groups")
           }
           else{
-              if(currentIndex < ArrangedSymbolGroupsData.length){
+              if(currentIndex < ArrangedSymbolGroupsData.length - 1){
                 handleNext()
               }
               else{

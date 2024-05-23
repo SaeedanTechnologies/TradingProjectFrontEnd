@@ -327,43 +327,6 @@ const SymbolSettingsEntry = () => {
         vol_min: volMin || '',
         vol_max: volMax || ''
       };
-      
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0) { // save 
-        setIsLoading(true)
-        const res = await SymbolSettingPost(SymbolGroupData, token);
-        const { data: { message, success, payload } } = res;
-        setIsLoading(false)
-        if (success) {
-          clearFields();
-          CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: 'Symbol Setting Created Successfully',
-            key: 2
-          })
-          // navigate('/symbol-settings')
-        } else {
-          setIsLoading(false)
-          if (payload) {
-            const { feed_fetch_name } = payload
-            Selectedenable.title = 'Yes' ? 'Yes' : 'No',
-              CustomNotification({
-                type: 'error',
-                title: message,
-                description: feed_fetch_name[0],
-                key: 1
-              })
-          } else {
-            CustomNotification({
-              type: 'Opsss...',
-              title: message,
-              description: message,
-              key: 2
-            })
-          }
-        }
-
-      } else if (SymbolSettingIds.length >= 2) {
         setIsLoading(true)
         const Params = {
           table_name: 'symbel_settings',
@@ -394,35 +357,6 @@ const SymbolSettingsEntry = () => {
             })
           }
         }
-
-      }
-      else {
-        setIsLoading(true)
-        const res = await UpdateSymbolSettings(SymbolSettingIds[0], SymbolGroupData, token);
-        const { data: { message, success, payload } } = res;
-        setIsLoading(false)
-        if (success) {
-          dispatch(updateSymbolSettings([payload]))
-          CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: 'Symbol Setting Updated Successfully',
-            key: 2
-          })
-          // navigate('/symbol-settings')
-           setIsDisabled(true)
-        } else {
-          setIsLoading(false)
-          CustomNotification({
-            type: 'error',
-            title: 'error',
-            description: message,
-            key: `abc`
-          })
-        }
-
-      }
-
     } catch (err) {
       const validationErrors = {};
       err.inner?.forEach(error => {
@@ -470,7 +404,7 @@ const SymbolSettingsEntry = () => {
         if(ArrangedSymbolSettingsData.length === 0 || ArrangedSymbolSettingsData === undefined || ArrangedSymbolSettingsData === null){
           navigate("/symbol-settings")
         }else{
-          if(currentIndex < ArrangedSymbolSettingsData.length)
+          if(currentIndex < ArrangedSymbolSettingsData.length - 1)
           handleNext()
           else
           handlePrevious()

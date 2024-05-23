@@ -265,7 +265,6 @@ const fetchTransactionOrder = async (page) => {
     const { data: { message, payload, success } } = res
     setIsLoading(false)
     setStatesForEditMode(payload, success, groupList)
- 
   }
 
  const setStatesForEditMode = async (payload, success, groupList)=>{
@@ -378,7 +377,7 @@ else
       navigate("/transaction-orders")
    }
    else{
-     if(currentIndex < ArrangedTransactionOrdersData?.length){
+     if(currentIndex < ArrangedTransactionOrdersData?.length - 1){
        handleNext()
      }
      else{

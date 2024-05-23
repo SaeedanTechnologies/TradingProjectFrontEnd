@@ -389,33 +389,33 @@ const Index = ({ title, direction }) => {
             });
 
         
-       if( userRole === 'brand' ){
-        switch(direction){
-          case 1:
-            fetchTradingAccounts(userBrand.public_key,CurrentPage);
-            break;
-          case 2:
-             fetchActiveGroups(userBrand.public_key,CurrentPage);
-            break;
-          case 3: 
-            fetchMarginCalls(userBrand.public_key,CurrentPage) 
-            break;
-        }
-        } 
-        else{
-          switch(direction){
-          case 1:
-            fetchTradingAccounts(null,CurrentPage);
-            break;
-          case 2:
-             fetchActiveGroups(null,CurrentPage);
-            break;
-          case 3: 
-            fetchMarginCalls(null,CurrentPage) 
-            break;
-        }
+      //  if( userRole === 'brand' ){
+      //   switch(direction){
+      //     case 1:
+      //       fetchTradingAccounts(userBrand.public_key,CurrentPage);
+      //       break;
+      //     case 2:
+      //        fetchActiveGroups(userBrand.public_key,CurrentPage);
+      //       break;
+      //     case 3: 
+      //       fetchMarginCalls(userBrand.public_key,CurrentPage) 
+      //       break;
+      //   }
+      //   } 
+      //   else{
+      //     switch(direction){
+      //     case 1:
+      //       fetchTradingAccounts(null,CurrentPage);
+      //       break;
+      //     case 2:
+      //        fetchActiveGroups(null,CurrentPage);
+      //       break;
+      //     case 3: 
+      //       fetchMarginCalls(null,CurrentPage) 
+      //       break;
+      //   }
 
-        }
+        // }
            
           }else{
             Swal.fire({
@@ -518,12 +518,12 @@ const [newColumns , setNewColumns] = useState(renderColumns)
 
 
   const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchTradingAccounts(userBrand.public_key,page)
-    }
-    else{
-      fetchTradingAccounts(null,page)
-    }
+    //   if(userRole === 'brand' ){
+    //   fetchTradingAccounts(userBrand.public_key,page)
+    // }
+    // else{
+    //   fetchTradingAccounts(null,page)
+    // }
   }
 
   useEffect(() => {
@@ -533,29 +533,29 @@ const [newColumns , setNewColumns] = useState(renderColumns)
 
   useEffect(() => {
     setIsUpdated(true)
-  switch (direction) {
-    case 1:
-      if (userRole === 'brand') {
-        fetchTradingAccounts(userBrand.public_key, CurrentPage);
-      } else {
-        fetchTradingAccounts(null, CurrentPage);
-      }
-      break;
-    case 2:
-      if (userRole === 'brand') {
-        fetchActiveGroups(userBrand.public_key, CurrentPage);
-      } else {
-        fetchActiveGroups(null, CurrentPage);
-      }
-      break;
-    case 3:
-      if (userRole === 'brand') {
-        fetchMarginCalls(userBrand.public_key, CurrentPage);
-      } else {
-        fetchMarginCalls(null, CurrentPage);
-      }
+  // switch (direction) {
+  //   case 1:
+  //     if (userRole === 'brand') {
+  //       fetchTradingAccounts(userBrand.public_key, CurrentPage);
+  //     } else {
+  //       fetchTradingAccounts(null, CurrentPage);
+  //     }
+  //     break;
+  //   case 2:
+  //     if (userRole === 'brand') {
+  //       fetchActiveGroups(userBrand.public_key, CurrentPage);
+  //     } else {
+  //       fetchActiveGroups(null, CurrentPage);
+  //     }
+  //     break;
+  //   case 3:
+  //     if (userRole === 'brand') {
+  //       fetchMarginCalls(userBrand.public_key, CurrentPage);
+  //     } else {
+  //       fetchMarginCalls(null, CurrentPage);
+  //     }
 
-  }
+  // }
   const channel = pusher.subscribe('trading_accounts');
         channel.bind('update', (data) => {
           const mData = [data]
@@ -640,6 +640,8 @@ const [newColumns , setNewColumns] = useState(renderColumns)
             setPerPage={setPerPage}
             SearchQuery = {Search_Trading_Accounts_List}
             LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
         />
         </div>
         )}
@@ -667,6 +669,8 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           setPerPage={setPerPage}
           SearchQuery = {Search_Trading_Accounts_List}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
        
        )}
@@ -694,6 +698,8 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           setPerPage={setPerPage}
           SearchQuery = {Search_Trading_Accounts_List}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
         )}
 

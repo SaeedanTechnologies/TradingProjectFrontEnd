@@ -230,14 +230,14 @@ const TransactionOrders = () => {
     
     }
   }
-  useEffect(() => {
-     if(userRole === 'brand' ){
-      fetchTransactionOrder(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchTransactionOrder(null,CurrentPage)
-    }
-  }, [])
+  // useEffect(() => {
+  //    if(userRole === 'brand' ){
+  //     fetchTransactionOrder(userBrand.public_key,CurrentPage)
+  //   }
+  //   else{
+  //     fetchTransactionOrder(null,CurrentPage)
+  //   }
+  // }, [])
 
  useEffect(() => {
         const newCols = columns.filter(x => checkedList.includes(x.key));
@@ -246,21 +246,21 @@ const TransactionOrders = () => {
 
    useEffect(() => {
     setIsUpdated(true)
-     if(userRole === 'brand' ){
-      fetchTransactionOrder(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchTransactionOrder(null,CurrentPage)
-    }
+    //  if(userRole === 'brand' ){
+    //   fetchTransactionOrder(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchTransactionOrder(null,CurrentPage)
+    // }
   }, [perPage])
 
   const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchTransactionOrder(userBrand.public_key,page)
-    }
-    else{
-      fetchTransactionOrder(null,page)
-    }
+    //   if(userRole === 'brand' ){
+    //   fetchTransactionOrder(userBrand.public_key,page)
+    // }
+    // else{
+    //   fetchTransactionOrder(null,page)
+    // }
   }
 
   const LoadingHandler = React.useCallback((isLoading)=>{
@@ -309,6 +309,8 @@ const TransactionOrders = () => {
               setPerPage={setPerPage}
               SearchQuery = {Search_Transaction_Ordcer}
               LoadingHandler={LoadingHandler}
+              setCurrentPage={setCurrentPage}
+              setLastPage={setLastPage}
               // brandId={userRole === 'brand' ? userBrand.public_key : null}
               />
         </div>
