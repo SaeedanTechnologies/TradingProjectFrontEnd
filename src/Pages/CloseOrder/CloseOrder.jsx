@@ -18,6 +18,7 @@ const CloseOrder = () => {
   const { token: { colorBG, colorPrimary, TableHeaderColor } } = theme.useToken();
   const [isLoading, setIsLoading] = useState(false)
   const [closeOrders, setCloseOrders] = useState([])
+  const [SearchQueryList,SetSearchQueryList]= useState({})
   
 
   const [CurrentPage, setCurrentPage] = useState(1)
@@ -326,12 +327,13 @@ const CloseOrder = () => {
   useEffect(() => {
     setIsUpdated(true)
 
-    // if(userRole === 'brand' ){
-    //   fetchCloseOrders(userBrand.public_key,CurrentPage)
-    // }
-    // else{
-    //   fetchCloseOrders(null,CurrentPage)
-    // }
+    if(userRole === 'brand' ){
+
+       
+      SetSearchQueryList({brand_id:userBrand.public_key})
+    }
+    
+
   }, [])
 
   return (
@@ -357,6 +359,7 @@ const CloseOrder = () => {
           perPage={perPage}
           setPerPage={setPerPage}
           SearchQuery = {Search_Close_Order}
+          SearchQueryList = {SearchQueryList}
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}

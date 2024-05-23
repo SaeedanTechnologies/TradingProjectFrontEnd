@@ -112,9 +112,12 @@ class DnDTable extends Component {
 
   async SearchHandler(currentPage){
   //  this.setState({isLoading: true})
- 
+    const queryParams = {
+      ...this.state.searchValues,
+      ...this.props.SearchQueryList
+    }
     this.props.LoadingHandler(true)
-    const  res = await this.props.SearchQuery(this.props.token ,currentPage, this.props.perPage, this.state.searchValues)
+    const  res = await this.props.SearchQuery(this.props.token ,currentPage, this.props.perPage,queryParams )
     
     const {data:{payload, success, message}} = res
     this.props.setCurrentPage(payload.current_page)
