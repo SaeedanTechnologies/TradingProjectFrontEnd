@@ -65,7 +65,8 @@ const TransactionOrderEntry = () => {
           label:'Name',
           name:'name',
          varient: 'standard',
-         shrink: true,
+        //  shrink: true,
+         shrink: name,
         value :name,
         onChange:(e,value) =>{
         if(e.target.value){
@@ -83,7 +84,7 @@ const TransactionOrderEntry = () => {
          control:'CustomTextField',
           label:'Email',
           name:'email',
-          shrink: true,
+          shrink: email,
          varient: 'standard',
         value :email,
         onChange:(e,value) =>{
@@ -105,6 +106,7 @@ const TransactionOrderEntry = () => {
           varient:'standard',
           type:'number',
           value:phone,
+          shrink: phone,
           onChange:(e,value) =>{
             if(e.target.value){
                 setPhone(e.target.value)
@@ -196,6 +198,7 @@ const TransactionOrderEntry = () => {
        control:'CustomTextField',
       label:'Amount',
       name: 'amount',
+      shrink: amount,
        varient: 'standard',
     value: amount,
     onChange:(e,value) =>{
@@ -231,6 +234,7 @@ const TransactionOrderEntry = () => {
        control:'CustomTextField',
       label:'Comment',
       name: 'comment',
+      shrink: comment,
      varient: 'standard',
     value:comment,
     onChange:(e,value) =>{
@@ -409,18 +413,7 @@ else
   ];
 
  const handleSubmit = async () => {
-  let brandId;
- 
     try {
-       
-      if(userRole === 'brand' )
-      {
-        brandId = userBrand.public_key
-      }
-      else
-      {
-        brandId = null
-      }
       
       if (TransactionOrdersIds.length < 2) {
         await TransactionOrderEntryValidationSchema.validate({
@@ -557,9 +550,9 @@ else
                   label={val.label}
                   shrink={val.shrink}
                   disabled={isDisabled}
-                  value= {val.value}
-                  options={val.options}
-                  getOptionLabel={(option) => val.getOptionLabel(option)}
+                  value={val.value}
+                  // options={val.options}
+                  // getOptionLabel={(option) => val.getOptionLabel(option)}
                   onChange={(e,value) => val.onChange(e,value)} 
                   />
                   {errors?.[val.name] && <span style={{ color: 'red' }}>{errors?.[val.name]}</span>}

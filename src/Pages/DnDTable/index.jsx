@@ -182,7 +182,16 @@ class DnDTable extends Component {
               placeholder={`Search ${column?.title?.props?.children}`}
               value={this.state.searchValues[column.dataIndex]}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
-              onPressEnter={()=>this.SearchHandler(this.props.current)}
+              onPressEnter={()=>{
+                // Check if object has no keys and if all keys have empty values. Our object is (this.state.searchValues)
+                if(Object.keys(this.state.searchValues).length === 0 || Object.values(this.state.searchValues).every(value => value === null || value === undefined || value === '')){
+                  this.setState({isSearching: true})
+                }
+                else{
+                  this.setState({isSearching: false})
+                }
+                this.SearchHandler(this.props.current)
+              }}
               ref={this.inputRef}
               />,
               dataIndex: column.dataIndex,
