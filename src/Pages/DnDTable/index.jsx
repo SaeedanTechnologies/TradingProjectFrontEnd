@@ -233,6 +233,7 @@ class DnDTable extends Component {
           this.setState({ columns: ColumnsData, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
         }
       }else{
+        this.SearchHandler(this.props.current)
         this.setState({ columns: columnsWithChildren, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
       }
      

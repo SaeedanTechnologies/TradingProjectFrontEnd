@@ -71,23 +71,23 @@ const PendingOrder = () => {
   }
 
   const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,page)
-    }
-    else{
-      fetchPendingOrders(null,page)
-    }
+    //   if(userRole === 'brand' ){
+    //   fetchPendingOrders(userBrand.public_key,page)
+    // }
+    // else{
+    //   fetchPendingOrders(null,page)
+    // }
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchPendingOrders(null,CurrentPage)
-    }
-  }, [])
+  //   if(userRole === 'brand' ){
+  //     fetchPendingOrders(userBrand.public_key,CurrentPage)
+  //   }
+  //   else{
+  //     fetchPendingOrders(null,CurrentPage)
+  //   }
+  // }, [])
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
@@ -385,14 +385,15 @@ const PendingOrder = () => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
   setNewColumns(newCols)
   }, [checkedList]);
-     useEffect(() => {
+    
+  useEffect(() => {
     setIsUpdated(true)
-     if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchPendingOrders(null,CurrentPage)
-    }
+    //  if(userRole === 'brand' ){
+    //   fetchPendingOrders(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchPendingOrders(null,CurrentPage)
+    // }
 
   }, [perPage])
 
@@ -412,12 +413,12 @@ const PendingOrder = () => {
   useEffect(() => {
     setIsUpdated(true)
 
-    if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchPendingOrders(null,CurrentPage)
-    }
+    // if(userRole === 'brand' ){
+    //   fetchPendingOrders(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchPendingOrders(null,CurrentPage)
+    // }
   }, [])
 
   return (

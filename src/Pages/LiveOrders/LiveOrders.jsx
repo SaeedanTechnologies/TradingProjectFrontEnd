@@ -32,46 +32,46 @@ const LiveOrders = () => {
     color: 'black',
   };
 
-  const fetchLiveOrder = async (brandId,page) => {
-    setIsLoading(true)
-    const params = { OrderTypes: ['market'], token,brandId,page}
-    const mData = await Get_Trade_Order(params,page)
-    const { data: { message, payload, success } } = mData
-    // debugger
-    const allLiveOrders = payload?.data?.map((order) => ({
-      id: order.id,
-      trading_account_loginId: order.trading_account_loginId,
+  // const fetchLiveOrder = async (brandId,page) => {
+  //   setIsLoading(true)
+  //   const params = { OrderTypes: ['market'], token,brandId,page}
+  //   const mData = await Get_Trade_Order(params,page)
+  //   const { data: { message, payload, success } } = mData
+  //   // debugger
+  //   const allLiveOrders = payload?.data?.map((order) => ({
+  //     id: order.id,
+  //     trading_account_loginId: order.trading_account_loginId,
 
-      symbol: order.symbol,
-      open_time: moment(order.open_time).format('D MMMM YYYY h:mm A'),
-      type: order.type,
-      volume: order.volume,
-      open_price: order.open_price,
-      stopLoss: order.stopLoss,
-      takeProfit: order.takeProfit,
-      reason: order.reason ? order.reason : '...',
-      swap: order.swap ? order.swap : '...',
-      profit: order.profit ? order.profit : '...',
-      comment: order.comment
+  //     symbol: order.symbol,
+  //     open_time: moment(order.open_time).format('D MMMM YYYY h:mm A'),
+  //     type: order.type,
+  //     volume: order.volume,
+  //     open_price: order.open_price,
+  //     stopLoss: order.stopLoss,
+  //     takeProfit: order.takeProfit,
+  //     reason: order.reason ? order.reason : '...',
+  //     swap: order.swap ? order.swap : '...',
+  //     profit: order.profit ? order.profit : '...',
+  //     comment: order.comment
 
-    }))
-    setIsLoading(false)
-    if (success) {
-      setLiveOrders(allLiveOrders)
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setTotalRecords(payload.total)
-      setIsUpdated(false)
+  //   }))
+  //   setIsLoading(false)
+  //   if (success) {
+  //     setLiveOrders(allLiveOrders)
+  //     setCurrentPage(payload.current_page)
+  //     setLastPage(payload.last_page)
+  //     setTotalRecords(payload.total)
+  //     setIsUpdated(false)
 
-    }
-  }
+  //   }
+  // }
     const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchLiveOrder(userBrand.public_key,page)
-    }
-    else{
-      fetchLiveOrder(null,page)
-    }
+    //   if(userRole === 'brand' ){
+    //   fetchLiveOrder(userBrand.public_key,page)
+    // }
+    // else{
+    //   fetchLiveOrder(null,page)
+    // }
   }
 
   
@@ -81,12 +81,12 @@ const LiveOrders = () => {
 
   useEffect(() => {
     setIsUpdated(true)
-    if(userRole === 'brand' ){
-      fetchLiveOrder(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchLiveOrder(null,CurrentPage)
-    }
+    // if(userRole === 'brand' ){
+    //   fetchLiveOrder(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchLiveOrder(null,CurrentPage)
+    // }
   }, [])
 
   const columns = [
@@ -272,12 +272,12 @@ const LiveOrders = () => {
 
    useEffect(() => {
     setIsUpdated(true)
-    if(userRole === 'brand' ){
-      fetchLiveOrder(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchLiveOrder(null,CurrentPage)
-    }
+    // if(userRole === 'brand' ){
+    //   fetchLiveOrder(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchLiveOrder(null,CurrentPage)
+    // }
 
   }, [perPage])
 
