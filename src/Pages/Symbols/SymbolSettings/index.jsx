@@ -249,11 +249,11 @@ const Index = () => {
   }
   useEffect(() => {
     setIsUpdated(true)
-    fetchAllSetting(CurrentPage)
+    // fetchAllSetting(CurrentPage)
   }, [perPage])
 
   const onPageChange = (page) =>{
-    fetchAllSetting(page)
+    // fetchAllSetting(page)
   }
   useEffect(() => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
@@ -294,6 +294,7 @@ const Index = () => {
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
+          setTotalRecords={setTotalRecords}
           isUpated={isUpdated}
           setSelecetdIDs={setSymbolSettingsSelecetdIDs}
           setTableData = {setSymbolSettingsData}
