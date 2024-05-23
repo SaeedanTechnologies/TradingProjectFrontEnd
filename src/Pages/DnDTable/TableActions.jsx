@@ -10,7 +10,6 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
-  
   const items = [
     {
       key: '1',
@@ -91,7 +90,6 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         
      </Button>
     </Dropdown>
-
     </div>
     </div>
 );

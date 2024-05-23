@@ -256,7 +256,6 @@ const SymbolGroupEntry = () => {
   }
 
  const handlePrevious = () => {
-    // debugger
     if (currentIndex > 0) 
     {
     
@@ -282,9 +281,6 @@ const SymbolGroupEntry = () => {
     
     }
   };
-
- 
-
   const handleNext = () => {
     if (currentIndex < ArrangedSymbolGroupsData.length - 1) 
     {
@@ -361,9 +357,6 @@ const SymbolGroupEntry = () => {
           }
   }
    await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading,onSuccessCallBack)
-
-  
-
 }
 
   const items = [
@@ -384,8 +377,6 @@ const SymbolGroupEntry = () => {
     },
    
   ];
-
-
 
   useEffect(()=>{
       if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){ // update case
@@ -426,8 +417,6 @@ const SymbolGroupEntry = () => {
     }
    
   }
-
-
 
   return (
     <Spin spinning={isLoading} size="large">
