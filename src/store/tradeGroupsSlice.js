@@ -12,16 +12,6 @@ export const tradeGroupsSlice = createSlice({
     },
     setTradeGroupsData: (state, action)=>{
       state.tradeGroupsData = action.payload.sort((a, b) => a.id - b.id);
-      let newData = [...state.tradeGroupsData];
-        action.payload.forEach(newItem => {
-          // Check if newItem's ID already exists in array c
-          const isDuplicate = newData.some(item => item.id === newItem.id);
-          // If not a duplicate, push it to array c
-          if (!isDuplicate) {
-            newData.push(newItem);
-          }
-        });
-      state.tradeGroupsData = newData;
     }, 
     deleteTradeGroupById: (state, action) => {
       const idToDelete = action.payload;

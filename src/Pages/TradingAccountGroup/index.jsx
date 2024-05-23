@@ -40,7 +40,7 @@ const Index = () => {
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
-
+  const [SearchQueryList,SetSearchQueryList]= useState({})
 
   const columns = [
     {
@@ -247,12 +247,8 @@ const Index = () => {
   useEffect(() => {
     setIsUpdated(true)
     if(userRole === 'brand' ){
-      fetchData(userBrand?.public_key)
+      SetSearchQueryList({brand_id:userBrand.public_key})
     }
-    else{
-      fetchData(null)
-    }
-    
   }, [])
 
   // useEffect(() => {
@@ -261,12 +257,12 @@ const Index = () => {
   //   }, [checkedList]);
 
   const onPageChange = () =>{
-    if(userRole === 'brand' ){
-      fetchData(userBrand?.public_key)
-    }
-    else{
-      fetchData(null)
-    }
+    // if(userRole === 'brand' ){
+    //   fetchData(userBrand?.public_key)
+    // }
+    // else{
+    //   fetchData(null)
+    // }
   }
 
   const DeleteHandler = async (id) => {
@@ -330,7 +326,7 @@ const Index = () => {
           />
          }
         </div>
-        <CustomTable 
+        <CustomTable
             direction="/trading-group-entry"
             columns={columns} 
             data={TradingAccounGroupList} 
@@ -343,6 +339,7 @@ const Index = () => {
             setSelecetdIDs={setTradeGroupsSelectedIDs}
             setTableData = {setTradeGroupsData}
             isUpated={isUpdated}
+            SearchQueryList = {SearchQueryList}
             // editPermissionName="active_account_group_update"
             // deletePermissionName="active_account_group_delete"
             setTotalRecords={setTotalRecords}
