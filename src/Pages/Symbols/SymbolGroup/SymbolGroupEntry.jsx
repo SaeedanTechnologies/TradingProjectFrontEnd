@@ -160,37 +160,63 @@ const SymbolGroupEntry = () => {
         // trading_interval_end_time: trading_interval_end_time,
         swap: Swap||""
       }
+      if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){
+       setIsLoading(true)
+       const res = await SaveSymbolGroups(SymbolGroupData, token)
+       const {data: {message, payload, success}} = res
+       setIsLoading(false)
+       if(success){
+          CustomNotification({
+            type: 'success',
+            title: 'success',
+            description: message,
+            key: 2
+          })
+        clearFields()
+        // navigate('/symbol-groups')
+      }else{
+      setIsLoading(false)
+      CustomNotification({
+            type: 'error',
+            title: 'error',
+            description: message,
+            key: 2
+          })
+      }
+      }
+      else {
         setIsLoading(true)
-         const Params = {
-          table_name: 'symbel_groups',
-          table_ids: SymbolGroupsIds,
-          ...SymbolGroupData
-        }
-        
-        const res = await GenericEdit(Params, token)
-        const { data: { message, success, payload } } = res;
-        if (success)
-        {
-          dispatch(updateSymbolGroups(payload))
-            // clearFields();
-            CustomNotification({
-              type: 'success',
-              title: 'success',
-              description: 'Symbol Setting Updated Successfully',
-              key: 2
-            })
-            navigate('/symbol-groups')
-        }
-        else
-        {
-            setIsLoading(false)
-            CustomNotification({
-              type: 'error',
-              title: 'error',
-              description: message,
-              key: `abc`
-            })
-        }
+        const Params = {
+         table_name: 'symbel_groups',
+         table_ids: SymbolGroupsIds,
+         ...SymbolGroupData
+       }
+       
+       const res = await GenericEdit(Params, token)
+       const { data: { message, success, payload } } = res;
+       if (success)
+       {
+         dispatch(updateSymbolGroups(payload))
+           // clearFields();
+           CustomNotification({
+             type: 'success',
+             title: 'success',
+             description: 'Symbol Setting Updated Successfully',
+             key: 2
+           })
+           navigate('/symbol-groups')
+       }
+       else
+       {
+           setIsLoading(false)
+           CustomNotification({
+             type: 'error',
+             title: 'error',
+             description: message,
+             key: `abc`
+           })
+       }
+      }
     }catch(err){
       const validationErrors = {};
       err.inner.forEach(error => {

@@ -214,6 +214,7 @@ const TransactionOrders = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [SearchQueryList,SetSearchQueryList]= useState({})
 
 
   const fetchTransactionOrder = async (brandId,page) => {
@@ -230,14 +231,11 @@ const TransactionOrders = () => {
     
     }
   }
-  // useEffect(() => {
-  //    if(userRole === 'brand' ){
-  //     fetchTransactionOrder(userBrand.public_key,CurrentPage)
-  //   }
-  //   else{
-  //     fetchTransactionOrder(null,CurrentPage)
-  //   }
-  // }, [])
+  useEffect(() => {
+    if(userRole === 'brand' ){
+      SetSearchQueryList({brand_id:userBrand.public_key})
+    }
+  }, [])
 
  useEffect(() => {
         const newCols = columns.filter(x => checkedList.includes(x.key));
@@ -308,6 +306,7 @@ const TransactionOrders = () => {
               perPage={perPage}
               setPerPage={setPerPage}
               SearchQuery = {Search_Transaction_Ordcer}
+              SearchQueryList={SearchQueryList}
               LoadingHandler={LoadingHandler}
               setCurrentPage={setCurrentPage}
               setLastPage={setLastPage}
