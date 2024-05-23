@@ -18,7 +18,7 @@ import { TransactionOrderEntryValidationSchema } from '../../utils/validations';
 
 
 const TransactionOrderEntry = () => {
-
+//////////
     const token = useSelector(({ user }) => user?.user?.token)
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
@@ -325,7 +325,7 @@ else
       navigate("/transaction-orders")
    }
    else{
-     if(currentIndex < ArrangedTransactionOrdersData?.length){
+     if(currentIndex < ArrangedTransactionOrdersData?.length -1){
        handleNext()
      }
      else{
@@ -358,7 +358,6 @@ else
 
  const handleSubmit = async () => {
   let brandId;
- 
     try {
        
       if(userRole === 'brand' )

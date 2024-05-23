@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Space, Spin, Tag, theme } from 'antd';
 
-import { PlusCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, EditOutlined, DeleteOutlined, CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import CustomButton from '../../components/CustomButton';
 import { AddnewStyle, footerStyle, submitStyle } from '../Brand/style';
 import CustomTable from '../../components/CustomTable';
@@ -50,6 +50,7 @@ const Index = () => {
       sorter: (a, b) => a.name.length - b.name.length,
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
+        ////
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
@@ -344,12 +345,15 @@ const Index = () => {
             isUpated={isUpdated}
             // editPermissionName="active_account_group_update"
             // deletePermissionName="active_account_group_delete"
-            table_name= "trading_account_groups"
+            setTotalRecords={setTotalRecords}
+            table_name= "trading_groups"
             setSortDirection = {setSortDirection}
             perPage={parseInt(perPage)}
             setPerPage={setPerPage}
             SearchQuery = {Search_Trading_Account_Group_List}
             LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
            />
         {/* <CustomModalp
           isModalOpen={isModalOpen}

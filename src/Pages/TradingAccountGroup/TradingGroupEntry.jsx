@@ -17,7 +17,7 @@ import { Symbol_Group_List } from '../../utils/_SymbolSettingAPICalls';
 import { GetBrandsList } from '../../utils/_BrandListAPI';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
-import { deleteTradeGroupById, updateTradeGroupData } from '../../store/tradeGroupsSlice';
+import { deleteTradeGroupById, setTradeGroupsSelectedIDs, updateTradeGroupData } from '../../store/tradeGroupsSlice';
 import CustomNotification from '../../components/CustomNotification';
 
 const TradingGroupEntry = () => {
@@ -81,18 +81,27 @@ const TradingGroupEntry = () => {
       table_name:'trading_groups',
       table_ids: [ArrangedTradingGroupData[currentIndex].id]
     }
-    
-   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteTradeGroupById(ArrangedTradingGroupData[currentIndex].id))
-    if(ArrangedTradingGroupData.length === 0 || ArrangedTradingGroupData === undefined || ArrangedTradingGroupData === null){
-       navigate("/trading-group")
-       navigate(0)
-    }else{
-      if(currentIndex < ArrangedTradingGroupData.length)
-      handleNext()
-      else
-      handlePrevious()
+    const onSuccessCallBack = (message) => {
+      CustomNotification({
+        type: "success",
+        title: "Deleted",
+        description: message,
+        key: "a4",
+      })
+      dispatch(deleteTradeGroupById(ArrangedTradingGroupData[currentIndex].id))
+      if(ArrangedTradingGroupData.length === 0 || ArrangedTradingGroupData === undefined || ArrangedTradingGroupData === null){
+         navigate("/trading-group")
+         navigate(0)
+      }else{
+        if(currentIndex < ArrangedTradingGroupData.length)
+        handleNext()
+        else
+        handlePrevious()
+      }
     }
+    
+   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading, onSuccessCallBack )
+   
     
 
   }
@@ -220,13 +229,14 @@ const TradingGroupEntry = () => {
     }
       const TradingGroupData = {
         name,
-        mass_leverage: massLeverage.value,
+        mass_leverage: massLeverage?.value,
         mass_swap: massSwap,
-        symbel_group_ids: SelectedGroup.map(item => item.id),
+        symbel_group_ids: SelectedGroup?.map(item => item.id),
         trading_account_ids: SelectedAccountList ? SelectedAccountList?.map(item => item.id) : [],
-        brand_id:userRole === 'brand'? userBrand.public_key :  selectedBrand.public_key   
+        brand_id:userRole === 'brand'? userBrand?.public_key :  selectedBrand?.public_key   
 
        }
+
        if (TradingAccountGroupsIds.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0) { // save
         setIsLoading(true)
         const res = await SaveTradingAccountGroups(TradingGroupData, token)
@@ -242,6 +252,7 @@ const TradingGroupEntry = () => {
           clearFields()
           fetchData()
         } else {
+      setIsLoading(false)
           CustomNotification({
             type: 'error',
             title: 'Oppss..',
@@ -250,7 +261,8 @@ const TradingGroupEntry = () => {
           })
         }
 
-      }else if(TradingAccountGroupsIds.length >= 2){
+      }
+      else if(TradingAccountGroupsIds.length >= 2){
         setIsLoading(true)
         const Params = {
           table_name: 'trading_groups',
@@ -260,48 +272,40 @@ const TradingGroupEntry = () => {
         const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;
         setIsLoading(false)
-        if (res !== undefined) {
-          if (success) {
-            clearFields();
-            CustomNotification({
-              type: 'success',
-              title: 'success',
-              description: 'Trading Account Updated Successfully',
-              key: 2
-            })
-            navigate('/trading-group')
-            navigate(0)
-          } else {
-            setIsLoading(false)
-            CustomNotification({
-              type: 'error',
-              title: 'error',
-              description: message,
-              key: `abc`
-            })
-          }
+        if(success) {
+          dispatch(updateTradeGroupData(payload))
+          CustomNotification({
+            type: 'success',
+            title: 'success',
+            description: 'Trading Account Updated Successfully',
+            key: 2
+          })
+          navigate('/trading-group')
+
+        }
+        else {
+          setIsLoading(false)
+          CustomNotification({
+            type: 'error',
+            title: 'error',
+            description: message,
+            key: `abc`
+          })
         }
       }
        else { // update
         setIsLoading(true)
-        const Params = {
-          table_name: 'trading_groups',
-          table_ids: TradingAccountGroupsIds,
-          ...TradingGroupData
-        }
-        const res = await GenericEdit(Params, token)
+        const res = await updateTradeGroupData(TradingAccountGroupsIds[0],TradingGroupData, token)
         const { data: { message, payload, success } } = res
-        
-        setIsLoading(false)
+        setIsLoading(false)    
         if (success) {
-          dispatch(updateTradeGroupData(payload))
+          dispatch(updateTradeGroupData([payload]))
           CustomNotification({
             type: 'success',
             title: 'success',
             description: 'Trading Group Updated Successfully',
             key: 2
           })
-          // navigate('/symbol-settings')
            setIsDisabled(true)
         } else {
           setIsLoading(false)
@@ -317,23 +321,22 @@ const TradingGroupEntry = () => {
 
     } catch (err) {
       const validationErrors = {};
-      err.inner.forEach(error => {
+      err?.inner?.forEach(error => {
         validationErrors[error.path] = error.message;
       });
       setErrors(validationErrors);
     }
   }
   const handlePrevious = () => {
-    
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedTradingGroupData[currentIndex - 1];
+      dispatch(setTradeGroupsSelectedIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
-      
     }
   };
 
@@ -343,13 +346,19 @@ const TradingGroupEntry = () => {
     if (currentIndex < ArrangedTradingGroupData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedTradingGroupData[currentIndex + 1];
+      dispatch(setTradeGroupsSelectedIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
     }else{
-      alert(`no next record found`)
+      CustomNotification({
+        type: 'warning',
+        title: 'warning',
+        description: 'No Next record found',
+        key: 2
+      })
     }
   }; 
   const cancleHandler= ()=>{

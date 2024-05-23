@@ -11,6 +11,7 @@ export const tradeGroupsSlice = createSlice({
         state.selectedRowsIds = action.payload
     },
     setTradeGroupsData: (state, action)=>{
+      state.tradeGroupsData = action.payload.sort((a, b) => a.id - b.id);
       let newData = [...state.tradeGroupsData];
         action.payload.forEach(newItem => {
           // Check if newItem's ID already exists in array c
@@ -28,13 +29,16 @@ export const tradeGroupsSlice = createSlice({
     },
     updateTradeGroupData: (state, action) => {
       const updatedData = action.payload;
-      const index = state.tradeGroupsData.findIndex(item => item.id === updatedData.id);
-      if (index !== -1) {
-        state.tradeGroupsData[index] = {
-          ...state.tradeGroupsData[index],
-          ...updatedData,
-        };
-      }
+      updatedData.forEach(updated=> {
+        const index = state.tradeGroupsData.findIndex(item => item.id === updated.id);
+        if (index !== -1) {
+          state.tradeGroupsData[index] = {
+            ...state.tradeGroupsData[index],
+            ...updated,
+          };
+        }
+
+      })
     },
   },
 })
