@@ -30,11 +30,18 @@ const TransactionOrders = () => {
 
 
   const columns = [
-    // {
-    //   title: 'LoginID',
-    //   dataIndex: 'LoginID',
-    //   key: '1',
-    // },
+    {
+      title:<span className="dragHandler">LoginID</span>,
+      dataIndex: 'trading_account_loginId',
+      key: '1',
+      sorter:(a, b) => a?.trading_account_loginId - b?.trading_account_loginId,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
     {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',

@@ -24,7 +24,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
-    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && direction !== "/active-accounts" && direction !== "/margin-calls"  && {
+    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && direction !== "/active-accounts" && direction !== "/margin-calls" && direction ==='/single-trading-accounts/details/live-orders'  && {
       key: '3',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
