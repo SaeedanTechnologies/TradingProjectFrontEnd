@@ -4,11 +4,10 @@ import CustomTable from '../../components/CustomTable';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Delete_Trade_Order, Get_Trade_Order, Search_Live_Order } from '../../utils/_TradingAPICalls';
-import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { ColumnSorter, CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { setLiveOrdersSelectedIds,setLiveOrdersData, } from '../../store/TradeOrders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
-
 
 const LiveOrders = () => {
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
@@ -38,13 +37,13 @@ const LiveOrders = () => {
     const params = { OrderTypes: ['market'], token,brandId,page}
     const mData = await Get_Trade_Order(params,page)
     const { data: { message, payload, success } } = mData
-    
+    // debugger
     const allLiveOrders = payload?.data?.map((order) => ({
       id: order.id,
-      loginId: order.trading_account_id,
-      orderId: order.id,
+      trading_account_loginId: order.trading_account_loginId,
+
       symbol: order.symbol,
-      open_time: moment(order.open_time).format('L'),
+      open_time: moment(order.open_time).format('D MMMM YYYY h:mm A'),
       type: order.type,
       volume: order.volume,
       open_price: order.open_price,
@@ -94,9 +93,9 @@ const LiveOrders = () => {
 
     {
       title:<span className="dragHandler">LoginID</span>,
-      dataIndex: 'loginId',
+      dataIndex: 'trading_account_loginId',
       key: '1',
-      sorter: (a, b) => a.loginId.length - b.loginId.length,
+      sorter: (a, b) =>  ColumnSorter(a.trading_account_loginId,b.trading_account_loginId),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -107,9 +106,9 @@ const LiveOrders = () => {
     },
     {
       title:<span className="dragHandler">OrderID</span>,
-      dataIndex: 'orderId',
+      dataIndex: 'id',
       key: '2',
-      sorter: (a, b) => a.orderId.length - b.orderId.length,
+      sorter: (a, b) => a.id - b.id,
        sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -122,7 +121,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
       key: '2',
-      sorter: (a, b) => a.symbol.length - b.symbol.length,
+      sorter: (a, b) =>  ColumnSorter(a.symbol , b.symbol),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -134,7 +133,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Open Time</span>,
       dataIndex: 'open_time',
       key: '2',
-      sorter: (a, b) => a.open_time.length - b.open_time.length,
+      sorter: (a, b) => ColumnSorter(a.open_time,b.open_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -147,7 +146,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '2',
-      sorter: (a, b) => a.type.length - b.type.length,
+      sorter: (a, b) => ColumnSorter(a.type , b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -159,7 +158,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: '2',
-      sorter: (a, b) => a.volume.length - b.volume.length,
+      sorter: (a, b) =>  a.volume - b.volume,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -171,7 +170,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '2',
-      sorter: (a, b) => a.open_price.length - b.open_price.length,
+      sorter: (a, b) => a.open_price - b.open_price,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -183,7 +182,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: '2',
-      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -195,7 +194,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: '2',
-      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
+      sorter: (a, b) => a.takeProfit - b.takeProfit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -207,7 +206,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Reason</span>,
       dataIndex: 'reason',
       key: '2',
-      sorter: (a, b) => a.reason.length - b.reason.length,
+      sorter: (a, b) => ColumnSorter(a.reason,b.reason),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -219,7 +218,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '2',
-      sorter: (a, b) => a.swap.length - b.swap.length,
+      sorter: (a, b) => a.swap - b.swap,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -231,7 +230,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '2',
-      sorter: (a, b) => a.profit.length - b.profit.length,
+      sorter: (a, b) => a.profit - b.profit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -243,7 +242,7 @@ const LiveOrders = () => {
       title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: '2',
-      sorter: (a, b) => a.comment.length - b.comment.length,
+      sorter: (a, b) => ColumnSorter(a.comment - b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -311,6 +310,8 @@ const LiveOrders = () => {
           setPerPage={setPerPage}
           SearchQuery = {Search_Live_Order}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
       </div>
     </Spin>
