@@ -56,10 +56,12 @@ export const TradeValidationSchema = Yup.object().shape({
 
    export const TransactionOrderEntryValidationSchema = Yup.object().shape({
     SelectedMethod: Yup.object().required('Method is required.'),
+    name: Yup.string().required('Name is required.'),
     amount: Yup.string().required('Order Amount is required.'),
     email: Yup.string().email('Invalid email').required('Email is required'),
     phone: Yup.string().matches(/^\+?[0-9]{8,14}$/, 'Invalid phone number').required('Phone number is required'),
     SelectedType: Yup.object().required('Type is required.'),
+    SelectedGroup: Yup.object().required('Group is required.'),
     SelectedCurrency: Yup.object().required('Currency is required'),
     SelectedCountry: Yup.object().required('Country is required'),
     comment: Yup.string().required('Comment is required.'),

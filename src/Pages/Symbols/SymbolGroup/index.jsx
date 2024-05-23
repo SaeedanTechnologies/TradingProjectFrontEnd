@@ -28,8 +28,6 @@ const Index = () => {
   const [perPage, setPerPage] = useState(10)
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
 
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
@@ -200,7 +198,7 @@ const FetchData = async (page) =>{
   // debugger
     setIsLoading(true)
     const res = await Symbol_Group_List(token,page,parseInt(perPage))
-  const {data:{message, payload, success}} = res
+    const {data:{message, payload, success}} = res
     setIsLoading(false)
     if(success){
    
@@ -232,7 +230,7 @@ const DeleteHandler = async (id)=>{
           text: message,
           icon: "success"
         });
-        FetchData(page)
+        // FetchData(page)
       }else{
         Swal.fire({
           title: "Opps!",
@@ -249,12 +247,12 @@ const DeleteHandler = async (id)=>{
 }
 
  const onPageChange = (page) =>{
-    FetchData(page)
+    // FetchData(page)
   }
 
 useEffect(() => {
   setIsUpdated(true)
-  FetchData(CurrentPage)
+  // FetchData(CurrentPage)
 }, [perPage])
 
 
@@ -266,15 +264,13 @@ useEffect(() => {
   const LoadingHandler = React.useCallback((isLoading)=>{
     setIsLoading(isLoading)
   },[])
-
-
+  
   return (
     <Spin spinning={isLoading} size="large">
     <div className='p-8' style={{ backgroundColor: colorBG }}>
     <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
       <h1 className='text-2xl font-semibold'>Symbol Group</h1>
       <div className='flex items-center gap-4'>
-       <CustomTextField label={'Search'} varient={'outlined'} sx={{height:'48px'}} />
         <CustomButton
           Text='Add New Symbol Group'
           style={AddnewStyle}

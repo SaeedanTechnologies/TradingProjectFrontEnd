@@ -282,7 +282,7 @@ const LiveOrders = () => {
   }, [perPage])
 
 
-    useEffect(() => {
+  useEffect(() => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
   setNewColumns(newCols)
   }, [checkedList]);
