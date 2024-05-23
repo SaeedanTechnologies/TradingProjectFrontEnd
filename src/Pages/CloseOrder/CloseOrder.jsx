@@ -346,6 +346,7 @@ const CloseOrder = () => {
           data={closeOrders} 
           headerStyle={headerStyle}
           total={totalRecords}
+          setTotalRecords={setTotalRecords}
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}

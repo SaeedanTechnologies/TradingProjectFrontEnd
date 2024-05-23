@@ -431,6 +431,7 @@ const PendingOrder = () => {
           data={pendingOrders} 
           headerStyle={headerStyle}
           total={totalRecords}
+          setTotalRecords={setTotalRecords}
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}

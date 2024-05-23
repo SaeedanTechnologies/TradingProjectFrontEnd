@@ -298,6 +298,7 @@ const LiveOrders = () => {
           data={liveOrders} 
           headerStyle={headerStyle}
           total={totalRecords}
+          setTotalRecords={setTotalRecords}
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
