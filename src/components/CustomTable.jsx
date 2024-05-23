@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, setTotalRecords,setCurrentPage, setLastPage,
   table_name, setSortDirection, perPage, setPerPage, editPermissionName,
-   deletePermissionName, SearchQuery,LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId}) => {
+   deletePermissionName, SearchQuery,SearchQueryList,LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId}) => {
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -49,6 +49,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           editPermissionName={editPermissionName}
           deletePermissionName={deletePermissionName}
           SearchQuery={SearchQuery}
+          SearchQueryList={SearchQueryList}
           LoadingHandler={LoadingHandler}
           footer={footer}
           setTableData={setTableData}

@@ -17,6 +17,7 @@ const PendingOrder = () => {
   const { token: { colorBG, colorPrimary, TableHeaderColor } } = theme.useToken();
   const [isLoading, setIsLoading] = useState(false)
   const [pendingOrders, setPendingOrders] = useState([])
+  const [SearchQueryList,SetSearchQueryList]= useState({})
   
 
   const [CurrentPage, setCurrentPage] = useState(1)
@@ -79,15 +80,17 @@ const PendingOrder = () => {
     // }
   }
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   if(userRole === 'brand' ){
-  //     fetchPendingOrders(userBrand.public_key,CurrentPage)
-  //   }
-  //   else{
-  //     fetchPendingOrders(null,CurrentPage)
-  //   }
-  // }, [])
+
+     if(userRole === 'brand' ){
+
+       
+      SetSearchQueryList({brand_id:userBrand.public_key})
+    }
+   
+
+  }, [])
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
@@ -444,6 +447,7 @@ const PendingOrder = () => {
           perPage={perPage}
           setPerPage={setPerPage}
           SearchQuery = {Search_Pending_Order}
+          SearchQueryList = {SearchQueryList}
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
