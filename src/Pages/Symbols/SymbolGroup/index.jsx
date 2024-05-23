@@ -309,9 +309,8 @@ useEffect(() => {
           setPerPage={setPerPage}
           SearchQuery = {Symbol_Group_List}
           LoadingHandler={LoadingHandler}
-          
-
-          
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
       </div>
        

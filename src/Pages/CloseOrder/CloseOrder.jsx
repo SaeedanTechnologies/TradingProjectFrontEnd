@@ -8,6 +8,8 @@ import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import {  Get_Trade_Order, Search_Close_Order } from '../../utils/_TradingAPICalls';
 import {  setCloseOrdersSelectedIds,setCloseOrdersData} from '../../store/TradeOrders';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
+import { ColumnSorter } from '../../utils/helpers';
+
 
 const CloseOrder = () => {
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
@@ -41,11 +43,10 @@ const CloseOrder = () => {
     const { data: { message, payload, success } } = mData
     const allCloseOrders = payload?.data?.map((order) => ({
       id: order.id,
-      loginId: order.trading_account_id,
-      orderId: order.id,
+      trading_account_loginId: order.trading_account_loginId,
       symbol: order.symbol,
-      open_time:  moment(order.open_time).format('MM/DD/YYYY HH:mm'),
-      close_time: moment(order.close_time).format('MM/DD/YYYY HH:mm') ,
+      open_time:  moment(order.open_time).format('D MMMM YYYY h:mm A'),
+      close_time: moment(order.close_time).format('D MMMM YYYY h:mm A') ,
       type: order.type,
       volume: order.volume,
       open_price: order.open_price,
@@ -96,9 +97,9 @@ const CloseOrder = () => {
 
     // {
     //   title:<span className="dragHandler">LoginID</span>,
-    //   dataIndex: 'loginId',
+    //   dataIndex: 'trading_account_loginId',
     //   key: '1',
-    //   sorter: (a, b) => a.loginId.length - b.loginId.length,
+    //   sorter: (a, b) => a.trading_account_loginId.length - b.trading_account_loginId.length,
     //   sortDirections: ['ascend', 'descend'],
     //   sortIcon: (sortDir) => {
     //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -108,9 +109,9 @@ const CloseOrder = () => {
     // },
     // {
     //   title:<span className="dragHandler">OrderID</span>,
-    //   dataIndex: 'orderId',
+    //   dataIndex: 'id',
     //   key: '2',
-    //   sorter: (a, b) => a.orderId.length - b.orderId.length,
+    //   sorter: (a, b) => a.id. - b.id,
     //   sortDirections: ['ascend', 'descend'],
     //   sortIcon: (sortDir) => {
     //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -123,7 +124,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
       key: '3',
-      sorter: (a, b) => a.symbol.length - b.symbol.length,
+      sorter: (a, b) => ColumnSorter(a.symbol , b.symbol),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -135,7 +136,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Open Time</span>,
       dataIndex: 'open_time',
       key: '4',
-      sorter: (a, b) => a.open_time.length - b.open_time.length,
+      sorter: (a, b) =>  ColumnSorter(a.open_time , b.open_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -147,7 +148,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Close Time</span>,
       dataIndex: 'close_time',
       key: '5',
-      sorter: (a, b) => a.close_time.length - b.close_time.length,
+      sorter: (a, b) => ColumnSorter(a.close_time , b.close_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -159,7 +160,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '6',
-      sorter: (a, b) => a.type.length - b.type.length,
+      sorter: (a, b) => ColumnSorter(a.type , b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -171,7 +172,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: '7',
-      sorter: (a, b) => a.volume.length - b.volume.length,
+      sorter: (a, b) => a.volume - b.volume,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -184,7 +185,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Stop Lose</span>,
       dataIndex: 'stopLoss',
       key: '8',
-      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -196,7 +197,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
       key: '9',
-      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
+      sorter: (a, b) => a.takeProfit - b.takeProfit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -208,7 +209,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '10',
-      sorter: (a, b) => a.open_price.length - b.open_price.length,
+      sorter: (a, b) => a.open_price - b.open_price,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -220,7 +221,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Closed Price</span>,
       dataIndex: 'close_price',
       key: '11',
-      sorter: (a, b) => a.close_price.length - b.close_price.length,
+      sorter: (a, b) => a.close_price - b.close_price,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -233,7 +234,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Reason</span>,
       dataIndex: 'reason',
       key: '12',
-      sorter: (a, b) => a.reason.length - b.reason.length,
+      sorter: (a, b) =>  ColumnSorter(a.reason , b.reason),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -245,7 +246,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'reason',
       key: '13',
-      sorter: (a, b) => a.swap.length - b.swap.length,
+      sorter: (a, b) => a.swap - b.swap,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -257,7 +258,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '14',
-      sorter: (a, b) => a.profit.length - b.profit.length,
+      sorter: (a, b) => a.profit - b.profit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -269,7 +270,7 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: '15',
-      sorter: (a, b) => a.comment.length - b.comment.length,
+      sorter: (a, b) =>  ColumnSorter(a.comment , b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -318,10 +319,6 @@ const CloseOrder = () => {
     setIsLoading(isLoading)
   },[])
 
-
-
-
-
   useEffect(() => {
     const newCols = columns.filter(x => checkedList.includes(x.key));
     setNewColumns(newCols)
@@ -361,7 +358,8 @@ const CloseOrder = () => {
           setPerPage={setPerPage}
           SearchQuery = {Search_Close_Order}
           LoadingHandler={LoadingHandler}
-
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
       </div>
     </Spin>

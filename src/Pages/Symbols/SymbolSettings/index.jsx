@@ -303,6 +303,8 @@ const Index = () => {
           setPerPage={setPerPage}
           SearchQuery = {All_Setting_Data}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
       </div>
      </Spin>

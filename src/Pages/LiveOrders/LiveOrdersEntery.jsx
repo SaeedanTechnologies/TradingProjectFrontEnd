@@ -17,7 +17,8 @@ import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
-import { deleteLiveOrderById } from '../../store/TradeOrders';
+import { deleteLiveOrderById, setLiveOrdersSelectedIds,updateLiveOrder } from '../../store/TradeOrders';
+
 
 
 
@@ -129,25 +130,39 @@ const LiveOrdersEntery = () => {
     if (currentIndex < ArrangedLiveOrdersData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedLiveOrdersData[currentIndex + 1];
+      dispatch(setLiveOrdersSelectedIds([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
     }else{
-      alert(`no next record found`)
+       CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Next record found',
+            key: 2
+          })
     }
   };
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedLiveOrdersData[currentIndex - 1];
+      dispatch( setLiveOrdersSelectedIds([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
       
+    }else{
+       CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Previous record found',
+            key: 2
+          })
     }
   };
 
@@ -203,23 +218,20 @@ const LiveOrdersEntery = () => {
   },[])
 
   const handleSubmit = async () => {
-
+    debugger
      const SymbolData = {
-        symbol: symbol.name,
-        feed_name: symbol.feed_name,
-        order_type: order_type.value,
-        type:  type.value,
-        volume: String(volume),
+        symbol: symbol?.name || '',
+        feed_name: symbol?.feed_name||'',
+        order_type: order_type?.value||'',
+        type:  type?.value||'',
+        volume: String(volume)||'',
         comment,
         takeProfit: String(takeProfit === "" ? "" : takeProfit),
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
         trading_account_id,
         brand_id
       }
-
-
-      
-    
+          
     try {
        
       if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save 
@@ -248,13 +260,14 @@ const LiveOrdersEntery = () => {
         setIsLoading(false)
         if (res !== undefined) {
           if (success) {
+            dispatch(updateLiveOrder(payload))
             CustomNotification({
               type: 'success',
               title: 'success',
               description: 'Live Order Updated Successfully',
               key: 2
             })
-            navigate('/live-orders')
+         
           } else {
             setIsLoading(false)
             CustomNotification({
@@ -296,17 +309,30 @@ const handleLossChange = (newValue) => {
       table_name:'trade_orders',
       table_ids: [ArrangedLiveOrdersData[currentIndex].id]
     }
-    
-    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteLiveOrderById(ArrangedLiveOrdersData[currentIndex].id))
-    if(ArrangedLiveOrdersData.length === 0 || ArrangedLiveOrdersData === undefined || ArrangedLiveOrdersData === null){
-       navigate("/live-orders")
-    }else{
-      if(currentIndex < ArrangedLiveOrdersData.length)
-      handleNext()
-      else
-      handlePrevious()
+
+    const onSuccessCallBack = (message)=>{
+           CustomNotification({
+            type: "success",
+            title: "Deleted",
+            description: message,
+            key: "a4",
+          })
+          dispatch(deleteLiveOrderById(ArrangedLiveOrdersData[currentIndex].id))
+          if(ArrangedLiveOrdersData.length === 0 || ArrangedLiveOrdersData === undefined || ArrangedLiveOrdersData === null){
+            navigate("/live-orders")
+          }else{
+            if(currentIndex < ArrangedLiveOrdersData.length-1){
+              handleNext()
+
+            }
+            else{
+              handlePrevious()
+            }
+          }
     }
+
+    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading,onSuccessCallBack )
+ 
     
 
   }
