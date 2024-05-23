@@ -81,6 +81,7 @@ class DnDTable extends Component {
     this.MassCloseOrdersHandler = this.MassCloseOrdersHandler.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleClearSearch = this.handleClearSearch.bind(this)
+    this.calculateItemRange = this.calculateItemRange.bind(this)
 
     const that = this;
 
@@ -109,18 +110,17 @@ class DnDTable extends Component {
     };
   }
 
-
-
-  async SearchHandler(){
+  async SearchHandler(currentPage){
   //  this.setState({isLoading: true})
  
     this.props.LoadingHandler(true)
-    const  res = await this.props.SearchQuery(this.props.token ,this.props.current, this.props.perPage, this.state.searchValues)
+    const  res = await this.props.SearchQuery(this.props.token ,currentPage, this.props.perPage, this.state.searchValues)
     
     const {data:{payload, success, message}} = res
-    
+    this.props.setCurrentPage(payload.current_page)
+    this.props.setTotalRecords(payload.total)
+    this.props.setLastPage(payload.last_page)
    //  this.setState({isLoading: false})
-   this.setState({isSearching: false})
    this.props.LoadingHandler(false)
     if(success){
       this.setState({data: payload.data})
@@ -157,7 +157,8 @@ class DnDTable extends Component {
       // Add event listener to the button
       button.addEventListener('click', () => {
         if(this.state.isSearching){ // search 
-          this.SearchHandler()
+          this.SearchHandler(this.props.current)
+          this.setState({isSearching: false})
         }else{ // clear
           this.setState({isSearching: true})
           this.props.LoadingHandler(true)
@@ -181,7 +182,7 @@ class DnDTable extends Component {
               placeholder={`Search ${column?.title?.props?.children}`}
               value={this.state.searchValues[column.dataIndex]}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
-              onPressEnter={this.SearchHandler}
+              onPressEnter={()=>this.SearchHandler(this.props.current)}
               ref={this.inputRef}
               />,
               dataIndex: column.dataIndex,
@@ -190,8 +191,6 @@ class DnDTable extends Component {
           }
       ]
   }));
-  
-  console.log(columnsWithChildren)
   this.setState({columns: columnsWithChildren})
     try{
       const ColumnsData = columnsWithChildren.map(x=>{
@@ -211,7 +210,7 @@ class DnDTable extends Component {
       this.setState({isLoading: false})
       if(payload && payload.length > 0){
         const selectedCols = JSON.parse(payload[0].value) // from db
-        
+        this.SearchHandler(this.props.current)
         // const filteredColumns = columnsWithChildren.filter(column =>  
         //   selectedCols.some(selectedColumn => selectedColumn.dataIndex === column.dataIndex)
         // );
@@ -229,12 +228,12 @@ class DnDTable extends Component {
         );
         
         if(success){
-         
           this.setState({ columns: filteredColumns, dropDownColumns: ColumnsData, selectedColumns: mData });
         }else{
           this.setState({ columns: ColumnsData, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
         }
       }else{
+        this.SearchHandler(this.props.current)
         this.setState({ columns: columnsWithChildren, dropDownColumns: ColumnsData, selectedColumns: ColumnsData });
       }
      
@@ -243,7 +242,6 @@ class DnDTable extends Component {
         alert(`Error occured ${err.message}`)
     } 
   }
-
   componentDidUpdate(prevProps,prevState) {
     if (prevProps.columns !== this.props.columns) {
       this.setState({ columns: this.props.columns });
@@ -257,7 +255,6 @@ class DnDTable extends Component {
      if (prevProps.isSearching !== this.state.isSearching) {
         // Update the button when isSearching state changes
         const buttonText = this.state.isSearching ? 'Search' : 'Clear';
-        
         const searchButton = document.querySelector('.ant-table-thead tr:first-child th:first-child button');
         if (searchButton) {
             searchButton.innerText = buttonText;
@@ -268,14 +265,7 @@ class DnDTable extends Component {
             }
         }
     }
-   
-    // else if (prevProps.data !== this.props.data) {
-    //   // Update data state with new data from props
-    //   this.setState({ data: this.props.data });
-    // } 
-  
   }
-
 
   handleInputChange = (dataIndex, value) => {
     this.setState(prevState => ({
@@ -371,40 +361,13 @@ class DnDTable extends Component {
     }
   }
   handleClearSearch = () => {
-    // const _test = this.inputRef
-
-    // this.inputRef.current.input.value = '';
-
+    this.SearchHandler(this.props.current)
     const clearedSearchValues = {};
     const inputRefs = Object.keys(this.state.searchValues);
     inputRefs.forEach((key) => {
       clearedSearchValues[key] = '';
     });
     this.setState({ searchValues:clearedSearchValues, isSearching: true })
-
-    // this.setState({ searchValues:clearedSearchValues, isSearching: true },()=>{
-    //   document.getElementById('search-input-Name').value = '';
-    // });
-  //   const columnsWithChildren = this.props.columns.map(column => ({
-  //     ...column,
-  //     children: [ // inputs
-  //         {
-  //             title: <Input 
-  //             id={`search-input-${column.title.props.children}`}
-  //             placeholder={`Search ${column.title.props.children}`}
-  //             value={this.state.searchValues[column.dataIndex]}
-  //             onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
-  //             onPressEnter={this.SearchHandler}
-  //             ref={this.inputRef}
-  //             />,
-  //             dataIndex: column.dataIndex,
-  //             key: `${column.dataIndex}-search`,
-  //             width: 150,
-  //         }
-  //     ]
-  // }));
-
-  // this.setState({columns: columnsWithChildren})
     document.getElementById("search-input").value = ''
     
   };
@@ -469,8 +432,9 @@ class DnDTable extends Component {
                 const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item[this.props.column_name]));
                 this.setState({data: newData})
               }else{
-                const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
-                this.setState({data: newData})
+                this.SearchHandler(this.props.current)
+                // const newData = this.state.data.filter(item => !this.state.selectedRowKeys.includes(item.id));
+                // this.setState({data: newData})
                 this.props.setTableData(newData)
               }
                CustomNotification({
@@ -627,6 +591,12 @@ class DnDTable extends Component {
   }
    
   }
+  calculateItemRange = () => {
+    const { current, perPage, total } = this.props;
+    const start = (current - 1) * perPage + 1;
+    const end = Math.min(current * perPage, total);
+    return `Showing ${start}-${end} of ${total} items`;
+  };
   render() {
     const { columns, selectedRowKeys } = this.state;
     const combinedColumns = columns.map((stateCol, index) => ({
@@ -658,9 +628,6 @@ class DnDTable extends Component {
                   {this.state.isCompleteSelect ? `Deselect All Data (${selectedRowKeys.length})` : `Select All Data (${selectedRowKeys.length})`}
                 </h1>
               }
-
-          
-
           </div>
           <Table
             bordered
@@ -700,7 +667,15 @@ class DnDTable extends Component {
             components={this.components}
             columns={combinedColumns}
             dataSource={this.state.data} 
-            pagination={false}
+            pagination={{
+              current: this.props.current,
+              pageSize: this.props.perPage,
+              total: this.props.total,
+              onChange: (page, pageSize) => {
+                this.SearchHandler(page)
+                this.props.setCurrentPage(page);
+              },
+            }}
             rowSelection={rowSelection}
             showSorterTooltip={false}
             summary={this.props.summary}
@@ -730,6 +705,9 @@ class DnDTable extends Component {
             scroll={{ x: 'max-content' }}
           />
         </ReactDragListView.DragColumn>
+        <div style={{ textAlign: "right", marginTop: "10px" }}>
+          {this.calculateItemRange()}
+        </div>
         <CustomModal
           title={this.props.formName+' - Add Remove Columns'}
           isModalOpen={this.state.isAddRemove}
@@ -751,7 +729,6 @@ class DnDTable extends Component {
               this.setState({selectedColumns: null })
             }
           }}
-          
           renderInput={(params) => (
             <TextField {...params} label="Columns" placeholder="Columns" variant="standard" />
           )}

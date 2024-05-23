@@ -8,6 +8,7 @@ import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import {  Get_Trade_Order, Search_Pending_Order } from '../../utils/_TradingAPICalls';
 import {  setCloseOrdersSelectedIds,setCloseOrdersData, setPendingOrdersData, setPendingOrdersSelectedIds} from '../../store/TradeOrders';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
+import { ColumnSorter } from '../../utils/helpers';
 
 const PendingOrder = () => {
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
@@ -70,74 +71,109 @@ const PendingOrder = () => {
   }
 
   const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,page)
-    }
-    else{
-      fetchPendingOrders(null,page)
-    }
+    //   if(userRole === 'brand' ){
+    //   fetchPendingOrders(userBrand.public_key,page)
+    // }
+    // else{
+    //   fetchPendingOrders(null,page)
+    // }
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchPendingOrders(null,CurrentPage)
-    }
-  }, [])
+  //   if(userRole === 'brand' ){
+  //     fetchPendingOrders(userBrand.public_key,CurrentPage)
+  //   }
+  //   else{
+  //     fetchPendingOrders(null,CurrentPage)
+  //   }
+  // }, [])
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
       key: '5',
-      sorter: (a, b) => a.symbol.length - b.symbol.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.symbol , b.symbol ),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
 
     },
     {
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'open_time',
       key: '1',
-      sorter: (a, b) => a.open_time.length - b.open_time.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.open_time , b.open_time ),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '3',
-      sorter: (a, b) => a.type.length - b.type.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.type , b.type ),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: '4',
-      sorter: (a, b) => a.volume.length - b.volume.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.volume - b.volume,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
 
     },
     {
       title:<span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: '7',
-      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: '8',
-      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.takeProfit - b.takeProfit,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '6',
-      sorter: (a, b) => a.open_price.length - b.open_price.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.open_price - b.open_price,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     }
   ];
 
@@ -349,14 +385,15 @@ const PendingOrder = () => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
   setNewColumns(newCols)
   }, [checkedList]);
-     useEffect(() => {
+    
+  useEffect(() => {
     setIsUpdated(true)
-     if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchPendingOrders(null,CurrentPage)
-    }
+    //  if(userRole === 'brand' ){
+    //   fetchPendingOrders(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchPendingOrders(null,CurrentPage)
+    // }
 
   }, [perPage])
 
@@ -376,12 +413,12 @@ const PendingOrder = () => {
   useEffect(() => {
     setIsUpdated(true)
 
-    if(userRole === 'brand' ){
-      fetchPendingOrders(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchPendingOrders(null,CurrentPage)
-    }
+    // if(userRole === 'brand' ){
+    //   fetchPendingOrders(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchPendingOrders(null,CurrentPage)
+    // }
   }, [])
 
   return (
@@ -395,6 +432,7 @@ const PendingOrder = () => {
           data={pendingOrders} 
           headerStyle={headerStyle}
           total={totalRecords}
+          setTotalRecords={setTotalRecords}
           onPageChange = {onPageChange}
           current_page={CurrentPage}
           token = {token}
@@ -407,6 +445,8 @@ const PendingOrder = () => {
           setPerPage={setPerPage}
           SearchQuery = {Search_Pending_Order}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
 
         />
       </div>

@@ -17,7 +17,7 @@ import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
-import { deleteCloseOrderById } from '../../store/TradeOrders';
+import { deletePendingOrderById,setPendingOrdersSelectedIds,updatePendingOrder } from '../../store/TradeOrders';
 
 
 
@@ -123,25 +123,39 @@ const PendingOrderEntry = () => {
     if (currentIndex < ArrangedPendingOrdersData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedPendingOrdersData[currentIndex + 1];
+      dispatch(setPendingOrdersSelectedIds([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
     }else{
-      alert(`no next record found`)
+        CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Next record found',
+            key: 2
+          })
     }
   };
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedPendingOrdersData[currentIndex - 1];
+      dispatch(setPendingOrdersSelectedIds([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
       
+    }else{
+       CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Previous record found',
+            key: 2
+          })
     }
   };
 
@@ -190,7 +204,6 @@ const PendingOrderEntry = () => {
   },[])
 
   const handleSubmit = async () => {
-    debugger
     try {
     
         const PendingData = {
@@ -236,6 +249,7 @@ const PendingOrderEntry = () => {
         setIsLoading(false)
         if (res !== undefined) {
           if (success) {
+            dispatch(updatePendingOrder(payload))
             CustomNotification({
               type: 'success',
               title: 'success',
@@ -280,21 +294,39 @@ const handleLossChange = (newValue) => {
 
   
   const deleteHandler = ()=>{
+
     const Params = {
       table_name:'trade_orders',
-      table_ids: [ArrangedPendingOrdersData[currentIndex].id]
+      table_ids: [ArrangedPendingOrdersData[currentIndex]?.id]
+    }
+
+     const onSuccessCallBack = (message)=>{
+           CustomNotification({
+            type: "success",
+            title: "Deleted",
+            description: message,
+            key: "a4",
+          })
+
+        dispatch(deletePendingOrderById(ArrangedPendingOrdersData[currentIndex]?.id))
+        
+        if(ArrangedPendingOrdersData.length === 0 || ArrangedPendingOrdersData === undefined || ArrangedPendingOrdersData === null){
+          navigate("/pending-orders")
+        }
+        else
+        {
+          if(currentIndex < ArrangedPendingOrdersData?.length-1)
+            {
+              handleNext()
+            }
+          else{
+             handlePrevious()
+          }
+        }
     }
     
-    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteCloseOrderById(ArrangedPendingOrdersData[currentIndex].id))
-    if(ArrangedPendingOrdersData.length === 0 || ArrangedPendingOrdersData === undefined || ArrangedPendingOrdersData === null){
-       navigate("/close-orders")
-    }else{
-      if(currentIndex < ArrangedPendingOrdersData.length)
-      handleNext()
-      else
-      handlePrevious()
-    }
+    CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading,onSuccessCallBack )
+   
     
 
   }

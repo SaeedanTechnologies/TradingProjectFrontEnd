@@ -14,7 +14,7 @@ import TradingModal from './TradingModal'
 import { setAccountID, setTradingAccountsData,setSelectedTradingAccountsIDs } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
-import { CheckBrandPermission } from '../../utils/helpers';
+import { CheckBrandPermission, ColumnSorter } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
@@ -54,7 +54,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">LoginID</span>,
       dataIndex: 'loginId',
       key: '1',
-      sorter: (a, b) => a.loginId?.length - b.loginId?.length,
+      sorter: (a, b) => a.loginId - b.loginId,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -66,7 +66,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Trading Group Id</span>,
       dataIndex: 'trading_group_id',
       key: '2',
-      sorter: (a, b) => a.trading_group_id?.length - b.trading_group_id?.length,
+      sorter: (a, b) => a.trading_group_id - b.trading_group_id,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -78,7 +78,8 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">{userRole === 'admin' ? 'Brand' : 'Customer'}</span>,
       dataIndex: `${userRole === 'admin' ? 'brand' : 'customer'}`,
       key: '3',
-      sorter: (a, b) => {userRole === 'admin' ? a.brand?.length - b.brand?.length : a.customer?.length - b.customer?.length},
+      sorter:(a, b) =>  ColumnSorter(userRole === 'admin' ? (a.brand, b.brand) : (a.customer, b.customer)),
+      // sorter: (a, b) => {userRole === 'admin' ? a.brand?.length - b.brand?.length : a.customer?.length - b.customer?.length},
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -90,7 +91,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '4',
-      sorter: (a, b) => a.country?.length - b.country?.length,
+      sorter:(a, b) =>  ColumnSorter(a.country,b.country),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -102,7 +103,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Phone No.</span>,
       dataIndex: 'phone',
       key: '5',
-      sorter: (a, b) => a.phone?.length - b.phone?.length,
+      sorter: (a, b) => a.phone - b.phone,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -114,7 +115,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '6',
-      sorter: (a, b) => a.email?.length - b.email?.length,
+      sorter:(a, b) =>  ColumnSorter(a.email,b.email),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -126,7 +127,17 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '7',
-      sorter: (a, b) => a.leverage?.length - b.leverage?.length,
+      sorter:(a, b) => {
+        // Split the ratio values and parse them as numbers
+        const ratioA = a.leverage.split(':').map(Number);
+        const ratioB = b.leverage.split(':').map(Number);
+        
+        // Compare the ratio values
+        if (ratioA[0] === ratioB[0]) {
+          return ratioA[1] - ratioB[1];
+        }
+        return ratioA[0] - ratioB[0];
+      },
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -138,7 +149,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Balance</span>,
       dataIndex: 'balance',
       key: '8',
-      sorter: (a, b) => a.balance?.length - b.balance?.length,
+      sorter: (a, b) => a.balance - b.balance,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -150,7 +161,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Credit</span>,
       dataIndex: 'credit',
       key: '9',
-      sorter: (a, b) => a.credit?.length - b.credit?.length,
+      sorter: (a, b) => a.credit - b.credit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -162,7 +173,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Equity</span>,
       dataIndex: 'equity',
       key: '10',
-      sorter: (a, b) => a.equity?.length - b.equity?.length,
+      sorter: (a, b) => a.equity - b.equity,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -175,7 +186,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Margin Level</span>,
       dataIndex: 'margin_level_percentage',
       key: '11',
-      sorter: (a, b) => a.margin_level_percentage?.length - b.margin_level_percentage?.length,
+      sorter: (a, b) => a.margin_level_percentage - b.margin_level_percentage,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -187,7 +198,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '12',
-      sorter: (a, b) => a.profit?.length - b.profit?.length,
+      sorter: (a, b) => a.profit - b.profit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -199,7 +210,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '13',
-      sorter: (a, b) => a.swap?.length - b.swap?.length,
+      sorter: (a, b) => a.swap - b.swap,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -211,7 +222,7 @@ const Index = ({ title, direction }) => {
      title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '14',
-      sorter: (a, b) => a.currency?.length - b.currency?.length,
+      sorter:(a, b) =>  ColumnSorter(a.currency,b.currency),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -224,7 +235,7 @@ const Index = ({ title, direction }) => {
      title:<span className="dragHandler">Registration Time</span>,
       dataIndex: 'registration_time',
       key: '15',
-      sorter: (a, b) => a.registration_time?.length - b.registration_time?.length,
+      sorter: (a, b) => a.registration_time - b.registration_time,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -236,7 +247,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Last Access Time</span>,
       dataIndex: 'last_access_time',
       key: '16',
-      sorter: (a, b) => a.last_access_time?.length - b.last_access_time?.length,
+      sorter: (a, b) => a.last_access_time - b.last_access_time,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -248,7 +259,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Last Access IP</span>,
       dataIndex: 'last_access_address_IP',
       key: '17',
-      sorter: (a, b) => a.last_access_address_IP?.length - b.last_access_address_IP?.length,
+      sorter: (a, b) => a.last_access_address_IP - b.last_access_address_IP,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -256,22 +267,22 @@ const Index = ({ title, direction }) => {
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
     },
-    {
-      title: 'Action',
-      dataIndex: 'type',
-      key: '18',
-      render: (_, record) => {
-        return (
-        <Space size="middle" className='cursor-pointer'>
-          <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() =>{ 
-            setTradeId(record)
+    // {
+    //   title: 'Action',
+    //   dataIndex: 'type',
+    //   key: '18',
+    //   render: (_, record) => {
+    //     return (
+    //     <Space size="middle" className='cursor-pointer'>
+    //       <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() =>{ 
+    //         setTradeId(record)
 
-            // dispatch(setTradingAccountGroupData(record)) 
-            }} />
-            <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
-        </Space>
-      )},
-    },
+    //         // dispatch(setTradingAccountGroupData(record)) 
+    //         }} />
+    //         <DeleteOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => DeleteHandler(record.id)} />
+    //     </Space>
+    //   )},
+    // },
   ]
 
   const headerStyle = {
@@ -378,33 +389,33 @@ const Index = ({ title, direction }) => {
             });
 
         
-       if( userRole === 'brand' ){
-        switch(direction){
-          case 1:
-            fetchTradingAccounts(userBrand.public_key,CurrentPage);
-            break;
-          case 2:
-             fetchActiveGroups(userBrand.public_key,CurrentPage);
-            break;
-          case 3: 
-            fetchMarginCalls(userBrand.public_key,CurrentPage) 
-            break;
-        }
-        } 
-        else{
-          switch(direction){
-          case 1:
-            fetchTradingAccounts(null,CurrentPage);
-            break;
-          case 2:
-             fetchActiveGroups(null,CurrentPage);
-            break;
-          case 3: 
-            fetchMarginCalls(null,CurrentPage) 
-            break;
-        }
+      //  if( userRole === 'brand' ){
+      //   switch(direction){
+      //     case 1:
+      //       fetchTradingAccounts(userBrand.public_key,CurrentPage);
+      //       break;
+      //     case 2:
+      //        fetchActiveGroups(userBrand.public_key,CurrentPage);
+      //       break;
+      //     case 3: 
+      //       fetchMarginCalls(userBrand.public_key,CurrentPage) 
+      //       break;
+      //   }
+      //   } 
+      //   else{
+      //     switch(direction){
+      //     case 1:
+      //       fetchTradingAccounts(null,CurrentPage);
+      //       break;
+      //     case 2:
+      //        fetchActiveGroups(null,CurrentPage);
+      //       break;
+      //     case 3: 
+      //       fetchMarginCalls(null,CurrentPage) 
+      //       break;
+      //   }
 
-        }
+        // }
            
           }else{
             Swal.fire({
@@ -507,12 +518,12 @@ const [newColumns , setNewColumns] = useState(renderColumns)
 
 
   const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchTradingAccounts(userBrand.public_key,page)
-    }
-    else{
-      fetchTradingAccounts(null,page)
-    }
+    //   if(userRole === 'brand' ){
+    //   fetchTradingAccounts(userBrand.public_key,page)
+    // }
+    // else{
+    //   fetchTradingAccounts(null,page)
+    // }
   }
 
   useEffect(() => {
@@ -522,29 +533,29 @@ const [newColumns , setNewColumns] = useState(renderColumns)
 
   useEffect(() => {
     setIsUpdated(true)
-  switch (direction) {
-    case 1:
-      if (userRole === 'brand') {
-        fetchTradingAccounts(userBrand.public_key, CurrentPage);
-      } else {
-        fetchTradingAccounts(null, CurrentPage);
-      }
-      break;
-    case 2:
-      if (userRole === 'brand') {
-        fetchActiveGroups(userBrand.public_key, CurrentPage);
-      } else {
-        fetchActiveGroups(null, CurrentPage);
-      }
-      break;
-    case 3:
-      if (userRole === 'brand') {
-        fetchMarginCalls(userBrand.public_key, CurrentPage);
-      } else {
-        fetchMarginCalls(null, CurrentPage);
-      }
+  // switch (direction) {
+  //   case 1:
+  //     if (userRole === 'brand') {
+  //       fetchTradingAccounts(userBrand.public_key, CurrentPage);
+  //     } else {
+  //       fetchTradingAccounts(null, CurrentPage);
+  //     }
+  //     break;
+  //   case 2:
+  //     if (userRole === 'brand') {
+  //       fetchActiveGroups(userBrand.public_key, CurrentPage);
+  //     } else {
+  //       fetchActiveGroups(null, CurrentPage);
+  //     }
+  //     break;
+  //   case 3:
+  //     if (userRole === 'brand') {
+  //       fetchMarginCalls(userBrand.public_key, CurrentPage);
+  //     } else {
+  //       fetchMarginCalls(null, CurrentPage);
+  //     }
 
-  }
+  // }
   const channel = pusher.subscribe('trading_accounts');
         channel.bind('update', (data) => {
           const mData = [data]
@@ -612,7 +623,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           <CustomTable
             direction="/single-trading-accounts/details/live-order"
             formName = "Trading Accounts" 
-            columns={renderColumns}
+            columns={newColumns}
             data={tradingAccountsList} 
             headerStyle={headerStyle}
             total={totalRecords}
@@ -624,18 +635,22 @@ const [newColumns , setNewColumns] = useState(renderColumns)
             setTableData = {setTradingAccountGroupData}
             table_name= "trading_accounts"
             setSortDirection = {setSortDirection}
+            setTotalRecords={setTotalRecords}
             perPage={parseInt(perPage)}
             setPerPage={setPerPage}
             SearchQuery = {Search_Trading_Accounts_List}
             LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
         />
         </div>
         )}
         {direction === 2 && (
         <CustomTable
-          direction="/active-accounts"
+          // direction="/active-accounts"
+          direction="/single-trading-accounts/details/live-order"
           formName = "Active Accounts" 
-          columns={renderColumns}
+          columns={newColumns}
           data={activeGroup} 
           headerStyle={headerStyle}
           total={totalRecords}
@@ -649,18 +664,22 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           // deletePermissionName="active_account_group_delete"
           table_name= "trading_accounts"
           setSortDirection = {setSortDirection}
+          setTotalRecords={setTotalRecords}
           perPage={parseInt(perPage)}
           setPerPage={setPerPage}
           SearchQuery = {Search_Trading_Accounts_List}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
        
        )}
         {direction === 3 && (
         <CustomTable
-          direction="/margin-calls"
+          // direction="/margin-calls"
+          direction="/single-trading-accounts/details/live-order"
           formName = "Margin Calls" 
-          columns={renderColumns}
+          columns={newColumns}
           data={marginCall} 
           headerStyle={headerStyle}
           total={totalRecords}
@@ -674,10 +693,13 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           // deletePermissionName="margin_call_trading_delete"
           table_name= "trading_accounts"
           setSortDirection = {setSortDirection}
+          setTotalRecords={setTotalRecords}
           perPage={parseInt(perPage)}
           setPerPage={setPerPage}
           SearchQuery = {Search_Trading_Accounts_List}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
         )}
 

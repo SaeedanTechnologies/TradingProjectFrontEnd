@@ -155,11 +155,27 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     },
 
     {
-      id: 3, control: 'CustomTextField', display: 'show', label: 'Email', required: true, varient: 'standard', value: tradingAccount.email, onChange: (e) => {
-        setTradingAccount(prevData => ({
-          ...prevData,
-          email: e.target.value
-        }));
+      id: 3,
+       control: 'CustomTextField',
+        display: 'show',
+         label: 'Email',
+          required: true,
+           varient: 'standard',
+       value: tradingAccount.email,
+        onChange: (e) => {
+        if (e.target.value) {
+          setErrors(prevErrors => ({ ...prevErrors, email: "" }))
+          setTradingAccount(prevData => ({
+            ...prevData,
+            email: e.target.value
+          }))
+        }
+        else {
+          setTradingAccount(prevData => ({
+            ...prevData,
+            email: ''
+          }))
+        }
       }
     },
     {
@@ -171,10 +187,23 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       varient: 'standard',
       value: tradingAccount.phone,
       onChange: (e) => {
-        setTradingAccount(prevData => ({
-          ...prevData,
-          phone: e.target.value
-        }));
+        if (e.target.value) {
+          setErrors(prevErrors => ({ ...prevErrors, email: "" }))
+          setTradingAccount(prevData => ({
+            ...prevData,
+            phone: e.target.value
+          }))
+        }
+        else {
+          setTradingAccount(prevData => ({
+            ...prevData,
+            phone: ''
+          }))
+        }
+        // setTradingAccount(prevData => ({
+        //   ...prevData,
+        //   phone: e.target.value
+        // }));
       }
     },
   
@@ -184,7 +213,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
       display: 'show',
       name: 'Country',
       label: 'Country',
-      required: true,
+      required: false,
       varient: 'standard',
       options: Countries,
       value: tradingAccount.country,
@@ -217,11 +246,23 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     // },
     {
       id: 7, control: 'CustomTextField', display: 'show', label: 'Name', varient: 'standard', value: tradingAccount.name, onChange: (e) => {
-
-        setTradingAccount(prevData => ({
-          ...prevData,
-          name: e.target.value
-        }))
+        if (e.target.value) {
+          setErrors(prevErrors => ({ ...prevErrors, email: "" }))
+          setTradingAccount(prevData => ({
+            ...prevData,
+            name: e.target.value
+          }))
+        }
+        else {
+          setTradingAccount(prevData => ({
+            ...prevData,
+            phone: ''
+          }))
+        }
+        // setTradingAccount(prevData => ({
+        //   ...prevData,
+        //   name: e.target.value
+        // }))
       }
     },
     // {
@@ -440,8 +481,9 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
                       varient={val.varient}
                       label={val.label}
                       required={val.required}
-                      options={val.options}
-                      getOptionLabel={(option) => val.getOptionLabel(option)}
+                      // options={val.options}
+                      value={val.value}
+                      // getOptionLabel={(option) => val.getOptionLabel(option)}
                       onChange={(e, value) => val.onChange(e, value)}
                     />
                     {errors.symbol && <span style={{ color: 'red' }}>{errors.symbol}</span>}

@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import ARROW_UP_DOWN from '../../../assets/images/arrow-up-down.png'
 import  "../../DnDTable/index.css";
 import '../SymbolSettings/index.css'
+import moment from 'moment';
 
 const columns = [
   {
@@ -131,7 +132,8 @@ const Index = () => {
       const res = await GET_Min_Chart_Data(token, page, parseInt(perPage))
       const { data: { message, payload, success, } } = res
       setIsLoading(false)
-      setMinData(payload?.data)
+      const minData = payload?.data.map((x)=> ({...x, created_at:moment(x.created_at).format('D MMMM YYYY h:mm A')})) 
+      setMinData(minData)
       setTotalRecords(payload?.total)
       setCurrentPage(payload?.current_page)
       setLastPage(payload?.last_page)

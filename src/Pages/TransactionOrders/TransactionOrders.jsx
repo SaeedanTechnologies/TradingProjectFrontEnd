@@ -30,11 +30,18 @@ const TransactionOrders = () => {
 
 
   const columns = [
-    // {
-    //   title: 'LoginID',
-    //   dataIndex: 'LoginID',
-    //   key: '1',
-    // },
+    {
+      title:<span className="dragHandler">LoginID</span>,
+      dataIndex: 'trading_account_loginId',
+      key: '1',
+      sorter:(a, b) => a?.trading_account_loginId - b?.trading_account_loginId,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
     {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
@@ -223,14 +230,14 @@ const TransactionOrders = () => {
     
     }
   }
-  useEffect(() => {
-     if(userRole === 'brand' ){
-      fetchTransactionOrder(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchTransactionOrder(null,CurrentPage)
-    }
-  }, [])
+  // useEffect(() => {
+  //    if(userRole === 'brand' ){
+  //     fetchTransactionOrder(userBrand.public_key,CurrentPage)
+  //   }
+  //   else{
+  //     fetchTransactionOrder(null,CurrentPage)
+  //   }
+  // }, [])
 
  useEffect(() => {
         const newCols = columns.filter(x => checkedList.includes(x.key));
@@ -239,21 +246,21 @@ const TransactionOrders = () => {
 
    useEffect(() => {
     setIsUpdated(true)
-     if(userRole === 'brand' ){
-      fetchTransactionOrder(userBrand.public_key,CurrentPage)
-    }
-    else{
-      fetchTransactionOrder(null,CurrentPage)
-    }
+    //  if(userRole === 'brand' ){
+    //   fetchTransactionOrder(userBrand.public_key,CurrentPage)
+    // }
+    // else{
+    //   fetchTransactionOrder(null,CurrentPage)
+    // }
   }, [perPage])
 
   const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchTransactionOrder(userBrand.public_key,page)
-    }
-    else{
-      fetchTransactionOrder(null,page)
-    }
+    //   if(userRole === 'brand' ){
+    //   fetchTransactionOrder(userBrand.public_key,page)
+    // }
+    // else{
+    //   fetchTransactionOrder(null,page)
+    // }
   }
 
   const LoadingHandler = React.useCallback((isLoading)=>{
@@ -302,6 +309,8 @@ const TransactionOrders = () => {
               setPerPage={setPerPage}
               SearchQuery = {Search_Transaction_Ordcer}
               LoadingHandler={LoadingHandler}
+              setCurrentPage={setCurrentPage}
+              setLastPage={setLastPage}
               // brandId={userRole === 'brand' ? userBrand.public_key : null}
               />
         </div>

@@ -10,7 +10,6 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
-  
   const items = [
     {
       key: '1',
@@ -24,7 +23,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
-    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && direction !== "/active-accounts" && direction !== "/margin-calls"  && {
+    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && direction !=='/single-trading-accounts/details/live-order'  && {
       key: '3',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
@@ -91,7 +90,6 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         
      </Button>
     </Dropdown>
-
     </div>
     </div>
 );
