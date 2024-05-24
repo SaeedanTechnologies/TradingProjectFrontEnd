@@ -479,7 +479,7 @@ const TradingAccountsEntry = () => {
         const Params = {
           table_name: 'trading_accounts',
           table_ids: TradingAccountsIds,
-          table_ids: isCompleteSelect ? [] : TradingAccountsIds,
+          table_ids: isCompleteSelect === "true" ? [] : TradingAccountsIds,
           ...SymbolGroupData
         }
         const res = await GenericEdit(Params, token)

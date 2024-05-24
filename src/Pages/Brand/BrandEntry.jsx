@@ -125,7 +125,7 @@ const BrandEntry = () => {
         setIsLoading(true)
         const Params = {
          table_name: 'brands',
-         table_ids: isCompleteSelect ? [] : BrandIds,
+         table_ids: isCompleteSelect === "true" ? [] : BrandIds,
          ...BrandData
       }
       const res = await GenericEdit(Params, token)
