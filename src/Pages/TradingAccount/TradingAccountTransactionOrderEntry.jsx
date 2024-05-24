@@ -12,19 +12,20 @@ import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Tra
 import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
-import { deleteTransactionOrderById, setTransactionsOrdersSelectedIDs, updateTransactionOrders } from '../../store/transactionOrdersSlice';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
 import { TransactionOrderEntryValidationSchema } from '../../utils/validations';
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
+import { updateTransactionOrders,setTransactionOrdersData,setTransactionOrdersSelectedIds } from '../../store/TradingAccountListSlice';
 
 
-const TransactionOrderEntry = () => {
-    const isCompleteSelect = localStorage.getItem("isCompleteSelect")
+const TradingAccountTransactionOrderEntry = () => {
     const token = useSelector(({ user }) => user?.user?.token)
     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const dispatch = useDispatch()
+    const isCompleteSelect = localStorage.getItem("isCompleteSelect")
+  
 
   const {
     token: { colorBG, TableHeaderColor, Gray2  },
@@ -52,8 +53,8 @@ const TransactionOrderEntry = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [ CurrentPage,setCurrentPage] = useState(1)
 
-   const TransactionOrdersIds = useSelector(({ transactionOrders }) => transactionOrders.selectedRowsIds)
-  const TransactionOrdersData = useSelector(({transactionOrders})=> transactionOrders.transactionOrdersData)
+   const TransactionOrdersIds = useSelector(({ tradingAccount }) => tradingAccount.selectedTransactionOrdersRowsIds)
+  const TransactionOrdersData = useSelector(({tradingAccount})=> tradingAccount.transactionOrdersData)
   const ArrangedTransactionOrdersData= TransactionOrdersData.slice().sort((a, b) => a.id - b.id);
   
 
@@ -257,6 +258,7 @@ const TransactionOrderEntry = () => {
 
 
 const fetchTransactionOrder = async (page) => {
+  
   setIsLoading(true)
   const group_response = await ALL_Trading_Account_Group_List(token)
     const {data: { payload : groupList, success : suc}} = group_response
@@ -268,10 +270,12 @@ const fetchTransactionOrder = async (page) => {
     const res = await Single_Transaction_Order(token,TransactionOrdersIds[0],parseInt(page) )
     const { data: { message, payload, success } } = res
     setIsLoading(false)
+    
     setStatesForEditMode(payload, success, groupList)
   }
 
  const setStatesForEditMode = async (payload, success, groupList)=>{
+       
       if (success) {
         setIsLoading(true)
         const country = Countries.find((country)=>country.label === payload?.country)
@@ -298,9 +302,9 @@ const fetchTransactionOrder = async (page) => {
   }
 
 useEffect(() => {
-    if (TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0) { // save
+    if (TransactionOrdersIds?.length === 1 && parseInt(TransactionOrdersIds[0]) === 0) { // save
        setIsDisabled(false)
-    } else if (TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) !== 0) { // single edit
+    } else if (TransactionOrdersIds?.length === 1 && parseInt(TransactionOrdersIds[0]) !== 0) { // single edit
       const cIndex = ArrangedTransactionOrdersData.findIndex(item => parseInt(item.id) === parseInt(TransactionOrdersIds[0]))
       setCurrentIndex(cIndex)
       setIsDisabled(true)
@@ -317,7 +321,7 @@ useEffect(() => {
   
 
   const handleNext = () => {
-    if (currentIndex < ArrangedTransactionOrdersData.length - 1) {
+    if (currentIndex < ArrangedTransactionOrdersData?.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedTransactionOrdersData[currentIndex + 1];
       dispatch(setTransactionsOrdersSelectedIDs([payload.id]))
@@ -378,7 +382,7 @@ else
      })
      dispatch(deleteTransactionOrderById(ArrangedTransactionOrdersData[currentIndex]?.id))
      if(ArrangedTransactionOrdersData?.length === 0 || ArrangedTransactionOrdersData === undefined || ArrangedTransactionOrdersData === null){
-      navigate("/transaction-orders")
+      navigate("/single-trading-accounts/details/transaction-order")
    }
    else{
      if(currentIndex < ArrangedTransactionOrdersData?.length - 1){
@@ -415,7 +419,7 @@ else
  const handleSubmit = async () => {
     try {
       
-      if (TransactionOrdersIds.length < 2) {
+      if (TransactionOrdersIds?.length < 2) {
         await TransactionOrderEntryValidationSchema.validate({
           SelectedMethod: SelectedMethod,
           amount: amount,
@@ -448,7 +452,8 @@ else
         setIsLoading(true)
         const Params = {
           table_name: 'transaction_orders',
-          table_ids: isCompleteSelect === "true" ? [] : TransactionOrdersIds,
+          table_ids: isCompleteSelect ? [] : TransactionOrdersIds,
+
           ...transactionOrderData
         }
         const res = await GenericEdit(Params, token)
@@ -493,16 +498,16 @@ else
                 src={ARROW_BACK_CDN}
                 alt='back icon'
                 className='cursor-pointer'
-                onClick={() => navigate("/transaction-orders")}
+                onClick={() => navigate("/single-trading-accounts/details/transaction-order")}
               />
               {
                 isDisabled ? <h1 className='text-2xl font-semibold'>Transaction Order</h1> :
-                  <h1 className='text-2xl font-semibold'>{TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Add Transaction Order' : 'Edit Transaction Order'}</h1>
+                  <h1 className='text-2xl font-semibold'>{TransactionOrdersIds?.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Add Transaction Order' : 'Edit Transaction Order'}</h1>
               }
             </div>
             {/* toolbar */}
-            {(isDisabled && TransactionOrdersIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-            {(TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) !== 0)  &&
+            {(isDisabled && TransactionOrdersIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
+            {(TransactionOrdersIds?.length === 1 && parseInt(TransactionOrdersIds[0]) !== 0)  &&
               <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
             {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
               {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
@@ -565,7 +570,7 @@ else
           {
               !isDisabled && <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>
              <CustomButton
-              Text={ TransactionOrdersIds.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Submit' : 'Update'}
+              Text={ TransactionOrdersIds?.length === 1 && parseInt(TransactionOrdersIds[0]) === 0 ? 'Submit' : 'Update'}
               style={{
                 padding: '16px',
                 height: '48px',
@@ -600,4 +605,4 @@ else
   )
 }
 
-export default TransactionOrderEntry
+export default TradingAccountTransactionOrderEntry

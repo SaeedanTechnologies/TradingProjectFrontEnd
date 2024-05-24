@@ -321,6 +321,16 @@ const TradingGroupEntry = () => {
         setStatesForEditMode(payload, true)
       }, 3000)
     }
+    else
+    {
+      CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Previous record found',
+            key: 2
+          })
+    
+    }
   };
 
 

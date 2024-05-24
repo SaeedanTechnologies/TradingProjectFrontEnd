@@ -1,12 +1,15 @@
 import React,{useState,useEffect} from 'react'
 import { Space, theme,Spin } from 'antd';
-import { DeleteOutlined} from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
-import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Delete_Trade_Order, Get_Trade_Order,Search_Close_Order } from '../../utils/_TradingAPICalls';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { setCloseOrdersSelectedIds,setCloseOrdersData } from '../../store/TradingAccountListSlice';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
+import { ColumnSorter } from '../../utils/helpers';
 
 
 const CloseOrder = () => {
@@ -21,6 +24,11 @@ const CloseOrder = () => {
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [perPage, setPerPage] = useState(10)
+  const [sortDirection, setSortDirection] = useState("")
+  const [SearchQueryList,SetSearchQueryList]= useState({})
 
     const fetchCloseOrder = async (page) => {
       setIsLoading(true)
@@ -60,23 +68,33 @@ const CloseOrder = () => {
 
 
   const onPageChange = (page) =>{
-     fetchCloseOrder(page)  
+    //  fetchCloseOrder(page)  
     }
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
       key: '5',
-      sorter: (a, b) => a.symbol.length - b.symbol.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.symbol , b.symbol),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
 
     },
     {
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'open_time',
       key: '1',
-      sorter: (a, b) => a.open_time.length - b.open_time.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) =>  ColumnSorter(a.open_time - b.open_time),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     // {
     //   title:<span className="dragHandler">Order No</span>,
@@ -89,51 +107,86 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '3',
-      sorter: (a, b) => a.type.length - b.type.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.type , b.type),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: '4',
-      sorter: (a, b) => a.volume.length - b.volume.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.volume - b.volume,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
 
     },
     {
       title:<span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: '7',
-      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: '8',
-      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.takeProfit - b.takeProfit,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '6',
-      sorter: (a, b) => a.open_price.length - b.open_price.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.open_price - b.open_price,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Close Time</span>,
       dataIndex: 'close_time',
       key: '9',
-      sorter: (a, b) => a.close_time.length - b.close_time.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.close_time - b.close_time,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Close Price</span>,
       dataIndex: 'close_price',
       key: '10',
-      sorter: (a, b) => a.close_price.length - b.close_price.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.close_price - b.close_price,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     // {
     //   title:<span className="dragHandler">Reason</span>,
@@ -146,15 +199,25 @@ const CloseOrder = () => {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '12',
-      sorter: (a, b) => a.swap.length - b.swap.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.swap - b.swap,
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '13',
-      sorter: (a, b) => a.profit.length - b.profit.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.profit - b.profit,
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     // {
     //   title: 'Actions',
@@ -168,18 +231,30 @@ const CloseOrder = () => {
     // },
   ];
   
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+
   const headerStyle = {
     background: TableHeaderColor, 
     color: 'black', 
   };
 
+    const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
  
+    useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
 
 
 
   useEffect(()=>{
-
-         fetchCloseOrder(CurrentPage)
+          SetSearchQueryList({trading_account_id,order_types:['close']})
+        //  fetchCloseOrder(CurrentPage)
   
   },[])
 
@@ -187,15 +262,28 @@ const CloseOrder = () => {
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{backgroundColor: colorBG}}>
         <CustomTable
-            direction="/single-trading-accounts/details/close-order"
-            formName = "Close Orders" 
-            columns={columns}
+            direction="/single-trading-accounts/details/close-order-entry"
+            formName = "Trading Close Orders" 
+            columns={newColumns}
             data={closeOrders} 
             headerStyle={headerStyle}
             total={totalRecords}
+            setTotalRecords={setTotalRecords}
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            isUpated={isUpdated}
+            setSelecetdIDs={setCloseOrdersSelectedIds}
+            setTableData = {setCloseOrdersData}
+            table_name= "trade_orders"
+            setSortDirection = {setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery = {Search_Close_Order}
+            SearchQueryList = {SearchQueryList}
+            LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
           />
       </div>
     </Spin>

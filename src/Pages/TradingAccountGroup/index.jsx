@@ -14,7 +14,7 @@ import TradingAccountModal from '../TradingAccountGroup/TradingAccountModal';
 import { DeleteTradingAccountGroup, Search_Trading_Account_Group_List, Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { CheckBrandPermission, CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, ColumnSorter, CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { setTradingGroupData } from '../../store/TradingGroupData';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 // import { setTradeSettingsData, setTradeSettingsSelecetdIDs } from '../../store/tradeGroupsSlice';
@@ -47,7 +47,7 @@ const Index = () => {
       title:<span className="dragHandler">Group Name</span>,
       dataIndex: 'name',
       key: '1',
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter:(a, b) =>  ColumnSorter(a.name,b.name),
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         ////
@@ -59,8 +59,8 @@ const Index = () => {
     {
       title:<span className="dragHandler">Brand Name</span>,
       dataIndex: 'brands_name',
-      key: '1',
-      sorter: (a, b) => a.name.length - b.name.length,
+      key: '2',
+      sorter:(a, b) =>  ColumnSorter(a.brands_name,b.brands_name),
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -71,8 +71,8 @@ const Index = () => {
     {
       title:<span className="dragHandler">Brand Id</span>,
       dataIndex: 'brand_id',
-      key: '2',
-      sorter: (a, b) => a.brand_id.length - b.brand_id.length,
+      key: '3',
+      sorter: (a, b) => a?.brand_id - b?.brand_id,
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -82,9 +82,9 @@ const Index = () => {
     },
     {
       title:<span className="dragHandler">Symbol Group</span>,
-      dataIndex: 'symbel_groups',
-      key: '3',
-      sorter: (a, b) => a.symbel_groups.length - b.symbel_groups.length,
+      dataIndex: 'symbel_group',
+      key: '4',
+      // sorter:(a, b) =>  ColumnSorter(a.symbel_groups,b.symbel_groups),
       sortDirections: ['ascend'], 
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -107,12 +107,12 @@ const Index = () => {
     {
       title:<span className="dragHandler">Mass Buy/Sell Trading Order</span>,
       dataIndex: 'MBS',
-      key: '4',
+      key: '5',
       render: (text, record) => <span onClick={()=>{
         dispatch(setTradeGroupsSelectedIDs(record.id))
         navigate('/trading-group/mb-to')
       }}  style={{ color: colorPrimary, fontWeight: '600' }}>View Details</span>,
-      sorter: (a, b) => a.MBS.length - b.MBS.length,
+      // sorter:(a, b) =>  ColumnSorter(a.MBS,b.MBS),
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -124,7 +124,7 @@ const Index = () => {
     {
       title:<span className="dragHandler">Mass deposit/widthdraw</span>,
       dataIndex: 'MDW',
-      key: '5',
+      key: '6',
       render: (_, record) => (
         <span
         onClick={()=>{
@@ -139,7 +139,7 @@ const Index = () => {
           View Details
         </span>
       ),
-      sorter: (a, b) => a.MDW.length - b.MDW.length,
+      // sorter:(a, b) =>  ColumnSorter(a.MDW,b.MDW),
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -151,8 +151,18 @@ const Index = () => {
     {
       title:<span className="dragHandler">Mass Laverage</span>,
       dataIndex: 'mass_leverage',
-      key: '6',
-      sorter: (a, b) => a.mass_leverage.length - b.mass_leverage.length,
+      key: '7',
+      sorter:(a, b) => {
+        // Split the ratio values and parse them as numbers
+        const ratioA = a.mass_leverage.split(':').map(Number);
+        const ratioB = b.mass_leverage.split(':').map(Number);
+        
+        // Compare the ratio values
+        if (ratioA[0] === ratioB[0]) {
+          return ratioA[1] - ratioB[1];
+        }
+        return ratioA[0] - ratioB[0];
+      },
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -163,8 +173,8 @@ const Index = () => {
     {
       title:<span className="dragHandler">Mass Swap</span>,
       dataIndex: 'mass_swap',
-      key: '7',
-      sorter: (a, b) => a.mass_swap.length - b.mass_swap.length,
+      key: '8',
+      sorter: (a, b) => a?.mass_swap - b?.mass_swap,
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -175,14 +185,14 @@ const Index = () => {
     {
       title:<span className="dragHandler">Trading Accounts</span>,
       dataIndex: 'trading_accounts',
-      key: '8',
+      key: '9',
       render: (text, record) => {
         const { trading_accounts } = record
         return (
           <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => showAccountModal(trading_accounts)}>View Accounts</span>
         )
       },
-      sorter: (a, b) => a.trading_accounts.length - b.trading_accounts.length,
+      // sorter:(a, b) =>  ColumnSorter(a.trading_accounts,b.trading_accounts),
       sortDirections: ['ascend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -207,6 +217,9 @@ const Index = () => {
 // const [checkedList, setCheckedList] = useState(defaultCheckedList);
 // const [newColumns , setNewColumns] = useState(columns)
 
+ const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -237,6 +250,17 @@ const Index = () => {
     const { data: { message, payload, success } } = res
     setIsLoading(false)
     if (success) {
+      // const newData = payload.data.map((x)=>({
+      //   name:x?.brands?.name,
+      //   brands_name:x?.brands_name,
+      //   brand_id:x?.brand_id,
+      //   symbel_groups:x?.symbel_groups,
+      //   MBS:x?.MBS,
+      //   MDW:x?.MDW,
+      //   mass_leverage:x?.mass_leverage,
+      //   mass_swap:x?.mass_swap,
+      //   trading_accounts:x?.trading_accounts,
+      // }))
       setTradingAccountGroupList(payload?.data)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
@@ -244,6 +268,12 @@ const Index = () => {
       setIsUpdated(false)
     }
   }
+
+  useEffect(() => {
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
+    }, [checkedList]);
+    
   useEffect(() => {
     setIsUpdated(true)
     if(userRole === 'brand' ){
@@ -328,7 +358,7 @@ const Index = () => {
         </div>
         <CustomTable
             direction="/trading-group-entry"
-            columns={columns} 
+            columns={newColumns} 
             data={TradingAccounGroupList} 
             headerStyle={headerStyle}
             formName={'Trading Account Group'}

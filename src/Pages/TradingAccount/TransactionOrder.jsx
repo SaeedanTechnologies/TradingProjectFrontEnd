@@ -1,8 +1,7 @@
 import { Space, Tag, theme, Spin } from 'antd';
 import React, { useState, useEffect } from 'react'
-import { PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, DeleteOutlined, CaretUpOutlined, CaretDownOutlined  } from '@ant-design/icons';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
-
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 
@@ -15,10 +14,13 @@ import moment from 'moment'
 import CustomNotification from '../../components/CustomNotification';
 import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
 import { TextField, Input, InputAdornment, FormControl, Select, InputLabel, MenuItem } from '@mui/material';
-import { CheckBrandPermission } from "../../utils/helpers";
+import { CheckBrandPermission, ColumnSorter } from "../../utils/helpers";
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import { AddnewStyle } from '../Brand/style';
 import CustomModal from '../../components/CustomModal';
+import { Search_Transaction_Ordcer } from '../../utils/_SymbolSettingAPICalls';
+import { setTransactionOrdersSelectedIds,setTransactionOrdersData } from '../../store/TradingAccountListSlice';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 
 
 const TransactionOrder = () => {
@@ -33,6 +35,9 @@ const TransactionOrder = () => {
   const userPermissions = useSelector((state) => state?.user?.user?.user?.permissions)
   const currentTradingAccountData = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData)
 
+  const [sortDirection, setSortDirection] = useState("")
+  const [perPage, setPerPage] = useState(10)
+  const [SearchQueryList,SetSearchQueryList]= useState({})
 
   const [transactionOrders, setTransactionOrders] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,6 +57,7 @@ const TransactionOrder = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
+  const [isUpdated, setIsUpdated] = useState(true)
   const [totalRecords, setTotalRecords] = useState(0)
   const columns = [
     {
@@ -59,70 +65,87 @@ const TransactionOrder = () => {
       dataIndex: 'created_at',
       key: '1',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
-      sorter: (a, b) => a.Time.length - b.Time.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) =>  ColumnSorter(a.created_at , b.created_at),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
 
     },
     {
       title: <span className="dragHandler">Method</span>,
       dataIndex: 'method',
       key: 'method',
-      sorter: (a, b) => a.method.length - b.method.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.method, b.method),
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
     },
     {
       title: <span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: 'type',
-      sorter: (a, b) => a.type.length - b.type.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.type, b.type),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
     },
     {
       title: <span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: 'currency',
-      sorter: (a, b) => a.currency.length - b.currency.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.currency, b.currency),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
     },
     {
       title: <span className="dragHandler">Comments</span>,
       dataIndex: 'comment',
       key: 'comment',
-      sorter: (a, b) => a.comment.length - b.comment.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) =>ColumnSorter( a.comment , b.comment),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
       key: 'amount',
-      sorter: (a, b) => a.amount.length - b.amount.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.amount - b.amount,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
 
   ];
-  const data = [
-    {
-      key: '1',
-      Time: '10:00 AM',
-      Deal: 'Deal 1',
-      Type: 'Type 1',
-      Amount: '$1000',
-    },
-    {
-      key: '2',
-      Time: '11:30 AM',
-      Deal: 'Deal 2',
-      Type: 'Type 2',
-      Amount: '$2000',
-    },
-    {
-      key: '3',
-      Time: '1:45 PM',
-      Deal: 'Deal 3',
-      Type: 'Type 3',
-      Amount: '$1500',
-    },
-  ];
+
+   const [newColumns , setNewColumns] = useState(columns)
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+
+
+ 
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
@@ -167,9 +190,8 @@ const TransactionOrder = () => {
     setComment('')
   }
 
-  const onPageChange = (page) => {
-
-    fetchTransactionOrder(page)
+  const onPageChange = (page) =>{
+    // FetchData(page)
   }
 
   const handleSubmit = async (type) => {
@@ -265,6 +287,7 @@ const TransactionOrder = () => {
       setCurrency(payload?.currency)
       setBrandId(payload?.brand_id)
 
+
     }
 
 
@@ -273,9 +296,25 @@ const TransactionOrder = () => {
 
   useEffect(() => {
     setMethod('balance')
-    fetchTransactionOrder(CurrentPage)
+    // fetchTransactionOrder(CurrentPage)
+     SetSearchQueryList({trading_account_id})
     fetchSingleTradeAccount()
+
+
+
+
+
   }, [])
+
+
+   useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
+
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
 
   const defaultProps = {
     options: OperationsList,
@@ -384,15 +423,17 @@ const TransactionOrder = () => {
           {/* <CustomTable columns={columns} data={transactionOrders} headerStyle={headerStyle} /> */}
 
           <CustomTable
-            direction="/single-trading-accounts/details/transaction-order"
+            direction="/single-trading-accounts/details/transaction-order-entry"
             formName="Transaction Order"
-            columns={columns}
+            columns={newColumns}
             data={transactionOrders}
             headerStyle={headerStyle}
             total={totalRecords}
+             setTotalRecords={setTotalRecords}
             onPageChange={onPageChange}
             current_page={CurrentPage}
             token={token}
+            isUpated={isUpdated}
             addButton={() => (
               <CustomButton
                 Text='Add Transaction Order'
@@ -405,6 +446,17 @@ const TransactionOrder = () => {
                 }}
               />
             )}
+            setSelecetdIDs={setTransactionOrdersSelectedIds}
+            setTableData = {setTransactionOrdersData}
+            table_name= "transaction_orders"
+            setSortDirection = {setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery = {Search_Transaction_Ordcer}
+            SearchQueryList={SearchQueryList}
+            LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
           />
         </div>
 

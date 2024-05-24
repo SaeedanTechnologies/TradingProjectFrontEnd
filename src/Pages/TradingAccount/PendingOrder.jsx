@@ -1,12 +1,15 @@
 import React,{useState,useEffect} from 'react'
 import { Space, theme,Spin } from 'antd';
-import { DeleteOutlined} from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
-import { Delete_Trade_Order, Get_Trade_Order } from '../../utils/_TradingAPICalls';
+import { Delete_Trade_Order, Get_Trade_Order,Search_Pending_Order } from '../../utils/_TradingAPICalls';
 import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { ColumnSorter } from '../../utils/helpers';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
+import {setPendingOrdersData,setPendingOrdersSelectedIds } from '../../store/TradingAccountListSlice';
 
 
 const PendingOrder = () => {
@@ -18,9 +21,16 @@ const PendingOrder = () => {
   const [pendingOrder,setPendingOrder] = useState([])
   const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
 
+  const [isUpdated, setIsUpdated] = useState(true)
+  const [perPage, setPerPage] = useState(10)
+
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [sortDirection, setSortDirection] = useState("")
+  const [SearchQueryList,SetSearchQueryList]= useState({})
+  
+
 
     const fetchPendingOrder = async (page) => {
       setIsLoading(true)
@@ -60,62 +70,108 @@ const PendingOrder = () => {
 
 
   const onPageChange = (page) =>{
-     fetchPendingOrder(page)  
+    //  fetchPendingOrder(page)  
     }
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
       key: '5',
-      sorter: (a, b) => a.symbol.length - b.symbol.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.symbol - b.symbol),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
 
     },
     {
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'open_time',
       key: '1',
-      sorter: (a, b) => a.open_time.length - b.open_time.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) =>ColumnSorter(a.open_time , b.open_time),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '3',
-      sorter: (a, b) => a.type.length - b.type.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) =>ColumnSorter( a.type , b.type),
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: '4',
-      sorter: (a, b) => a.volume.length - b.volume.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.volume - b.volume,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
 
     },
     {
       title:<span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: '7',
-      sorter: (a, b) => a.stopLoss.length - b.stopLoss.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: '8',
-      sorter: (a, b) => a.takeProfit.length - b.takeProfit.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.takeProfit - b.takeProfit,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title:<span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '6',
-      sorter: (a, b) => a.open_price.length - b.open_price.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => a.open_price - b.open_price,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     }
   ];
   
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+
+ 
+
+   useEffect(() => {
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
+
   const headerStyle = {
     background: TableHeaderColor, 
     color: 'black', 
@@ -123,11 +179,15 @@ const PendingOrder = () => {
 
  
 
+      const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
 
 
   useEffect(()=>{
 
-         fetchPendingOrder(CurrentPage)
+        //  fetchPendingOrder(CurrentPage)
+        SetSearchQueryList({trading_account_id,order_types:['pending']})
   
   },[])
 
@@ -135,15 +195,28 @@ const PendingOrder = () => {
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{backgroundColor: colorBG}}>
         <CustomTable
-            direction="/single-trading-accounts/details/Pending-order"
-            formName = "Pending Orders" 
-            columns={columns}
+            direction="/single-trading-accounts/details/pending-order-entry"
+            formName = "Trading Pending Orders" 
+            columns={newColumns}
             data={pendingOrder} 
             headerStyle={headerStyle}
             total={totalRecords}
+            setTotalRecords={setTotalRecords}
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            isUpated={isUpdated}
+            setSelecetdIDs={setPendingOrdersSelectedIds}
+            setTableData = {setPendingOrdersData}
+            table_name= "trade_orders"
+            setSortDirection = {setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery = {Search_Pending_Order}
+            SearchQueryList = {SearchQueryList}
+            LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
           />
       </div>
     </Spin>
