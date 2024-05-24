@@ -312,7 +312,7 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
-    debugger;
+    // debugger;
       this.setState({ currentRecords: record });
       this.props.dispatch(this.props.setSelecetdIDs([record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
@@ -614,6 +614,7 @@ class DnDTable extends Component {
   };
   render() {
     const { columns, selectedRowKeys } = this.state;
+    
     const combinedColumns = columns.map((stateCol, index) => ({
       ...stateCol,
       onHeaderCell: (column) => ({
