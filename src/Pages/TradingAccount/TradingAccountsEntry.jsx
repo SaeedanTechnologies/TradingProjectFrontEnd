@@ -478,7 +478,7 @@ const TradingAccountsEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trading_accounts',
-          table_ids: isCompleteSelect ? [] : TradingAccountsIds,
+          table_ids: isCompleteSelect === "true" ? [] : TradingAccountsIds,
           ...formPayload
         }
         const res = await GenericEdit(Params, token)

@@ -369,7 +369,7 @@ const SymbolSettingsEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'symbel_settings',
-          table_ids: isCompleteSelect ? [] : SymbolSettingIds,
+          table_ids: isCompleteSelect === "true" ? [] : SymbolSettingIds,
           ...SymbolGroupData
         }
         const res = await GenericEdit(Params, token)

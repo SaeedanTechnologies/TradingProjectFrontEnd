@@ -189,7 +189,7 @@ const SymbolGroupEntry = () => {
         setIsLoading(true)
         const Params = {
          table_name: 'symbel_groups',
-         table_ids: isCompleteSelect ? [] : SymbolGroupsIds,
+         table_ids: isCompleteSelect === "true" ? [] : SymbolGroupsIds,
          ...SymbolGroupData
        }
        
@@ -198,6 +198,7 @@ const SymbolGroupEntry = () => {
        if (success)
        {
          dispatch(updateSymbolGroups(payload))
+         localStorage.setItem('isCompleteSelect', JSON.stringify(false));
            // clearFields();
            CustomNotification({
              type: 'success',

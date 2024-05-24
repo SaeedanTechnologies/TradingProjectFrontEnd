@@ -448,7 +448,7 @@ else
         setIsLoading(true)
         const Params = {
           table_name: 'transaction_orders',
-          table_ids: isCompleteSelect ? [] : TransactionOrdersIds,
+          table_ids: isCompleteSelect === "true" ? [] : TransactionOrdersIds,
           ...transactionOrderData
         }
         const res = await GenericEdit(Params, token)
