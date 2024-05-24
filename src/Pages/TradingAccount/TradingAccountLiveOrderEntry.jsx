@@ -249,7 +249,7 @@ const TradingAccountLiveOrderEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
-          table_ids: isCompleteSelect ? [] : LiveOrdersRowsIds,
+          table_ids: isCompleteSelect === "true" ? [] : LiveOrdersRowsIds,
           ...SymbolData
         }
         const res = await GenericEdit(Params, token)

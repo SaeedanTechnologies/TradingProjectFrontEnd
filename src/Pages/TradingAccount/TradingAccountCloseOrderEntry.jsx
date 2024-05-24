@@ -247,7 +247,7 @@ const TradingAccountCloseOrderEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
-          table_ids: isCompleteSelect ? [] : CloseOrdersRowsIds,
+          table_ids: isCompleteSelect === "true" ? [] : CloseOrdersRowsIds,
           ...CloseData
         }
         const res = await GenericEdit(Params, token)

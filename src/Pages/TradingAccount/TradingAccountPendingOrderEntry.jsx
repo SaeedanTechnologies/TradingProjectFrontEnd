@@ -240,7 +240,7 @@ const TradingAccountPendingOrderEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
-          table_ids: isCompleteSelect ? [] : PendingOrdersRowsIds,
+          table_ids: isCompleteSelect === "true" ? [] : PendingOrdersRowsIds,
           ...PendingData
         }
         const res = await GenericEdit(Params, token)
