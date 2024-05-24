@@ -358,7 +358,7 @@ const Index = () => {
         </div>
         <CustomTable
             direction="/trading-group-entry"
-            columns={newColumns} 
+            columns={columns} 
             data={TradingAccounGroupList} 
             headerStyle={headerStyle}
             formName={'Trading Account Group'}
