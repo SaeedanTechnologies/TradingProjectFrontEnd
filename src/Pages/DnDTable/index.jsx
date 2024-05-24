@@ -113,7 +113,8 @@ class DnDTable extends Component {
 
   async SearchHandler(currentPage){
   //  this.setState({isLoading: true})
-    const queryParams = {
+    // debugger
+  const queryParams = {
       ...this.state.searchValues,
       ...this.props.SearchQueryList
     }
@@ -319,7 +320,6 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
-    // debugger;
       this.setState({ currentRecords: record });
       this.props.dispatch(this.props.setSelecetdIDs([record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){

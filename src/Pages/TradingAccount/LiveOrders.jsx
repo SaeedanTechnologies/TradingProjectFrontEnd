@@ -2,25 +2,38 @@ import { theme, Spin, Table } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
-import { MinusCircleOutlined  } from '@ant-design/icons';
+import { MinusCircleOutlined,CaretUpOutlined, CaretDownOutlined  } from '@ant-design/icons';
 import { useLocation, } from 'react-router-dom';
-import { Put_Trade_Order, Put_Trading_Account } from '../../utils/_TradingAPICalls';
+import { Put_Trade_Order, Put_Trading_Account,Search_Live_Order } from '../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
 import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
+import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
 
-const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,CurrentPage,totalRecords,lastPage, grandProfit, lotSize,margin, totalSwap }) => {
+const LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
  
+  const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id)
   const token = useSelector(({ user }) => user?.user?.token)
-  const liveOrdersData = useSelector(({liveOrder})=> liveOrder.liveorder)
+  const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
   const location = useLocation()
   const { pathname } = location
+
+
+      const [CurrentPage, setCurrentPage] = useState(1)
+    const [lastPage, setLastPage] = useState(1)
+    const [isUpdated, setIsUpdated] = useState(true)
+    const [totalRecords, setTotalRecords] = useState(0)
+    const [perPage, setPerPage] = useState(10)
+    const [SearchQueryList,SetSearchQueryList]= useState({})
+    const [sortDirection, setSortDirection] = useState("")
+
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
@@ -119,13 +132,18 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     // },
   ];
 
+  
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+
   const headerStyle = {
     background: TableHeaderColor,
     color: 'black',
   };
 
  const onPageChange = (page) =>{
-      fetchLiveOrder(page)
+      // fetchLiveOrder(page)
   }
   // const CancelLiveOrder = async (id) => {
 
@@ -161,8 +179,15 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
   //     }
         
   // }
+
   useEffect(() => {
-    fetchLiveOrder(CurrentPage)
+  const newCols = columns.filter(x => checkedList.includes(x.key));
+  setNewColumns(newCols)
+  }, [checkedList]);
+
+  useEffect(() => {
+    // fetchLiveOrder(CurrentPage)
+    SetSearchQueryList({trading_account_id,order_types:['market']})
   }, [pathname])
   useEffect(()=>{
     const res = calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)
@@ -171,6 +196,12 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
       UpdateTradingAccountStatus()
     }
   }, [balance,grandProfit,lotSize,accountLeverage])
+
+    const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
+
+
   useEffect(() => {
     const intervalId = setInterval(async () => {
       try {
@@ -200,12 +231,13 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
          <CustomTable
-            direction="/single-trading-accounts/details/live-orders"
-            formName = "Live Orders" 
-            columns={columns}
+            direction="/single-trading-accounts/details/live-order-entry"
+            formName = "Trading Live Orders" 
+            columns={newColumns}
             data={tradeOrder} 
             headerStyle={headerStyle}
             total={totalRecords}
+            setTotalRecords={setTotalRecords}
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
@@ -230,6 +262,18 @@ const LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading,Curren
                 </Table.Summary.Row>
               </Table.Summary>
             )}
+            isUpated={isUpdated}
+            setSelecetdIDs={setLiveOrdersSelectedIds}
+            setTableData = {setLiveOrdersData}
+            table_name= "trade_orders"
+            setSortDirection = {setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery = {Search_Live_Order}
+            SearchQueryList = {SearchQueryList}
+            LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
           />
       </div>
     </Spin>

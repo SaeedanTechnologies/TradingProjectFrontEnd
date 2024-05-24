@@ -6,7 +6,7 @@ import CustomTable from '../../components/CustomTable';
 import moment from 'moment';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import {  Get_Trade_Order, Search_Pending_Order } from '../../utils/_TradingAPICalls';
-import {  setCloseOrdersSelectedIds,setCloseOrdersData, setPendingOrdersData, setPendingOrdersSelectedIds} from '../../store/TradeOrders';
+import {  setPendingOrdersData, setPendingOrdersSelectedIds} from '../../store/TradeOrders';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { ColumnSorter } from '../../utils/helpers';
 
