@@ -247,12 +247,12 @@ const DeleteHandler = async (id)=>{
 }
 
  const onPageChange = (page) =>{
-    // FetchData(page)
+    FetchData(page)
   }
 
 useEffect(() => {
   setIsUpdated(true)
-  // FetchData(CurrentPage)
+  FetchData(CurrentPage)
 }, [perPage])
 
 

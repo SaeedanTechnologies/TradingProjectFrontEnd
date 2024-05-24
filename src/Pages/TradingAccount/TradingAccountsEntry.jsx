@@ -21,6 +21,7 @@ import { Get_Single_Trading_Account, Update_Trading_Account } from '../../utils/
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 
 const TradingAccountsEntry = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
@@ -478,6 +479,7 @@ const TradingAccountsEntry = () => {
         const Params = {
           table_name: 'trading_accounts',
           table_ids: TradingAccountsIds,
+          table_ids: isCompleteSelect ? [] : TradingAccountsIds,
           ...SymbolGroupData
         }
         const res = await GenericEdit(Params, token)

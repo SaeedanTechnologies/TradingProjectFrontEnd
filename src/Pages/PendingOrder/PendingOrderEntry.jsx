@@ -23,6 +23,7 @@ import { deletePendingOrderById,setPendingOrdersSelectedIds,updatePendingOrder }
 
 
 const PendingOrderEntry = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const token = useSelector(({ user }) => user?.user?.token)
   const PendingOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedPendingOrdersRowsIds )
   const PendingOrdersData = useSelector(({tradeOrders})=> tradeOrders.pendingOrdersData)
@@ -241,7 +242,7 @@ const PendingOrderEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
-          table_ids: PendingOrdersRowsIds,
+          table_ids: isCompleteSelect ? [] : PendingOrdersRowsIds,
           ...PendingData
         }
         const res = await GenericEdit(Params, token)

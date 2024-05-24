@@ -23,6 +23,7 @@ import { deleteCloseOrderById,setCloseOrdersSelectedIds,updateCloseOrder } from 
 
 
 const CloseOrderEntery = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const token = useSelector(({ user }) => user?.user?.token)
   const CloseOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedCloseOrdersRowsIds)
   const CloseOrdersData = useSelector(({tradeOrders})=> tradeOrders.closeOrdersData)
@@ -246,7 +247,7 @@ const CloseOrderEntery = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
-          table_ids: CloseOrdersRowsIds,
+          table_ids: isCompleteSelect ? [] : CloseOrdersRowsIds,
           ...CloseData
         }
         const res = await GenericEdit(Params, token)

@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 
 
 const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler,addButton }) =>{
-  
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)

@@ -24,6 +24,7 @@ import { deleteLiveOrderById, setLiveOrdersSelectedIds,updateLiveOrder } from '.
 
 
 const LiveOrdersEntery = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const token = useSelector(({ user }) => user?.user?.token)
   const LiveOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedLiveOrdersRowsIds)
   const LiveOrdersData = useSelector(({tradeOrders})=> tradeOrders.liveOrdersData)
@@ -251,7 +252,7 @@ const LiveOrdersEntery = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
-          table_ids: LiveOrdersRowsIds,
+          table_ids: isCompleteSelect ? [] : LiveOrdersRowsIds,
           ...SymbolData
         }
         const res = await GenericEdit(Params, token)

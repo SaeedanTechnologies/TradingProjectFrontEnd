@@ -30,6 +30,7 @@ const FeedData = [
 
 
 const SymbolSettingsEntry = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const token = useSelector(({ user }) => user?.user?.token)
   const SymbolSettingIds = useSelector(({ symbolSettings }) => symbolSettings.selectedRowsIds)
   const SymbolSettingsData = useSelector(({symbolSettings})=> symbolSettings.symbolSettingsData)
@@ -368,7 +369,7 @@ const SymbolSettingsEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'symbel_settings',
-          table_ids: SymbolSettingIds,
+          table_ids: isCompleteSelect ? [] : SymbolSettingIds,
           ...SymbolGroupData
         }
         const res = await GenericEdit(Params, token)

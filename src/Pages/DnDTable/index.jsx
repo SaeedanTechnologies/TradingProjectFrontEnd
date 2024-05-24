@@ -53,6 +53,7 @@ class DnDTable extends Component {
       isMassDelete: false,
       isAddRemove: false,
       selectedRowKeys: [],
+      selectedRowKeys_All:[],
       dropDownColumns: [],
       selectedColumns: null,
       isCompleteSelect: false, 
@@ -120,6 +121,7 @@ class DnDTable extends Component {
     const  res = await this.props.SearchQuery(this.props.token ,currentPage, this.props.perPage,queryParams )
     
     const {data:{payload, success, message}} = res
+   
     //  this.setState({isLoading: false})
     if(success){
       this.props.LoadingHandler(false)
@@ -128,6 +130,11 @@ class DnDTable extends Component {
       this.props.setLastPage(payload.last_page)
       this.setState({data: payload.data})
       this.props.dispatch(this.props.setTableData(payload.data))
+      localStorage.setItem('isCompleteSelect', JSON.stringify(false));
+      if(this.state.isCompleteSelect) {
+        const allRowKeys = payload.data.map((row) => row.id);
+        this.setState({ selectedRowKeys: allRowKeys });
+      }
     }
   }
   componentDidMount() {
@@ -312,7 +319,7 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
-    debugger;
+    // debugger;
       this.setState({ currentRecords: record });
       this.props.dispatch(this.props.setSelecetdIDs([record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
@@ -376,7 +383,6 @@ class DnDTable extends Component {
     }
   }
   handleClearSearch = () => {
-    this.SearchHandler(this.props.current)
     const clearedSearchValues = {};
     const inputRefs = Object.keys(this.state.searchValues);
     inputRefs.forEach((key) => {
@@ -384,21 +390,26 @@ class DnDTable extends Component {
     });
     this.setState({ searchValues:clearedSearchValues, isSearching: true })
     document.getElementById("search-input").value = ''
-    
+    this.SearchHandler(this.props.current)
   };
   
   onSelectAllChange(checked, selectedRows) {
     this.setState({ isSelectAll: checked });
+    
   }
   toggleCompleteSelect() {
+
     this.setState((prevState) => ({isCompleteSelect: !prevState.isCompleteSelect}),
     ()=>{
+      localStorage.setItem('isCompleteSelect', JSON.stringify(this.state.isCompleteSelect));
       if (this.state.isCompleteSelect) {
         const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
-
         this.setState({ selectedRowKeys: allRowKeys });
+        
       } else {
+        this.setState((prevState)=>({isSelectAll:!prevState.isSelectAll}))
         this.setState({ selectedRowKeys: [] })
+        localStorage.setItem('isCompleteSelect', JSON.stringify(false));
       }
     }
   );
@@ -407,7 +418,7 @@ class DnDTable extends Component {
   }
   MassEditHandler() {
       if (this.state.selectedRowKeys.length > 0) {
-          this.props.dispatch(this.props.setSelecetdIDs(this.state.selectedRowKeys))
+        this.props.dispatch(this.props.setSelecetdIDs(this.state.selectedRowKeys))
           this.props.navigate(this.props.direction);
       } else {
         CustomNotification({
@@ -624,10 +635,9 @@ class DnDTable extends Component {
     
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys,
-      onChange: this.onSelectChange, // Make sure you define onSelectChange method
+      onChange: this.onSelectChange, 
       onSelectAll: this.onSelectAllChange,
     };
-
     return (
       <>
         <ReactDragListView.DragColumn {...this.dragProps}>
@@ -640,7 +650,7 @@ class DnDTable extends Component {
                   className="text-2xl font-semibold text-blue-500 cursor-pointer"
                   onClick={this.toggleCompleteSelect}
                 >
-                  {this.state.isCompleteSelect ? `Deselect All Data (${selectedRowKeys.length})` : `Select All Data (${selectedRowKeys.length})`}
+                  {this.state.isCompleteSelect ? `Deselect All Data (${this.props.total})` : `Select All Data (${selectedRowKeys.length})`}
                 </h1>
               }
           </div>

@@ -20,6 +20,7 @@ import TimePicker from '../../../components/TimePicker';
 
 
 const SymbolGroupEntry = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary  },
   } = theme.useToken();
@@ -188,7 +189,7 @@ const SymbolGroupEntry = () => {
         setIsLoading(true)
         const Params = {
          table_name: 'symbel_groups',
-         table_ids: SymbolGroupsIds,
+         table_ids: isCompleteSelect ? [] : SymbolGroupsIds,
          ...SymbolGroupData
        }
        
@@ -253,6 +254,7 @@ const SymbolGroupEntry = () => {
     }
   };
   const handleNext = () => {
+    // console.log(currentIndex == ArrangedSymbolGroupsData.length -1, "YE CURRENT INDEX HA")
     if (currentIndex < ArrangedSymbolGroupsData.length - 1) 
     {
       setCurrentIndex(prevIndex => prevIndex + 1);

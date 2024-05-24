@@ -21,6 +21,7 @@ import { deleteTradeGroupById, setTradeGroupsSelectedIDs, updateTradeGroupData }
 import CustomNotification from '../../components/CustomNotification';
 
 const TradingGroupEntry = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const { token: { colorBG } } = theme.useToken();
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -272,7 +273,7 @@ const TradingGroupEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trading_groups',
-          table_ids: TradingAccountGroupsIds,
+          table_ids: isCompleteSelect ? [] : TradingAccountGroupsIds,
           ...TradingGroupData
         }
         const res = await GenericEdit(Params, token)

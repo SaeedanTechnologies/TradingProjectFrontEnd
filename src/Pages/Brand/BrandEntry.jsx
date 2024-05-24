@@ -19,7 +19,7 @@ import { EditOutlined } from '@mui/icons-material';
 
 
 const BrandEntry = () => {
-
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const BrandIds = useSelector(({ brands }) => brands?.selectedRowsIds)
     const BrandGroupData = useSelector(({brands})=> brands?.brandData)
    const ArrangedBrandData = BrandGroupData?.slice().sort((a, b) => a.id - b.id);
@@ -125,7 +125,7 @@ const BrandEntry = () => {
         setIsLoading(true)
         const Params = {
          table_name: 'brands',
-         table_ids: BrandIds,
+         table_ids: isCompleteSelect ? [] : BrandIds,
          ...BrandData
       }
       const res = await GenericEdit(Params, token)

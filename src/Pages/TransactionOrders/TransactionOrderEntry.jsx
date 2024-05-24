@@ -19,6 +19,7 @@ import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroup
 
 
 const TransactionOrderEntry = () => {
+  const isCompleteSelect = localStorage.getItem("isCompleteSelect")
 //////////
     const token = useSelector(({ user }) => user?.user?.token)
     const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
@@ -448,7 +449,7 @@ else
         setIsLoading(true)
         const Params = {
           table_name: 'transaction_orders',
-          table_ids: TransactionOrdersIds,
+          table_ids: isCompleteSelect ? [] : TransactionOrdersIds,
           ...transactionOrderData
         }
         const res = await GenericEdit(Params, token)
