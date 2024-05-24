@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Stack, Typography } from '@mui/material';
 
-import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { ColumnSorter, CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
 import { setBrandData, setBrandSelectedIDs, setBrandUser  } from '../../store/BrandsSlice';
 
@@ -38,7 +38,7 @@ const BrandList = () => {
       title:<span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '1',
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter:(a, b) =>  ColumnSorter(a.name,b.name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -51,7 +51,7 @@ const BrandList = () => {
       title:<span className="dragHandler">Domain</span>,
       dataIndex: 'domain',
       key: '2',
-      sorter: (a, b) => a.domain.length - b.domain.length,
+      sorter:(a, b) =>  ColumnSorter(a.domain,b.domain),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -63,9 +63,9 @@ const BrandList = () => {
    
     {
       title:<span className="dragHandler">Password</span>,
-      dataIndex: 'original_password',
+      dataIndex: 'user_password',
       key: '3',
-      sorter: (a, b) => a.original_password.length - b.original_password.length,
+      sorter: (a, b) => a.user_password - b.user_password,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -93,7 +93,7 @@ const BrandList = () => {
           </Space>
         </Stack>
       ),
-      sorter: (a, b) => a.public_key.length - b.public_key.length,
+      sorter: (a, b) => a.public_key - b.public_key,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -106,7 +106,7 @@ const BrandList = () => {
       title:<span className="dragHandler">Margin Calls</span>,
       dataIndex: 'margin_call',
       key: '5',
-      sorter: (a, b) => a.margin_call.length - b.margin_call.length,
+      sorter: (a, b) => a.margin_call - b.margin_call,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -120,7 +120,17 @@ const BrandList = () => {
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '6',
-      sorter: (a, b) => a.leverage.length - b.leverage.length,
+      sorter:(a, b) => {
+        // Split the ratio values and parse them as numbers
+        const ratioA = a.leverage.split(':').map(Number);
+        const ratioB = b.leverage.split(':').map(Number);
+        
+        // Compare the ratio values
+        if (ratioA[0] === ratioB[0]) {
+          return ratioA[1] - ratioB[1];
+        }
+        return ratioA[0] - ratioB[0];
+      },
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -201,7 +211,7 @@ const BrandList = () => {
 
   useEffect(() => {
     setIsUpdated(true)
-    fetchBrands(CurrentPage)
+    // fetchBrands(CurrentPage)
   }, [perPage])
 
   useEffect(() => {
@@ -230,7 +240,7 @@ const BrandList = () => {
 
      const onPageChange = (page) =>{
    
-        fetchBrands(page)
+        // fetchBrands(page)
     }
 
   const headerStyle = {
@@ -264,13 +274,14 @@ const BrandList = () => {
         <CustomTable
             direction="/brand-entry"
             formName = "Brand List" 
-            columns={columns}
+            columns={newColumns}
             data={BrandsList} 
             headerStyle={headerStyle}
             total={totalRecords}
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            setTotalRecords={setTotalRecords}
             isUpated={isUpdated}
             setSelecetdIDs={setBrandSelectedIDs}
             setTableData = {setBrandData}
@@ -280,6 +291,8 @@ const BrandList = () => {
             setPerPage={setPerPage}
             SearchQuery = {Brands_List}
             LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
           />
         {/* <CustomModal
           isModalOpen={isModalOpen}

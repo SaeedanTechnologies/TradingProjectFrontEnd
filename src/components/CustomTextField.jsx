@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import React from 'react'
 
-const CustomTextField = ({ label, required=false, varient, multiline, rows, type, value, className, sx, onChange, disabled, InputProps, shrink=false}) => {
+const CustomTextField = ({ label, required=false, varient, multiline, rows, type, value, className, sx, onChange, disabled, InputProps}) => {
   return (
     <TextField
       type={type}
@@ -17,7 +17,7 @@ const CustomTextField = ({ label, required=false, varient, multiline, rows, type
       sx={sx}
       disabled={disabled}
       onChange={onChange}
-      // InputLabelProps={{ shrink: shrink }} // Use InputLabelProps to pass shrink prop
+      InputLabelProps={{ shrink: value }} // Use InputLabelProps to pass shrink prop
       // shrink = {true}
       fullWidth
     />

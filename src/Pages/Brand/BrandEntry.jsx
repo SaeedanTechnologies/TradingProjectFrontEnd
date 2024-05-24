@@ -12,7 +12,7 @@ import { Dropdown, Spin, theme } from 'antd';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from 'react-router-dom';
-import { deleteBrandById, updateBrandsData } from '../../store/BrandsSlice';
+import { deleteBrandById, setBrandSelectedIDs, updateBrandsData } from '../../store/BrandsSlice';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { EditOutlined } from '@mui/icons-material';
@@ -121,7 +121,7 @@ const BrandEntry = () => {
           notifyError(message)
         }
       } 
-      else if(BrandIds.length >= 2){
+      else {
         setIsLoading(true)
         const Params = {
          table_name: 'brands',
@@ -132,6 +132,7 @@ const BrandEntry = () => {
         const { data: { message, success, payload } } = res;
         if (success)
         {
+          dispatch(updateBrandsData(payload))
             CustomNotification({
               type: 'success',
               title: 'success',
@@ -151,23 +152,7 @@ const BrandEntry = () => {
             })
         }
     }
-      else {
-        setIsLoading(true)
-        const res = await UpdateBrand(BrandIds[0], BrandData, token)
-        const { data: { message, payload, success } } = res
-        setIsLoading(false)
-        if (success) {
-            dispatch(updateBrandsData(payload))
-            notifySuccess(message)
-        //   setIsModalOpen(false)
-        //   fetchBrands()
-        //   clearFields()
-          setIsDisabled(true)
-        } else {
-          notifyError(message)
-        }
-      }
-
+      
     } catch (err) {
       const validationErrors = {};
       err.inner.forEach(error => {
@@ -181,6 +166,7 @@ const BrandEntry = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedBrandData[currentIndex - 1];
+      dispatch(setBrandSelectedIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
@@ -188,19 +174,37 @@ const BrandEntry = () => {
       }, 3000)
       
     }
+    else
+    {
+      CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Previous record found',
+            key: 2
+          })
+    
+    }
   };
 
   const handleNext = () => {
     if (currentIndex < ArrangedBrandData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedBrandData[currentIndex + 1];
+      dispatch(setBrandSelectedIDs([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
         setStatesForEditMode(payload, true,LeverageList)
       }, 3000)
-    }else{
-      alert(`no next record found`)
+    }else
+    {
+      
+       CustomNotification({
+            type: 'warning',
+            title: 'warning',
+            description: 'No Next record found',
+            key: 2
+          })
     }
   }; 
 
@@ -217,19 +221,30 @@ const BrandEntry = () => {
   const deleteHandler = async ()=>{
     const Params = {
       table_name:'brands',
-      table_ids: [ArrangedBrandData[currentIndex].id]
+      table_ids: [ArrangedBrandData[currentIndex]?.id]
     }
-    
-   await  CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading )
-    dispatch(deleteBrandById(ArrangedBrandData[currentIndex].id))
-    if(ArrangedBrandData.length === 0 || ArrangedBrandData === undefined || ArrangedBrandData === null){
+    const onSuccessCallBack = (message)=>{
+      CustomNotification({
+       type: "success",
+       title: "Deleted",
+       description: message,
+       key: "a4",
+     })
+    dispatch(deleteBrandById(ArrangedBrandData[currentIndex]?.id))
+     if(ArrangedBrandData.length === 0 || ArrangedBrandData === undefined || ArrangedBrandData === null){
        navigate("/brand")
-    }else{
-      if(currentIndex < ArrangedBrandData.length)
-      handleNext()
-      else
-      handlePrevious()
-    }
+     }
+     else{
+         if(currentIndex < ArrangedBrandData.length - 1){
+           handleNext()
+         }
+         else{
+           handlePrevious()
+         }
+     }
+}
+   await  CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading, onSuccessCallBack)
+    
   }
 
   const items = [
