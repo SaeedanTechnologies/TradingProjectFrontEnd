@@ -2,7 +2,6 @@ import { theme, Spin, Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { LeftOutlined, RightOutlined, EllipsisOutlined } from '@ant-design/icons';
-
 import * as Yup from 'yup';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg'
 import CustomTextField from '../../components/CustomTextField';
@@ -478,9 +477,8 @@ const TradingAccountsEntry = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trading_accounts',
-          table_ids: TradingAccountsIds,
           table_ids: isCompleteSelect === "true" ? [] : TradingAccountsIds,
-          ...SymbolGroupData
+          ...formPayload
         }
         const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;
