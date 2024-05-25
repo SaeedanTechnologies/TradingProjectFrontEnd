@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const tradingAccountGroup = createSlice({
     name: 'tradingAccountGroup',
     initialState: {
-        tradingAccountGroupData: null,
+        tradingAccountGroupData: {balance:0, currency:"", leverage:"", brand_margin_call:-23, id:-1},
         AllTradingAccountGroupData: []
     },
     reducers: {

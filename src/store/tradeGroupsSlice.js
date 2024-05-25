@@ -4,7 +4,8 @@ export const tradeGroupsSlice = createSlice({
   name: 'tradeGroups',
    initialState : {
   selectedRowsIds: null,
-  tradeGroupsData: []
+  tradeGroupsData: [],
+  tradeCurrentGroupData: null,
 },
   reducers: {
     setTradeGroupsSelectedIDs: (state,action) => {
@@ -12,6 +13,9 @@ export const tradeGroupsSlice = createSlice({
     },
     setTradeGroupsData: (state, action)=>{
       state.tradeGroupsData = action.payload.sort((a, b) => a.id - b.id);
+    }, 
+    setCurrentTradeGroupData: (state, action)=>{
+      state.tradeCurrentGroupData = action.payload;
     }, 
     deleteTradeGroupById: (state, action) => {
       const idToDelete = action.payload;
@@ -33,6 +37,8 @@ export const tradeGroupsSlice = createSlice({
   },
 })
 
-export const {setTradeGroupsSelectedIDs, setTradeGroupsData, deleteTradeGroupById, updateTradeGroupData } = tradeGroupsSlice.actions
+
+
+export const {setTradeGroupsSelectedIDs, setTradeGroupsData, deleteTradeGroupById, updateTradeGroupData,setCurrentTradeGroupData } = tradeGroupsSlice.actions
 
 export default tradeGroupsSlice.reducer

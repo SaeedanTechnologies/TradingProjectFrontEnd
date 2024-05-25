@@ -53,6 +53,8 @@ import TradingAccountLiveOrderEntry from '../Pages/TradingAccount/TradingAccount
 import TradingAccountCloseOrderEntry from '../Pages/TradingAccount/TradingAccountCloseOrderEntry';
 import TradingAccountPendingOrderEntry from '../Pages/TradingAccount/TradingAccountPendingOrderEntry';
 import TradingAccountTransactionOrderEntry from '../Pages/TradingAccount/TradingAccountTransactionOrderEntry';
+import MBTradingOrderEntry from '../Pages/TradingAccountGroup/MBTradingOrderEntry';
+import MassDipositWidthdrawEntry from '../Pages/TradingAccountGroup/MassDipositWidthdrawEntry'
 
 export const router = createBrowserRouter([
   {
@@ -80,14 +82,17 @@ export const router = createBrowserRouter([
       { path: "/trading-group", element: <TradingAccountGroup /> },
       { path: "/trading-group-entry", element: <TradingGroupEntry /> },
       { path: "/trading-group/mb-to", element: <MBTradingOrder /> },
+      { path: "/trading-group/mb-to-entry",element:<MBTradingOrderEntry/>},
       { path: "/trading-group/mb-to/create", element: <Trade /> },
       { path: "/trading-group/mass-deposit", element: <MassDipositWidthdraw /> },
       { path: "/trading-group/mass-deposit/create", element: <MDWEntry /> },
+      { path:  "/trading-group/mass-deposit-entry",element:<MassDipositWidthdrawEntry/>},
       { path: "/single-trading-accounts", element: <SingleTradingAccount /> },
       { path: "/single-trading-accounts/details/live-order-entry", element:<TradingAccountLiveOrderEntry/> },
       { path: "/single-trading-accounts/details/close-order-entry", element:<TradingAccountCloseOrderEntry/> },
       { path: "/single-trading-accounts/details/pending-order-entry", element:<TradingAccountPendingOrderEntry/> },
       { path :"/single-trading-accounts/details/transaction-order-entry", element:<TradingAccountTransactionOrderEntry/>},
+     
       {
         path: "/single-trading-accounts/details", element: <TradingAccountDetails />, children: [
           { path: "live-order", element: <LiveOrders /> },

@@ -24,6 +24,7 @@ import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
 
+
 import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 import CandleStickChart from '../../components/CandleStickChart';
 
@@ -35,8 +36,10 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
   const trading_group_id = useSelector(({group}) => group?.tradingGroupData?.id)
+  
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
-  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
+  
+  const {value: accountLeverage} = LeverageList?.find(x=> x?.title === leverage) ||  { value: '1', title: '1:1' }
 
   // console.log('trading_group_id',trading_group_id)
 
@@ -215,7 +218,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
       const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
       const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
       const margin = calculateMargin(res, accountLeverage)
-      if(margin > balance || balance === 0){
+      if(margin > balance || balance === 0 ){
       CustomNotification({ 
         type: "error", 
         title: "Validation", 

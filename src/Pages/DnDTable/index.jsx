@@ -322,7 +322,11 @@ class DnDTable extends Component {
   handleRowClick = (record) => {
     
       this.setState({ currentRecords: record });
-      this.props.dispatch(this.props.setSelecetdIDs([record.id]))
+        if(this.props.column_name)
+          {
+            this.props.dispatch(this.props.setCurrentData(record))
+          }
+      this.props.dispatch(this.props.setSelecetdIDs([this.props.column_name? record[this.props.column_name] : record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
         this.props.dispatch(setTradingAccountGroupData(record))
         this.props.dispatch(setAccountID(record.id))

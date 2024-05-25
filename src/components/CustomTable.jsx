@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
-  direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData, setTotalRecords,setCurrentPage, setLastPage,
+  direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData,setCurrentData, setTotalRecords,setCurrentPage, setLastPage,
   table_name, setSortDirection, perPage, setPerPage, editPermissionName,
    deletePermissionName, SearchQuery,SearchQueryList,LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId}) => {
   
@@ -53,6 +53,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           LoadingHandler={LoadingHandler}
           footer={footer}
           setTableData={setTableData}
+          setCurrentData={setCurrentData}
           setTotalRecords={setTotalRecords}
           column_name={column_name}
           summary = {summary}
