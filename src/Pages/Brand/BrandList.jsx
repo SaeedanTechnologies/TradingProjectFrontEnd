@@ -274,7 +274,7 @@ const BrandList = () => {
         <CustomTable
             direction="/brand-entry"
             formName = "Brand List" 
-            columns={newColumns}
+            columns={columns}
             data={BrandsList} 
             headerStyle={headerStyle}
             total={totalRecords}

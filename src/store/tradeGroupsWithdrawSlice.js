@@ -4,24 +4,33 @@ export const tradeGroupsWithdrawSlice = createSlice({
   name: 'tradeWithdrawGroups',
    initialState : {
   selectedRowsIds: null,
-  tradeWithdrawGroupsData: []
+  tradeWithdrawGroupsData: [],
+  tradeWithdrawCurrentData: null,
 },
   reducers: {
     setTradeWithdrawGroupsSelectedIDs: (state,action) => {
         state.selectedRowsIds = action.payload
     },
     setTradeWithdrawGroupsData: (state, action)=>{
-      let newData = [...state.tradeWithdrawGroupsData];
-        action.payload.forEach(newItem => {
-          // Check if newItem's ID already exists in array c
-          const isDuplicate = newData.some(item => item.id === newItem.id);
-          // If not a duplicate, push it to array c
-          if (!isDuplicate) {
-            newData.push(newItem);
-          }
-        });
-      state.tradeWithdrawGroupsData = newData;
+      
+      state.tradeWithdrawGroupsData = action.payload.sort((a, b) => a.id - b.id)
     }, 
+    setTradeWithdrawCurrentData: (state, action)=>{
+      
+      state.tradeWithdrawCurrentData = action.payload;
+    },
+    updateTradeWithdrawGroupData: (state, action) => {
+          const updatedDataArray = action.payload; // assuming payload is an array of objects
+          updatedDataArray.forEach(updatedData => {
+            const index = state.tradeWithdrawGroupsData.findIndex(item => item.id === updatedData.id);
+            if (index !== -1) {
+              state.tradeWithdrawGroupsData[index] = {
+                ...state.tradeWithdrawGroupsData[index],
+                ...updatedData,
+              };
+            }
+          });
+    },
     deleteTradeWithdrawGroupById: (state, action) => {
       const idToDelete = action.payload;
       state.tradeWithdrawGroupsData = state.tradeWithdrawGroupsData.filter(item => item.id !== idToDelete);
@@ -29,6 +38,6 @@ export const tradeGroupsWithdrawSlice = createSlice({
   },
 })
 
-export const {setTradeWithdrawGroupsSelectedIDs, setTradeWithdrawGroupsData, tradeWithdrawGroupsData } = tradeGroupsWithdrawSlice.actions
+export const {setTradeWithdrawGroupsSelectedIDs, setTradeWithdrawGroupsData,updateTradeWithdrawGroupData,deleteTradeWithdrawGroupById, tradeWithdrawGroupsData,setTradeWithdrawCurrentData } = tradeGroupsWithdrawSlice.actions
 
 export default tradeGroupsWithdrawSlice.reducer

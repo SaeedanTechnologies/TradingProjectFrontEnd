@@ -8,7 +8,10 @@ import CustomTable from '../../components/CustomTable';
 import { GET_Group_Transaction_Order } from '../../utils/_TradeOrderAPI';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { setTradeWithdrawGroupsData, setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { setTradeWithdrawGroupsData, setTradeWithdrawGroupsSelectedIDs,setTradeWithdrawCurrentData } from '../../store/tradeGroupsWithdrawSlice';
+import { ColumnSorter } from '../../utils/helpers';
+import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 
 const MassDipositWidthdraw = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -62,35 +65,6 @@ const MassDipositWidthdraw = () => {
     background: TableHeaderColor,
     color: 'black',
   };
-  const columns = [
-    {
-      title: 'Time',
-      dataIndex: 'Time',
-      key: 'created_at',
-      render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
-    },
-
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: '3',
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'amount',
-      key: '4',
-    },
-    {
-      title: 'Currency',
-      dataIndex: 'currency',
-      key: '5',
-    },
-    {
-      title: 'Method',
-      dataIndex: 'method',
-      key: '5',
-    },
-  ];
 
   const data = [
     {
@@ -109,6 +83,89 @@ const MassDipositWidthdraw = () => {
     },
     // Add more data objects as needed
   ];
+
+
+  const columns = [
+    {
+      title: 'Time',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
+      sorter:(a, b) => ColumnSorter(a?.trading_account_loginId , b?.trading_account_loginId),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: '3',
+      sorter:(a, b) => ColumnSorter(a?.type , b?.type),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount',
+      key: '4',
+      sorter:(a, b) => a?.amount - b?.amount,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title: 'Currency',
+      dataIndex: 'currency',
+      key: '5',
+      sorter:(a, b) => ColumnSorter(a?.currency , b?.currency),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title: 'Method',
+      dataIndex: 'method',
+      key: '6',
+      sorter:(a, b) => ColumnSorter(a?.method , b?.method),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+  ];
+
+  const defaultCheckedList = columns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns , setNewColumns] = useState(columns)
+  const [SearchQueryList,SetSearchQueryList]= useState({})
+
+  useEffect(() => {
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
+  }, [checkedList]);
+
+
+    useEffect(() => {
+      SetSearchQueryList({token, id})
+  }, [])
+
+  
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
@@ -136,26 +193,55 @@ const MassDipositWidthdraw = () => {
           </Link>
         </div>
         <CustomTable
-          columns={columns}
+          direction="/trading-group/mass-deposit-entry"
+          formName="Mass Deposit"
+          columns={newColumns}
           column_name="group_unique_id"
           data={transactionOrder}
           headerStyle={headerStyle}
-          direction="/trading-group/mass-deposit"
-          formName="Mass Deposit"
           total={totalRecords}
+          setTotalRecords={setTotalRecords}
           onPageChange={onPageChange}
           current_page={CurrentPage}
           token={token}
           isUpated={isUpdated}
           setSelecetdIDs={setTradeWithdrawGroupsSelectedIDs}
           setTableData={setTradeWithdrawGroupsData}
+          setCurrentData={setTradeWithdrawCurrentData}
           table_name="transaction_orders"
           setSortDirection={setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
-          SearchQuery={getTransectionOrder}
+          SearchQuery={GET_Group_Transaction_Order}
+          SearchQueryList={SearchQueryList}
           LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
         />
+
+
+         {/* direction="/transaction-orders-entry"
+              formName = "Transactions Orders" 
+              columns={newColumns}
+              data={transactionData} 
+              headerStyle={headerStyle}
+              total={totalRecords}
+              setTotalRecords={setTotalRecords}
+              onPageChange = {onPageChange}
+              current_page={CurrentPage}
+              token = {token}
+              isUpated={isUpdated}
+              setSelecetdIDs={setTransactionsOrdersSelectedIDs}
+              setTableData = {setTransactionOrdersData}
+              table_name= "transaction_orders"
+              setSortDirection = {setSortDirection}
+              perPage={perPage}
+              setPerPage={setPerPage}
+              SearchQuery = {Search_Transaction_Ordcer}
+              SearchQueryList={SearchQueryList}
+              LoadingHandler={LoadingHandler}
+              setCurrentPage={setCurrentPage}
+              setLastPage={setLastPage} */}
 
       </div>
     </Spin>
