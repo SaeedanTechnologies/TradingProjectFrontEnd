@@ -48,6 +48,7 @@ class DnDTable extends Component {
     this.inputRef = createRef();
     this.state = {
       columns: props.columns,
+      handlePageChange:props.handlePageChange,
       isRearangments: false,
       isMassEdit: false,
       isMassDelete: false,
@@ -405,6 +406,7 @@ class DnDTable extends Component {
       localStorage.setItem('isCompleteSelect', JSON.stringify(this.state.isCompleteSelect));
       if (this.state.isCompleteSelect) {
         const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
+        console.log(allRowKeys, "ALL ROW KEYS")
         this.setState({ selectedRowKeys: allRowKeys });
         
       } else {
@@ -701,6 +703,7 @@ class DnDTable extends Component {
               onChange: (page, pageSize) => {
                 this.SearchHandler(page)
                 this.props.setCurrentPage(page);
+                this.props.handlePageChange(page)
               },
             }}
             rowSelection={rowSelection}

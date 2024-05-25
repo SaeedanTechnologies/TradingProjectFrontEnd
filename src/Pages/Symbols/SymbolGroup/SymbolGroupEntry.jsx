@@ -13,10 +13,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GenericEdit,GenericDelete } from '../../../utils/_APICalls';
 import CustomNotification from '../../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../../utils/helpers';
-import { deleteSymbolGroupById, setSymbolGroupsSelectedIDs, updateSymbolGroups } from '../../../store/symbolGroupsSlice';
+import { deleteSymbolGroupById, setSymbolGroupsData, setSymbolGroupsSelectedIDs, updateSymbolGroups } from '../../../store/symbolGroupsSlice';
 import CustomDateRangePicker from '../../../components/CustomDateRange';
 import { updateSymbolSettings } from '../../../store/symbolSettingsSlice';
 import TimePicker from '../../../components/TimePicker';
+import { FetchData } from '../../../utils/FetchData';
 
 
 const SymbolGroupEntry = () => {
@@ -58,7 +59,7 @@ const SymbolGroupEntry = () => {
    const SymbolGroupsIds = useSelector(({ symbolGroups }) => symbolGroups.selectedRowsIds)
     const SymbolGroupsData = useSelector(({symbolGroups})=> symbolGroups.symbolGroupsData)
    const ArrangedSymbolGroupsData = SymbolGroupsData.slice().sort((a, b) => a.id - b.id);
-
+  console.log(ArrangedSymbolGroupsData)
   const validationSchema = Yup.object().shape({
       symbolGroupName: Yup.string().required('Name is required'),
       Leverage: Yup.object().required('Leverage is required'),
@@ -228,57 +229,163 @@ const SymbolGroupEntry = () => {
     }
   }
 
- const handlePrevious = () => {
-    if (currentIndex > 0) 
-    {
+//  const handlePrevious = () => {
+//     if (currentIndex > 0) 
+//     {
     
-      setCurrentIndex(prevIndex => prevIndex - 1);
-      const payload = ArrangedSymbolGroupsData[currentIndex - 1];
-      dispatch(setSymbolGroupsSelectedIDs([payload.id]))
-      setIsLoading(true)
-      setTimeout(()=>{
-        setIsLoading(false)
-        setStatesForEditMode(payload, true,LeverageList)
-      }, 3000)
+//       setCurrentIndex(prevIndex => prevIndex - 1);
+//       const payload = ArrangedSymbolGroupsData[currentIndex - 1];
+//       dispatch(setSymbolGroupsSelectedIDs([payload.id]))
+//       setIsLoading(true)
+//       setTimeout(()=>{
+//         setIsLoading(false)
+//         setStatesForEditMode(payload, true,LeverageList)
+//       }, 3000)
       
-    }
-    else
-    {
+//     }
+//     else
+//     {
     
+//       CustomNotification({
+//             type: 'warning',
+//             title: 'warning',
+//             description: 'No Previous record found',
+//             key: 2
+//           })
+    
+//     }
+//   };
+const handlePrevious = async () => {
+  if (currentIndex > 0) {
+    setCurrentIndex(prevIndex => prevIndex - 1);
+    const payload = ArrangedSymbolGroupsData[currentIndex - 1];
+    dispatch(setSymbolGroupsSelectedIDs([payload.id]));
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setStatesForEditMode(payload, true, LeverageList);
+    }, 3000);
+  } else {
+    const page = localStorage.getItem("page");
+    const page_num = Number(page) - 1;
+
+    if (page_num < 1) {
       CustomNotification({
-            type: 'warning',
-            title: 'warning',
-            description: 'No Previous record found',
-            key: 2
-          })
-    
+        type: 'warning',
+        title: 'warning',
+        description: 'No Previous record found',
+        key: 2
+      });
+      return;
     }
-  };
-  const handleNext = () => {
-    // console.log(currentIndex == ArrangedSymbolGroupsData.length -1, "YE CURRENT INDEX HA")
-    if (currentIndex < ArrangedSymbolGroupsData.length - 1) 
-    {
+
+    setIsLoading(true);
+    const res = await FetchData(page_num, token);
+    const newSymbolGroupsData = res?.data?.payload?.data;
+
+    if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
+      dispatch(setSymbolGroupsData(newSymbolGroupsData));
+      const newArrangedSymbolGroupsData = newSymbolGroupsData.slice().sort((a, b) => a.id - b.id);
+      const payload = newArrangedSymbolGroupsData[newArrangedSymbolGroupsData.length - 1];
+      dispatch(setSymbolGroupsSelectedIDs([payload.id]));
+      setCurrentIndex(newArrangedSymbolGroupsData.length - 1);
+      setTimeout(() => {
+        setIsLoading(false);
+        setStatesForEditMode(payload, true, LeverageList);
+      }, 3000);
+      localStorage.setItem("page", page_num);
+    } else {
+      setIsLoading(false);
+      CustomNotification({
+        type: 'warning',
+        title: 'warning',
+        description: 'No Previous record found',
+        key: 2
+      });
+    }
+  }
+};
+  //#region HandleNext 
+  // const handleNext = async  () => {
+  //   if (currentIndex < ArrangedSymbolGroupsData.length - 1) 
+  //   {
+  //     setCurrentIndex(prevIndex => prevIndex + 1);
+  //     console.log(currentIndex, "YE CURRENT INDEX JA RHA")
+  //     const payload = ArrangedSymbolGroupsData[currentIndex + 1];
+  //     dispatch(setSymbolGroupsSelectedIDs([payload.id]))
+  //     setIsLoading(true)
+  //     setTimeout(()=>{
+  //       setIsLoading(false)
+  //       setStatesForEditMode(payload, true,LeverageList)
+  //     }, 3000)
+  //   }
+  //   else
+  //   { 
+  //     setCurrentIndex(-1);
+  //     const page = localStorage.getItem("page")
+  //     const page_num = Number(page) +1; 
+  //     setIsLoading(true)
+  //     const res = await FetchData(page_num, token)
+  //     dispatch(setSymbolGroupsData(res?.data?.payload?.data))
+  //     console.log(currentIndex, "YE CURRENT INDEX JA RHA else ma sy")
+  //     const payload = ArrangedSymbolGroupsData[currentIndex];
+  //     console.log(payload, "YE PAYLOAD HA")
+  //     dispatch(setSymbolGroupsSelectedIDs([payload?.id]))
+  //     setIsLoading(false)
+  //     // setTimeout(()=>{
+  //     //   setIsLoading(false)
+  //     //   setStatesForEditMode(payload, true,LeverageList)
+  //     // }, 3000)
+      
+  //     //  CustomNotification({
+  //     //       type: 'warning',
+  //     //       title: 'warning',
+  //     //       description: 'No Next record found',
+  //     //       key: 2
+  //     //     })
+  //   }
+  // }; 
+  const handleNext = async () => {
+    if (currentIndex < ArrangedSymbolGroupsData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedSymbolGroupsData[currentIndex + 1];
-      dispatch(setSymbolGroupsSelectedIDs([payload.id]))
-      setIsLoading(true)
-      setTimeout(()=>{
-        setIsLoading(false)
-        setStatesForEditMode(payload, true,LeverageList)
-      }, 3000)
+      dispatch(setSymbolGroupsSelectedIDs([payload.id]));
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        setStatesForEditMode(payload, true, LeverageList);
+      }, 3000);
+    } else {
+      const page = localStorage.getItem("page");
+      const page_num = Number(page) + 1;
+      setIsLoading(true);
+      const res = await FetchData(page_num, token);
+      const newSymbolGroupsData = res?.data?.payload?.data;
+  
+      if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
+        dispatch(setSymbolGroupsData(newSymbolGroupsData));
+        const newArrangedSymbolGroupsData = newSymbolGroupsData.slice().sort((a, b) => a.id - b.id);
+        const payload = newArrangedSymbolGroupsData[0];
+        dispatch(setSymbolGroupsSelectedIDs([payload.id]));
+        setCurrentIndex(0);
+        setTimeout(() => {
+          setIsLoading(false);
+          setStatesForEditMode(payload, true, LeverageList);
+        }, 3000);
+        localStorage.setItem("page", page_num);
+      } else {
+        setIsLoading(false);
+        CustomNotification({
+          type: 'warning',
+          title: 'warning',
+          description: 'No Next record found',
+          key: 2
+        });
+      }
     }
-    else
-    {
-      
-       CustomNotification({
-            type: 'warning',
-            title: 'warning',
-            description: 'No Next record found',
-            key: 2
-          })
-    }
-  }; 
-
+  };
+  
+//#endregion
 //   const handleTimeChange = (start_time, end_time) => {
 //     console.log('Formatted start time:', start_time);
 //     console.log('Formatted end time:', end_time);

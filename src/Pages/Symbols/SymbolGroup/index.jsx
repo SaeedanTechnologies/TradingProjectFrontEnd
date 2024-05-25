@@ -195,13 +195,11 @@ const Index = () => {
   
 
 const FetchData = async (page) =>{
-  // debugger
     setIsLoading(true)
     const res = await Symbol_Group_List(token,page,parseInt(perPage))
     const {data:{message, payload, success}} = res
     setIsLoading(false)
     if(success){
-   
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
