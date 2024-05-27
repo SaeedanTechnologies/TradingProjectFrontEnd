@@ -43,6 +43,7 @@ const ResizableTitle = (props) => {
 };
 
 class DnDTable extends Component {
+
   constructor(props) {
     super(props);
     this.inputRef = createRef();
@@ -404,13 +405,13 @@ class DnDTable extends Component {
     
   }
   toggleCompleteSelect() {
-
+    console.log("THIS IS Complete Select", this.state.isCompleteSelect)
     this.setState((prevState) => ({isCompleteSelect: !prevState.isCompleteSelect}),
     ()=>{
       localStorage.setItem('isCompleteSelect', JSON.stringify(this.state.isCompleteSelect));
       if (this.state.isCompleteSelect) {
-        const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
-        console.log(allRowKeys, "ALL ROW KEYS")
+        const allRowKeys = this.props.data.map((row) => this.props?.column_name ? row[this.props?.column_name] : row.id);
+        console.log(this.props.data, "ALL ROW KEYSssssss")
         this.setState({ selectedRowKeys: allRowKeys });
         
       } else {

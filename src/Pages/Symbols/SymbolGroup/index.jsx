@@ -283,6 +283,7 @@ useEffect(() => {
     </div>
 
     <div className='mb-5'>
+      {/* #reigon Custom Table*/}
       <CustomTable
           direction="/symbol-groups-entry"
           formName = "Symbol Groups" 

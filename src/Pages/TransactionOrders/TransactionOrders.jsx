@@ -244,21 +244,21 @@ const TransactionOrders = () => {
 
    useEffect(() => {
     setIsUpdated(true)
-    //  if(userRole === 'brand' ){
-    //   fetchTransactionOrder(userBrand.public_key,CurrentPage)
-    // }
-    // else{
-    //   fetchTransactionOrder(null,CurrentPage)
-    // }
+     if(userRole === 'brand' ){
+      fetchTransactionOrder(userBrand.public_key,CurrentPage)
+    }
+    else{
+      fetchTransactionOrder(null,CurrentPage)
+    }
   }, [perPage])
 
   const onPageChange = (page) =>{
-    //   if(userRole === 'brand' ){
-    //   fetchTransactionOrder(userBrand.public_key,page)
-    // }
-    // else{
-    //   fetchTransactionOrder(null,page)
-    // }
+      if(userRole === 'brand' ){
+      fetchTransactionOrder(userBrand.public_key,page)
+    }
+    else{
+      fetchTransactionOrder(null,page)
+    }
   }
 
   const LoadingHandler = React.useCallback((isLoading)=>{

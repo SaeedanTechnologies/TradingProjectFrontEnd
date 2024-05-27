@@ -130,6 +130,8 @@ const SymbolGroupEntry = () => {
           Sunday: { start: '00:00', end: '00:00' },
         })
   }
+  //#region HandleSubmit
+
   const handleSubmit = async()=> {
     
     try{
@@ -255,6 +257,8 @@ const SymbolGroupEntry = () => {
     
 //     }
 //   };
+  //#region HandlePrevious 
+
 const handlePrevious = async () => {
   if (currentIndex > 0) {
     setCurrentIndex(prevIndex => prevIndex - 1);
@@ -305,7 +309,6 @@ const handlePrevious = async () => {
     }
   }
 };
-  //#region HandleNext 
   // const handleNext = async  () => {
   //   if (currentIndex < ArrangedSymbolGroupsData.length - 1) 
   //   {
@@ -345,6 +348,7 @@ const handlePrevious = async () => {
   //     //     })
   //   }
   // }; 
+  //#region HandleNext 
   const handleNext = async () => {
     if (currentIndex < ArrangedSymbolGroupsData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);

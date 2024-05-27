@@ -36,57 +36,57 @@ const CloseOrder = () => {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
   };
-  // const fetchCloseOrders = async (brandId,page) => {
-  //   setIsLoading(true)
-  //   const params = { OrderTypes: ['close'], token,brandId,page }
-  //   const mData = await Get_Trade_Order(params)
-  //   const { data: { message, payload, success } } = mData
-  //   const allCloseOrders = payload?.data?.map((order) => ({
-  //     id: order.id,
-  //     trading_account_loginId: order.trading_account_loginId,
-  //     symbol: order.symbol,
-  //     open_time: order.open_time ? moment(order.open_time).format('D MMMM YYYY h:mm A') : '...',
-  //     close_time: order.close_time?  moment(order.close_time).format('D MMMM YYYY h:mm A'): '...' ,
-  //     type: order.type,
-  //     volume: order.volume,
-  //     open_price: order.open_price,
-  //     close_price: order.close_price,
-  //     stopLoss: order.stopLoss|| '...' ,
-  //     takeProfit: order.takeProfit || '...',
-  //     reason: order.reason ? order.reason : '...',
-  //     swap: order.swap ? order.swap : '...',
-  //     profit: order.profit ? order.profit : '...',
-  //     comment: order.comment
+  const fetchCloseOrders = async (brandId,page) => {
+    setIsLoading(true)
+    const params = { OrderTypes: ['close'], token,brandId,page }
+    const mData = await Get_Trade_Order(params)
+    const { data: { message, payload, success } } = mData
+    const allCloseOrders = payload?.data?.map((order) => ({
+      id: order.id,
+      trading_account_loginId: order.trading_account_loginId,
+      symbol: order.symbol,
+      open_time: order.open_time ? moment(order.open_time).format('D MMMM YYYY h:mm A') : '...',
+      close_time: order.close_time?  moment(order.close_time).format('D MMMM YYYY h:mm A'): '...' ,
+      type: order.type,
+      volume: order.volume,
+      open_price: order.open_price,
+      close_price: order.close_price,
+      stopLoss: order.stopLoss|| '...' ,
+      takeProfit: order.takeProfit || '...',
+      reason: order.reason ? order.reason : '...',
+      swap: order.swap ? order.swap : '...',
+      profit: order.profit ? order.profit : '...',
+      comment: order.comment
 
-  //   }))
-  //   setIsLoading(false)
-  //   if (success) {
-  //     setCurrentPage(payload.current_page)
-  //     setLastPage(payload.last_page)
-  //     setTotalRecords(payload.total)
-  //     setCloseOrders(allCloseOrders)
-  //   }
+    }))
+    setIsLoading(false)
+    if (success) {
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+      setCloseOrders(allCloseOrders)
+    }
 
-  // }
-
-  const onPageChange = (page) =>{
-  //     if(userRole === 'brand' ){
-  //     fetchCloseOrders(userBrand.public_key,page)
-  //   }
-  //   else{
-  //     fetchCloseOrders(null,page)
-  //   }
   }
 
-  // useEffect(() => {
+  const onPageChange = (page) =>{
+      if(userRole === 'brand' ){
+      fetchCloseOrders(userBrand.public_key,page)
+    }
+    else{
+      fetchCloseOrders(null,page)
+    }
+  }
 
-  //   if(userRole === 'brand' ){
-  //     fetchCloseOrders(userBrand.public_key,CurrentPage)
-  //   }
-  //   else{
-  //     fetchCloseOrders(null,CurrentPage)
-  //   }
-  // }, [])
+  useEffect(() => {
+
+    if(userRole === 'brand' ){
+      fetchCloseOrders(userBrand.public_key,CurrentPage)
+    }
+    else{
+      fetchCloseOrders(null,CurrentPage)
+    }
+  }, [])
 
 
 

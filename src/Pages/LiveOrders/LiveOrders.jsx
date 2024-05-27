@@ -67,12 +67,12 @@ const LiveOrders = () => {
     }
   }
     const onPageChange = (page) =>{
-    //   if(userRole === 'brand' ){
-    //   fetchLiveOrder(userBrand.public_key,page)
-    // }
-    // else{
-    //   fetchLiveOrder(null,page)
-    // }
+      if(userRole === 'brand' ){
+      fetchLiveOrder(userBrand.public_key,page)
+    }
+    else{
+      fetchLiveOrder(null,page)
+    }
   }
 
   
@@ -271,12 +271,12 @@ const LiveOrders = () => {
 
    useEffect(() => {
     setIsUpdated(true)
-    // if(userRole === 'brand' ){
-    //   fetchLiveOrder(userBrand.public_key,CurrentPage)
-    // }
-    // else{
-    //   fetchLiveOrder(null,CurrentPage)
-    // }
+    if(userRole === 'brand' ){
+      fetchLiveOrder(userBrand.public_key,CurrentPage)
+    }
+    else{
+      fetchLiveOrder(null,CurrentPage)
+    }
 
   }, [perPage])
 

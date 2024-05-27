@@ -287,12 +287,12 @@ const Index = () => {
   //   }, [checkedList]);
 
   const onPageChange = () =>{
-    // if(userRole === 'brand' ){
-    //   fetchData(userBrand?.public_key)
-    // }
-    // else{
-    //   fetchData(null)
-    // }
+    if(userRole === 'brand' ){
+      fetchData(userBrand?.public_key)
+    }
+    else{
+      fetchData(null)
+    }
   }
 
   const DeleteHandler = async (id) => {
