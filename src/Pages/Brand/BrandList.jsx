@@ -211,7 +211,7 @@ const BrandList = () => {
 
   useEffect(() => {
     setIsUpdated(true)
-    // fetchBrands(CurrentPage)
+    fetchBrands(CurrentPage)
   }, [perPage])
 
   useEffect(() => {
@@ -240,7 +240,7 @@ const BrandList = () => {
 
      const onPageChange = (page) =>{
    
-        // fetchBrands(page)
+        fetchBrands(page)
     }
 
   const headerStyle = {

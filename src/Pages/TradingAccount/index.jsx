@@ -518,12 +518,12 @@ const [newColumns , setNewColumns] = useState(renderColumns)
 
 
   const onPageChange = (page) =>{
-    //   if(userRole === 'brand' ){
-    //   fetchTradingAccounts(userBrand.public_key,page)
-    // }
-    // else{
-    //   fetchTradingAccounts(null,page)
-    // }
+      if(userRole === 'brand' ){
+      fetchTradingAccounts(userBrand.public_key,page)
+    }
+    else{
+      fetchTradingAccounts(null,page)
+    }
   }
 
   useEffect(() => {
@@ -533,29 +533,29 @@ const [newColumns , setNewColumns] = useState(renderColumns)
 
   useEffect(() => {
     setIsUpdated(true)
-  // switch (direction) {
-  //   case 1:
-  //     if (userRole === 'brand') {
-  //       fetchTradingAccounts(userBrand.public_key, CurrentPage);
-  //     } else {
-  //       fetchTradingAccounts(null, CurrentPage);
-  //     }
-  //     break;
-  //   case 2:
-  //     if (userRole === 'brand') {
-  //       fetchActiveGroups(userBrand.public_key, CurrentPage);
-  //     } else {
-  //       fetchActiveGroups(null, CurrentPage);
-  //     }
-  //     break;
-  //   case 3:
-  //     if (userRole === 'brand') {
-  //       fetchMarginCalls(userBrand.public_key, CurrentPage);
-  //     } else {
-  //       fetchMarginCalls(null, CurrentPage);
-  //     }
+  switch (direction) {
+    case 1:
+      if (userRole === 'brand') {
+        fetchTradingAccounts(userBrand.public_key, CurrentPage);
+      } else {
+        fetchTradingAccounts(null, CurrentPage);
+      }
+      break;
+    case 2:
+      if (userRole === 'brand') {
+        fetchActiveGroups(userBrand.public_key, CurrentPage);
+      } else {
+        fetchActiveGroups(null, CurrentPage);
+      }
+      break;
+    case 3:
+      if (userRole === 'brand') {
+        fetchMarginCalls(userBrand.public_key, CurrentPage);
+      } else {
+        fetchMarginCalls(null, CurrentPage);
+      }
 
-  // }
+  }
   const channel = pusher.subscribe('trading_accounts');
         channel.bind('update', (data) => {
           const mData = [data]

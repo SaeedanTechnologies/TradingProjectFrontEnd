@@ -249,11 +249,11 @@ const Index = () => {
   }
   useEffect(() => {
     setIsUpdated(true)
-    // fetchAllSetting(CurrentPage)
+    fetchAllSetting(CurrentPage)
   }, [perPage])
 
   const onPageChange = (page) =>{
-    // fetchAllSetting(page)
+    fetchAllSetting(page)
   }
   useEffect(() => {
   const newCols = columns.filter(x => checkedList.includes(x.key));
@@ -265,7 +265,7 @@ const Index = () => {
   },[])
 
 
- 
+ console.log(allSetting, "ALL SETTINGS DATA")
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>

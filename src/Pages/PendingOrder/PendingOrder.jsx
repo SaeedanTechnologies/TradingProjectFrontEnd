@@ -72,12 +72,12 @@ const PendingOrder = () => {
   }
 
   const onPageChange = (page) =>{
-    //   if(userRole === 'brand' ){
-    //   fetchPendingOrders(userBrand.public_key,page)
-    // }
-    // else{
-    //   fetchPendingOrders(null,page)
-    // }
+      if(userRole === 'brand' ){
+      fetchPendingOrders(userBrand.public_key,page)
+    }
+    else{
+      fetchPendingOrders(null,page)
+    }
   }
 
   useEffect(() => {
@@ -391,12 +391,12 @@ const PendingOrder = () => {
     
   useEffect(() => {
     setIsUpdated(true)
-    //  if(userRole === 'brand' ){
-    //   fetchPendingOrders(userBrand.public_key,CurrentPage)
-    // }
-    // else{
-    //   fetchPendingOrders(null,CurrentPage)
-    // }
+     if(userRole === 'brand' ){
+      fetchPendingOrders(userBrand.public_key,CurrentPage)
+    }
+    else{
+      fetchPendingOrders(null,CurrentPage)
+    }
 
   }, [perPage])
 
