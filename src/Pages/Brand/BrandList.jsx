@@ -244,8 +244,8 @@ const BrandList = () => {
     }
 
   const headerStyle = {
-    background: TableHeaderColor, // Set the background color of the header
-    color: 'black', // Set the text color of the header
+    background: TableHeaderColor,
+    color: 'black', 
   };
 
   const LoadingHandler = React.useCallback((isLoading)=>{
