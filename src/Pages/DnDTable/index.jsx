@@ -160,6 +160,17 @@ class DnDTable extends Component {
       this.setState({ buttonCreated: true });
     }
   };
+  handleClearSearch = () => {
+    const clearedSearchValues = {};
+    const inputRefs = Object.keys(this.state.searchValues);
+    inputRefs.forEach((key) => {
+      clearedSearchValues[key] = '';
+    });
+    console.log(clearedSearchValues, "STATE VALUES")
+    this.setState({ searchValues:clearedSearchValues, isSearching: true })
+    document.getElementById("search-input").value = ''
+    this.SearchHandler(this.props.current)
+  };
   async useEffect(){
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
@@ -170,10 +181,10 @@ class DnDTable extends Component {
       button.classList.add('custom-button');
       // Add event listener to the button
       button.addEventListener('click', () => {
-        if(this.state.isSearching){ // search 
+        if(this.state.isSearching){
           this.SearchHandler(this.props.current)
           this.setState({isSearching: false})
-        }else{ // clear
+        }else{ 
           this.setState({isSearching: true})
           this.props.LoadingHandler(true)
           this.handleClearSearch()
@@ -277,7 +288,6 @@ class DnDTable extends Component {
       this.setState({ data: this.props.data });
     } 
      if (prevProps.isSearching !== this.state.isSearching) {
-        // Update the button when isSearching state changes
         const buttonText = this.state.isSearching ? 'Search' : 'Clear';
         const searchButton = document.querySelector('.ant-table-thead tr:first-child th:first-child button');
         if (searchButton) {
@@ -322,7 +332,6 @@ class DnDTable extends Component {
   };
 
   handleRowClick = (record) => {
-    
       this.setState({ currentRecords: record });
         if(this.props.column_name)
           {
@@ -389,16 +398,17 @@ class DnDTable extends Component {
       this.setIsRearangments(false);
     }
   }
-  handleClearSearch = () => {
-    const clearedSearchValues = {};
-    const inputRefs = Object.keys(this.state.searchValues);
-    inputRefs.forEach((key) => {
-      clearedSearchValues[key] = '';
-    });
-    this.setState({ searchValues:clearedSearchValues, isSearching: true })
-    document.getElementById("search-input").value = ''
-    this.SearchHandler(this.props.current)
-  };
+  // handleClearSearch = () => {
+  //   const clearedSearchValues = {};
+  //   const inputRefs = Object.keys(this.state.searchValues);
+  //   inputRefs.forEach((key) => {
+  //     clearedSearchValues[key] = '';
+  //   });
+  //   console.log(clearedSearchValues, "STATE VALUES")
+  //   this.setState({ searchValues:clearedSearchValues, isSearching: true })
+  //   document.getElementById("search-input").value = ''
+  //   this.SearchHandler(this.props.current)
+  // };
   
   onSelectAllChange(checked, selectedRows) {
     this.setState({ isSelectAll: checked });

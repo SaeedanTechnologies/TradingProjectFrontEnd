@@ -182,7 +182,7 @@ const CloseOrder = () => {
     },
     
     {
-      title:<span className="dragHandler">Stop Lose</span>,
+      title:<span className="dragHandler">Stop Loss</span>,
       dataIndex: 'stopLoss',
       key: '8',
       sorter: (a, b) => a.stopLoss - b.stopLoss,

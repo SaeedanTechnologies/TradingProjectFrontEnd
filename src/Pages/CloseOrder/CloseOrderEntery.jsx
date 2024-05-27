@@ -35,6 +35,11 @@ const CloseOrderEntery = () => {
   const dispatch = useDispatch()
 
     const [symbolsList, setSymbolsList] = useState([])
+    const [close_price, setClosePrice] = useState("")
+    const [close_time, setCloseTime] = useState("")
+    const [open_time, setOpenTime] = useState("")
+    const [reason, setReason] = useState("")
+    const [profit, setProfit] = useState("")
     const [symbol, setSymbol] = useState(null);
     const [pricing, setPricing] = useState({ openPrice: 0, askPrice: 0 });
     const [open_price,setOpen_price] = useState(0);
@@ -46,8 +51,6 @@ const CloseOrderEntery = () => {
     const [comment,setComment] = useState('');
     const [brand_id,setBrand_id] = useState('')
     const [trading_account_id,setTrading_account_id] = useState(0)
-
-
 
 
   const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
@@ -105,12 +108,15 @@ const CloseOrderEntery = () => {
 
 
   const setStatesForEditMode = async (payload, success)=>{
-    debugger
-      if (success) {
+    if (success) {
         setIsLoading(true)
         const selectedSymbolList =  symbolsList?.find((x)=> x.name === payload?.symbol)
         setSymbol(selectedSymbolList);
         setOpen_price(payload.open_price);
+        setOpenTime(payload.open_time)
+        setCloseTime(payload.close_time)
+        setClosePrice(payload.close_price)
+        setReason(payload.reason)
         const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
         setOrder_type(selectedOrderType);
         const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
@@ -180,8 +186,9 @@ const CloseOrderEntery = () => {
 
     setIsLoading(false)
     if (success) {
-    const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
-    setSymbol(selectedSymbolList);
+      const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
+      setSymbol(selectedSymbolList);
+      console.log(SymbolsList, "PAYLOAD")
     setOpen_price(payload.open_price);
     const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
     setOrder_type(selectedOrderType);
@@ -224,8 +231,15 @@ const CloseOrderEntery = () => {
       // type:  type.value,
       volume: String(volume) ? String(volume) : '',
       comment,
+      open_time:String(open_time)? String(open_time) : '',
+      open_price: String(open_price === "" ? "" : open_price),
+      close_price: String(close_price === "" ? "" : close_price),
+      close_time:String(close_time === "" ?  "" : close_time),
+      reason:String(reason === "" ? "" : reason),
       takeProfit: String(takeProfit === "" ? "" : takeProfit),
       stopLoss: String(stopLoss === "" ? "" : stopLoss),
+      profit: String(profit === "" ? "" : profit),
+
       trading_account_id,
       brand_id
       };
@@ -428,7 +442,56 @@ const handleLossChange = (newValue) => {
                 />
                 {errors.symbol && <span style={{ color: 'red' }}>{errors.symbol}</span>}
             </div>
-        
+            <div>
+            <label>Open Time</label>
+            <CustomTextField 
+                varient={'standard'}
+                value={open_time}
+                disabled={isDisabled}
+                type="datetime-local"
+                onChange={e => setOpenTime(e.target.value)}
+                 />
+            </div>
+            <div>
+              <label>Close Time</label>
+            <CustomTextField 
+                varient={'standard'}
+                value={close_time}
+                disabled={isDisabled}
+                type="datetime-local"
+                onChange={e => setCloseTime(e.target.value)}
+                 />
+            </div>
+            <div>
+            <CustomTextField label={'Open Price'}
+                varient={'standard'}
+                value={open_price}
+                disabled={isDisabled}
+                onChange={e => setOpen_price(e.target.value)}
+                 />
+                 <CustomTextField label={'Profit'}
+                varient={'standard'}
+                value={profit}
+                disabled={isDisabled}
+                onChange={e => setProfit(e.target.value)}
+                 />
+            </div>
+            <div>
+            <CustomTextField label={'Close Price'}
+                varient={'standard'}
+                value={close_price}
+                disabled={isDisabled}
+                onChange={e => setClosePrice(e.target.value)}
+                 />
+            </div>
+            <div>
+            <CustomTextField label={'Reason'}
+                varient={'standard'}
+                value={reason}
+                disabled={isDisabled}
+                onChange={e => setReason(e.target.value)}
+                 />
+            </div>
             <div>
                 <Autocomplete
                   name={'Type'}
