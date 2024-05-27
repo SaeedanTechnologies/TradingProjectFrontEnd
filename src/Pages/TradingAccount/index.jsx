@@ -14,7 +14,7 @@ import TradingModal from './TradingModal'
 import { setAccountID, setTradingAccountsData,setSelectedTradingAccountsIDs } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
-import { CheckBrandPermission, ColumnSorter } from '../../utils/helpers';
+import { CheckBrandPermission, ColumnSorter,ColumnSpaceSorter } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
@@ -52,33 +52,44 @@ const Index = ({ title, direction }) => {
   const renderColumns = [
     {
       title:<span className="dragHandler">LoginID</span>,
-      dataIndex: 'loginId',
+      dataIndex: 'login_id',
       key: '1',
-      sorter: (a, b) => a.loginId - b.loginId,
+      sorter: (a, b) => a.login_id - b.login_id,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
+      
     },
     {
       title:<span className="dragHandler">Trading Group Id</span>,
       dataIndex: 'trading_group_id',
       key: '2',
-      sorter: (a, b) => a.trading_group_id - b.trading_group_id,
+      sorter: (a, b) => {
+      const { trading_group_id: aTradingGroupId } = a;
+      const { trading_group_id: bTradingGroupId } = b;
+
+      // Detect sort order to determine ascending or descending
+      const sortOrder = a.sortOrder || 'ascend'; // Default to ascending
+      const ascending = sortOrder === 'ascend';
+
+      return ColumnSpaceSorter(aTradingGroupId, bTradingGroupId, ascending);
+    },
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
+    
     },
     {
       title:<span className="dragHandler">{userRole === 'admin' ? 'Brand' : 'Customer'}</span>,
-      dataIndex: `${userRole === 'admin' ? 'brand' : 'customer'}`,
+      dataIndex: `${userRole === 'admin' ? 'brand_name' : 'brand_customer_name'}`,
       key: '3',
-      sorter:(a, b) =>  ColumnSorter(userRole === 'admin' ? (a.brand, b.brand) : (a.customer, b.customer)),
+      sorter:(a, b) =>  ColumnSorter(userRole === 'admin' ? (a.brand_name, b.brand_name) : (a.brand_customer_name, b.brand_customer_name)),
       // sorter: (a, b) => {userRole === 'admin' ? a.brand?.length - b.brand?.length : a.customer?.length - b.customer?.length},
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {

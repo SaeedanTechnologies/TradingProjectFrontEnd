@@ -81,6 +81,30 @@ export const ColumnSorter = (a,b)=>{
       return a?.toString().localeCompare(b?.toString());
 }
 
+
+
+export const ColumnSpaceSorter = (a, b, ascending = true) => {
+  // Check if both values are empty
+  if (!a && !b) {
+    return 0; // No change in order
+  }
+  
+  // Check if one of the values is empty
+  if (!a) {
+    return 1; // a is empty, so it should come after b
+  }
+  if (!b) {
+    return -1; // b is empty, so it should come after a
+  }
+
+  // Both values are not empty, perform regular comparison
+  if (ascending) {
+    return a - b;
+  } else {
+    return b - a;
+  }
+};
+
 export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{
 
   if(userRole ===  'brand') {
