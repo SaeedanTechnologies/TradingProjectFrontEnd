@@ -34,7 +34,7 @@ const TransactionOrders = () => {
       title:<span className="dragHandler">LoginID</span>,
       dataIndex: 'trading_account_loginId',
       key: '1',
-      sorter:(a, b) => a?.trading_account_loginId - b?.trading_account_loginId,
+      sorter:(a, b) => ColumnSorter(a?.trading_account_loginId , b?.trading_account_loginId),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -45,7 +45,7 @@ const TransactionOrders = () => {
     {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
-      key: '1',
+      key: '2',
       sorter:(a, b) => a?.id - b?.id,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {

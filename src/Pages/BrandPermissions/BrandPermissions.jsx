@@ -15,7 +15,7 @@ const BrandPermissions = () => {
 
   const navigate = useNavigate()
   const token = useSelector(({ user }) => user?.user?.token)
-  const brand = useSelector((state)=>state?.brands?.user)
+  const brand = useSelector((state)=>state?.brands?.user) ?? []
     const dispatch = useDispatch();
 
   const data = [
@@ -23,64 +23,64 @@ const BrandPermissions = () => {
     index: 0,
     module: 'Trading Account List',
     key:'trading_account_list',
-    read:brand.permissions.find((br)=>br.name=== 'trading_account_list_read') ? true : false,
-    create:brand.permissions.find((br)=>br.name=== 'trading_account_list_create') ? true : false,
-    update:brand.permissions.find((br)=>br.name=== 'trading_account_list_update') ? true : false,
-    del:brand.permissions.find((br)=>br.name=== 'trading_account_list_delete') ? true : false,
+    read:brand?.permissions?.find((br)=>br.name=== 'trading_account_list_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'trading_account_list_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'trading_account_list_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'trading_account_list_delete') ? true : false,
   },
   {
     index: 1,
     module: 'Trading Account Group',
     key:'trading_account_group',
-    read:brand.permissions.find((br)=>br.name=== 'trading_account_group_read') ? true : false,
-    create:brand.permissions.find((br)=>br.name=== 'trading_account_group_create') ? true : false,
-    update:brand.permissions.find((br)=>br.name=== 'trading_account_group_update') ? true : false,
-    del:brand.permissions.find((br)=>br.name=== 'trading_account_group_delete') ? true : false
+    read:brand?.permissions?.find((br)=>br.name=== 'trading_account_group_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'trading_account_group_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'trading_account_group_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'trading_account_group_delete') ? true : false
   },
   {
     index: 2,
     module: 'Active Account Group',
     key:'active_account_group',
-    read:brand.permissions.find((br)=>br.name=== 'active_account_group_read') ? true : false,
-    create:brand.permissions.find((br)=>br.name=== 'active_account_group_create') ? true : false,
-    update:brand.permissions.find((br)=>br.name=== 'active_account_group_update') ? true : false,
-    del:brand.permissions.find((br)=>br.name=== 'active_account_group_delete') ? true : false
+    read:brand?.permissions?.find((br)=>br.name=== 'active_account_group_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'active_account_group_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'active_account_group_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'active_account_group_delete') ? true : false
   },
   {
     index: 3,
     module: 'Margin Call Trading Account',
     key:'margin_call_trading',
-    read:brand.permissions.find((br)=>br.name=== 'margin_call_trading_read') ? true : false,
-    create:brand.permissions.find((br)=>br.name=== 'margin_call_trading_create') ? true : false,
-    update:brand.permissions.find((br)=>br.name=== 'margin_call_trading_update') ? true : false,
-    del:brand.permissions.find((br)=>br.name=== 'margin_call_trading_delete') ? true : false,
+    read:brand?.permissions?.find((br)=>br.name=== 'margin_call_trading_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'margin_call_trading_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'margin_call_trading_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'margin_call_trading_delete') ? true : false,
   },
    {
     index: 4,
     module: 'Live Orders',
     key:'live_orders',
-    read:brand.permissions.find((br)=>br.name=== 'live_orders_read') ? true : false,
-    create:brand.permissions.find((br)=>br.name=== 'live_orders_create') ? true : false,
-    update:brand.permissions.find((br)=>br.name=== 'live_orders_update') ? true : false,
-    del:brand.permissions.find((br)=>br.name=== 'live_orders_delete') ? true : false,
+    read:brand?.permissions?.find((br)=>br.name=== 'live_orders_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'live_orders_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'live_orders_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'live_orders_delete') ? true : false,
   },
    {
     index: 5,
     module: 'Close Orders',
     key:'close_orders',
-    read:brand.permissions.find((br)=>br.name=== 'close_orders_read') ? true : false,
-    create:brand.permissions.find((br)=>br.name=== 'close_orders_create') ? true : false,
-    update:brand.permissions.find((br)=>br.name=== 'close_orders_update') ? true : false,
-    del:brand.permissions.find((br)=>br.name=== 'close_orders_delete') ? true : false
+    read:brand?.permissions?.find((br)=>br.name=== 'close_orders_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'close_orders_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'close_orders_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'close_orders_delete') ? true : false
   },
    {
     index: 6,
     module: 'Transaction Orders',
     key:'transaction_orders',
-    read:brand.permissions.find((br)=>br.name=== 'transaction_orders_read') ? true : false,
-    create:brand.permissions.find((br)=>br.name=== 'transaction_orders_create') ? true : false,
-    update:brand.permissions.find((br)=>br.name=== 'transaction_orders_update') ? true : false,
-    del:brand.permissions.find((br)=>br.name=== 'transaction_orders_delete') ? true : false,
+    read:brand?.permissions?.find((br)=>br.name=== 'transaction_orders_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'transaction_orders_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'transaction_orders_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'transaction_orders_delete') ? true : false,
   },
   
   ];

@@ -91,7 +91,7 @@ const MassDipositWidthdraw = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
-      sorter:(a, b) => ColumnSorter(a?.trading_account_loginId , b?.trading_account_loginId),
+      sorter:(a, b) => ColumnSorter(a?.created_at , b?.created_at),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

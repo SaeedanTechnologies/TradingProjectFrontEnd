@@ -82,28 +82,23 @@ export const ColumnSorter = (a,b)=>{
 }
 
 
+export const ColumnSpaceSorter = (a, b, col, sortOrder) => {
+  // debugger
+  if (a[col] === null && b[col] === null) {
+        return 1;
+    } else if (a[col] === null) {
+        return 1;  // Push `a` with null at the end
+    } else if (b[col] === null) {
+        return -1; // Push `b` with null at the end
+    }
 
-export const ColumnSpaceSorter = (a, b, ascending = true) => {
-  // Check if both values are empty
-  if (!a && !b) {
-    return 0; // No change in order
-  }
-  
-  // Check if one of the values is empty
-  if (!a) {
-    return 1; // a is empty, so it should come after b
-  }
-  if (!b) {
-    return -1; // b is empty, so it should come after a
-  }
-
-  // Both values are not empty, perform regular comparison
-  if (ascending) {
-    return a - b;
-  } else {
-    return b - a;
-  }
+    const numA = parseFloat(a[col]);
+    const numB = parseFloat(b[col]);
+    return sortOrder === 'ascend' ? numA - numB : numB - numA;
 };
+
+
+
 
 export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{
 

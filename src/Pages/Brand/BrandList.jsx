@@ -65,7 +65,7 @@ const BrandList = () => {
       title:<span className="dragHandler">Password</span>,
       dataIndex: 'user_password',
       key: '3',
-      sorter: (a, b) => a.user_password - b.user_password,
+      sorter: (a, b) => ColumnSorter(a.user_password , b.user_password),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

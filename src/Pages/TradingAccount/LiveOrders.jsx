@@ -20,8 +20,8 @@ const LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSize
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
-  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage)
-  const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency)
+  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '1', title: '1:1' }
+  const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
   const location = useLocation()
   const { pathname } = location
 
