@@ -363,6 +363,8 @@ const CloseOrder = () => {
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
+          editPermissionName="close_orders_update"
+          deletePermissionName="close_orders_delete"
         />
       </div>
     </Spin>

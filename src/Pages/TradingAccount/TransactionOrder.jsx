@@ -457,6 +457,8 @@ const TransactionOrder = () => {
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
+            editPermissionName="transaction_orders_update"
+            deletePermissionName="transaction_orders_delete"
           />
         </div>
 

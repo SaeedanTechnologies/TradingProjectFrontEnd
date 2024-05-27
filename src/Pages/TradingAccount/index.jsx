@@ -67,7 +67,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Trading Group Id</span>,
       dataIndex: 'trading_group_id',
       key: '2',
-      sorter: (a, b,sortOrder) => ColumnSpaceSorter(a, b, 'trading_group_id', sortOrder ),
+      sorter: (a, b) => ColumnSpaceSorter(a.trading_group_id, b.trading_group_id ),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -644,6 +644,8 @@ const [newColumns , setNewColumns] = useState(renderColumns)
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
+            editPermissionName="trading_account_list_update"
+            deletePermissionName="trading_account_list_delete"
         />
         </div>
         )}
@@ -662,8 +664,8 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           isUpated={isUpdated}
           setSelecetdIDs={setActiveAccountSelecetdIDs}
           setTableData = {setActiveAccountData}
-          // editPermissionName="active_account_group_update"
-          // deletePermissionName="active_account_group_delete"
+          editPermissionName="active_account_group_update"
+          deletePermissionName="active_account_group_delete"
           table_name= "trading_accounts"
           setSortDirection = {setSortDirection}
           setTotalRecords={setTotalRecords}
@@ -691,8 +693,8 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           isUpated={isUpdated}
           setSelecetdIDs={setMarginCallsSelecetdIDs}
           setTableData = {setMarginCallsData}
-          // editPermissionName="margin_call_trading_update"
-          // deletePermissionName="margin_call_trading_delete"
+          editPermissionName="margin_call_trading_update"
+          deletePermissionName="margin_call_trading_delete"
           table_name= "trading_accounts"
           setSortDirection = {setSortDirection}
           setTotalRecords={setTotalRecords}
