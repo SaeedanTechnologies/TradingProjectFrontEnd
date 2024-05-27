@@ -369,8 +369,8 @@ const Index = () => {
             setTableData = {setTradeGroupsData}
             isUpated={isUpdated}
             SearchQueryList = {SearchQueryList}
-            // editPermissionName="active_account_group_update"
-            // deletePermissionName="active_account_group_delete"
+            editPermissionName="active_account_group_update"
+            deletePermissionName="active_account_group_delete"
             setTotalRecords={setTotalRecords}
             table_name= "trading_groups"
             setSortDirection = {setSortDirection}

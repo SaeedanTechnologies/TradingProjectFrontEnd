@@ -4,7 +4,7 @@ import CustomTable from '../../components/CustomTable';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Delete_Trade_Order, Get_Trade_Order, Search_Live_Order } from '../../utils/_TradingAPICalls';
-import { ColumnSorter, CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { ColumnSorter, ColumnSpaceSorter, CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { setLiveOrdersSelectedIds,setLiveOrdersData, } from '../../store/TradeOrders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
@@ -314,6 +314,8 @@ const LiveOrders = () => {
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
+          editPermissionName="live_orders_update"
+          deletePermissionName="live_orders_delete"
         />
       </div>
     </Spin>

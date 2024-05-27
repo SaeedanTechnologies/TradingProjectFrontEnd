@@ -311,6 +311,9 @@ const TransactionOrders = () => {
               setCurrentPage={setCurrentPage}
               setLastPage={setLastPage}
               // brandId={userRole === 'brand' ? userBrand.public_key : null}
+               editPermissionName="transaction_orders_update"
+            deletePermissionName="transaction_orders_delete"
+           
               />
         </div>
          

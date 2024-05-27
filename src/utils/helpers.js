@@ -82,20 +82,32 @@ export const ColumnSorter = (a,b)=>{
 }
 
 
-export const ColumnSpaceSorter = (a, b, col, sortOrder) => {
+export const ColumnSpaceSorter = (a, b) => {
   // debugger
-  if (a[col] === null && b[col] === null) {
+  //  const valueA = a === null || a === undefined || a === '' ? Infinity : a;
+  // const valueB = b === null || b === undefined || b === '' ? Infinity : b;
+
+  // if (valueA === valueB) {
+  //   return 0;
+  // }
+
+  // return valueA < valueB ? -1 : 1;
+
+ if(a && b) {
+        return a - b;
+    } else if(a ) {
+        // That means be has null rechargeType, so a will come first.
+        return -1;
+    } else if(b) {
+        // That means a has null rechargeType so b will come first.
         return 1;
-    } else if (a[col] === null) {
-        return 1;  // Push `a` with null at the end
-    } else if (b[col] === null) {
-        return -1; // Push `b` with null at the end
     }
 
-    const numA = parseFloat(a[col]);
-    const numB = parseFloat(b[col]);
-    return sortOrder === 'ascend' ? numA - numB : numB - numA;
+    // Both rechargeType has null value so there will be no order change.
+    return 0;
+
 };
+
 
 
 

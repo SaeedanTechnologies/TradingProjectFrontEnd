@@ -274,6 +274,10 @@ const LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSize
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
+           
+            editPermissionName="live_orders_update"
+          deletePermissionName="live_orders_delete"
+            
           />
       </div>
     </Spin>
