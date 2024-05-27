@@ -119,7 +119,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
-      key: '2',
+      key: '3',
       sorter: (a, b) =>  ColumnSorter(a.symbol , b.symbol),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -131,7 +131,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Open Time</span>,
       dataIndex: 'open_time',
-      key: '2',
+      key: '4',
       sorter: (a, b) => ColumnSorter(a.open_time,b.open_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -144,7 +144,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
-      key: '2',
+      key: '5',
       sorter: (a, b) => ColumnSorter(a.type , b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -156,7 +156,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
-      key: '2',
+      key: '50',
       sorter: (a, b) =>  a.volume - b.volume,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -168,7 +168,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
-      key: '2',
+      key: '7',
       sorter: (a, b) => a.open_price - b.open_price,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -180,7 +180,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
-      key: '2',
+      key: '8',
       sorter: (a, b) => a.stopLoss - b.stopLoss,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -192,7 +192,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
-      key: '2',
+      key: '100',
       sorter: (a, b) => a.takeProfit - b.takeProfit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -204,7 +204,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Reason</span>,
       dataIndex: 'reason',
-      key: '2',
+      key: '20',
       sorter: (a, b) => ColumnSorter(a.reason,b.reason),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -216,7 +216,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
-      key: '2',
+      key: '24',
       sorter: (a, b) => a.swap - b.swap,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -228,7 +228,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
-      key: '2',
+      key: '29',
       sorter: (a, b) => a.profit - b.profit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -240,7 +240,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
-      key: '2',
+      key: '27',
       sorter: (a, b) => ColumnSorter(a.comment - b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {

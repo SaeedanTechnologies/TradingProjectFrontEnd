@@ -670,7 +670,7 @@ class DnDTable extends Component {
                   className="text-2xl font-semibold text-blue-500 cursor-pointer"
                   onClick={this.toggleCompleteSelect}
                 >
-                  {this.state.isCompleteSelect ? `Deselect All Data (${this.props.total})` : `Select All Data (${selectedRowKeys.length})`}
+                  {this.state.isCompleteSelect ? `Deselect All Data (${this.props.total})` : `Select All Data (${this.props.total})`}
                 </h1>
               }
           </div>

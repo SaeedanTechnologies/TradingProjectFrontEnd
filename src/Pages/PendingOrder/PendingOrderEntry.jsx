@@ -46,7 +46,7 @@ const PendingOrderEntry = () => {
     const [comment,setComment] = useState('');
     const [brand_id,setBrand_id] = useState('')
     const [trading_account_id,setTrading_account_id] = useState(0)
-
+    const [open_time, setTime] = useState("")
 
 
 
@@ -115,11 +115,10 @@ const PendingOrderEntry = () => {
         setComment(payload?.comment);
         setBrand_id(payload?.brand_id)
         setIsLoading(false)
+        setTime(payload.open_time)
       }
    
   }
-
-  
   const handleNext = () => {
     if (currentIndex < ArrangedPendingOrdersData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
@@ -186,7 +185,7 @@ const PendingOrderEntry = () => {
     setComment(payload?.comment);
     setBrand_id(payload?.brand_id)
     setTrading_account_id(payload?.trading_account_id)
-
+    setTime(payload.open_time)
     }
   }
 
@@ -214,6 +213,7 @@ const PendingOrderEntry = () => {
         type:  type.value ? type.value : '',
         volume: String(volume) ? String(volume) : '',
         comment,
+        open_time:time,
         takeProfit: String(takeProfit === "" ? "" : takeProfit),
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
         trading_account_id,
@@ -545,6 +545,16 @@ const handleLossChange = (newValue) => {
                 value={comment}
                 disabled={isDisabled}
                 onChange={e => setComment(e.target.value)}
+                 />
+            </div>
+            <div>
+              <label>Time</label>
+              <CustomTextField 
+              type="datetime-local"
+                varient={'standard'}
+                value={open_time}
+                disabled={isDisabled}
+                onChange={e => setTime(e.target.value)}
                  />
             </div>
 

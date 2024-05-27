@@ -188,12 +188,15 @@ const CloseOrderEntery = () => {
     if (success) {
       const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
       setSymbol(selectedSymbolList);
-      console.log(SymbolsList, "PAYLOAD")
     setOpen_price(payload.open_price);
     const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
     setOrder_type(selectedOrderType);
     const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
+    setOpenTime(payload?.open_time)
+    setCloseTime(payload?.close_time)
+    setOpen_price(payload?.open_price)
+    setClosePrice(payload?.close_price)
     setVolume(payload?.volume);
     setTakeProfit(payload?.takeProfit);
     setStopLoss(payload?.stopLoss);
@@ -469,7 +472,10 @@ const handleLossChange = (newValue) => {
                 disabled={isDisabled}
                 onChange={e => setOpen_price(e.target.value)}
                  />
-                 <CustomTextField label={'Profit'}
+                 
+            </div>
+            <div>
+            <CustomTextField label={'Profit'}
                 varient={'standard'}
                 value={profit}
                 disabled={isDisabled}
