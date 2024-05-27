@@ -48,12 +48,11 @@ const Index = () => {
       dataIndex: 'name',
       key: '1',
       sorter:(a, b) =>  ColumnSorter(a.name,b.name),
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
-        ////
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
@@ -61,35 +60,35 @@ const Index = () => {
       dataIndex: 'brands_name',
       key: '2',
       sorter:(a, b) =>  ColumnSorter(a.brands_name,b.brands_name),
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
-    {
-      title:<span className="dragHandler">Brand Id</span>,
-      dataIndex: 'brand_id',
-      key: '3',
-      sorter: (a, b) => a?.brand_id - b?.brand_id,
-      sortDirections: ['ascend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
-    },
+    // {
+    //   title:<span className="dragHandler">Brand Id</span>,
+    //   dataIndex: 'brand_id',
+    //   key: '3',
+    //   sorter: (a, b) => a?.brand_id - b?.brand_id,
+    //   sortDirections: ['ascend', 'descend'],
+    //   sortIcon: (sortDir) => {
+    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+    //   },
+    // },
     {
       title:<span className="dragHandler">Symbol Group</span>,
       dataIndex: 'symbel_group',
       key: '4',
       // sorter:(a, b) =>  ColumnSorter(a.symbel_groups,b.symbel_groups),
-      sortDirections: ['ascend'], 
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
        render: (_, { symbel_groups }) => (
         <>
@@ -113,11 +112,11 @@ const Index = () => {
         navigate('/trading-group/mb-to')
       }}  style={{ color: colorPrimary, fontWeight: '600' }}>View Details</span>,
       // sorter:(a, b) =>  ColumnSorter(a.MBS,b.MBS),
-      sortDirections: ['ascend'],
+     sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     
     },
@@ -140,11 +139,11 @@ const Index = () => {
         </span>
       ),
       // sorter:(a, b) =>  ColumnSorter(a.MDW,b.MDW),
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
 
@@ -163,11 +162,11 @@ const Index = () => {
         }
         return ratioA[0] - ratioB[0];
       },
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
@@ -175,11 +174,11 @@ const Index = () => {
       dataIndex: 'mass_swap',
       key: '8',
       sorter: (a, b) => a?.mass_swap - b?.mass_swap,
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
@@ -193,11 +192,11 @@ const Index = () => {
         )
       },
       // sorter:(a, b) =>  ColumnSorter(a.trading_accounts,b.trading_accounts),
-      sortDirections: ['ascend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
 
     },

@@ -54,7 +54,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">LoginID</span>,
       dataIndex: 'login_id',
       key: '1',
-      sorter: (a, b) => a.login_id - b.login_id,
+      sorter: (a, b) => ColumnSorter(a.login_id , b.login_id),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -67,16 +67,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Trading Group Id</span>,
       dataIndex: 'trading_group_id',
       key: '2',
-      sorter: (a, b) => {
-      const { trading_group_id: aTradingGroupId } = a;
-      const { trading_group_id: bTradingGroupId } = b;
-
-      // Detect sort order to determine ascending or descending
-      const sortOrder = a.sortOrder || 'ascend'; // Default to ascending
-      const ascending = sortOrder === 'ascend';
-
-      return ColumnSpaceSorter(aTradingGroupId, bTradingGroupId, ascending);
-    },
+      sorter: (a, b,sortOrder) => ColumnSpaceSorter(a, b, 'trading_group_id', sortOrder ),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -89,7 +80,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">{userRole === 'admin' ? 'Brand' : 'Customer'}</span>,
       dataIndex: `${userRole === 'admin' ? 'brand_name' : 'brand_customer_name'}`,
       key: '3',
-      sorter:(a, b) =>  ColumnSorter(userRole === 'admin' ? (a.brand_name, b.brand_name) : (a.brand_customer_name, b.brand_customer_name)),
+      sorter:(a, b) =>  (userRole === 'admin' ? ColumnSorter(a.brand_name, b.brand_name) : ColumnSorter(a.brand_customer_name, b.brand_customer_name)),
       // sorter: (a, b) => {userRole === 'admin' ? a.brand?.length - b.brand?.length : a.customer?.length - b.customer?.length},
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -246,7 +237,7 @@ const Index = ({ title, direction }) => {
      title:<span className="dragHandler">Registration Time</span>,
       dataIndex: 'registration_time',
       key: '15',
-      sorter: (a, b) => a.registration_time - b.registration_time,
+      sorter: (a, b) => ColumnSorter(a.registration_time , b.registration_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -258,7 +249,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Last Access Time</span>,
       dataIndex: 'last_access_time',
       key: '16',
-      sorter: (a, b) => a.last_access_time - b.last_access_time,
+      sorter: (a, b) =>   ColumnSorter(a.last_access_time , b.last_access_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -270,7 +261,7 @@ const Index = ({ title, direction }) => {
       title:<span className="dragHandler">Last Access IP</span>,
       dataIndex: 'last_access_address_IP',
       key: '17',
-      sorter: (a, b) => a.last_access_address_IP - b.last_access_address_IP,
+      sorter: (a, b) =>  ColumnSorter(a.last_access_address_IP , b.last_access_address_IP),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

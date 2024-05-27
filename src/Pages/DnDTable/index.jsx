@@ -188,6 +188,7 @@ class DnDTable extends Component {
           this.setState({isSearching: true})
           this.props.LoadingHandler(true)
           this.handleClearSearch()
+          
           setTimeout(()=>{
             this.setState({ data: this.props.data });
             this.props.LoadingHandler(false)
