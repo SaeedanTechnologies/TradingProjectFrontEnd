@@ -35,7 +35,7 @@ const TradingAccountPendingOrderEntry = () => {
     const [symbolsList, setSymbolsList] = useState([])
     const [symbol, setSymbol] = useState(null);
     const [pricing, setPricing] = useState({ openPrice: 0, askPrice: 0 });
-    const [open_price,setOpen_price] = useState(0);
+    const [open_price,setOpen_price] = useState("");
     const [order_type, setOrder_type] = useState(null);
     const [type,setType] = useState(null);
     const [volume,setVolume] = useState(0.01);
@@ -487,7 +487,7 @@ const handleLossChange = (newValue) => {
                         disabled={isDisabled}
                         sx={numberInputStyle}
                         varient={'standard'}
-                        onChange={e => handleInputChange('open_price', e.target.value)}
+                        onChange={(e) => setOpen_price(e.target.value)}
                       />
                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
                     </div>
