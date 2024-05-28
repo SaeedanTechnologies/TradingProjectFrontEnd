@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import { Space, theme,Spin } from 'antd';
+import { Space, theme,Spin, Table } from 'antd';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
 import { useSelector } from 'react-redux';
@@ -10,16 +10,20 @@ import { CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { setCloseOrdersSelectedIds,setCloseOrdersData } from '../../store/TradingAccountListSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { ColumnSorter } from '../../utils/helpers';
+import { MinusCircleOutlined  } from '@ant-design/icons';
+import { CurrenciesList } from '../../utils/constants';
 
 
-const CloseOrder = () => {
+const CloseOrder = ({totalSwap, grandProfit}) => {
   
 
   const token = useSelector(({user})=> user?.user?.token )
   const {token: { colorBG, TableHeaderColor, colorPrimary  },} = theme.useToken();
   const [isLoading,setIsLoading] = useState(false)
   const [closeOrders,setCloseOrders] = useState([])
-  const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+  const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
+  const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
 
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -272,6 +276,22 @@ const CloseOrder = () => {
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token = {token}
+            summary={() => (
+              <Table.Summary fixed>
+                <Table.Summary.Row className='bg-gray-300'>
+                  <Table.Summary.Cell index={0} colSpan={10}>
+                  <span className='text-sm font-bold text-arial'>
+                      <MinusCircleOutlined /> 
+                      Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
+                      Credit: {parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
+                      Bonus: {parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
+                      </span>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{grandProfit}</Table.Summary.Cell>
+                </Table.Summary.Row>
+              </Table.Summary>
+            )}
             isUpated={isUpdated}
             setSelecetdIDs={setCloseOrdersSelectedIds}
             setTableData = {setCloseOrdersData}

@@ -30,7 +30,7 @@ const TransactionOrder = () => {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
   const dispatch = useDispatch()
-  const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0])
   const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state) => state?.user?.user?.user?.permissions)
   const currentTradingAccountData = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData)

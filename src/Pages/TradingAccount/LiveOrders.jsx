@@ -14,12 +14,14 @@ import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
 
-const LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
- 
-  const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id)
+const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
+  const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0])
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const test = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData)
+  console.log(test, "TESTTTTTTT")
+  console.log(balance)
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '1', title: '1:1' }
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
   const location = useLocation()
@@ -143,7 +145,7 @@ const LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSize
   };
 
  const onPageChange = (page) =>{
-      // fetchLiveOrder(page)
+      fetchLiveOrder(page)
   }
   // const CancelLiveOrder = async (id) => {
 

@@ -140,7 +140,7 @@ const PendingOrder = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-
+//
     },
     {
       title:<span className="dragHandler">SL</span>,
@@ -403,26 +403,6 @@ const PendingOrder = () => {
     const LoadingHandler = React.useCallback((isLoading)=>{
     setIsLoading(isLoading)
   },[])
-
-
-
-
-
-  useEffect(() => {
-    const newCols = columns.filter(x => checkedList.includes(x.key));
-    setNewColumns(newCols)
-    }, [checkedList]);
-
-  useEffect(() => {
-    setIsUpdated(true)
-
-    // if(userRole === 'brand' ){
-    //   fetchPendingOrders(userBrand.public_key,CurrentPage)
-    // }
-    // else{
-    //   fetchPendingOrders(null,CurrentPage)
-    // }
-  }, [])
 
   return (
     <Spin spinning={isLoading} size="large">

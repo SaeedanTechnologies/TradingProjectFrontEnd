@@ -22,7 +22,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
-    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && direction !=='/single-trading-accounts/details/live-order'  && {
+    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName)  && {
       key: '3',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
@@ -34,7 +34,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
       ),
     },
-    (selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName) && direction ==='/single-trading-accounts/details/live-orders') &&{
+    (selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName) && direction ==='/single-trading-accounts/details/live-order-entry') &&{
       key: '5',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassCloseOrdersHandler}>   Close  </button>
@@ -58,7 +58,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
     </div>
     <div>
      {
-      direction !== "/single-trading-accounts/details/live-orders" && <Select
+      direction !== "/single-trading-accounts/details/live-order-entry" && <Select
       style={{ width: 120 }}
       className='mr-3'
       onChange={handleChange}

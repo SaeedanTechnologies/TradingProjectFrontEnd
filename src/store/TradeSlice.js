@@ -8,9 +8,9 @@ export const tradingSlice = createSlice({
   tradingAccountsData: []
 },
   reducers: {
-    setAccountID: (state,action) => {
-      state.trading_account_id = action.payload
-    },
+    // setAccountID: (state,action) => {
+    //   state.trading_account_id = action.payload
+    // },
       setSelectedTradingAccountsIDs: (state,action) => {
         state.selectedRowsIds = action.payload
     },

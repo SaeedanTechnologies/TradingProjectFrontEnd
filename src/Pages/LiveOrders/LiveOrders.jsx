@@ -290,7 +290,7 @@ const LiveOrders = () => {
     <Spin spinning={isLoading} size="large">
       <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
         <h1 className='text-2xl font-bold'>Live Orders</h1>
-
+          
          <CustomTable
           direction="/live-orders-entry"
           formName = "Live Orders" 

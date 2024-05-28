@@ -217,15 +217,15 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
   const handleSubmit = (typeReceive) => {
       const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
       const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
-      const margin = calculateMargin(res, accountLeverage)
-      if(margin > balance || balance === 0 ){
-      CustomNotification({ 
-        type: "error", 
-        title: "Validation", 
-        description: 'Margin must be less than your balance', 
-        key: 1 
-      })
-      }else{
+      // const margin = calculateMargin(res, accountLeverage)
+      // if(margin > balance || balance === 0 ){
+      // CustomNotification({ 
+      //   type: "error", 
+      //   title: "Validation", 
+      //   description: 'Margin must be less than your balance', 
+      //   key: 1 
+      // })
+      // }else{
         balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
         createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
         typeReceive === 'buy' ? 
@@ -236,7 +236,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
         createOrder(typeReceive)
         :
         CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
-      }
+      // }
    
   }
 

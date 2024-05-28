@@ -61,20 +61,35 @@ const CustomNumberTextField = ({
 
   const handleChange = (event) => {
     const newValue = event.target.value;
-    // const even = parseFloat(parseFloat(newValue) % 2).toFixed(2)
-    const rem = parseFloat(parseFloat(newValue) % step).toFixed(2)
-    
-    if (!isNaN(newValue) && (parseFloat(newValue) === max || (parseFloat(newValue) >= min && parseFloat(newValue) <= max && parseFloat(rem) === min))) {
+    if (!isNaN(newValue)) {
+      if (parseFloat(newValue) >= min && parseFloat(newValue) <= max) {
+        setCurrentValue(newValue);
+        onChange(newValue);
+        setError('');
+      } else {
+        setCurrentValue(newValue);
+        setError(`${newValue} is outside the valid range [${min}, ${max}]`);
+        CustomNotification({ type: "error", title: "Live Order", description: `${newValue} is outside the valid range [${min}, ${max}]`, key: 1 });
+      }
+    } else {
       setCurrentValue(newValue);
-      onChange(newValue)
-      setError('');
-    }
-    else {
-      setCurrentValue(newValue);
-      // alert('invalid value')
       setError(`${newValue} is an Invalid Value`);
-      CustomNotification({ type: "error", title: "Live Order", description: `${newValue} is an Invalid Value`, key: 1 })
+      CustomNotification({ type: "error", title: "Live Order", description: `${newValue} is an Invalid Value`, key: 1 });
     }
+    // const newValue = event.target.value;
+    // // const even = parseFloat(parseFloat(newValue) % 2).toFixed(2)
+    // const rem = parseFloat(parseFloat(newValue) % step).toFixed(2)
+    // if (!isNaN(newValue) && (parseFloat(newValue) === max || (parseFloat(newValue) >= min && parseFloat(newValue) <= max && parseFloat(rem) === min))) {
+    //   setCurrentValue(newValue);
+    //   onChange(newValue)
+    //   setError('');
+    // }
+    // else {
+    //   setCurrentValue(newValue);
+    //   // alert('invalid value')
+    //   setError(`${newValue} is an Invalid Value`);
+    //   CustomNotification({ type: "error", title: "Live Order", description: `${newValue} is an Invalid Value`, key: 1 })
+    // }
     // if (isFirstClick.current) {
     //   if (!isNaN(initialFromState) && initialFromState >= min && initialFromState <= max) {
     //     setCurrentValue(initialFromState);

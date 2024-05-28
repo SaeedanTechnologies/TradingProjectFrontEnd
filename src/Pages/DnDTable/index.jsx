@@ -21,7 +21,6 @@ const ResizableTitle = (props) => {
   if (!width) {
     return <th {...restProps} />;
   }
-
   return (
     <Resizable
       width={width}
@@ -43,7 +42,6 @@ const ResizableTitle = (props) => {
 };
 
 class DnDTable extends Component {
-
   constructor(props) {
     super(props);
     this.inputRef = createRef();
@@ -85,9 +83,7 @@ class DnDTable extends Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.handleClearSearch = this.handleClearSearch.bind(this)
     this.calculateItemRange = this.calculateItemRange.bind(this)
-
     const that = this;
-
     this.dragProps = {
       onDragEnd(fromIndex, toIndex) {
         if (that.state.isRearangments) {
@@ -112,11 +108,10 @@ class DnDTable extends Component {
       ignoreSelector: "react-resizable-handle",
     };
   }
-
   async SearchHandler(currentPage){
-  //  this.setState({isLoading: true})
+    //  this.setState({isLoading: true})
     // debugger
-  const queryParams = {
+    const queryParams = {
       ...this.state.searchValues,
       ...this.props.SearchQueryList
     }
@@ -143,30 +138,30 @@ class DnDTable extends Component {
   componentDidMount() {
     this.useEffect()
   }
-  createButtonAndHR = () => {
-    const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
-    if (firstColumnHeaderCell && !this.state.buttonCreated) {
-      const hr = document.createElement('hr');
-      hr.classList.add("custom-line");
-      firstColumnHeaderCell.appendChild(hr);
+  // createButtonAndHR = () => {
+  //   const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
+  //   if (firstColumnHeaderCell && !this.state.buttonCreated) {
+  //     const hr = document.createElement('hr');
+  //     hr.classList.add("custom-line");
+  //     firstColumnHeaderCell.appendChild(hr);
 
-      const button = document.createElement('button');
-      button.classList.add('custom-button');
-      button.innerText = 'Search'; // Set initial button text
-      button.style.backgroundColor = '#1CAC70'; // Set initial button color
-      button.addEventListener('click', this.handleButtonClick);
-      firstColumnHeaderCell.appendChild(button);
+  //     const button = document.createElement('button');
+  //     button.classList.add('custom-button');
+  //     button.innerText = 'Search'; // Set initial button text
+  //     button.style.backgroundColor = '#1CAC70'; // Set initial button color
+  //     button.addEventListener('click', this.handleButtonClick);
+  //     firstColumnHeaderCell.appendChild(button);
 
-      this.setState({ buttonCreated: true });
-    }
-  };
+  //     this.setState({ buttonCreated: true });
+  //   }
+  // };
+  
   handleClearSearch = () => {
     const clearedSearchValues = {};
     const inputRefs = Object.keys(this.state.searchValues);
     inputRefs.forEach((key) => {
       clearedSearchValues[key] = '';
     });
-    console.log(clearedSearchValues, "STATE VALUES")
     this.setState({ searchValues:clearedSearchValues, isSearching: true })
     document.getElementById("search-input").value = ''
     this.SearchHandler(this.props.current)
@@ -341,7 +336,7 @@ class DnDTable extends Component {
       this.props.dispatch(this.props.setSelecetdIDs([this.props.column_name? record[this.props.column_name] : record.id]))
       if(this.props.direction === "/single-trading-accounts/details/live-order"){
         this.props.dispatch(setTradingAccountGroupData(record))
-        this.props.dispatch(setAccountID(record.id))
+        // this.props.dispatch(setAccountID(record.id))
       }
       this.props.navigate(this.props.direction);
   };
@@ -794,7 +789,7 @@ class DnDTable extends Component {
         loading={this.state.isLoading}
         />
         <CustomButton
-         Text={'Cancle'}
+         Text={'Cancel'}
          style={{
           padding: '12px',
           height: '40px',

@@ -7,9 +7,9 @@ export const marginCallsSlice = createSlice({
   marginCallsData: []
 },
   reducers: {
-    setMarginCallsSelecetdIDs: (state,action) => {
-        state.selectedRowsIds = action.payload
-    },
+    // setMarginCallsSelecetdIDs: (state,action) => {
+    //     state.selectedRowsIds = action.payload
+    // },
     setMarginCallsData: (state, action)=>{
       let newData = [...state.marginCallsData];
         action.payload.forEach(newItem => {

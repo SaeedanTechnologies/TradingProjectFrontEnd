@@ -7,9 +7,9 @@ export const activeAccountSlice = createSlice({
   activeAccountData: []
 },
   reducers: {
-    setActiveAccountSelecetdIDs: (state,action) => {
-        state.selectedRowsIds = action.payload
-    },
+    // setActiveAccountSelecetdIDs: (state,action) => {
+    //     state.selectedRowsIds = action.payload
+    // },
     setActiveAccountData: (state, action)=>{
       let newData = [...state.activeAccountData];
         action.payload.forEach(newItem => {
