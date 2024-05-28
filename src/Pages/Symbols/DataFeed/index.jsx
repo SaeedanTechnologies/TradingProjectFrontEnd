@@ -23,7 +23,7 @@ const Index = () => {
       const res = await GetDataFeeds(token)
       const { data: { payload, message, success } } = res
       setIsLoading(false)
-      debugger
+      // debugger
       if (success) {
         setDataFeedList(payload.data)
       }

@@ -57,8 +57,8 @@ const fetchSingleTradeAccount= async()=>{
       setIsLoading(true)
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res
-      
-      const { data: {payload:customersList } } = await GetAllBrandsCustomerList(token, tradingAccountGroupData?.brand_public_key)
+      // debugger
+      const { data: {payload:customersList } } = await GetAllBrandsCustomerList(token, tradingAccountGroupData?.brand_id)
       setBrandCustomerList(customersList)
 
 

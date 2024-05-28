@@ -194,7 +194,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
         setIsLoading(false)
         fetchData(null, connected, 0); //to stop connection when no symbol is selected
         CustomNotification({ type: "success", title: "Live Order", description: message, key: 1 })
-        CurrentPage && fetchLiveOrder(CurrentPage)
+        // CurrentPage && fetchLiveOrder(CurrentPage)
         clearFields()
       }
       else {

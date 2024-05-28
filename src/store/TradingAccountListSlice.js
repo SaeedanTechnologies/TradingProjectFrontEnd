@@ -18,7 +18,6 @@ export const tradingAccountSlice = createSlice({
         state.selectedLiveOrdersRowsIds = action.payload
     },
     setLiveOrdersData: (state, action)=>{
-
       state.liveOrdersData = action.payload.sort((a, b) => a.id - b.id)
     }, 
      updateLiveOrder : (state, action) => {
