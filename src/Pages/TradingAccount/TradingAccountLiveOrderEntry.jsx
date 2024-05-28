@@ -48,7 +48,6 @@ const TradingAccountLiveOrderEntry = () => {
 
 
 
-
   const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -222,6 +221,7 @@ const TradingAccountLiveOrderEntry = () => {
         order_type: order_type?.value||'',
         type:  type?.value||'',
         volume: String(volume)||'',
+        open_price :String(open_price) || "",
         comment,
         takeProfit: String(takeProfit === "" ? "" : takeProfit),
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
@@ -291,7 +291,9 @@ const TradingAccountLiveOrderEntry = () => {
 const handleVolumeChange = (newValue) => {
     setVolume(newValue)
   }
-
+  const handleOpenPriceChange = (newValue) => {
+    setOpen_price(newValue)
+  }
 const handleProfitChange = (newValue) => {
     setTakeProfit(newValue);
   };
@@ -510,7 +512,17 @@ const handleLossChange = (newValue) => {
                     />
                 {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
             </div>
-
+            <div>
+              <CustomNumberTextField
+                      label="Open Price"
+                      value={open_price}
+                      initialFromState={0.01}
+                      onChange={handleOpenPriceChange}
+                      disabled={isDisabled}
+                      fullWidth
+                    />
+                {errors.volume && <span style={{ color: 'red' }}>{errors.open_price}</span>}
+            </div>
             <div>
             <CustomStopLossTextField
             label="Take Profit"
