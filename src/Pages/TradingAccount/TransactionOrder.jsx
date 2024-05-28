@@ -38,7 +38,8 @@ const TransactionOrder = () => {
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
   const [SearchQueryList,SetSearchQueryList]= useState({})
-
+  const [email,setEmail] =  useState('')
+  const [country,setCountry] = useState("")
   const [transactionOrders, setTransactionOrders] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [method, setMethod] = useState('')
@@ -46,6 +47,8 @@ const TransactionOrder = () => {
   const [amount, setAmount] = useState('')
   const [comment, setComment] = useState('')
   const [brandId, setBrandId] = useState(-1)
+  const [name,setName]  = useState("")
+  const [phone,setPhone] = useState("")
   const [OperationsList, setOperationList] = useState([
     { "label": "Balance", "value": "balance" },
     { "label": "Commission", "value": "commission" },
@@ -195,7 +198,7 @@ const TransactionOrder = () => {
   }
 
   const handleSubmit = async (type) => {
-    // handle sumbit
+    // debugger
     let isApplicable = true;
 
     if ( type === 'withdraw') {
@@ -221,7 +224,10 @@ const TransactionOrder = () => {
         amount,
         comment,
         currency,
-        name: null,
+        name,
+        email,
+        phone,
+        country,
         group: null,
         type,
         status: "requested",
@@ -276,7 +282,6 @@ const TransactionOrder = () => {
   }
 
   const fetchSingleTradeAccount = async () => {
-
     setIsLoading(true)
     const res = await Get_Single_Trading_Account(trading_account_id, token)
     const { data: { message, payload, success } } = res
@@ -286,6 +291,10 @@ const TransactionOrder = () => {
     if (success) {
       setCurrency(payload?.currency)
       setBrandId(payload?.brand_id)
+      setName(payload?.name)
+      setEmail(payload?.email)
+      setPhone(payload?.phone)
+      setCountry(payload?.country)
 
 
     }

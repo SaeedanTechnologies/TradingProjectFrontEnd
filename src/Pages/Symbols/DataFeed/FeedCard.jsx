@@ -14,7 +14,7 @@ const FeedCard = ({ feedName, feedServer, id, fetchData, enabled }) => {
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
-  debugger
+  // debugger
   return (
     <div className='bg-white border rounded-lg p-4'>
       <div className='flex justify-between'>

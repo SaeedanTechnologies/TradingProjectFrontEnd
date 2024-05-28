@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
-import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer } from '../../utils/helpers';
+import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, ColumnSorter } from '../../utils/helpers';
 import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
@@ -42,81 +42,137 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
       key: '1',
-      sorter: (a, b) => a.symbol.length - b.symbol.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) =>  ColumnSorter(a.symbol , b.symbol),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {  
       title:<span className="dragHandler">Time</span>,
       dataIndex: 'created_at',
       key: '2',
       render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm:ss')}</span>,
-      sorter: (a, b) => a.time.length - b.time.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) =>  ColumnSorter(a.created_at , b.created_at),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     
     },
     {
       title: <span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: 'type',
-      sorter: (a, b) => a.time.length - b.time.length,
-      sortDirections: ['ascend'],
+      
+      sorter: (a, b) =>  ColumnSorter(a.type , b.type),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
       render: (text)=> <span className={`${text === 'sell' ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     {
       title: <span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: 'volume',
-      sorter: (a, b) => a.volume.length - b.volume.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.volume , b.volume),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {
       title: <span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: 'stopLoss',
-      sorter: (a, b) => a?.stopLoss.length - b?.stopLoss.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.stopLoss , b.stopLoss),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {
       title: <span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: 'takeProfit',
-      sorter: (a, b) => a?.takeProfit.length - b?.takeProfit.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.takeProfit , b.takeProfit),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {
       title: <span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: 'open_price',
-      sorter: (a, b) => a.open_price.length - b.open_price.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.open_price , b.open_price),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {
       title: <span className="dragHandler">Current Price</span>,
       dataIndex: 'currentPrice',
       key: 'currentPrice',
-      sorter: (a, b) => a.currentPrice.length - b.currentPrice.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.currentPrice , b.currentPrice),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {
       title: <span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: 'comment',
-      sorter: (a, b) => a.comment.length - b.comment.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.comment , b.comment),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {
       title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: 'swap',
-      sorter: (a, b) => a.profit.length - b.profit.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.swap , b.swap),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
     },
     {
       title: <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: 'profit',
-      sorter: (a, b) => a.profit.length - b.profit.length,
-      sortDirections: ['ascend'],
+      sorter: (a, b) => ColumnSorter(a.profit , b.profit),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
    
