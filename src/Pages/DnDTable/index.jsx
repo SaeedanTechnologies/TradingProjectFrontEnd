@@ -231,7 +231,7 @@ class DnDTable extends Component {
         }
       })
       const Params = {
-        names:[this.props.formName]
+        names:[this.props.formName + this.props.user.id]
       }
       // this.setState({dropDownColumns: ColumnsData, selectedColumns: ColumnsData})
       this.setState({isLoading: true})
@@ -572,7 +572,7 @@ class DnDTable extends Component {
   try{
     const Params = {
       data:{
-      name: this.props.formName,
+      name: this.props.formName + this.props.user.id,
      
     }}
     const ColumnsData = this.state.columns.map(x=>{
@@ -750,7 +750,7 @@ class DnDTable extends Component {
           {this.calculateItemRange()}
         </div>
         <CustomModal
-          title={this.props.formName+' - Add Remove Columns'}
+          title={this.props.formName + ' - Add Remove Columns'}
           isModalOpen={this.state.isAddRemove}
           footer={[]}
           width={600}

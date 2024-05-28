@@ -46,6 +46,7 @@ const BrandList = () => {
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
+   
     {
      
       title:<span className="dragHandler">Domain</span>,
@@ -59,12 +60,23 @@ const BrandList = () => {
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
-    
+     {
+      title:<span className="dragHandler">Username</span>,
+      dataIndex: 'user_name',
+      key: '3',
+      sorter:(a, b) =>  ColumnSorter(a.user_name,b.user_name),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
    
     {
       title:<span className="dragHandler">Password</span>,
       dataIndex: 'user_password',
-      key: '3',
+      key: '4',
       sorter: (a, b) => ColumnSorter(a.user_password , b.user_password),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -78,7 +90,7 @@ const BrandList = () => {
       
       title:<span className="dragHandler">Authorization Key</span>,
       dataIndex: 'public_key',
-      key: '4',
+      key: '5',
       render: (_, record) => (
 
         <Stack direction="row" justifyContent={'space-between'} alignItems={'center'}>
@@ -93,19 +105,13 @@ const BrandList = () => {
           </Space>
         </Stack>
       ),
-      sorter: (a, b) => a.public_key - b.public_key,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
+    
     },
     {
  
       title:<span className="dragHandler">Margin Calls</span>,
       dataIndex: 'margin_call',
-      key: '5',
+      key: '6',
       sorter: (a, b) => a.margin_call - b.margin_call,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -119,7 +125,7 @@ const BrandList = () => {
  
       title:<span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
-      key: '6',
+      key: '7',
       sorter:(a, b) => {
         // Split the ratio values and parse them as numbers
         const ratioA = a.leverage.split(':').map(Number);
@@ -142,7 +148,7 @@ const BrandList = () => {
      {
       title:<span className="dragHandler">Action</span>,
       dataIndex: 'permission', 
-      key: '7',
+      key: '8',
       render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
      },
   ];
@@ -205,7 +211,7 @@ const BrandList = () => {
 
   const openPermissions = (user)=>{
     navigate('/brand-permissions')
-    const payload = { user_id:user.user_id,permissions:user.permissions} 
+    const payload = { user_id:user.user_id,permissions:user.user.permissions} 
     dispatch(setBrandUser(payload))
   }
 

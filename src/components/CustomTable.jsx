@@ -4,7 +4,7 @@ import { Button, Input, Space, Table, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
 import DnDTable from '../Pages/DnDTable';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 
 const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData,setCurrentData, setTotalRecords,setCurrentPage, setLastPage,
@@ -13,6 +13,11 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
   
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+    const user = useSelector((state)=>state?.user?.user?.user)
+
+
+
   const handlePageChange = (page) => {
     onPageChange(page);
   };
@@ -63,6 +68,7 @@ const CustomTable = ({ columns, data, current_page, total, headerStyle, onPageCh
           brandId={brandId}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
+          user={user}
         />
         {/* {
           direction !== "/single-trading-accounts/details/live-orders" &&  <div style={{ textAlign: 'right', marginTop: 16 }}>

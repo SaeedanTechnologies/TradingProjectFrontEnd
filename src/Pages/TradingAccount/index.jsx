@@ -26,6 +26,7 @@ const Index = ({ title, direction }) => {
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
+
   
   const [tradingAccountsList, setTradingAccountsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +40,8 @@ const Index = ({ title, direction }) => {
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
 
+
+  const [SearchQueryList,SetSearchQueryList]= useState({})
 
   const token = useSelector(({ user }) => user?.user?.token)
   const {
@@ -224,13 +227,13 @@ const Index = ({ title, direction }) => {
      title:<span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '14',
-      sorter:(a, b) =>  ColumnSorter(a.currency,b.currency),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
+      // sorter:(a, b) =>  ColumnSorter(a.currency,b.currency),
+      // sortDirections: ['ascend', 'descend'],
+      // sortIcon: (sortDir) => {
+      //   if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+      //   if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+      //   return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      // },
     },
     {
 
@@ -303,6 +306,7 @@ const Index = ({ title, direction }) => {
     setIsLoading(isLoading)
   },[])
   
+
  
 
   const fetchTradingAccounts = async (brandId,page) => {
@@ -535,65 +539,53 @@ const [newColumns , setNewColumns] = useState(renderColumns)
 
   useEffect(() => {
     setIsUpdated(true)
-  switch (direction) {
-    case 1:
       if (userRole === 'brand') {
-        fetchTradingAccounts(userBrand.public_key, CurrentPage);
+        SetSearchQueryList({brand_id:userBrand.public_key,CurrentPage})
       } else {
-        fetchTradingAccounts(null, CurrentPage);
-      }
-      break;
-    case 2:
-      if (userRole === 'brand') {
-        fetchActiveGroups(userBrand.public_key, CurrentPage);
-      } else {
-        fetchActiveGroups(null, CurrentPage);
-      }
-      break;
-    case 3:
-      if (userRole === 'brand') {
-        fetchMarginCalls(userBrand.public_key, CurrentPage);
-      } else {
-        fetchMarginCalls(null, CurrentPage);
-      }
-
-  }
-  const channel = pusher.subscribe('trading_accounts');
+        SetSearchQueryList({CurrentPage})
+        }
+     
+      const channel = pusher.subscribe('trading_accounts');
         channel.bind('update', (data) => {
-          const mData = [data]
-          console.log(data)
-          const isExist = !!marginCall.find(x => x.id === data.id);
-          // debugger
-          if(data.status === 'margin_call' && !isExist ){
-            const tradingAccounts = mData?.map((item) => ({
-              id: item.id,
-              loginId: item.login_id,
-              trading_group_id: item.trading_group_id,
-              country: item.country,
-              phone: item.phone,
-              email: item.email,
-              leverage: item.leverage,
-              balance: item.balance,
-              credit: item.credit,
-              equity: item.equity,
-              margin_level_percentage: item.margin_level_percentage,
-              profit: item.profit,
-              swap: item.swap,
-              currency: item.currency,
-              registration_time: item.registration_time,
-              last_access_time: item.last_access_time ? item.last_access_time : '...',
-              last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
-            }))
-            setMarginCall(tradingAccounts)
-          }
-          
+                const mData = [data]
+                console.log(data)
+                const isExist = !!marginCall.find(x => x.id === data.id);
+                // debugger
+                if(data.status === 'margin_call' && !isExist ){
+                  const tradingAccounts = mData?.map((item) => ({
+                    id: item.id,
+                    loginId: item.login_id,
+                    trading_group_id: item.trading_group_id,
+                    country: item.country,
+                    phone: item.phone,
+                    email: item.email,
+                    leverage: item.leverage,
+                    balance: item.balance,
+                    credit: item.credit,
+                    equity: item.equity,
+                    margin_level_percentage: item.margin_level_percentage,
+                    profit: item.profit,
+                    swap: item.swap,
+                    currency: item.currency,
+                    registration_time: item.registration_time,
+                    last_access_time: item.last_access_time ? item.last_access_time : '...',
+                    last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
+                  }))
+                  setMarginCall(tradingAccounts)
+                }
+                
         });
-  return () => {
-    channel.unbind('update');
-    pusher.unsubscribe('trading_accounts');
-  };
+  
+      return () => {
+        channel.unbind('update');
+        pusher.unsubscribe('trading_accounts');
+      };
 }, [direction]);
 
+
+  // useEffect(() => {
+  //   SetSearchQueryList({brand_id:userBrand.public_key,CurrentPage})
+  // }, [pathname])
 
   return (
     <Spin spinning={isLoading} size="large">
@@ -641,6 +633,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
             perPage={parseInt(perPage)}
             setPerPage={setPerPage}
             SearchQuery = {Search_Trading_Accounts_List}
+            SearchQueryList = {SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
@@ -672,6 +665,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           perPage={parseInt(perPage)}
           setPerPage={setPerPage}
           SearchQuery = {Search_Trading_Accounts_List}
+          SearchQueryList = {SearchQueryList}
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
@@ -701,6 +695,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           perPage={parseInt(perPage)}
           setPerPage={setPerPage}
           SearchQuery = {Search_Trading_Accounts_List}
+          SearchQueryList = {SearchQueryList}
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
