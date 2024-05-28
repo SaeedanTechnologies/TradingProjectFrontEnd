@@ -20,8 +20,6 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const test = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData)
-  console.log(test, "TESTTTTTTT")
-  console.log(balance)
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '1', title: '1:1' }
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
   const location = useLocation()
@@ -247,20 +245,20 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
                   <Table.Summary.Cell index={0} colSpan={10}>
-                  <span className='text-sm font-bold text-arial'>
+                    <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
-                      Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
-                      Equity: {calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName}  &nbsp;
-                      Credit: {parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
-                      Bonus: {parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
+                      Balance: {isNaN(balance) ? 0 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
+                      Equity: {isNaN(calculateEquity(balance, grandProfit, credit, bonus)) ? 0 : calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName} &nbsp;
+                      Credit: {isNaN(credit) ? 0 : parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
+                      Bonus: {isNaN(bonus) ? 0 : parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
                       {tradeOrder.length > 0  &&
-                      <span> Margin: {margin}</span>}&nbsp;
-                      Free Margin {calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus),margin)} &nbsp;
-                      {tradeOrder.length > 0  && <span>Margin Level:  {calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus),margin)} %</span>}
-                      </span>
+                      <span> Margin: {isNaN(margin) ? 0 : margin}</span>}&nbsp;
+                      Free Margin: {isNaN(calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)} &nbsp;
+                      {tradeOrder.length > 0  && <span>Margin Level: {isNaN(calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)} %</span>}
+                    </span>
                   </Table.Summary.Cell>
-                  <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>
-                  <Table.Summary.Cell>{grandProfit}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell>
                 </Table.Summary.Row>
               </Table.Summary>
             )}

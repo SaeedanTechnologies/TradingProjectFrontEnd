@@ -280,15 +280,15 @@ const CloseOrder = ({totalSwap, grandProfit}) => {
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
                   <Table.Summary.Cell index={0} colSpan={10}>
-                  <span className='text-sm font-bold text-arial'>
+                    <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
-                      Balance: {parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
-                      Credit: {parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
-                      Bonus: {parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
-                      </span>
+                      Balance: {isNaN(balance) ? 0.00 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
+                      Credit: {isNaN(credit) ? 0.00 : parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
+                      Bonus: {isNaN(bonus) ? 0.00 : parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
+                    </span>
                   </Table.Summary.Cell>
-                  <Table.Summary.Cell>{totalSwap}</Table.Summary.Cell>
-                  <Table.Summary.Cell>{grandProfit}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell>
                 </Table.Summary.Row>
               </Table.Summary>
             )}
