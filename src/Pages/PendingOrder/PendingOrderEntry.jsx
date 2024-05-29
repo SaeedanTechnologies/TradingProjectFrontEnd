@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Autocomplete, TextField,InputAdornment } from '@mui/material'
 import { EditOutlined } from '@mui/icons-material';
 import { numberInputStyle } from '../TradingAccount/style';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import { GenericEdit,GenericDelete } from '../../utils/_APICalls';
 import CustomNotification from '../../components/CustomNotification';
 import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '../../utils/_SymbolSettingAPICalls';
@@ -28,9 +28,12 @@ const PendingOrderEntry = () => {
   const PendingOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedPendingOrdersRowsIds )
   const PendingOrdersData = useSelector(({tradeOrders})=> tradeOrders.pendingOrdersData)
   const ArrangedPendingOrdersData = PendingOrdersData;
+
+
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
   
-  const {
-    token: { colorBG },} = theme.useToken();
+  const {token: { colorBG },} = theme.useToken();
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -340,15 +343,23 @@ const handleLossChange = (newValue) => {
           setIsDisabled(false)
         }}>   Edit </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'pending_orders_update')
+
     },
     {
       key: '2',
       label: (
         <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'pending_orders_delete')
+
     },
    
   ];
+
+    const filteredItems = items.filter(item => item.visible);
+
+
   const cancleHandler= ()=>{
     if(isDisabled){
       navigate('/close-orders')
@@ -379,17 +390,16 @@ const handleLossChange = (newValue) => {
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
             <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
-            <Dropdown
+            {!!filteredItems.length &&  (<Dropdown
               menu={{
-                items,
+                items : filteredItems,
               }}
               placement="bottom"
               arrow
               trigger={['click']}
-              
-            >
+              >
               <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
-          </Dropdown>
+          </Dropdown>)}
             </div>
           }
         
@@ -547,23 +557,8 @@ const handleLossChange = (newValue) => {
                 onChange={e => setComment(e.target.value)}
                  />
             </div>
-            <div>
-              <label>Time</label>
-              <CustomTextField 
-              type="datetime-local"
-                varient={'standard'}
-                value={open_time}
-                disabled={isDisabled}
-                onChange={e => setTime(e.target.value)}
-                 />
-            </div>
-
-
           </div>
           
-           
-
-
 
           {
             !isDisabled &&  <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>

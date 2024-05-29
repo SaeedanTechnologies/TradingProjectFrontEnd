@@ -54,6 +54,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+      visible: true,
     },
     {
       title:<span className="dragHandler">Brand Name</span>,
@@ -66,6 +67,8 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+      visible: userRole === 'admin' ? true : false,
+
     },
     // {
     //   title:<span className="dragHandler">Brand Id</span>,
@@ -78,6 +81,8 @@ const Index = () => {
     //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
     //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
     //   },
+    //   visible: true,
+
     // },
     {
       title:<span className="dragHandler">Symbol Group</span>,
@@ -100,7 +105,46 @@ const Index = () => {
             );
           })}
         </>
-      )
+      ),
+      visible: true,
+
+    },
+    {
+      title:<span className="dragHandler">Mass Laverage</span>,
+      dataIndex: 'mass_leverage',
+      key: '7',
+      sorter:(a, b) => {
+        // Split the ratio values and parse them as numbers
+        const ratioA = a.mass_leverage.split(':').map(Number);
+        const ratioB = b.mass_leverage.split(':').map(Number);
+        
+        // Compare the ratio values
+        if (ratioA[0] === ratioB[0]) {
+          return ratioA[1] - ratioB[1];
+        }
+        return ratioA[0] - ratioB[0];
+      },
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+      visible: true,
+
+    },
+     {
+      title:<span className="dragHandler">Mass Swap</span>,
+      dataIndex: 'mass_swap',
+      key: '8',
+      sorter: (a, b) => a?.mass_swap - b?.mass_swap,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+      visible: true,
 
     },
     {
@@ -118,6 +162,8 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+      visible: true,
+
     
     },
     {
@@ -145,42 +191,12 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+      visible: true,
+
     },
 
-    {
-      title:<span className="dragHandler">Mass Laverage</span>,
-      dataIndex: 'mass_leverage',
-      key: '7',
-      sorter:(a, b) => {
-        // Split the ratio values and parse them as numbers
-        const ratioA = a.mass_leverage.split(':').map(Number);
-        const ratioB = b.mass_leverage.split(':').map(Number);
-        
-        // Compare the ratio values
-        if (ratioA[0] === ratioB[0]) {
-          return ratioA[1] - ratioB[1];
-        }
-        return ratioA[0] - ratioB[0];
-      },
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
-    {
-      title:<span className="dragHandler">Mass Swap</span>,
-      dataIndex: 'mass_swap',
-      key: '8',
-      sorter: (a, b) => a?.mass_swap - b?.mass_swap,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+    
+   
     {
       title:<span className="dragHandler">Trading Accounts</span>,
       dataIndex: 'trading_accounts',
@@ -198,6 +214,7 @@ const Index = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+      visible: true,
 
     },
     // {
@@ -212,6 +229,7 @@ const Index = () => {
     // },
   ];
 
+  const filteredColumns = columns.filter((column) => column.visible !== false);
 //   const defaultCheckedList = columns.map((item) => item.key);
 // const [checkedList, setCheckedList] = useState(defaultCheckedList);
 // const [newColumns , setNewColumns] = useState(columns)
@@ -357,7 +375,7 @@ const Index = () => {
         </div>
         <CustomTable
             direction="/trading-group-entry"
-            columns={columns} 
+            columns={filteredColumns} 
             data={TradingAccounGroupList} 
             headerStyle={headerStyle}
             formName={'Trading Account Group'}
@@ -368,7 +386,6 @@ const Index = () => {
             setSelecetdIDs={setTradeGroupsSelectedIDs}
             setTableData = {setTradeGroupsData}
             isUpated={isUpdated}
-            SearchQueryList = {SearchQueryList}
             editPermissionName="active_account_group_update"
             deletePermissionName="active_account_group_delete"
             setTotalRecords={setTotalRecords}
@@ -377,6 +394,7 @@ const Index = () => {
             perPage={parseInt(perPage)}
             setPerPage={setPerPage}
             SearchQuery = {Search_Trading_Account_Group_List}
+            SearchQueryList={SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}

@@ -11,7 +11,7 @@ import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg'
 import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
 import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
 import { TransactionOrderEntryValidationSchema } from '../../utils/validations';
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
@@ -22,6 +22,7 @@ const TradingAccountTransactionOrderEntry = () => {
     const token = useSelector(({ user }) => user?.user?.token)
     const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+    const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const dispatch = useDispatch()
     const isCompleteSelect = localStorage.getItem("isCompleteSelect")
@@ -156,25 +157,25 @@ const TradingAccountTransactionOrderEntry = () => {
         } 
         }   
     },
-    {
-      id: 14, 
-      control:'CustomAutocomplete',
-      name:'SelectedGroup',   
-      label:'Select Group', 
-      varient: 'standard',
-      options:tradingAccountGroupList,
-      value:SelectedGroup,
-      getOptionLabel: (option) => option.name ? option.name : "",
-      onChange:(e,value) =>{
-        if(value){
-            setSelectedGroup(value)
-            setErrors(prevErrors => ({ ...prevErrors, SelectedGroup: "" }))
-        }
-        else{
-            setSelectedGroup(null)
-        } 
-        }
-    },
+    // {
+    //   id: 14, 
+    //   control:'CustomAutocomplete',
+    //   name:'SelectedGroup',   
+    //   label:'Select Group', 
+    //   varient: 'standard',
+    //   options:tradingAccountGroupList,
+    //   value:SelectedGroup,
+    //   getOptionLabel: (option) => option.name ? option.name : "",
+    //   onChange:(e,value) =>{
+    //     if(value){
+    //         setSelectedGroup(value)
+    //         setErrors(prevErrors => ({ ...prevErrors, SelectedGroup: "" }))
+    //     }
+    //     else{
+    //         setSelectedGroup(null)
+    //     } 
+    //     }
+    // },
     {
       id: 10, 
       control:'CustomAutocomplete',
@@ -406,15 +407,20 @@ else
           setIsDisabled(false)
         }}>   Edit </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'transaction_orders_update')
     },
     {
       key: '2',
       label: (
         <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
+     visible: CheckBrandPermission(userPermissions,userRole,'transaction_orders_delete')
+
     },
    
   ];
+
+  const filteredItems = items.filter(item => item.visible);
 
  const handleSubmit = async () => {
     try {
@@ -427,7 +433,6 @@ else
           name: name,
           phone: phone,
           SelectedType: SelectedType,
-          SelectedGroup: SelectedGroup,
           SelectedCurrency: SelectedCurrency,
           SelectedCountry: SelectedCountry,
           comment: comment,
@@ -442,7 +447,6 @@ else
         phone:phone,
         country:SelectedCountry?.label,
         type:SelectedType?.value,
-        group:SelectedGroup?.name,
         currency:SelectedCurrency?.value,
         method:SelectedMethod?.value,
         amount: amount,
@@ -508,12 +512,12 @@ else
             {/* toolbar */}
             {(isDisabled && TransactionOrdersIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
             {(TransactionOrdersIds?.length === 1 && parseInt(TransactionOrdersIds[0]) !== 0)  &&
-              <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
+             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
             {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
               {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
-              <Dropdown
+            {!! filteredItems.length  && <Dropdown
                 menu={{
-                  items,
+                   items: filteredItems,
                 }}
                 placement="bottom"
                 arrow
@@ -521,7 +525,7 @@ else
                 
               >
                 <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
-            </Dropdown>
+            </Dropdown> }
             </div>
             }
           

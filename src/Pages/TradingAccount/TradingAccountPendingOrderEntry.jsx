@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Autocomplete, TextField,InputAdornment } from '@mui/material'
 import { EditOutlined } from '@mui/icons-material';
 import { numberInputStyle } from './style';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import { GenericEdit,GenericDelete } from '../../utils/_APICalls';
 import CustomNotification from '../../components/CustomNotification';
 import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '../../utils/_SymbolSettingAPICalls';
@@ -26,6 +26,12 @@ const TradingAccountPendingOrderEntry = () => {
   const PendingOrdersRowsIds = useSelector(({ tradingAccount }) => tradingAccount.selectedPendingOrdersRowsIds )
   const PendingOrdersData = useSelector(({tradingAccount})=> tradingAccount.pendingOrdersData)
   const ArrangedPendingOrdersData = PendingOrdersData;
+
+
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
+
+
    const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const {
     token: { colorBG },} = theme.useToken();
@@ -338,15 +344,22 @@ const handleLossChange = (newValue) => {
           setIsDisabled(false)
         }}>   Edit </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'pending_orders_update')
     },
     {
       key: '2',
       label: (
         <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'pending_orders_delete')
+
     },
    
   ];
+
+  const filteredItems = items.filter(item => item.visible);
+
+
   const cancleHandler= ()=>{
     if(isDisabled){
       navigate('/single-trading-accounts/details/pending-order')
@@ -378,9 +391,9 @@ const handleLossChange = (newValue) => {
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
             <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
-            <Dropdown
+            {!!filteredItems.length &&  (<Dropdown
               menu={{
-                items,
+                items:filteredItems,
               }}
               placement="bottom"
               arrow
@@ -388,7 +401,7 @@ const handleLossChange = (newValue) => {
               
             >
               <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
-          </Dropdown>
+          </Dropdown>)}
             </div>
           }
         

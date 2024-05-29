@@ -90,36 +90,36 @@ const LiveOrders = () => {
 
   const columns = [
 
-    {
-      title:<span className="dragHandler">LoginID</span>,
-      dataIndex: 'trading_account_loginId',
-      key: '1',
-      sorter: (a, b) =>  ColumnSorter(a.trading_account_loginId,b.trading_account_loginId),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
+    // {
+    //   title:<span className="dragHandler">LoginID</span>,
+    //   dataIndex: 'trading_account_loginId',
+    //   key: '1',
+    //   sorter: (a, b) =>  ColumnSorter(a.trading_account_loginId,b.trading_account_loginId),
+    //   sortDirections: ['ascend', 'descend'],
+    //   sortIcon: (sortDir) => {
+    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+    //   },
       
-    },
-    {
-      title:<span className="dragHandler">OrderID</span>,
-      dataIndex: 'id',
-      key: '2',
-      sorter: (a, b) => a.id - b.id,
-       sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+    // },
+    // {
+    //   title:<span className="dragHandler">OrderID</span>,
+    //   dataIndex: 'id',
+    //   key: '2',
+    //   sorter: (a, b) => a.id - b.id,
+    //    sortDirections: ['ascend', 'descend'],
+    //   sortIcon: (sortDir) => {
+    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+    //   },
+    // },
 
     {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
-      key: '3',
+      key: '1',
       sorter: (a, b) =>  ColumnSorter(a.symbol , b.symbol),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -129,10 +129,10 @@ const LiveOrders = () => {
       },
     },
     {
-      title:<span className="dragHandler">Open Time</span>,
-      dataIndex: 'open_time',
-      key: '4',
-      sorter: (a, b) => ColumnSorter(a.open_time,b.open_time),
+      title:<span className="dragHandler">Order Type</span>,
+      dataIndex: 'order_type',
+      key: '2',
+      sorter: (a, b) => ColumnSorter(a.order_type,b.order_type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -141,22 +141,11 @@ const LiveOrders = () => {
       },
     },
 
-    {
-      title:<span className="dragHandler">Type</span>,
-      dataIndex: 'type',
-      key: '5',
-      sorter: (a, b) => ColumnSorter(a.type , b.type),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+    
     {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
-      key: '50',
+      key: '3',
       sorter: (a, b) =>  a.volume - b.volume,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -166,33 +155,9 @@ const LiveOrders = () => {
       },
     },
     {
-      title:<span className="dragHandler">Open Price</span>,
-      dataIndex: 'open_price',
-      key: '7',
-      sorter: (a, b) => a.open_price - b.open_price,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
-    {
-      title:<span className="dragHandler">SL</span>,
-      dataIndex: 'stopLoss',
-      key: '8',
-      sorter: (a, b) => a.stopLoss - b.stopLoss,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
-    {
-      title:<span className="dragHandler">TP</span>,
+      title:<span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
-      key: '100',
+      key: '4',
       sorter: (a, b) => a.takeProfit - b.takeProfit,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -202,34 +167,10 @@ const LiveOrders = () => {
       },
     },
     {
-      title:<span className="dragHandler">Reason</span>,
-      dataIndex: 'reason',
-      key: '20',
-      sorter: (a, b) => ColumnSorter(a.reason,b.reason),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
-    {
-      title:<span className="dragHandler">Swap</span>,
-      dataIndex: 'swap',
-      key: '24',
-      sorter: (a, b) => a.swap - b.swap,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
-    {
-      title:<span className="dragHandler">Profit</span>,
-      dataIndex: 'profit',
-      key: '29',
-      sorter: (a, b) => a.profit - b.profit,
+      title:<span className="dragHandler">Stop Loss</span>,
+      dataIndex: 'stopLoss',
+      key: '5',
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -240,7 +181,7 @@ const LiveOrders = () => {
     {
       title:<span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
-      key: '27',
+      key: '6',
       sorter: (a, b) => ColumnSorter(a.comment - b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {

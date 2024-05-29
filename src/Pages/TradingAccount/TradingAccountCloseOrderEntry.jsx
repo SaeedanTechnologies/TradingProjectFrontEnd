@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Autocomplete, TextField,InputAdornment } from '@mui/material'
 import { EditOutlined } from '@mui/icons-material';
 import { numberInputStyle } from './style';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import { GenericEdit,GenericDelete } from '../../utils/_APICalls';
 import CustomNotification from '../../components/CustomNotification';
 import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '../../utils/_SymbolSettingAPICalls';
@@ -24,13 +24,15 @@ import { deleteCloseOrderById,setCloseOrdersSelectedIds,updateCloseOrder } from 
 
 const TradingAccountCloseOrderEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
   const CloseOrdersRowsIds = useSelector(({ tradingAccount }) => tradingAccount.selectedCloseOrdersRowsIds)
   const CloseOrdersData = useSelector(({tradingAccount})=> tradingAccount.closeOrdersData)
   const ArrangedCloseOrdersData = CloseOrdersData;
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   
   const {
-    token: { colorBG },} = theme.useToken();
+    token: { colorBG }} = theme.useToken();
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -41,6 +43,7 @@ const TradingAccountCloseOrderEntry = () => {
     const [order_type, setOrder_type] = useState(null);
     const [type,setType] = useState(null);
     const [volume,setVolume] = useState(0.01);
+    const [profit,setProfit ] = useState('');
     const [takeProfit,setTakeProfit] = useState('');
     const [stopLoss,setStopLoss] = useState('');
     const [comment,setComment] = useState('');
@@ -226,6 +229,8 @@ const TradingAccountCloseOrderEntry = () => {
       comment,
       takeProfit: String(takeProfit === "" ? "" : takeProfit),
       stopLoss: String(stopLoss === "" ? "" : stopLoss),
+      swap:String(swap === "" ? "" : swap),
+      profit:String(profit === "" ? "" : profit),
       trading_account_id,
       brand_id
       };
@@ -340,15 +345,24 @@ const handleLossChange = (newValue) => {
           setIsDisabled(false)
         }}>   Edit </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'close_orders_update')
+  
     },
     {
       key: '2',
       label: (
         <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'close_orders_delete')
+
     },
    
   ];
+
+  
+  const filteredItems = items.filter(item => item.visible);
+
+
   const cancleHandler= ()=>{
     if(isDisabled){
       navigate('/single-trading-accounts/details/close-order')
@@ -379,9 +393,9 @@ const handleLossChange = (newValue) => {
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
             <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
-            <Dropdown
+           {!! filteredItems.length && ( <Dropdown
               menu={{
-                items,
+                items : filteredItems,
               }}
               placement="bottom"
               arrow
@@ -389,7 +403,7 @@ const handleLossChange = (newValue) => {
               
             >
               <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
-          </Dropdown>
+          </Dropdown> )}
             </div>
           }
         
@@ -545,6 +559,28 @@ const handleLossChange = (newValue) => {
                 value={comment}
                 disabled={isDisabled}
                 onChange={e => setComment(e.target.value)}
+                 />
+            </div>
+
+            <div>
+              <CustomTextField 
+                label={'Swap'}
+                type={'number'}
+                varient={'standard'}
+                value={swap}
+                disabled={isDisabled}
+                onChange={e => setSwap(e.target.value)}
+                 />
+            </div>
+
+            <div>
+              <CustomTextField 
+                label={'Profit'}
+                type={'number'}
+                varient={'standard'}
+                value={profit}
+                disabled={isDisabled}
+                onChange={e => setProfit(e.target.value)}
                  />
             </div>
 

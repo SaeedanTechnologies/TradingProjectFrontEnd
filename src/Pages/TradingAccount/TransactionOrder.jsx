@@ -62,13 +62,14 @@ const TransactionOrder = () => {
   const [lastPage, setLastPage] = useState(1)
   const [isUpdated, setIsUpdated] = useState(true)
   const [totalRecords, setTotalRecords] = useState(0)
+  
   const columns = [
     {
-      title: <span className="dragHandler">Time</span>,
-      dataIndex: 'created_at',
+      title: <span className="dragHandler">Name</span>,
+      dataIndex: 'name',
       key: '1',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
-      sorter: (a, b) =>  ColumnSorter(a.created_at , b.created_at),
+      sorter: (a, b) =>  ColumnSorter(a.name , b.name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -78,11 +79,37 @@ const TransactionOrder = () => {
 
     },
     {
-      title: <span className="dragHandler">Method</span>,
-      dataIndex: 'method',
-      key: 'method',
-      sorter: (a, b) => ColumnSorter(a.method, b.method),
+      title: <span className="dragHandler">Email</span>,
+      dataIndex: 'email',
+      key: '2',
+      sorter: (a, b) => ColumnSorter(a.email, b.email),
        sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    {
+      title: <span className="dragHandler">Phone</span>,
+      dataIndex: 'phone',
+      key: '3',
+      sorter: (a, b) => ColumnSorter(a.phone, b.phone),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    {
+      title: <span className="dragHandler">Country</span>,
+      dataIndex: 'country',
+      key: '4',
+      sorter: (a, b) => ColumnSorter(a.country, b.country),
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
@@ -93,34 +120,56 @@ const TransactionOrder = () => {
     {
       title: <span className="dragHandler">Type</span>,
       dataIndex: 'type',
-      key: 'type',
-      sorter: (a, b) => ColumnSorter(a.type, b.type),
+      key: '5',
+      sorter: (a, b) =>ColumnSorter( a.type , b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-
+    },
+    {
+      title: <span className="dragHandler">Method</span>,
+      dataIndex: 'method',
+      key: '6',
+      sorter: (a, b) => a.method - b.method,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title: <span className="dragHandler">Method</span>,
+      dataIndex: 'method',
+      key: '7',
+      sorter: (a, b) => ColumnSorter(a.method , b.method),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
     },
     {
       title: <span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
-      key: 'currency',
-      sorter: (a, b) => ColumnSorter(a.currency, b.currency),
+      key: '8',
+      sorter: (a, b) => ColumnSorter(a.currency , b.currency),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-
     },
     {
-      title: <span className="dragHandler">Comments</span>,
+      title: <span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
-      key: 'comment',
-      sorter: (a, b) =>ColumnSorter( a.comment , b.comment),
+      key: '9',
+      sorter: (a, b) => ColumnSorter(a.comment , b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -128,18 +177,7 @@ const TransactionOrder = () => {
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
-    {
-      title: <span className="dragHandler">Amount</span>,
-      dataIndex: 'amount',
-      key: 'amount',
-      sorter: (a, b) => a.amount - b.amount,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+    
 
   ];
 

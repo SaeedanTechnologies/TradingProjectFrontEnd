@@ -16,8 +16,8 @@ import { submitStyle } from '../TradingAccount/style';
 import { Symbol_Group_List } from '../../utils/_SymbolSettingAPICalls';
 import { GetBrandsList } from '../../utils/_BrandListAPI';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
 import { deleteTradeGroupById, setTradeGroupsData, setTradeGroupsSelectedIDs, updateTradeGroupData } from '../../store/tradeGroupsSlice';
+import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 
 const TradingGroupEntry = () => {
@@ -32,6 +32,7 @@ const TradingGroupEntry = () => {
     const ArrangedTradingGroupData = TradingAccountGroupData;
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
+    const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
     const token = useSelector(({ user }) => user?.user?.token)
    ////////////////////////////////////STATES///////////////////////////////////////////////////////////////////////////
    const [GroupList, setGroupList] = useState([]);
@@ -156,15 +157,22 @@ const TradingGroupEntry = () => {
           setIsDisabled(false)
         }}>   Edit </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'trading_account_group_update')
+
     },
     {
       key: '2',
       label: (
         <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'trading_account_group_delete')
+
     },
    
   ];
+
+    const filteredItems = items.filter(item => item.visible);
+
   const fetchDataWRTID = async () => {
     setIsLoading(true)
     const res = await SelectTradingAccountGroupWRTID(TradingAccountGroupsIds[0], token)
@@ -402,17 +410,19 @@ const TradingGroupEntry = () => {
           <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
          <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
           <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
-          <Dropdown
-            menu={{
-              items,
-            }}
-            placement="bottom"
-            arrow
-            trigger={['click']}
-            
-          >
-            <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
-        </Dropdown>
+           {!! filteredItems.length  && (
+            <Dropdown
+              menu={{
+                items,
+              }}
+              placement="bottom"
+              arrow
+              trigger={['click']}
+              
+            >
+              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
+            </Dropdown>
+          )} 
         </div>
         }
       

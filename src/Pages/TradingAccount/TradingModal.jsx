@@ -48,9 +48,9 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
     }
   }
 
-  const fetchTradingAccountGroups = async () => {
+  const fetchTradingAccountGroups = async (public_key) => {
     setIsLoading(true)
-    const group_response = await ALL_Trading_Account_Group_List(token)
+    const group_response = await ALL_Trading_Account_Group_List(token,public_key)
     const { data: { payload, success } } = group_response
     setIsLoading(false)
     if (success) {
@@ -62,12 +62,13 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
 
 
   useEffect(() => {
-    fetchTradingAccountGroups()
     if (userRole === 'admin') {
       getBrandsList()
+      fetchTradingAccountGroups()
     }
     if (userRole !== 'admin') {
       getAllBrandsCustomerList(userBrand.public_key)
+      fetchTradingAccountGroups(userBrand.public_key)
     }
   }, [])
 

@@ -12,16 +12,16 @@ import CustomButton from '../../components/CustomButton';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomNotification from '../../components/CustomNotification';
 import { GenericEdit, GenericDelete } from '../../utils/_APICalls';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import { deleteSymbolSettingsById } from '../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
 import { GetAllBrandsCustomerList,GetBrandsList } from '../../utils/_BrandListAPI';
 import { Get_Single_Trading_Account, Update_Trading_Account } from '../../utils/_TradingAPICalls';
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
-
 const TradingAccountsEntry = () => {
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
   const userBrand = useSelector((state)=> state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
   const TradingAccountsIds = useSelector(({ trade }) => trade.selectedRowsIds)
@@ -569,12 +569,14 @@ const TradingAccountsEntry = () => {
           setIsDisabled(false)
         }}>   Edit </button>
       ),
+      disabled: CheckBrandPermission(userPermissions,userRole,'trading_account_list_update'),
     },
     {
       key: '2',
       label: (
-        <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
+        <button  rel="noopener noreferrer" onClick={deleteHandler} > Delete </button>
       ),
+      disabled: CheckBrandPermission(userPermissions,userRole,'trading_account_list_delete'),
     },
    
   ];

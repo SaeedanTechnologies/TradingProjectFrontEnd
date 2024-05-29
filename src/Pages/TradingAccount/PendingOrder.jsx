@@ -78,7 +78,7 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
     {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol',
-      key: '5',
+      key: '1',
       sorter: (a, b) => ColumnSorter(a.symbol - b.symbol),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -89,10 +89,10 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
 
     },
     {
-      title:<span className="dragHandler">Time</span>,
-      dataIndex: 'open_time',
-      key: '1',
-      sorter: (a, b) =>ColumnSorter(a.open_time , b.open_time),
+      title:<span className="dragHandler">Order Type</span>,
+      dataIndex: 'order_type',
+      key: '2',
+      sorter: (a, b) =>ColumnSorter(a.order_type , b.order_type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -113,10 +113,10 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
       },
     },
     {
-      title:<span className="dragHandler">Volume</span>,
-      dataIndex: 'volume',
+      title:<span className="dragHandler">Open Price</span>,
+      dataIndex: 'open_price',
       key: '4',
-      sorter: (a, b) => a.volume - b.volume,
+      sorter: (a, b) => a.open_price - b.open_price,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -126,10 +126,10 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
 
     },
     {
-      title:<span className="dragHandler">SL</span>,
-      dataIndex: 'stopLoss',
-      key: '7',
-      sorter: (a, b) => a.stopLoss - b.stopLoss,
+      title:<span className="dragHandler">Volume</span>,
+      dataIndex: 'volume',
+      key: '5',
+      sorter: (a, b) => a.volume - b.volume,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -138,7 +138,7 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
       },
     },
     {
-      title:<span className="dragHandler">TP</span>,
+      title:<span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
       key: '8',
       sorter: (a, b) => a.takeProfit - b.takeProfit,
@@ -150,10 +150,22 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
       },
     },
     {
-      title:<span className="dragHandler">Open Price</span>,
-      dataIndex: 'open_price',
+      title:<span className="dragHandler">Stop Loss</span>,
+      dataIndex: 'stopLoss',
       key: '6',
-      sorter: (a, b) => a.open_price - b.open_price,
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title:<span className="dragHandler">Comment</span>,
+      dataIndex: 'comment',
+      key: '6',
+      sorter: (a, b) => a.comment - b.comment,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -218,8 +230,8 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
                       Bonus: {isNaN(bonus) ? 0 : parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
                     </span>
                   </Table.Summary.Cell>
-                  <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
-                  <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell>
+                  {/* <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell> */}
                 </Table.Summary.Row>
               </Table.Summary>
             )}
