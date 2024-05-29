@@ -51,11 +51,11 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
       },
     },
     {  
-      title:<span className="dragHandler">Time</span>,
-      dataIndex: 'created_at',
+      title:<span className="dragHandler">Order Type</span>,
+      dataIndex: 'order_type',
       key: '2',
       render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm:ss')}</span>,
-      sorter: (a, b) =>  ColumnSorter(a.created_at , b.created_at),
+      sorter: (a, b) =>  ColumnSorter(a.order_type , b.order_type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -64,12 +64,13 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
       },
     
     },
+   
     {
-      title: <span className="dragHandler">Type</span>,
-      dataIndex: 'type',
-      key: 'type',
+      title: <span className="dragHandler">Volume</span>,
+      dataIndex: 'volume',
+      key: '3',
       
-      sorter: (a, b) =>  ColumnSorter(a.type , b.type),
+      sorter: (a, b) =>  ColumnSorter(a.volume , b.volume),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -77,42 +78,6 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
       render: (text)=> <span className={`${text === 'sell' ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
-    },
-    {
-      title: <span className="dragHandler">Volume</span>,
-      dataIndex: 'volume',
-      key: 'volume',
-      sorter: (a, b) => ColumnSorter(a.volume , b.volume),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
-    },
-    {
-      title: <span className="dragHandler">SL</span>,
-      dataIndex: 'stopLoss',
-      key: 'stopLoss',
-      sorter: (a, b) => ColumnSorter(a.stopLoss , b.stopLoss),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
-    },
-    {
-      title: <span className="dragHandler">TP</span>,
-      dataIndex: 'takeProfit',
-      key: 'takeProfit',
-      sorter: (a, b) => ColumnSorter(a.takeProfit , b.takeProfit),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
     },
     {
       title: <span className="dragHandler">Open Price</span>,
@@ -127,10 +92,10 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
       },
     },
     {
-      title: <span className="dragHandler">Current Price</span>,
-      dataIndex: 'currentPrice',
-      key: 'currentPrice',
-      sorter: (a, b) => ColumnSorter(a.currentPrice , b.currentPrice),
+      title: <span className="dragHandler">Take Profit</span>,
+      dataIndex: 'takeProfit',
+      key: 'takeProfit',
+      sorter: (a, b) => ColumnSorter(a.takeProfit , b.takeProfit),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -138,6 +103,20 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
     },
+    
+    {
+      title: <span className="dragHandler">Stop Loss</span>,
+      dataIndex: 'stopLoss',
+      key: 'stopLoss',
+      sorter: (a, b) => ColumnSorter(a.stopLoss , b.stopLoss),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+    },
+  
     {
       title: <span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
@@ -300,7 +279,7 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
-                  <Table.Summary.Cell index={0} colSpan={10}>
+                  <Table.Summary.Cell index={0} colSpan={8}>
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {isNaN(balance) ? 0 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;

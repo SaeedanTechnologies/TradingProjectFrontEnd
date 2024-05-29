@@ -106,10 +106,10 @@ const PendingOrder = () => {
 
     },
     {
-      title:<span className="dragHandler">Time</span>,
-      dataIndex: 'open_time',
+      title:<span className="dragHandler">Order Type</span>,
+      dataIndex: 'order_type',
       key: '1',
-      sorter: (a, b) => ColumnSorter(a.open_time , b.open_time ),
+      sorter: (a, b) => ColumnSorter(a.order_type , b.order_type ),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -122,6 +122,18 @@ const PendingOrder = () => {
       dataIndex: 'type',
       key: '3',
       sorter: (a, b) => ColumnSorter(a.type , b.type ),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+      {
+      title:<span className="dragHandler">Open Price</span>,
+      dataIndex: 'open_price',
+      key: '6',
+      sorter: (a, b) => a.open_price - b.open_price,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -142,20 +154,9 @@ const PendingOrder = () => {
       },
 //
     },
+  
     {
-      title:<span className="dragHandler">SL</span>,
-      dataIndex: 'stopLoss',
-      key: '7',
-      sorter: (a, b) => a.stopLoss - b.stopLoss,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
-    {
-      title:<span className="dragHandler">TP</span>,
+      title:<span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
       key: '8',
       sorter: (a, b) => a.takeProfit - b.takeProfit,
@@ -167,17 +168,30 @@ const PendingOrder = () => {
       },
     },
     {
-      title:<span className="dragHandler">Open Price</span>,
-      dataIndex: 'open_price',
-      key: '6',
-      sorter: (a, b) => a.open_price - b.open_price,
+      title:<span className="dragHandler">Stop Loss</span>,
+      dataIndex: 'stopLoss',
+      key: '7',
+      sorter: (a, b) => a.stopLoss - b.stopLoss,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-    }
+    },
+     {
+      title:<span className="dragHandler">Comment</span>,
+      dataIndex: 'comment',
+      key: '7',
+      sorter: (a, b) => a.comment - b.comment,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+  
   ];
 
 //   const columns = [

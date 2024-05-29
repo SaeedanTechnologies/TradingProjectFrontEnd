@@ -64,7 +64,7 @@ const BrandList = () => {
       title:<span className="dragHandler">Username</span>,
       dataIndex: 'user_name',
       key: '3',
-      sorter:(a, b) =>  ColumnSorter(a.user_name,b.user_name),
+      sorter:(a, b) =>  ColumnSorter(a?.user_name,b?.user_name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -77,7 +77,7 @@ const BrandList = () => {
       title:<span className="dragHandler">Password</span>,
       dataIndex: 'user_password',
       key: '4',
-      sorter: (a, b) => ColumnSorter(a.user_password , b.user_password),
+      sorter: (a, b) => ColumnSorter(a?.user_password , b?.user_password),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

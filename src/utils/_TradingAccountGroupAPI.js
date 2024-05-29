@@ -19,9 +19,16 @@ export const Search_Trading_Account_Group_List = async(token, page = 1, perPage 
   return res;
 }
 
-export const ALL_Trading_Account_Group_List = async(token) =>{
-  const res = await _API(`${apiUrl}/admin/getAllTradingGroupList`,'get',[],token)
-   return res
+export const ALL_Trading_Account_Group_List = async(token,public_key) =>{
+
+  const queryParams = new URLSearchParams({brand_id:public_key}).toString();
+  let res;
+  if(public_key){
+    res = await _API(`${apiUrl}/admin/getAllTradingGroupList?${queryParams}`,'get',[],token)
+    return res
+  }
+    res = await _API(`${apiUrl}/admin/getAllTradingGroupList`,'get',[],token)
+    return res
 }
 
 export const SaveTradingAccountGroups = async(TradingAccountGroupData, token)=>{

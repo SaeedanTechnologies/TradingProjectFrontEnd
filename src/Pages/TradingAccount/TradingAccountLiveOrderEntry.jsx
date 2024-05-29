@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Autocomplete, TextField,InputAdornment } from '@mui/material'
 import { EditOutlined } from '@mui/icons-material';
 import { numberInputStyle } from '../TradingAccount/style';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import { GenericEdit,GenericDelete } from '../../utils/_APICalls';
 import CustomNotification from '../../components/CustomNotification';
 import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '../../utils/_SymbolSettingAPICalls';
@@ -25,6 +25,10 @@ const TradingAccountLiveOrderEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const LiveOrdersRowsIds = useSelector(({ tradingAccount }) => tradingAccount.selectedLiveOrdersRowsIds)
   const LiveOrdersData = useSelector(({ tradingAccount })=> tradingAccount.liveOrdersData)
+  
+  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
+  
   const ArrangedLiveOrdersData = LiveOrdersData.slice().sort((a, b) => a.id - b.id);
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const {
@@ -43,6 +47,7 @@ const TradingAccountLiveOrderEntry = () => {
     const [stopLoss,setStopLoss] = useState('');
     const [comment,setComment] = useState('');
     const [brand_id,setBrand_id] = useState('')
+    const [profit,setProfit] = useState('')
     const [trading_account_id,setTrading_account_id] = useState(0)
 
 
@@ -225,6 +230,8 @@ const TradingAccountLiveOrderEntry = () => {
         comment,
         takeProfit: String(takeProfit === "" ? "" : takeProfit),
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
+        swap:String(swap === "" ? "" : swap),
+        profit:String(profit === "" ? "" : profit),
         trading_account_id,
         brand_id
       }
@@ -344,15 +351,23 @@ const handleLossChange = (newValue) => {
           setIsDisabled(false)
         }}>   Edit </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'live_orders_update')
+
     },
     {
       key: '2',
       label: (
         <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
+      visible: CheckBrandPermission(userPermissions,userRole,'live_orders_update')
+
     },
    
   ];
+
+    const filteredItems = items.filter(item => item.visible);
+
+
   const cancleHandler= ()=>{
     if(isDisabled){
       navigate('/single-trading-accounts/details/live-order')
@@ -383,9 +398,9 @@ const handleLossChange = (newValue) => {
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
             <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
-            <Dropdown
+            {!! filteredItems.length && ( <Dropdown
               menu={{
-                items,
+                items : filteredItems,
               }}
               placement="bottom"
               arrow
@@ -393,7 +408,7 @@ const handleLossChange = (newValue) => {
               
             >
               <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
-          </Dropdown>
+          </Dropdown> )}
             </div>
           }
         
@@ -559,6 +574,28 @@ const handleLossChange = (newValue) => {
                 value={comment}
                 disabled={isDisabled}
                 onChange={e => setComment(e.target.value)}
+                 />
+            </div>
+
+            <div>
+              <CustomTextField 
+                label={'Swap'}
+                type={'number'}
+                varient={'standard'}
+                value={swap}
+                disabled={isDisabled}
+                onChange={e => setSwap(e.target.value)}
+                 />
+            </div>
+
+            <div>
+              <CustomTextField 
+                label={'Profit'}
+                type={'number'}
+                varient={'standard'}
+                value={profit}
+                disabled={isDisabled}
+                onChange={e => setProfit(e.target.value)}
                  />
             </div>
 

@@ -64,8 +64,17 @@ const BrandPermissions = () => {
     update:brand?.permissions?.find((br)=>br.name=== 'live_orders_update') ? true : false,
     del:brand?.permissions?.find((br)=>br.name=== 'live_orders_delete') ? true : false,
   },
-   {
+  {
     index: 5,
+    module: 'Pending Orders',
+    key:'pending_orders',
+    read:brand?.permissions?.find((br)=>br.name=== 'pending_orders_read') ? true : false,
+    create:brand?.permissions?.find((br)=>br.name=== 'pending_orders_create') ? true : false,
+    update:brand?.permissions?.find((br)=>br.name=== 'pending_orders_update') ? true : false,
+    del:brand?.permissions?.find((br)=>br.name=== 'pending_orders_delete') ? true : false,
+  },
+  {
+    index: 6,
     module: 'Close Orders',
     key:'close_orders',
     read:brand?.permissions?.find((br)=>br.name=== 'close_orders_read') ? true : false,
@@ -73,8 +82,8 @@ const BrandPermissions = () => {
     update:brand?.permissions?.find((br)=>br.name=== 'close_orders_update') ? true : false,
     del:brand?.permissions?.find((br)=>br.name=== 'close_orders_delete') ? true : false
   },
-   {
-    index: 6,
+  {
+    index: 7,
     module: 'Transaction Orders',
     key:'transaction_orders',
     read:brand?.permissions?.find((br)=>br.name=== 'transaction_orders_read') ? true : false,
@@ -82,7 +91,6 @@ const BrandPermissions = () => {
     update:brand?.permissions?.find((br)=>br.name=== 'transaction_orders_update') ? true : false,
     del:brand?.permissions?.find((br)=>br.name=== 'transaction_orders_delete') ? true : false,
   },
-  
   ];
 
 
@@ -148,6 +156,7 @@ const BrandPermissions = () => {
   
 
 const columns = [
+
   {
     title: 'Module',
     dataIndex: 'module',
@@ -203,13 +212,7 @@ const columns = [
   },
 
 ];
-
-
-
-
-
   
-
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
 
   return (
