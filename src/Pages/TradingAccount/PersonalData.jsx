@@ -27,7 +27,7 @@ const PersonalData = () => {
   const [SelectedCountry,SetSelectedCountry] = useState(null)
   const [SelectedCustomerBrand,SetSelectedCustomerBrand] = useState(null)
   const [isLoading,setIsLoading] = useState(false)
-  const trading_account_id = useSelector((state)=>state?.trade?.trading_account_id)
+  const trading_account_id = useSelector((state)=>state?.trade?.selectedRowsIds[0])
   const [errors, setErrors] = useState({});
   const [BrandCustomerList,setBrandCustomerList] = useState([])
 

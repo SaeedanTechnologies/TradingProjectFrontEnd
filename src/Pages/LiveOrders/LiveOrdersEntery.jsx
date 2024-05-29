@@ -28,7 +28,7 @@ const LiveOrdersEntery = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const LiveOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedLiveOrdersRowsIds)
   const LiveOrdersData = useSelector(({tradeOrders})=> tradeOrders.liveOrdersData)
-  const ArrangedLiveOrdersData = LiveOrdersData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedLiveOrdersData = LiveOrdersData
   
   const {
     token: { colorBG },} = theme.useToken();

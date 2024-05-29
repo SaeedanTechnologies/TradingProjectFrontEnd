@@ -12,7 +12,7 @@ export const symbolGroupsSlice = createSlice({
     },
     setSymbolGroupsData: (state, action)=>{
     
-      state.symbolGroupsData = action.payload.sort((a, b) => a.id - b.id);
+      state.symbolGroupsData = action.payload;
     }, 
    
      updateSymbolGroups : (state, action) => {

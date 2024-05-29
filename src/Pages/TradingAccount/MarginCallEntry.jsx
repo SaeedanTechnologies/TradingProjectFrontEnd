@@ -347,7 +347,7 @@ const MarginCallEntry = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountI
       const res = await Save_Trading_Account(formPayload, token)
       const SymbolSettingIds = useSelector(({ symbolSettings }) => symbolSettings.selectedRowsIds)
       const SymbolSettingsData = useSelector(({symbolSettings})=> symbolSettings.symbolSettingsData)
-      const ArrangedSymbolSettingsData = SymbolSettingsData.slice().sort((a, b) => a.id - b.id);
+      const ArrangedSymbolSettingsData = SymbolSettingsData;
 
       const { data: { message, payload, success } } = res
       setIsLoading(false)

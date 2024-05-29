@@ -42,19 +42,19 @@ const TradingAccountDetails = () => {
   const { leverage } = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData);
   const { value: accountLeverage } = LeverageList?.find(x => x?.title === leverage || { value: '', title: '' },);
 
-  const fetchLiveOrder = async (page) => {
-    setIsLoading(true);
-    const params = { trading_account_id, OrderTypes: ['market'], token, page };
-    const mData = await Get_Trade_Order(params);
-    const { data: { message, payload, success } } = mData;
-    setIsLoading(false);
-    if (success) {
+  const fetchLiveOrder = async (data) => {
+    // setIsLoading(true);
+    // const params = { trading_account_id, OrderTypes: ['market'], token, page };
+    // const mData = await Get_Trade_Order(params);
+    // const { data: { message, payload, success } } = mData;
+    // setIsLoading(false);
+    // if (success) {
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
       let _totalSwap = 0;
       const currentDateTime = getCurrentDateTime();
-      const updatedData = await Promise.all(payload.data.map(async (x) => {
+      const updatedData = await Promise.all(data.map(async (x) => {
         const { askPrice, bidPrice } = await getOpenPriceFromAPI(x.symbol, x.feed_name);
         const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
         const open_price = parseFloat(x?.open_price).toFixed(pipVal);
@@ -71,18 +71,18 @@ const TradingAccountDetails = () => {
         totalVolumn += parseFloat(res);
         return { ...x, swap, profit, currentPrice, open_price };
       }));
-      dispatch(setLiveOrdersData(updatedData));
+      // dispatch(setLiveOrdersData(updatedData));
       setGrandProfit(totalProfit.toFixed(2));
       setGrandVolumn(totalVolumn.toFixed(2));
       setGrandMargin(totalMargin.toFixed(2));
       setTotalSwap(_totalSwap.toFixed(2));
-      setTradeOrder(updatedData);
-      setCurrentPage(payload.current_page);
-      setLastPage(payload.last_page);
-      setTotalRecords(payload.total);
-    }
+      // setTradeOrder(updatedData);
+      // setCurrentPage(payload.current_page);
+      // setLastPage(payload.last_page);
+      // setTotalRecords(payload.total);
+    // }
+    return updatedData;
   }
-
   const items = [
     {
       key: '1',

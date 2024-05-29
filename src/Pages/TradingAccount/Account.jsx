@@ -16,7 +16,7 @@ import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice
 const Account = () => {
   const token = useSelector(({user})=> user?.user?.token )
   const dispatch = useDispatch()
-  const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+  const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
   const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const tradingAccountGroupData = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const { token: { colorBG,   }} = theme.useToken();

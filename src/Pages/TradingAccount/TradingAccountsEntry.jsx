@@ -26,7 +26,7 @@ const TradingAccountsEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const TradingAccountsIds = useSelector(({ trade }) => trade.selectedRowsIds)
   const TradingAccountsData = useSelector(({trade})=> trade.tradingAccountsData)
-  const ArrangedTradingAccountsData = TradingAccountsData.slice().sort((a, b) => a?.id - b?.id);
+  const ArrangedTradingAccountsData = TradingAccountsData;
   const [brandList,setBrandList] = useState([])
   const [brandCustomerList, setBrandCustomerList] = useState([])
   const [tradingAccountGroupList, setTradingAccountGroupList] = useState([])

@@ -12,7 +12,7 @@ export const tradeGroupsSlice = createSlice({
         state.selectedRowsIds = action.payload
     },
     setTradeGroupsData: (state, action)=>{
-      state.tradeGroupsData = action.payload.sort((a, b) => a.id - b.id);
+      state.tradeGroupsData = action.payload;
     }, 
     setCurrentTradeGroupData: (state, action)=>{
       state.tradeCurrentGroupData = action.payload;

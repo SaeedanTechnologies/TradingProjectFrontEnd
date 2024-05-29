@@ -14,7 +14,8 @@ import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
 
-const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
+const   LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
+  // debugger;
   const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0])
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
@@ -76,7 +77,7 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
-      render: (text)=> <span className={`${text === 'sell' ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
+      render: (text)=> <span style={{color:"red"}}>{text}</span>
     },
     {
       title: <span className="dragHandler">Volume</span>,
@@ -199,7 +200,7 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
   };
 
  const onPageChange = (page) =>{
-      fetchLiveOrder(page)
+      // fetchLiveOrder(page)
   }
   // const CancelLiveOrder = async (id) => {
 
@@ -326,6 +327,7 @@ const   LiveOrders = ({  tradeOrder, isLoading, setIsLoading, grandProfit, lotSi
             perPage={perPage}
             setPerPage={setPerPage}
             SearchQuery = {Search_Live_Order}
+            // searchQueryManipulation = {fetchLiveOrder}
             SearchQueryList = {SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}

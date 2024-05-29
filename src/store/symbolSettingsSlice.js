@@ -11,7 +11,7 @@ export const symbolSettingsSlice = createSlice({
         state.selectedRowsIds = action.payload
     },
     setSymbolSettingsData: (state, action) => {
-       state.symbolSettingsData = action.payload.sort((a, b) => a.id - b.id)
+       state.symbolSettingsData = action.payload
     },
      updateSymbolSettings : (state, action) => {
           const updatedDataArray = action.payload; // assuming payload is an array of objects

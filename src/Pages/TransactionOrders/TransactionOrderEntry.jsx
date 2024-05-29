@@ -12,16 +12,17 @@ import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Tra
 import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
-import { deleteTransactionOrderById, setTransactionsOrdersSelectedIDs, updateTransactionOrders } from '../../store/transactionOrdersSlice';
+import { deleteTransactionOrderById, setTransactionOrdersData, setTransactionsOrdersSelectedIDs, updateTransactionOrders } from '../../store/transactionOrdersSlice';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
 import { TransactionOrderEntryValidationSchema } from '../../utils/validations';
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 
 
 const TransactionOrderEntry = () => {
+  const page = localStorage.getItem("page")
     const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const token = useSelector(({ user }) => user?.user?.token)
-    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+    const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0]) 
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const dispatch = useDispatch()
@@ -54,7 +55,7 @@ const TransactionOrderEntry = () => {
 
    const TransactionOrdersIds = useSelector(({ transactionOrders }) => transactionOrders.selectedRowsIds)
   const TransactionOrdersData = useSelector(({transactionOrders})=> transactionOrders.transactionOrdersData)
-  const ArrangedTransactionOrdersData= TransactionOrdersData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedTransactionOrdersData= TransactionOrdersData;
   
 
   const Control = [
@@ -313,10 +314,14 @@ useEffect(() => {
       setIsDisabled(true)
     }
   }, []);
-
+  const FetchData = async (brandId, page) =>{
+    const res = await Trading_Transaction_Order(brandId,page)
+    return res;
+}
   
 
-  const handleNext = () => {
+  //#region HandleNExt
+  const handleNext = async () => {
     if (currentIndex < ArrangedTransactionOrdersData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedTransactionOrdersData[currentIndex + 1];
@@ -328,13 +333,30 @@ useEffect(() => {
       }, 3000)
     }else
     {
-    
-       CustomNotification({
-            type: 'warning',
-            title: 'warning',
-            description: 'No Next record found',
-            key: 2
-          })
+      const page_num = Number(page) + 1;
+      setIsLoading(true);
+      const res = await FetchData(userBrand.public_key,page_num);
+      const newSymbolGroupsData = res?.data?.payload?.data;
+      if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
+        dispatch(setTransactionOrdersData(newSymbolGroupsData))
+        const newArrangedSymbolGroupsData = newSymbolGroupsData;
+        const payload = newArrangedSymbolGroupsData[newArrangedSymbolGroupsData.length - 1];
+        dispatch(setTransactionsOrdersSelectedIDs([payload.id]));
+      setCurrentIndex(newArrangedSymbolGroupsData.length - 1);
+      setTimeout(() => {
+        setIsLoading(false);
+        setStatesForEditMode(payload, true, LeverageList);
+      }, 3000);
+      localStorage.setItem("page", page_num);
+      }
+      else {
+        CustomNotification({
+             type: 'warning',
+             title: 'warning',
+             description: 'No Next record found',
+             key: 2
+           })
+      }
     }
   };
 

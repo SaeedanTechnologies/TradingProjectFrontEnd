@@ -10,14 +10,14 @@ import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import { LeverageList, PipsValues } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
-import { ALL_Symbol_Group_List, Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
+import { ALL_Symbol_Group_List, All_Setting_Data, Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
 import { GetAskBidData, GetCryptoData, GetFasciData } from '../../../utils/_ExchangeAPI'
 import { useDispatch, useSelector } from 'react-redux';
 import CustomNotification from '../../../components/CustomNotification';
 import { Autocomplete, TextField,Input,InputAdornment } from '@mui/material'
 import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
 import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
-import { deleteSymbolSettingsById, setSymbolSettingsSelecetdIDs, updateSymbolSettings } from '../../../store/symbolSettingsSlice';
+import { deleteSymbolSettingsById, setSymbolSettingsData, setSymbolSettingsSelecetdIDs, updateSymbolSettings } from '../../../store/symbolSettingsSlice';
 import { EditOutlined } from '@mui/icons-material';
 import CustomCheckbox from '../../../components/CustomCheckbox';
 import { numberInputStyle } from '../../TradingAccount/style';
@@ -30,12 +30,24 @@ const FeedData = [
 
 
 const SymbolSettingsEntry = () => {
+  const page = localStorage.getItem("page")
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const token = useSelector(({ user }) => user?.user?.token)
   const SymbolSettingIds = useSelector(({ symbolSettings }) => symbolSettings.selectedRowsIds)
+  console.log(SymbolSettingIds, "SYMBOL SETTING ID's")
   const SymbolSettingsData = useSelector(({symbolSettings})=> symbolSettings.symbolSettingsData)
-  const ArrangedSymbolSettingsData = SymbolSettingsData.slice().sort((a, b) => a.id - b.id);
-  
+  console.log(SymbolSettingsData, "SYMBOL SETTINGS DATA")
+  const ArrangedSymbolSettingsData = SymbolSettingsData;
+  const fetchAllSetting = async (page) => {
+    try {
+      const res = await All_Setting_Data(token, page, 10);
+      const { data: { message, success, payload } } = res
+      dispatch(setSymbolSettingsData(payload.data))
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  }
+  //
   const {
     token: { colorBG },} = theme.useToken();
   const navigate = useNavigate()
@@ -43,7 +55,7 @@ const SymbolSettingsEntry = () => {
   const [feedNameFetchList, setFeedNameFetchList] = useState([])
   const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
-
+  const [created_id , setCreatedId] = useState("")
   const [symbolName, setSymbolName] = useState('')
   const [SelectedLeverage, setSelectedLeverage] = useState(null)
   const [errors, setErrors] = useState({});
@@ -231,7 +243,12 @@ const SymbolSettingsEntry = () => {
       console.error('Error fetching symbol groups:', error);
     }
   };
-  const handleNext = () => {
+   const FetchData = async (page, token, perPage=10) =>{
+    const res = await All_Setting_Data(token,page,parseInt(perPage))
+    return res;
+}
+  //#region HandleNext 
+  const handleNext = async () => {
     if (currentIndex < ArrangedSymbolSettingsData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedSymbolSettingsData[currentIndex + 1];
@@ -242,15 +259,37 @@ const SymbolSettingsEntry = () => {
         setStatesForEditMode(payload, true)
       }, 3000)
     }else{
-     CustomNotification({
-            type: 'warning',
-            title: 'warning',
-            description: 'No Next record found',
-            key: 2
-          })
+      const page_num = Number(page) + 1;
+      setIsLoading(true);
+      const res = await FetchData(page_num, token);
+      const newSymbolGroupsData = res?.data?.payload?.data;
+      if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
+        dispatch(setSymbolSettingsData(newSymbolGroupsData))
+        const newArrangedSymbolGroupsData = newSymbolGroupsData;
+        const payload = newArrangedSymbolGroupsData[0];
+        dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
+        setCurrentIndex(0);
+        setTimeout(() => {
+          setIsLoading(false);
+          setStatesForEditMode(payload, true, LeverageList);
+        }, 3000);
+        localStorage.setItem("page", page_num);
+        
+      }
+      else {
+        setIsLoading(false);
+        CustomNotification({
+          type: 'warning',
+          title: 'warning',
+          description: 'No Next record found',
+          key: 2
+        })
+      }
     }
   };
-  const handlePrevious = () => {
+  //#region HandlePrevious
+
+  const handlePrevious = async() => {
     
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
@@ -264,16 +303,45 @@ const SymbolSettingsEntry = () => {
       
     }
     else{
-        CustomNotification({
-            type: 'warning',
-            title: 'warning',
-            description: 'No Previous record found',
-            key: 2
-          })
+    const page_num = Number(page) - 1;
+
+    if (page_num < 1) {
+      CustomNotification({
+        type: 'warning',
+        title: 'warning',
+        description: 'No Previous record found',
+        key: 2
+      });
+      return;
+    }
+    setIsLoading(true);
+    const res = await FetchData(page_num, token);
+    const newSymbolGroupsData = res?.data?.payload?.data;
+    if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
+      dispatch(setSymbolSettingsData(newSymbolGroupsData))
+      const newArrangedSymbolGroupsData = newSymbolGroupsData;
+      const payload = newArrangedSymbolGroupsData[0];
+      dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
+      setCurrentIndex(0);
+      setTimeout(() => {
+        setIsLoading(false);
+        setStatesForEditMode(payload, true, LeverageList);
+      }, 3000);
+      localStorage.setItem("page", page_num);
+    }
+    else {
+      
+      CustomNotification({
+        type: 'warning',
+        title: 'warning',
+        description: 'No Previous record found',
+        key: 2
+      });
+    }
     }
     
   };
-
+  
   useEffect(() => {
     fetchSymbolGroups();
     fetchFeedData();
@@ -324,15 +392,17 @@ const SymbolSettingsEntry = () => {
         leverage: SelectedLeverage?.value || '',
         feed_name: selectedFeedName?.module || '',
         feed_server: selectedFeedName?.feed_server || '',
-        swap: swap || '',
+        swap: String(swap) || '',
         vol_min: volMin || '',
         vol_max: volMax || ''
       };
       
-      if (SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0) { // save 
+      if (SymbolSettingIds.length === 1 && (parseInt(SymbolSettingIds[0]) === 0 || SymbolSettingIds[0] === undefined))  { // save 
         setIsLoading(true)
         const res = await SymbolSettingPost(SymbolGroupData, token);
         const { data: { message, success, payload } } = res;
+        fetchAllSetting(page)
+        dispatch(setSymbolSettingsSelecetdIDs([payload?.id]))
         setIsLoading(false)
         if (success) {
           clearFields();
@@ -342,6 +412,7 @@ const SymbolSettingsEntry = () => {
             description: 'Symbol Setting Created Successfully',
             key: 2
           })
+          window.location.reload();
           // navigate('/symbol-settings')
         } else {
           setIsLoading(false)

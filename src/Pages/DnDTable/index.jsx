@@ -126,8 +126,8 @@ class DnDTable extends Component {
       this.props.setCurrentPage(payload.current_page)
       this.props.setTotalRecords(payload.total)
       this.props.setLastPage(payload.last_page)
-      this.setState({data: payload.data})
-      this.props.dispatch(this.props.setTableData(payload.data))
+      this.setState({data:this.props.searchQueryManipulation ? this.props.searchQueryManipulation(payload.data) : payload.data})
+      this.props.dispatch(this.props.setTableData(this.props.searchQueryManipulation? this.props.searchQueryManipulation(payload.data) : payload.data))
       localStorage.setItem('isCompleteSelect', JSON.stringify(false));
       if(this.state.isCompleteSelect) {
         const allRowKeys = payload.data.map((row) => row.id);

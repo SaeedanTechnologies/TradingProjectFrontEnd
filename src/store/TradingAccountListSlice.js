@@ -18,7 +18,7 @@ export const tradingAccountSlice = createSlice({
         state.selectedLiveOrdersRowsIds = action.payload
     },
     setLiveOrdersData: (state, action)=>{
-      state.liveOrdersData = action.payload.sort((a, b) => a.id - b.id)
+      state.liveOrdersData = action.payload
     }, 
      updateLiveOrder : (state, action) => {
           const updatedDataArray = action.payload; // assuming payload is an array of objects
@@ -41,7 +41,7 @@ export const tradingAccountSlice = createSlice({
     },
     setCloseOrdersData: (state, action)=>{
       
-      state.closeOrdersData = action.payload.sort((a, b) => a.id - b.id)
+      state.closeOrdersData = action.payload
     },
     updateCloseOrder : (state, action) => {
           const updatedDataArray = action.payload; // assuming payload is an array of objects
@@ -63,7 +63,7 @@ export const tradingAccountSlice = createSlice({
         state.selectedPendingOrdersRowsIds = action.payload
     },
     setPendingOrdersData: (state, action)=>{
-     state.pendingOrdersData = action.payload.sort((a, b) => a.id - b.id)
+     state.pendingOrdersData = action.payload
     },
     updatePendingOrder : (state, action) => {
           const updatedDataArray = action.payload; // assuming payload is an array of objects
@@ -86,7 +86,7 @@ export const tradingAccountSlice = createSlice({
         state.selectedTransactionOrdersRowsIds = action.payload
     },
     setTransactionOrdersData: (state, action)=>{
-     state.transactionOrdersData = action.payload.sort((a, b) => a.id - b.id)
+     state.transactionOrdersData = action.payload
     },
     updateTransactionOrders : (state, action) => {
           const updatedDataArray = action.payload; // assuming payload is an array of objects

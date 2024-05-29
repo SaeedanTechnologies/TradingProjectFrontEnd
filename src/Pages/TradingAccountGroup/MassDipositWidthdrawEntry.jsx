@@ -21,7 +21,7 @@ import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroup
 const TransactionOrderEntry = () => {
     const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const token = useSelector(({ user }) => user?.user?.token)
-    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+    const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const tradeWithdrawCurrentData = useSelector(({tradeWithdrawGroups})=>tradeWithdrawGroups?.tradeWithdrawCurrentData)
@@ -54,7 +54,7 @@ const TransactionOrderEntry = () => {
 
    const TradeWithdrawGroupIds = useSelector(({ tradeWithdrawGroups }) => tradeWithdrawGroups.selectedRowsIds)
   const TradeWithdrawGroupsData= useSelector(({tradeWithdrawGroups})=> tradeWithdrawGroups.tradeWithdrawGroupsData)
-  const ArrangedTradeWithdrawGroupsData= TradeWithdrawGroupsData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedTradeWithdrawGroupsData= TradeWithdrawGroupsData;
   
 
   const Control = [

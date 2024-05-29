@@ -7,7 +7,7 @@ import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import CustomButton from '../../components/CustomButton';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { SaveTradingAccountGroups, SelectTradingAccountGroupWRTID, UpdateTradingAccountGroups, getAllTradingAccountsNotInGroup } from '../../utils/_TradingAccountGroupAPI';
+import { SaveTradingAccountGroups, SelectTradingAccountGroupWRTID, Trading_Account_Group_List, UpdateTradingAccountGroups, getAllTradingAccountsNotInGroup } from '../../utils/_TradingAccountGroupAPI';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import CustomTextField from '../../components/CustomTextField';
 import { Autocomplete, TextField } from '@mui/material';
@@ -17,10 +17,11 @@ import { Symbol_Group_List } from '../../utils/_SymbolSettingAPICalls';
 import { GetBrandsList } from '../../utils/_BrandListAPI';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
-import { deleteTradeGroupById, setTradeGroupsSelectedIDs, updateTradeGroupData } from '../../store/tradeGroupsSlice';
+import { deleteTradeGroupById, setTradeGroupsData, setTradeGroupsSelectedIDs, updateTradeGroupData } from '../../store/tradeGroupsSlice';
 import CustomNotification from '../../components/CustomNotification';
 
 const TradingGroupEntry = () => {
+  const page = localStorage.getItem("page")
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const { token: { colorBG } } = theme.useToken();
     const navigate = useNavigate()
@@ -28,7 +29,7 @@ const TradingGroupEntry = () => {
   ////////////////////////////////Reudx/////////////////////////////////////////////////////////////////////
     const TradingAccountGroupsIds = useSelector(({ tradeGroups }) => tradeGroups?.selectedRowsIds)
     const TradingAccountGroupData = useSelector(({tradeGroups})=> tradeGroups?.tradeGroupsData)
-    const ArrangedTradingGroupData = TradingAccountGroupData?.slice().sort((a, b) => a.id - b.id);
+    const ArrangedTradingGroupData = TradingAccountGroupData;
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const token = useSelector(({ user }) => user?.user?.token)
@@ -54,6 +55,15 @@ const TradingGroupEntry = () => {
     massLeverage: Yup.object().required('Mass Leverage is required'),
     massSwap: Yup.string().required('Mass Swap is required')
   });
+  const fetchData = async (brandId) => {
+    try {
+      const res = await Trading_Account_Group_List(token, brandId);
+      const { data: { message, success, payload } } = res
+      dispatch(setTradeGroupsData(payload.data))
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  }
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
@@ -244,10 +254,12 @@ const TradingGroupEntry = () => {
 
        }
 
-       if (TradingAccountGroupsIds.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0) { // save
+       if (TradingAccountGroupsIds.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0 || TradingAccountGroupsIds[0] === undefined) { // save
         setIsLoading(true)
         const res = await SaveTradingAccountGroups(TradingGroupData, token)
         const { data: { message, payload, success } } = res
+        fetchData(userBrand?.public_key)
+        dispatch(setTradeGroupsSelectedIDs([payload?.id]))
         setIsLoading(false)
         if (success) {
           CustomNotification({
@@ -257,7 +269,8 @@ const TradingGroupEntry = () => {
             key: 2
           })
           clearFields()
-          fetchData()
+          window.location.reload();
+
         } else {
       setIsLoading(false)
           CustomNotification({
@@ -310,6 +323,7 @@ const TradingGroupEntry = () => {
       setErrors(validationErrors);
     }
   }
+  //#region HandlePRevious
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
@@ -333,7 +347,7 @@ const TradingGroupEntry = () => {
     }
   };
 
-
+  // #region handleNExt
   const handleNext = () => {
     
     if (currentIndex < ArrangedTradingGroupData.length - 1) {

@@ -25,7 +25,7 @@ const TradingAccountPendingOrderEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const PendingOrdersRowsIds = useSelector(({ tradingAccount }) => tradingAccount.selectedPendingOrdersRowsIds )
   const PendingOrdersData = useSelector(({tradingAccount})=> tradingAccount.pendingOrdersData)
-  const ArrangedPendingOrdersData = PendingOrdersData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedPendingOrdersData = PendingOrdersData;
    const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const {
     token: { colorBG },} = theme.useToken();

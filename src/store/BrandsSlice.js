@@ -17,7 +17,7 @@ export const brandsSlice = createSlice({
       state.selectedRowsIds = action.payload
   },
   setBrandData: (state, action)=>{
-    state.brandData = action.payload.sort((a, b) => a.id - b.id);
+    state.brandData = action.payload;
   }, 
   updateBrandsData: (state, action) => {
     const updatedData = action.payload;

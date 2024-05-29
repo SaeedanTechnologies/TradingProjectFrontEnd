@@ -34,7 +34,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
   const navigate = useNavigate();
-  const trading_account_id = useSelector((state) => state?.trade?.trading_account_id)
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0])
   const trading_group_id = useSelector(({group}) => group?.tradingGroupData?.id)
   
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )

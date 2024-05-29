@@ -11,7 +11,7 @@ export const transactionOrdersSlice = createSlice({
         state.selectedRowsIds = action.payload
     },
     setTransactionOrdersData: (state, action)=>{
-      state.transactionOrdersData = action.payload.sort((a, b) => a.id - b.id);
+      state.transactionOrdersData = action.payload;
     },
     updateTransactionOrders: (state, action) => {
       const updatedData = action.payload;

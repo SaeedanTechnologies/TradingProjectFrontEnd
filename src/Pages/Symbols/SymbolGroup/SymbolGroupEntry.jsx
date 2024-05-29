@@ -18,10 +18,11 @@ import CustomDateRangePicker from '../../../components/CustomDateRange';
 import { updateSymbolSettings } from '../../../store/symbolSettingsSlice';
 import TimePicker from '../../../components/TimePicker';
 import { FetchData } from '../../../utils/FetchData';
-
-
+import { All_Setting_Data, Symbol_Group_List } from '../../../utils/_SymbolSettingAPICalls';
 const SymbolGroupEntry = () => {
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
+  const page = localStorage.getItem("page");
+
   const {
     token: { colorBG, TableHeaderColor, Gray2, colorPrimary  },
   } = theme.useToken();
@@ -58,8 +59,16 @@ const SymbolGroupEntry = () => {
 
    const SymbolGroupsIds = useSelector(({ symbolGroups }) => symbolGroups.selectedRowsIds)
     const SymbolGroupsData = useSelector(({symbolGroups})=> symbolGroups.symbolGroupsData)
-   const ArrangedSymbolGroupsData = SymbolGroupsData.slice().sort((a, b) => a.id - b.id);
-  console.log(ArrangedSymbolGroupsData)
+   const ArrangedSymbolGroupsData = SymbolGroupsData;
+   const fetchAllSetting = async (page) => {
+    try {
+      const res = await Symbol_Group_List(token, page, 10);
+      const { data: { message, success, payload } } = res
+      dispatch(setSymbolGroupsData(payload.data))
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  }
   const validationSchema = Yup.object().shape({
       symbolGroupName: Yup.string().required('Name is required'),
       Leverage: Yup.object().required('Leverage is required'),
@@ -164,10 +173,12 @@ const SymbolGroupEntry = () => {
         // trading_interval_end_time: trading_interval_end_time,
         swap: Swap||""
       }
-      if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){
+      if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0 || SymbolGroupsIds[0] === undefined){
        setIsLoading(true)
        const res = await SaveSymbolGroups(SymbolGroupData, token)
        const {data: {message, payload, success}} = res
+       fetchAllSetting(page)
+       dispatch(setSymbolGroupsSelectedIDs([payload?.id]))
        setIsLoading(false)
        if(success){
           CustomNotification({
@@ -177,6 +188,8 @@ const SymbolGroupEntry = () => {
             key: 2
           })
         clearFields()
+        window.location.reload();
+
         // navigate('/symbol-groups')
       }else{
       setIsLoading(false)
@@ -289,7 +302,7 @@ const handlePrevious = async () => {
 
     if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
       dispatch(setSymbolGroupsData(newSymbolGroupsData));
-      const newArrangedSymbolGroupsData = newSymbolGroupsData.slice().sort((a, b) => a.id - b.id);
+      const newArrangedSymbolGroupsData = newSymbolGroupsData;
       const payload = newArrangedSymbolGroupsData[newArrangedSymbolGroupsData.length - 1];
       dispatch(setSymbolGroupsSelectedIDs([payload.id]));
       setCurrentIndex(newArrangedSymbolGroupsData.length - 1);
@@ -349,6 +362,7 @@ const handlePrevious = async () => {
   //   }
   // }; 
   //#region HandleNext 
+  ///
   const handleNext = async () => {
     if (currentIndex < ArrangedSymbolGroupsData.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
@@ -360,7 +374,6 @@ const handlePrevious = async () => {
         setStatesForEditMode(payload, true, LeverageList);
       }, 3000);
     } else {
-      const page = localStorage.getItem("page");
       const page_num = Number(page) + 1;
       setIsLoading(true);
       const res = await FetchData(page_num, token);
@@ -368,7 +381,7 @@ const handlePrevious = async () => {
   
       if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
         dispatch(setSymbolGroupsData(newSymbolGroupsData));
-        const newArrangedSymbolGroupsData = newSymbolGroupsData.slice().sort((a, b) => a.id - b.id);
+        const newArrangedSymbolGroupsData = newSymbolGroupsData;
         const payload = newArrangedSymbolGroupsData[0];
         dispatch(setSymbolGroupsSelectedIDs([payload.id]));
         setCurrentIndex(0);

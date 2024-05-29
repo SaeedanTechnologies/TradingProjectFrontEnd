@@ -25,7 +25,7 @@ const TradingAccountLiveOrderEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const LiveOrdersRowsIds = useSelector(({ tradingAccount }) => tradingAccount.selectedLiveOrdersRowsIds)
   const LiveOrdersData = useSelector(({ tradingAccount })=> tradingAccount.liveOrdersData)
-  const ArrangedLiveOrdersData = LiveOrdersData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedLiveOrdersData = LiveOrdersData.slice();
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const {
     token: { colorBG },} = theme.useToken();

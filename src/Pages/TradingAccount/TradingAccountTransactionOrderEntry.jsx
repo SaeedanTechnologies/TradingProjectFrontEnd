@@ -20,7 +20,7 @@ import { updateTransactionOrders,setTransactionOrdersData,setTransactionOrdersSe
 
 const TradingAccountTransactionOrderEntry = () => {
     const token = useSelector(({ user }) => user?.user?.token)
-    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id )
+    const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const dispatch = useDispatch()
@@ -55,7 +55,7 @@ const TradingAccountTransactionOrderEntry = () => {
 
    const TransactionOrdersIds = useSelector(({ tradingAccount }) => tradingAccount.selectedTransactionOrdersRowsIds)
   const TransactionOrdersData = useSelector(({tradingAccount})=> tradingAccount.transactionOrdersData)
-  const ArrangedTransactionOrdersData= TransactionOrdersData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedTransactionOrdersData= TransactionOrdersData;
   
 
   const Control = [

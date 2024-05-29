@@ -26,7 +26,7 @@ const TradingAccountCloseOrderEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const CloseOrdersRowsIds = useSelector(({ tradingAccount }) => tradingAccount.selectedCloseOrdersRowsIds)
   const CloseOrdersData = useSelector(({tradingAccount})=> tradingAccount.closeOrdersData)
-  const ArrangedCloseOrdersData = CloseOrdersData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedCloseOrdersData = CloseOrdersData;
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   
   const {

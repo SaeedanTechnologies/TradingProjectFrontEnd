@@ -265,7 +265,6 @@ const Index = () => {
   },[])
 
 
- console.log(allSetting, "ALL SETTINGS DATA")
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>

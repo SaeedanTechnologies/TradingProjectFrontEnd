@@ -13,7 +13,7 @@ export const tradeGroupsWithdrawSlice = createSlice({
     },
     setTradeWithdrawGroupsData: (state, action)=>{
       
-      state.tradeWithdrawGroupsData = action.payload.sort((a, b) => a.id - b.id)
+      state.tradeWithdrawGroupsData = action.payload;
     }, 
     setTradeWithdrawCurrentData: (state, action)=>{
       

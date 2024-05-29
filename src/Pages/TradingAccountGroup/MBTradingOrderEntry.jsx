@@ -27,7 +27,7 @@ const MBTradingOrdersEntery = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const TradeGroupRowsIds = useSelector(({ tradeGroups }) => tradeGroups.selectedRowsIds)
   const TradeGroupData = useSelector(({tradeGroups})=> tradeGroups.tradeGroupsData)
-  const ArrangedTradeGroupRowsIds = TradeGroupRowsIds.slice().sort((a, b) => a.id - b.id);
+  const ArrangedTradeGroupRowsIds = TradeGroupRowsIds;
   
   const tradeCurrentGroupData = useSelector(({tradeGroups})=>tradeGroups?.tradeCurrentGroupData)
 

@@ -27,7 +27,7 @@ const CloseOrderEntery = () => {
   const token = useSelector(({ user }) => user?.user?.token)
   const CloseOrdersRowsIds = useSelector(({ tradeOrders }) => tradeOrders.selectedCloseOrdersRowsIds)
   const CloseOrdersData = useSelector(({tradeOrders})=> tradeOrders.closeOrdersData)
-  const ArrangedCloseOrdersData = CloseOrdersData.slice().sort((a, b) => a.id - b.id);
+  const ArrangedCloseOrdersData = CloseOrdersData
   
   const {
     token: { colorBG },} = theme.useToken();

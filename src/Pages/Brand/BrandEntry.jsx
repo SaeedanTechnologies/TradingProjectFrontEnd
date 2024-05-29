@@ -5,24 +5,25 @@ import CustomButton from '../../components/CustomButton';
 import { LeftOutlined, RightOutlined, CaretDownOutlined } from '@ant-design/icons';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
-import { GenericDelete, GenericEdit, GetSingleBrand, SaveBrands, UpdateBrand } from '../../utils/_APICalls';
+import { Brands_List, GenericDelete, GenericEdit, GetSingleBrand, SaveBrands, UpdateBrand } from '../../utils/_APICalls';
 import { LeverageList, notifyError, notifySuccess } from '../../utils/constants';
 import { ToastContainer } from 'react-toastify';
 import { Dropdown, Spin, theme } from 'antd';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from 'react-router-dom';
-import { deleteBrandById, setBrandSelectedIDs, updateBrandsData } from '../../store/BrandsSlice';
+import { deleteBrandById, setBrandData, setBrandSelectedIDs, updateBrandsData } from '../../store/BrandsSlice';
 import { CustomBulkDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { EditOutlined } from '@mui/icons-material';
 
 
 const BrandEntry = () => {
+  const page = localStorage.getItem("page")
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const BrandIds = useSelector(({ brands }) => brands?.selectedRowsIds)
     const BrandGroupData = useSelector(({brands})=> brands?.brandData)
-   const ArrangedBrandData = BrandGroupData?.slice().sort((a, b) => a.id - b.id);
+   const ArrangedBrandData = BrandGroupData;
 
     const {token: { colorBG },} = theme.useToken()
     const navigate = useNavigate()
@@ -37,7 +38,15 @@ const BrandEntry = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
-
+  const fetchData = async (page) => {
+    try {
+      const res = await Brands_List(token, page);
+      const { data: { message, success, payload } } = res
+      dispatch(setBrandData(payload.data))
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  }
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     domain: Yup.string()
@@ -106,17 +115,19 @@ const BrandEntry = () => {
         leverage: leverage.value
       }
     //   if (BrandID === 0) {
-        if(BrandIds.length === 1 && parseInt(BrandIds[0]) === 0){
+        if(BrandIds.length === 1 && parseInt(BrandIds[0]) === 0 || BrandIds[0] === undefined){
         setIsLoading(true)
-        
         const res = await SaveBrands(BrandData, token)
         const { data: { message, payload, success } } = res
+        fetchData(page)
+        dispatch(setBrandSelectedIDs([payload?.id]))
         setIsLoading(false)
         if (success) {
           notifySuccess(message)
         //   setIsModalOpen(false)
         //   fetchBrands()
           clearFields()
+          window.location.reload();
         } else {
           notifyError(message)
         }
