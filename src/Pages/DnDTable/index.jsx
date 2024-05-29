@@ -110,7 +110,7 @@ class DnDTable extends Component {
   }
   async SearchHandler(currentPage){
     //  this.setState({isLoading: true})
-    // debugger
+   
     const queryParams = {
       ...this.state.searchValues,
       ...this.props.SearchQueryList
@@ -156,16 +156,25 @@ class DnDTable extends Component {
   //   }
   // };
   
-  handleClearSearch = () => {
-    const clearedSearchValues = {};
-    const inputRefs = Object.keys(this.state.searchValues);
-    inputRefs.forEach((key) => {
-      clearedSearchValues[key] = '';
+handleClearSearch = () => {
+  const clearedSearchValues = {};
+  const inputRefs = Object.keys(this.state.searchValues);
+  
+  inputRefs.forEach((key) => {
+    clearedSearchValues[key] = '';
+  });
+
+  this.setState({ 
+    searchValues: clearedSearchValues, 
+    isSearching: true 
+  }, () => {
+    document.querySelectorAll(".search-input").forEach(element => {
+      element.value = '';
     });
-    this.setState({ searchValues:clearedSearchValues, isSearching: true })
-    document.getElementById("search-input").value = ''
-    this.SearchHandler(this.props.current)
-  };
+    this.SearchHandler(this.props.current);
+  });
+};
+
   async useEffect(){
     const firstColumnHeaderCell = document.querySelector('.ant-table-thead tr:first-child th:first-child');
     if(!this.state.buttonCreated){
@@ -200,6 +209,7 @@ class DnDTable extends Component {
           {
               title: <Input 
               id={`search-input`}
+              className={'search-input'}
               placeholder={`Search ${column?.title?.props?.children}`}
               value={this.state.searchValues[column.dataIndex]}
               onChange={e => this.handleInputChange(column.dataIndex, e.target.value)}
