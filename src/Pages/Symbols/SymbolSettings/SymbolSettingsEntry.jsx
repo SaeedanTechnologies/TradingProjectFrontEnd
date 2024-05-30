@@ -606,6 +606,12 @@ const SymbolSettingsEntry = () => {
                   if (value) {
                     setSelectedSymbol(value);
                     setSwap(value.swap)
+                    setLotSize(value.lot_size)
+                    setLotSteps(value.lot_step)
+                    setVolMin(value.vol_min)
+                    setVolMax(value.vol_max)
+                    const selectedLeverage = LeverageList.find(x => x.title === value.leverage)
+                    setSelectedLeverage(selectedLeverage)
                     setConnected(true)
                     setErrors(prevErrors => ({ ...prevErrors, SymbolGroup: "" }))
                   } else {

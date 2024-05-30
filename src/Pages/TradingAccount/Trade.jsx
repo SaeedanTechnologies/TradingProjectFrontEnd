@@ -23,7 +23,7 @@ import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
-
+import moment from 'moment';
 
 import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 import CandleStickChart from '../../components/CandleStickChart';
@@ -168,7 +168,7 @@ const Trade = ({ fetchLiveOrder, CurrentPage }) => {
         stop_limit_price,
         trading_account_id,
         open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
-        open_time: new Date().toISOString(),
+        open_time: moment().format('MM/DD/YYYY hh:mm A'),
         brand_id
       }
       
@@ -547,7 +547,7 @@ useEffect(() => {
                   name={'Type'}
                   variant={'standard'}
                   label={'Type'}
-                  options={TradeOrderTypes}
+                  options={TradeOrderTypes.slice(0,2)}
                   value={order_type}
                   getOptionLabel={(option) => option?.label ? option?.label : ""}
                   onChange={(e, value) => {
