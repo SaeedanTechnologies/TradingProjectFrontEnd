@@ -14,8 +14,9 @@ import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
 
-const   LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
+const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
   // debugger;
+  
   const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0])
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
@@ -183,7 +184,7 @@ const   LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading, gra
   }
   // const CancelLiveOrder = async (id) => {
 
-   const requiredOrder = tradeOrder.find((order)=>order.id === id)
+  //  const requiredOrder = tradeOrder.find((order)=>order.id === id)
 
   //   setIsLoading(true)
   //   const currentDateISO = new Date().toISOString();
@@ -270,7 +271,7 @@ const   LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading, gra
             direction="/single-trading-accounts/details/live-order-entry"
             formName = "Trading Live Orders" 
             columns={newColumns}
-            data={tradeOrder} 
+            // data={tradeOrder} 
             headerStyle={headerStyle}
             total={totalRecords}
             setTotalRecords={setTotalRecords}
@@ -287,10 +288,10 @@ const   LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading, gra
                       Equity: {isNaN(calculateEquity(balance, grandProfit, credit, bonus)) ? 0 : calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName} &nbsp;
                       Credit: {isNaN(credit) ? 0 : parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
                       Bonus: {isNaN(bonus) ? 0 : parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
-                      {tradeOrder.length > 0  &&
-                      <span> Margin: {isNaN(margin) ? 0 : margin}</span>}&nbsp;
+                      
+                      <span> Margin: {isNaN(margin) ? 0 : margin}</span>&nbsp;
                       Free Margin: {isNaN(calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)} &nbsp;
-                      {tradeOrder.length > 0  && <span>Margin Level: {isNaN(calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)} %</span>}
+                       <span>Margin Level: {isNaN(calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)} %</span>
                     </span>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
@@ -306,7 +307,7 @@ const   LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading, gra
             perPage={perPage}
             setPerPage={setPerPage}
             SearchQuery = {Search_Live_Order}
-            // searchQueryManipulation = {fetchLiveOrder}
+            searchQueryManipulation = {setManipulatedData}
             SearchQueryList = {SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}

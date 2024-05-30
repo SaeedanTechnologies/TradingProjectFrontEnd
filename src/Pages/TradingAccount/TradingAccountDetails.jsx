@@ -36,19 +36,13 @@ const TradingAccountDetails = () => {
   const { tradeId } = useParams();
   
   const [activeTab, setActiveTab] = useState('1');
-  const [tradeOrder, setTradeOrder] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0]);
   const { leverage } = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData);
   const { value: accountLeverage } = LeverageList?.find(x => x?.title === leverage || { value: '', title: '' },);
 
-  const fetchLiveOrder = async (data) => {
-    // setIsLoading(true);
-    // const params = { trading_account_id, OrderTypes: ['market'], token, page };
-    // const mData = await Get_Trade_Order(params);
-    // const { data: { message, payload, success } } = mData;
-    // setIsLoading(false);
-    // if (success) {
+  const setManipulatedData = async (data) => {
+    
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
@@ -71,44 +65,41 @@ const TradingAccountDetails = () => {
         totalVolumn += parseFloat(res);
         return { ...x, swap, profit, currentPrice, open_price };
       }));
-      // dispatch(setLiveOrdersData(updatedData));
+      
       setGrandProfit(totalProfit.toFixed(2));
       setGrandVolumn(totalVolumn.toFixed(2));
       setGrandMargin(totalMargin.toFixed(2));
       setTotalSwap(_totalSwap.toFixed(2));
-      // setTradeOrder(updatedData);
-      // setCurrentPage(payload.current_page);
-      // setLastPage(payload.last_page);
-      // setTotalRecords(payload.total);
-    // }
+    
+  
     return updatedData;
   }
   const items = [
     {
       key: '1',
       label: 'Live Orders',
-      component: <LiveOrders fetchLiveOrder={fetchLiveOrder} tradeOrder={tradeOrder} grandProfit={grandProfit} lotSize={grandVolumn} isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <LiveOrders setManipulatedData={setManipulatedData} grandProfit={grandProfit} lotSize={grandVolumn} isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} margin={grandMargin} totalSwap={totalSwap} />,
       path: '/single-trading-accounts/details/live-order',
       display: CheckBrandPermission(userPermissions, userRole, 'live_orders_read') ? 'show' : 'hide'
     },
     {
       key: '2',
       label: 'Trade',
-      component: <Trade fetchLiveOrder={fetchLiveOrder} CurrentPage={CurrentPage} />,
+      component: <Trade  CurrentPage={CurrentPage} />,
       path: '/single-trading-accounts/details/symbol',
       display: CheckBrandPermission(userPermissions, userRole, 'live_orders_create') ? 'show' : 'hide'
     },
     {
       key: '3',
       label: 'Pending Order',
-      component: <PendingOrder tradeOrder={tradeOrder} grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <PendingOrder setManipulatedData={setManipulatedData}  grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
       path: "/single-trading-accounts/details/pending-order",
       display: CheckBrandPermission(userPermissions, userRole, 'close_orders_read') ? 'show' : 'hide'
     },
     {
       key: '4',
       label: 'Close Order',
-      component: <CloseOrder tradeOrder={tradeOrder} grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <CloseOrder setManipulatedData={setManipulatedData} grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
       path: "/single-trading-accounts/details/close-order",
       display: CheckBrandPermission(userPermissions, userRole, 'close_orders_read') ? 'show' : 'hide'
     },

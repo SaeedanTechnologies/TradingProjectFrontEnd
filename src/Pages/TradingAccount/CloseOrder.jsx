@@ -14,7 +14,7 @@ import { MinusCircleOutlined  } from '@ant-design/icons';
 import { CurrenciesList } from '../../utils/constants';
 
 
-const CloseOrder = ({totalSwap, grandProfit}) => {
+const CloseOrder = ({setManipulatedData, totalSwap, grandProfit}) => {
   
 
   const token = useSelector(({user})=> user?.user?.token )
@@ -302,6 +302,7 @@ const CloseOrder = ({totalSwap, grandProfit}) => {
             perPage={perPage}
             setPerPage={setPerPage}
             SearchQuery = {Search_Close_Order}
+            searchQueryManipulation={setManipulatedData}
             SearchQueryList = {SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}

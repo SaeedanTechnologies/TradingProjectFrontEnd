@@ -110,7 +110,6 @@ class DnDTable extends Component {
   }
   async SearchHandler(currentPage){
     //  this.setState({isLoading: true})
-   
     const queryParams = {
       ...this.state.searchValues,
       ...this.props.SearchQueryList
@@ -122,12 +121,13 @@ class DnDTable extends Component {
    
     //  this.setState({isLoading: false})
     if(success){
+      const data =  this.props.searchQueryManipulation ? await this.props.searchQueryManipulation(payload.data) : payload.data
       this.props.LoadingHandler(false)
       this.props.setCurrentPage(payload.current_page)
       this.props.setTotalRecords(payload.total)
       this.props.setLastPage(payload.last_page)
-      this.setState({data:this.props.searchQueryManipulation ? this.props.searchQueryManipulation(payload.data) : payload.data})
-      this.props.dispatch(this.props.setTableData(this.props.searchQueryManipulation? this.props.searchQueryManipulation(payload.data) : payload.data))
+      this.setState({data:data})
+      this.props.dispatch(this.props.setTableData(data))
       localStorage.setItem('isCompleteSelect', JSON.stringify(false));
       if(this.state.isCompleteSelect) {
         const allRowKeys = payload.data.map((row) => row.id);
