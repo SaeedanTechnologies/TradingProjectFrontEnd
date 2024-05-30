@@ -413,7 +413,7 @@ const TradingGroupEntry = () => {
            {!! filteredItems.length  && (
             <Dropdown
               menu={{
-                items,
+                items:filteredItems,
               }}
               placement="bottom"
               arrow

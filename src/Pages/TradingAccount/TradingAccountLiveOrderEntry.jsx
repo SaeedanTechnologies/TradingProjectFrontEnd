@@ -235,7 +235,6 @@ const TradingAccountLiveOrderEntry = () => {
         trading_account_id,
         brand_id
       }
-          
     try {
        
       if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save 
@@ -285,8 +284,6 @@ const TradingAccountLiveOrderEntry = () => {
         }
 
       }
-      
-
     } catch (err) {
       const validationErrors = {};
       err.inner?.forEach(error => {
@@ -360,7 +357,7 @@ const handleLossChange = (newValue) => {
       label: (
         <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
-      visible: CheckBrandPermission(userPermissions,userRole,'live_orders_update')
+      visible: CheckBrandPermission(userPermissions,userRole,'live_orders_delete')
 
     },
    

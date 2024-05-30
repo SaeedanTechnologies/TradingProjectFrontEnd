@@ -38,6 +38,7 @@ const BrandEntry = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [stop_out,setStop_out]= useState('')
   const fetchData = async (page) => {
     try {
       const res = await Brands_List(token, page);
@@ -74,6 +75,9 @@ const BrandEntry = () => {
         case 'leverage':
           setLeverage(value);
         break;
+        case 'stop_out':
+          setStop_out(value);
+        break;
       default:
         break;
     }
@@ -97,25 +101,24 @@ const BrandEntry = () => {
 
   const handleSubmit = async () => {
     try {
-        if(BrandIds?.length < 2)
-            {
-      await validationSchema.validate({
-        name,
-        domain,
-        marginCall,
-        leverage
-      }, { abortEarly: false });
-
-      setErrors({});
-    }
+       
       const BrandData = {
         name: name,
         domain: domain,
         margin_call: marginCall,
-        leverage: leverage.value
+        leverage: leverage.value,
+        stop_out,
       }
     //   if (BrandID === 0) {
         if(BrandIds.length === 1 && parseInt(BrandIds[0]) === 0 || BrandIds[0] === undefined){
+          await validationSchema.validate({
+            name,
+            domain,
+            marginCall,
+            leverage
+          }, { abortEarly: false });
+
+          setErrors({});
         setIsLoading(true)
         const res = await SaveBrands(BrandData, token)
         const { data: { message, payload, success } } = res
@@ -313,6 +316,7 @@ const BrandEntry = () => {
       setName(payload.name)
       setDomain(payload.domain)
       setMarginCall(payload.margin_call)
+      setStop_out(payload.stop_out)
     //   setLeverage(payload.leverage)
     } else {
       notifyError(message)
@@ -402,6 +406,15 @@ const BrandEntry = () => {
         />
         {errors.marginCall && <span style={{ color: 'red' }}>{errors.marginCall}</span>}
 
+         <CustomTextField
+          label="Stop Out"
+          varient="standard"
+          type="number"
+          value={stop_out}
+          disabled={isDisabled}
+          onChange={e => handleInputChange('stop_out', e.target.value)}
+        />
+
         <CustomAutocomplete
           label="Select Leverage"
           name='Leverage'
@@ -430,8 +443,8 @@ const BrandEntry = () => {
           />
           
         </div> */}
-        {
-            !isDisabled && 
+
+       {!isDisabled && 
   
 
         <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>

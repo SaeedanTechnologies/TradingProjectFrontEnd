@@ -398,7 +398,7 @@ const handleLossChange = (newValue) => {
             <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
              {!! filteredItems.length  && ( <Dropdown
               menu={{
-                items,
+                items:filteredItems,
               }}
               placement="bottom"
               arrow

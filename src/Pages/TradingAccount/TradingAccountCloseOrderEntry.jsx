@@ -218,7 +218,6 @@ const TradingAccountCloseOrderEntry = () => {
   },[])
 
   const handleSubmit = async () => {
-    
     try {
      const CloseData = { // passing 0 to all fields if thers no need to validtion for mass editcase pass 0 so backend skip update which records have 0
       symbol: symbol?.feed_fetch_name ? symbol?.feed_fetch_name : '',

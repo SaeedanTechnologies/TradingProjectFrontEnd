@@ -12,12 +12,17 @@ import { Autocomplete,TextField } from '@mui/material'
 import CustomNotification from '../../components/CustomNotification';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import {Countries} from '../../utils/constants'
+import { CheckBrandPermission } from '../../utils/helpers';
 
 
 const PersonalData = () => {
   const token = useSelector(({user})=> user?.user?.token );
   const tradingAccountGroupData = useSelector(({tradingAccountGroup})=>tradingAccountGroup?.tradingAccountGroupData)
+  
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
+
+  
   const { token: { colorBG,  }} = theme.useToken();
   const [name,setName] = useState('')
   const [registration_time,setRegistration_time ] =  useState(moment().format('YYYY-MM-DD'))
@@ -252,11 +257,13 @@ const fetchSingleTradeAccount= async()=>{
           
     </div>
     <div className='flex justify-end'>
-    <CustomButton
+     <CustomButton
               Text={'Save Changes'}
               style={PDataSaveBtnStyle}
               onClickHandler={handleSubmit}
-            />
+              disabled={!CheckBrandPermission(userPermissions,userRole,'trading_account_list_update')}
+              
+            /> 
     </div>
    
    </div>

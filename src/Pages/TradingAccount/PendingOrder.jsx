@@ -235,6 +235,8 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
+            editPermissionName="pending_orders_update"
+            deletePermissionName="pending_orders_delete"
           />
       </div>
     </Spin>

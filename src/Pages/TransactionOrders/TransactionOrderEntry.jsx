@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg'
 import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
-import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined,CaretDownOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
 import { deleteTransactionOrderById, setTransactionOrdersData, setTransactionsOrdersSelectedIDs, updateTransactionOrders } from '../../store/transactionOrdersSlice';
 import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
@@ -22,7 +22,7 @@ const TransactionOrderEntry = () => {
   const page = localStorage.getItem("page")
     const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const token = useSelector(({ user }) => user?.user?.token)
-    const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0]) 
+    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id) 
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
     const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
@@ -443,25 +443,7 @@ else
 
  const handleSubmit = async () => {
     try {
-      
-      if (TransactionOrdersIds.length < 2) {
-        await TransactionOrderEntryValidationSchema.validate({
-          SelectedMethod: SelectedMethod,
-          amount: amount,
-          email: email,
-          name: name,
-          phone: phone,
-          SelectedType: SelectedType,
-          SelectedGroup: SelectedGroup,
-          SelectedCurrency: SelectedCurrency,
-          SelectedCountry: SelectedCountry,
-          comment: comment,
-        }, { abortEarly: false });
-
-        setErrors({});
-      }
-
-     const transactionOrderData = { 
+       const transactionOrderData = { 
         email:email,
         name: name,
         phone:phone,
@@ -546,7 +528,8 @@ else
                 trigger={['click']}
                 
               >
-                <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+                <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
+
             </Dropdown>)}
             </div>
             }
