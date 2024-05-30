@@ -271,7 +271,7 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit}) => {
             direction="/single-trading-accounts/details/close-order-entry"
             formName = "Trading Close Orders" 
             columns={newColumns}
-            data={closeOrders} 
+            // data={closeOrders} 
             headerStyle={headerStyle}
             total={totalRecords}
             setTotalRecords={setTotalRecords}

@@ -94,6 +94,18 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
       },
     },
     {
+      title: <span className="dragHandler">Current Price</span>,
+      dataIndex: 'currentPrice',
+      key: 'currentPrice',
+      sorter: (a, b) => ColumnSorter(a.currentPrice , b.currentPrice),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+    },
+    {
       title: <span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
       key: 'takeProfit',
