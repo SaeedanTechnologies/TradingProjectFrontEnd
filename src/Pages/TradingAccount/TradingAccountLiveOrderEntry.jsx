@@ -49,7 +49,7 @@ const TradingAccountLiveOrderEntry = () => {
     const [brand_id,setBrand_id] = useState('')
     const [profit,setProfit] = useState('')
     const [trading_account_id,setTrading_account_id] = useState(0)
-
+    const [open_time, setOpenTime] = useState("")
 
 
 
@@ -118,6 +118,7 @@ const TradingAccountLiveOrderEntry = () => {
         const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
         setType(selectedType);
         setVolume(payload?.volume);
+        setOpenTime(payload?.open_time)
         setTakeProfit(payload?.takeProfit);
         setStopLoss(payload?.stopLoss);
         setComment(payload?.comment);
@@ -188,6 +189,7 @@ const TradingAccountLiveOrderEntry = () => {
     const selectedType = LiveOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
     setVolume(payload?.volume);
+    setOpenTime(payload?.open_time)
     setTakeProfit(payload?.takeProfit);
     setStopLoss(payload?.stopLoss);
     setComment(payload?.comment);
@@ -445,27 +447,40 @@ const handleLossChange = (newValue) => {
                 />
                 {errors.symbol && <span style={{ color: 'red' }}>{errors.symbol}</span>}
             </div>
-        
+            <div>
+              <CustomNumberTextField
+                      label="Volume"
+                      value={volume}
+                      initialFromState={0.01}
+                      onChange={handleVolumeChange}
+                      disabled={isDisabled}
+                      fullWidth
+                      min={0.01}
+                      max={100}
+                      step={0.01}
+                    />
+                {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
+            </div>
             <div>
                 <Autocomplete
                   name={'Type'}
                   variant={'standard'}
                   label={'Type'}
-                  options={TradeOrderTypes}
+                  options={LiveOrderTypes}
                   disabled={isDisabled}
-                  value={order_type}
+                  value={type}
                   getOptionLabel={(option) => option.label ? option.label : ""}
                   onChange={(e, value) => {
                     if (value) {
 
-                      setOrder_type(value)
+                      setType(value)
                       setErrors(prevErrors => ({ ...prevErrors, order_type: "" }))
                     }
                     else
                       setOrder_type(null)
                   }}
                   renderInput={(params) =>
-                    <TextField {...params} name="Type" label="Order Type" variant="standard" />
+                    <TextField {...params} name="Type" label="Type" variant="standard" />
                   }
                 />
                 {errors.order_type && <span style={{ color: 'red' }}>{errors.order_type}</span>}
@@ -511,20 +526,7 @@ const handleLossChange = (newValue) => {
                     </div>
               )}
            
-            <div>
-              <CustomNumberTextField
-                      label="Volume"
-                      value={volume}
-                      initialFromState={0.01}
-                      onChange={handleVolumeChange}
-                      disabled={isDisabled}
-                      fullWidth
-                      min={0.01}
-                      max={100}
-                      step={0.01}
-                    />
-                {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
-            </div>
+            
             <div>
               <CustomNumberTextField
                       label="Open Price"
@@ -585,7 +587,16 @@ const handleLossChange = (newValue) => {
                 onChange={e => setSwap(e.target.value)}
                  />
             </div>
-
+              <div>
+              <label>Open Time</label>
+            <CustomTextField 
+                varient={'standard'}
+                value={open_time}
+                disabled={isDisabled}
+                type="datetime-local"
+                onChange={(e) => setOpenTime(e.target.value)}
+                 />
+              </div>
             <div>
               <CustomTextField 
                 label={'Profit'}

@@ -14,7 +14,7 @@ import { MinusCircleOutlined  } from '@ant-design/icons';
 import { CurrenciesList } from '../../utils/constants';
 
 
-const PendingOrder = ({grandProfit, totalSwap}) => {
+const PendingOrder = ({setManipulatedData,grandProfit, totalSwap}) => {
   
 
   const token = useSelector(({user})=> user?.user?.token )
@@ -231,6 +231,7 @@ const PendingOrder = ({grandProfit, totalSwap}) => {
             perPage={perPage}
             setPerPage={setPerPage}
             SearchQuery = {Search_Pending_Order}
+            searchQueryManipulation={setManipulatedData}
             SearchQueryList = {SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}

@@ -28,7 +28,7 @@ import moment from 'moment';
 import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 import CandleStickChart from '../../components/CandleStickChart';
 
-const Trade = ({ fetchLiveOrder, CurrentPage }) => {
+const Trade = ({ CurrentPage }) => {
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
