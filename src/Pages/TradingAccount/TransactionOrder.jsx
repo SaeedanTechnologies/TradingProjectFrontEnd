@@ -260,7 +260,7 @@ const TransactionOrder = () => {
         group: null,
         type,
         status: "requested",
-        brand_id: userBrand.public_key
+        brand_id: brandId
 
       }
 
@@ -316,6 +316,9 @@ const TransactionOrder = () => {
     const { data: { message, payload, success } } = res
 
 
+      setIsLoading(false)
+
+
     setIsLoading(false)
     if (success) {
       setCurrency(payload?.currency)
@@ -324,6 +327,7 @@ const TransactionOrder = () => {
       setEmail(payload?.email)
       setPhone(payload?.phone)
       setCountry(payload?.country)
+      setBrandId(payload?.brand_id)
 
 
     }
