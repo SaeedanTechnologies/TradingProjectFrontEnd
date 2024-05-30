@@ -51,7 +51,7 @@ const LiveOrdersEntery = () => {
     const [comment,setComment] = useState('');
     const [brand_id,setBrand_id] = useState('')
     const [trading_account_id,setTrading_account_id] = useState(0)
-
+    const [open_time, setOpenTime] = useState("")
 
 
 
@@ -121,6 +121,8 @@ const LiveOrdersEntery = () => {
         const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
         setType(selectedType);
         setVolume(payload?.volume);
+        setSwap(payload?.swap)
+        setOpenTime(payload?.open_time)
         setTakeProfit(payload?.takeProfit);
         setStopLoss(payload?.stopLoss);
         setComment(payload?.comment);
@@ -191,6 +193,8 @@ const LiveOrdersEntery = () => {
     const selectedType = LiveOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
     setVolume(payload?.volume);
+    setSwap(payload?.swap)
+    setOpenTime(payload?.open_time)
     setTakeProfit(payload?.takeProfit);
     setStopLoss(payload?.stopLoss);
     setComment(payload?.comment);
@@ -221,7 +225,7 @@ const LiveOrdersEntery = () => {
       setIsDisabled(true)
     }
   },[])
-
+  
   const handleSubmit = async () => {
      const SymbolData = {
         symbol: symbol?.feed_fetch_name || '',
@@ -229,6 +233,9 @@ const LiveOrdersEntery = () => {
         order_type: order_type?.value||'',
         type:  type?.value||'',
         volume: String(volume)||'',
+        swap: String(swap)||'',
+        open_price: String(open_price) || "",
+        open_time: String(open_time) || "",
         comment,
         takeProfit: String(takeProfit === "" ? "" : takeProfit),
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
@@ -237,55 +244,60 @@ const LiveOrdersEntery = () => {
       }
           
     try {
-       
-      if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save 
-        setIsLoading(true)
-        const res = await SymbolSettingPost(SymbolGroupData, token);
-        const { data: { message, success, payload } } = res;
-        setIsLoading(false)
-        if (success) {
-          CustomNotification({
-            type: 'success',
-            title: 'success',
-            description: 'Live Order is  Created Successfully',
-            key: 2
-          })
-        }
-
-      } else{
-        setIsLoading(true)
-        const Params = {
-          table_name: 'trade_orders',
-          table_ids: isCompleteSelect === "true" ? [] : LiveOrdersRowsIds,
-          ...SymbolData
-        }
-        const res = await GenericEdit(Params, token)
-        const { data: { message, success, payload } } = res;
-        setIsLoading(false)
-        if (res !== undefined) {
+      if(type.value === "sell" && takeProfit > stopLoss) {
+        CustomNotification({ type: "error", title: "Live Order", description: 'Stop Loss should be greater than Take Profit', key: 1 })
+      }
+      else if(type.value === "buy" && takeProfit < stopLoss) {
+        CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater than Stop Loss', key: 1 }) 
+      }else {
+        if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save 
+          setIsLoading(true)
+          const res = await SymbolSettingPost(SymbolGroupData, token);
+          const { data: { message, success, payload } } = res;
+          setIsLoading(false)
           if (success) {
-            dispatch(updateLiveOrder(payload))
             CustomNotification({
               type: 'success',
               title: 'success',
-              description: 'Live Order Updated Successfully',
+              description: 'Live Order is  Created Successfully',
               key: 2
             })
-            setIsDisabled(true)
-         
-          } else {
-            setIsLoading(false)
-            CustomNotification({
-              type: 'error',
-              title: 'error',
-              description: message,
-              key: `abc`
-            })
           }
+  
+        } else{
+          setIsLoading(true)
+          const Params = {
+            table_name: 'trade_orders',
+            table_ids: isCompleteSelect === "true" ? [] : LiveOrdersRowsIds,
+            ...SymbolData
+          }
+          const res = await GenericEdit(Params, token)
+          const { data: { message, success, payload } } = res;
+          setIsLoading(false)
+          if (res !== undefined) {
+            if (success) {
+              dispatch(updateLiveOrder(payload))
+              CustomNotification({
+                type: 'success',
+                title: 'success',
+                description: 'Live Order Updated Successfully',
+                key: 2
+              })
+              setIsDisabled(true)
+           
+            } else {
+              setIsLoading(false)
+              CustomNotification({
+                type: 'error',
+                title: 'error',
+                description: message,
+                key: `abc`
+              })
+            }
+          }
+  
         }
-
       }
-      
 
     } catch (err) {
       const validationErrors = {};
@@ -295,7 +307,6 @@ const LiveOrdersEntery = () => {
       setErrors(validationErrors);
     }
   };
-
 const handleVolumeChange = (newValue) => {
     setVolume(newValue)
   }
@@ -445,32 +456,90 @@ const handleLossChange = (newValue) => {
                 />
                 {errors.symbol && <span style={{ color: 'red' }}>{errors.symbol}</span>}
             </div>
-        
+            <div>
+              <CustomNumberTextField
+                      label="Volume"
+                      value={volume}
+                      initialFromState={0.01}
+                      onChange={handleVolumeChange}
+                      disabled={isDisabled}
+                      fullWidth
+                      min={0.01}
+                      max={100}
+                      step={0.01}
+                    />
+                {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
+            </div>
+                {
+                  LiveOrdersRowsIds.length > 1 ?
+                  null :
+                  <>
             <div>
                 <Autocomplete
                   name={'Type'}
                   variant={'standard'}
                   label={'Type'}
-                  options={TradeOrderTypes}
+                  options={LiveOrderTypes}
                   disabled={isDisabled}
-                  value={order_type}
+                  value={type}
                   getOptionLabel={(option) => option.label ? option.label : ""}
                   onChange={(e, value) => {
                     if (value) {
 
-                      setOrder_type(value)
-                      setErrors(prevErrors => ({ ...prevErrors, order_type: "" }))
+                      setType(value)
                     }
                     else
-                      setOrder_type(null)
+                      setType(null)
                   }}
                   renderInput={(params) =>
-                    <TextField {...params} name="Type" label="Order Type" variant="standard" />
+                    <TextField {...params} name="Type" label="Type" variant="standard" />
                   }
                 />
                 {errors.order_type && <span style={{ color: 'red' }}>{errors.order_type}</span>}
             </div>
-
+            <div>
+            <CustomStopLossTextField
+            label="Take Profit"
+                      value={takeProfit}
+                      initialFromState={pricing?.askPrice ?? 0}
+                      checkFirst={pricing?.askPrice ? true : false}
+                      onChange={ handleProfitChange}
+                       disabled={isDisabled}
+                      fullWidth
+                      min={0}
+            step={0.1}
+            />
+           {errors.takeProfit && <span style={{ color: 'red' }}>{errors.takeProfit}</span>}
+            </div>
+            <div>
+              <CustomStopLossTextField
+                        label="Stop Loss"
+                        value={stopLoss}
+                        initialFromState={pricing?.askPrice ?? 0}
+                        checkFirst={pricing?.askPrice ? true : false}
+                        onChange={handleLossChange}
+                        disabled={isDisabled}
+                        fullWidth
+                        min={0}
+                        step={0.1}
+                      />
+                  {errors.stopLoss && <span style={{ color: 'red' }}>{errors.stopLoss}</span>}
+            </div>
+            <div>
+                      <CustomTextField
+                        label={'Open Price'}
+                        value={open_price}
+                        type="number"
+                        disabled={isDisabled}
+                        sx={numberInputStyle}
+                        varient={'standard'}
+                        onChange={(e) =>setOpen_price (e.target.value)}
+                      />
+                      {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
+                    </div>
+                  </>
+                }
+            
               {order_type?.value === 'pending' && ( <div>
                 
                   <Autocomplete
@@ -494,6 +563,7 @@ const handleLossChange = (newValue) => {
                   />
              
             </div>
+            
                )}
             
              { order_type?.value === 'pending' && (
@@ -511,57 +581,36 @@ const handleLossChange = (newValue) => {
                     </div>
               )}
            
-            <div>
-              <CustomNumberTextField
-                      label="Volume"
-                      value={volume}
-                      initialFromState={0.01}
-                      onChange={handleVolumeChange}
-                      disabled={isDisabled}
-                      fullWidth
-                      min={0.01}
-                      max={100}
-                      step={0.01}
-                    />
-                {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
-            </div>
+           
+              
+           
 
+          
             <div>
-            <CustomStopLossTextField
-            label="Take Profit"
-                      value={takeProfit}
-                      initialFromState={pricing?.askPrice ?? 0}
-                      checkFirst={pricing?.askPrice ? true : false}
-                      onChange={ handleProfitChange}
-                       disabled={isDisabled}
-                      fullWidth
-                      min={0}
-            step={0.1}
-            />
-           {errors.takeProfit && <span style={{ color: 'red' }}>{errors.takeProfit}</span>}
-            </div>
+              <CustomTextField label={'Swap'}
+                varient={'standard'}
+                value={swap}
+                disabled={isDisabled}
+                onChange={ (e) => setSwap(e.target.value)}
+                 />
 
+            </div>
             <div>
-              <CustomStopLossTextField
-                        label="Stop Loss"
-                        value={stopLoss}
-                        initialFromState={pricing?.askPrice ?? 0}
-                        checkFirst={pricing?.askPrice ? true : false}
-                        onChange={handleLossChange}
-                        disabled={isDisabled}
-                        fullWidth
-                        min={0}
-                        step={0.1}
-                      />
-                  {errors.stopLoss && <span style={{ color: 'red' }}>{errors.stopLoss}</span>}
+            <label>Open Time</label>
+            <CustomTextField 
+                varient={'standard'}
+                value={open_time}
+                disabled={isDisabled}
+                type="datetime-local"
+                onChange={(e) => setOpenTime(e.target.value)}
+                 />
             </div>
-
              <div>
               <CustomTextField label={'Comments'}
                 varient={'standard'}
                 value={comment}
                 disabled={isDisabled}
-                onChange={e => setComment(e.target.value)}
+                onChange={(e) => setComment(e.target.value)}
                  />
             </div>
 

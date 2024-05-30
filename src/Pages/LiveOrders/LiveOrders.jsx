@@ -155,6 +155,30 @@ const LiveOrders = () => {
       },
     },
     {
+      title:<span className="dragHandler">Open Price</span>,
+      dataIndex: 'open_price',
+      key: '33',
+      sorter: (a, b) =>  a.open_price - b.open_price,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title:<span className="dragHandler">Open Time</span>,
+      dataIndex: 'open_time',
+      key: '333',
+      sorter: (a, b) =>  a.open_time - b.open_time,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
       title:<span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
       key: '4',
@@ -183,6 +207,18 @@ const LiveOrders = () => {
       dataIndex: 'comment',
       key: '6',
       sorter: (a, b) => ColumnSorter(a.comment - b.comment),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title:<span className="dragHandler">Swap</span>,
+      dataIndex: 'swap',
+      key: '6',
+      sorter: (a, b) => ColumnSorter(a.swap - b.swap),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
