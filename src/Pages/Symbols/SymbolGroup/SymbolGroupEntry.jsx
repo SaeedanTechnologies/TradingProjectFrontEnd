@@ -2,7 +2,7 @@ import { Spin, theme,Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { LeftOutlined, RightOutlined, EllipsisOutlined, EditOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, EllipsisOutlined, EditOutlined,CaretDownOutlined } from '@ant-design/icons';
 import ARROW_BACK_CDN from '../../../assets/images/arrow-back.svg';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
@@ -145,21 +145,7 @@ const SymbolGroupEntry = () => {
     
     try{
    
-      if(SymbolGroupsIds.length < 2)
-      {
-      await validationSchema.validate({
-        symbolGroupName,
-        Leverage : SelectedLeverage,
-        Swap,
-        LotSize,
-        LotStep,
-        VolMin,
-        VolMax,
-        // TradingInterval
-      }, { abortEarly: false });
-
-      setErrors({});
-     }
+    
       const SymbolGroupData = {
         name : symbolGroupName || "",
         leverage: SelectedLeverage?.value|| null,
@@ -175,6 +161,18 @@ const SymbolGroupEntry = () => {
       }
       if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0 || SymbolGroupsIds[0] === undefined){
        setIsLoading(true)
+          await validationSchema.validate({
+        symbolGroupName,
+        Leverage : SelectedLeverage,
+        Swap,
+        LotSize,
+        LotStep,
+        VolMin,
+        VolMax,
+        // TradingInterval
+      }, { abortEarly: false });
+
+      setErrors({});
        const res = await SaveSymbolGroups(SymbolGroupData, token)
        const {data: {message, payload, success}} = res
        fetchAllSetting(page)
@@ -548,7 +546,8 @@ const handlePrevious = async () => {
                   trigger={['click']}
                   
                 >
-                  <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+                <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
+
               </Dropdown>
           </div>
           }

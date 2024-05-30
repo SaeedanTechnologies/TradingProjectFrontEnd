@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg'
 import { Single_Transaction_Order, Trading_Transaction_Order, Update_Trading_Transaction_Order } from '../../utils/_SymbolSettingAPICalls';
-import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, EllipsisOutlined,EditOutlined,CaretDownOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
 import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
 import { GenericDelete, GenericEdit } from '../../utils/_APICalls';
@@ -425,21 +425,21 @@ else
  const handleSubmit = async () => {
     try {
       
-      if (TransactionOrdersIds?.length < 2) {
-        await TransactionOrderEntryValidationSchema.validate({
-          SelectedMethod: SelectedMethod,
-          amount: amount,
-          email: email,
-          name: name,
-          phone: phone,
-          SelectedType: SelectedType,
-          SelectedCurrency: SelectedCurrency,
-          SelectedCountry: SelectedCountry,
-          comment: comment,
-        }, { abortEarly: false });
+      // if (TransactionOrdersIds?.length < 2) {
+      //   await TransactionOrderEntryValidationSchema.validate({
+      //     SelectedMethod: SelectedMethod,
+      //     amount: amount,
+      //     email: email,
+      //     name: name,
+      //     phone: phone,
+      //     SelectedType: SelectedType,
+      //     SelectedCurrency: SelectedCurrency,
+      //     SelectedCountry: SelectedCountry,
+      //     comment: comment,
+      //   }, { abortEarly: false });
 
-        setErrors({});
-      }
+      //   setErrors({});
+      // }
 
      const transactionOrderData = { 
         email:email,
@@ -524,7 +524,8 @@ else
                 trigger={['click']}
                 
               >
-                <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> <EllipsisOutlined /> </div>
+              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
+
             </Dropdown> }
             </div>
             }

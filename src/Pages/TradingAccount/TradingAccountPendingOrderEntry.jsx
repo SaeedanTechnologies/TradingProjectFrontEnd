@@ -222,12 +222,7 @@ const TradingAccountPendingOrderEntry = () => {
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
         trading_account_id,
         brand_id
-      }
-
-   
-
-        
-
+      }        
       if (PendingOrdersRowsIds?.length === 1 && parseInt(PendingOrdersRowsIds[0]) === 0) { // save 
         setIsLoading(true)
         const res = await SymbolSettingPost(PendingData, token);

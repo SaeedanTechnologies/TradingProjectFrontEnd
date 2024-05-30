@@ -359,25 +359,7 @@ const SymbolSettingsEntry = () => {
   const handleSubmit = async () => {
     
     try {
-      if (SymbolSettingIds.length < 2) {
-        await validationSchema.validate({
-          SymbolGroup: selectedGroup,
-          symbolName: symbolName,
-          feed_name: selectedFeedName,
-          feed_name_fetch: selectedFeedNameFetch,
-          Leverage: SelectedLeverage,
-          swap: swap,
-          lotSize: lotSize,
-          lotSteps: lotSteps,
-          volMin: volMin,
-          volMax: volMax,
-          commission: commission,
-          enabled: Selectedenable,
-        }, { abortEarly: false });
-
-        setErrors({});
-      }
-
+     
       const SymbolGroupData = {
         name: symbolName || '',
         symbel_group_id: SelectedSymbol?.id || '',
@@ -398,6 +380,23 @@ const SymbolSettingsEntry = () => {
       };
       
       if (SymbolSettingIds.length === 1 && (parseInt(SymbolSettingIds[0]) === 0 || SymbolSettingIds[0] === undefined))  { // save 
+          await validationSchema.validate({
+          SymbolGroup: selectedGroup,
+          symbolName: symbolName,
+          feed_name: selectedFeedName,
+          feed_name_fetch: selectedFeedNameFetch,
+          Leverage: SelectedLeverage,
+          swap: swap,
+          lotSize: lotSize,
+          lotSteps: lotSteps,
+          volMin: volMin,
+          volMax: volMax,
+          commission: commission,
+          enabled: Selectedenable,
+        }, { abortEarly: false });
+
+        setErrors({});
+        
         setIsLoading(true)
         const res = await SymbolSettingPost(SymbolGroupData, token);
         const { data: { message, success, payload } } = res;

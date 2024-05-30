@@ -105,7 +105,6 @@ const BrandList = () => {
           </Space>
         </Stack>
       ),
-    
     },
     {
  
@@ -113,6 +112,20 @@ const BrandList = () => {
       dataIndex: 'margin_call',
       key: '6',
       sorter: (a, b) => a.margin_call - b.margin_call,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    {
+ 
+      title:<span className="dragHandler">Stop Out</span>,
+      dataIndex: 'stop_out',
+      key: '8',
+      sorter:(a, b) => a.stop_out - b.stop_out,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -145,10 +158,11 @@ const BrandList = () => {
       },
 
     },
+    
      {
       title:<span className="dragHandler">Action</span>,
       dataIndex: 'permission', 
-      key: '8',
+      key: '9',
       render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
      },
   ];
@@ -191,11 +205,14 @@ const BrandList = () => {
         user_id:brand?.user_id,
         domain:brand?.domain,
         name:brand?.name,
+        user_name:brand?.user_name,
+        user_password:brand?.user_password,
         original_password: brand?.user?.original_password,
         public_key: brand?.public_key,
         margin_call:brand?.margin_call,
         leverage: brand?.leverage,
-        permissions: brand?.user?.permissions
+        permissions: brand?.user?.permissions,
+        stop_out:brand?.stop_out
       }))
       
 

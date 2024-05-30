@@ -580,6 +580,8 @@ const TradingAccountsEntry = () => {
     },
    
   ];
+
+  
   const cancleHandler= ()=>{
     if(isDisabled){
       navigate('/trading-accounts')

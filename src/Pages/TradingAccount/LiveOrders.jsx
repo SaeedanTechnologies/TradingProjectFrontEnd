@@ -313,7 +313,7 @@ const   LiveOrders = ({ fetchLiveOrder, tradeOrder, isLoading, setIsLoading, gra
             setLastPage={setLastPage}
            
             editPermissionName="live_orders_update"
-          deletePermissionName="live_orders_delete"
+            deletePermissionName="live_orders_delete"
             
           />
       </div>
