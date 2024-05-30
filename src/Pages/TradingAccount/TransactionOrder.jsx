@@ -33,6 +33,8 @@ const TransactionOrder = () => {
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0])
   const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state) => state?.user?.user?.user?.permissions)
+    const userBrand = useSelector((state)=> state?.user?.user?.brand)
+
   const currentTradingAccountData = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData)
 
   const [sortDirection, setSortDirection] = useState("")
@@ -129,18 +131,7 @@ const TransactionOrder = () => {
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
-    {
-      title: <span className="dragHandler">Method</span>,
-      dataIndex: 'method',
-      key: '6',
-      sorter: (a, b) => a.method - b.method,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+    
     {
       title: <span className="dragHandler">Method</span>,
       dataIndex: 'method',
@@ -184,7 +175,7 @@ const TransactionOrder = () => {
    const [newColumns , setNewColumns] = useState(columns)
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
-
+  
 
  
   const headerStyle = {
@@ -269,7 +260,7 @@ const TransactionOrder = () => {
         group: null,
         type,
         status: "requested",
-        brand_id: brandId
+        brand_id: userBrand.public_key
 
       }
 

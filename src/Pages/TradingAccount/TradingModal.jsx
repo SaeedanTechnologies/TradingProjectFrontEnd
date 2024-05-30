@@ -14,6 +14,7 @@ import { LeverageList } from '../../utils/constants';
 import { GetAllBrandsCustomerList, GetBrandsList } from '../../utils/_BrandListAPI';
 import { TradingAccountValidationSchema } from '../../utils/validations';
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
+import moment from 'moment';
 
 
 const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, page }) => {
@@ -382,6 +383,7 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
         currency: tradingAccount.currency?.value,
         brand_customer_id: tradingAccount.brand_customer_id?.id,
         trading_group_id: tradingAccount.trading_group_id?.id,
+        registration_time: moment().format('MM/DD/YYYY hh:mm A'),
       }
 
       setIsLoading(true)

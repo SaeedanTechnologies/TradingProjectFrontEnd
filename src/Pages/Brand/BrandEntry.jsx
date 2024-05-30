@@ -391,15 +391,16 @@ const BrandEntry = () => {
           label="Margin Call"
           varient="standard"
           type="number"
-          InputProps={{
-            inputProps: { min: 1, max: 100 },
-          }}
+          // InputProps={{
+          //   inputProps: { min: 1, max: 100 },
+          // }}
           disabled={isDisabled}
           value={marginCall}
           onChange={e => {
-            if(e.target.value >= 0 && e.target.value <= 100){
+            // if(e.target.value >= 0 && e.target.value <= 100){
+            //   handleInputChange('marginCall', e.target.value)
+            // }
               handleInputChange('marginCall', e.target.value)
-            }
             
           }}
           
