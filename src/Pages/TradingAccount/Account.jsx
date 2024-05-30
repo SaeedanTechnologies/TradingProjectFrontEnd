@@ -12,6 +12,9 @@ import CustomNotification from '../../components/CustomNotification';
 import ChangePasswordModal from './ChangePasswordModal';
 import CustomModal from '../../components/CustomModal';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
+import { PlusOutlined   } from '@ant-design/icons';
+import SymbolSettingModal from './SymbolSettingModal';
+
 
 const Account = () => {
   const token = useSelector(({user})=> user?.user?.token )
@@ -21,6 +24,7 @@ const Account = () => {
   const tradingAccountGroupData = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const { token: { colorBG,   }} = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [symbolModalOpen,setSymbolModalOpen] =  useState(false)
   //
   const [tradingAccountGroupList,setTradingAccountGroupList] = useState([])
   const [selectedTradingAccountGroup,setSelectedTradingAccountGroup] = useState(null)
@@ -162,6 +166,16 @@ const ChkBoxesControl = [
     setIsModalOpen(false);
   };
 
+  const handleSymbolModalOk = () =>{
+      setSymbolModalOpen(false)
+  }
+
+   const handleSymbolModalCancel = () => {
+     setSymbolModalOpen(false)
+};
+
+
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -220,6 +234,7 @@ const ChkBoxesControl = [
                    /> )}
                 </div>
 
+              <div className='flex flex-col space-y-7'>
                 <CustomPasswordField
                   name="password"
                   label="Password"
@@ -231,6 +246,13 @@ const ChkBoxesControl = [
                   onChange={(event)=>setPassword(event.target.value)}
                 />  
 
+                <div>
+                   <PlusOutlined />
+                </div>    
+               
+
+              </div>  
+                
                 <div className='flex justify-start items-center'>
                     
                     <CustomButton
@@ -260,6 +282,22 @@ const ChkBoxesControl = [
                       
                         />
                     </CustomModal>
+
+                      <CustomModal
+                      isModalOpen={symbolModalOpen}
+                      handleOk={handleSymbolModalOk}
+                      handleCancel={handleSymbolModalCancel}
+                      title={''}
+                      width={800}
+                      footer={null}
+                      
+                    >
+                      <SymbolSettingModal setIsModalOpen={ setSymbolModalOpen}
+/>
+
+
+                    </CustomModal>
+
                 </div>
                 
             </div>

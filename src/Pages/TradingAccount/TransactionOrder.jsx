@@ -156,10 +156,22 @@ const TransactionOrder = () => {
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
+     {
+      title: <span className="dragHandler">Amount</span>,
+      dataIndex: 'amount',
+      key: '9',
+      sorter: (a, b) => a.amount - b.amount,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
     {
       title: <span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
-      key: '9',
+      key: '10',
       sorter: (a, b) => ColumnSorter(a.comment , b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
