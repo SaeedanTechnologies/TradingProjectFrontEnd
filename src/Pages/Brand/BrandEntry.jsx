@@ -150,7 +150,9 @@ const BrandEntry = () => {
               description: 'Brand Data Updated Successfully',
               key: 2
             })
-            navigate('/brand')
+        setIsLoading(false)
+            setIsDisabled(true)
+
         }
         else
         {

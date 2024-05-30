@@ -95,36 +95,36 @@ const CloseOrder = () => {
   const columns = [
 
 
-    // {
-    //   title:<span className="dragHandler">LoginID</span>,
-    //   dataIndex: 'trading_account_loginId',
-    //   key: '1',
-    //   sorter: (a, b) => ColumnSorter(a.trading_account_loginId , b.trading_account_loginId),
-    //   sortDirections: ['ascend', 'descend'],
-    //   sortIcon: (sortDir) => {
-    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-    //   },
-    // },
-    // {
-    //   title:<span className="dragHandler">OrderID</span>,
-    //   dataIndex: 'id',
-    //   key: '2',
-    //   sorter: (a, b) => a.id - b.id,
-    //   sortDirections: ['ascend', 'descend'],
-    //   sortIcon: (sortDir) => {
-    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-    //   },
-    // },
+    {
+      title:<span className="dragHandler">LoginID</span>,
+      dataIndex: 'trading_account_loginId',
+      key: '1',
+      sorter: (a, b) => ColumnSorter(a.trading_account_loginId , b.trading_account_loginId),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title:<span className="dragHandler">OrderID</span>,
+      dataIndex: 'id',
+      key: '2',
+      sorter: (a, b) => a.id - b.id,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
 
     {
       title:<span className="dragHandler">Symbol</span>,
-      dataIndex: 'symbol',
+      dataIndex: 'symbol_setting_name',
       key: '3',
-      sorter: (a, b) => ColumnSorter(a.symbol , b.symbol),
+      sorter: (a, b) => ColumnSorter(a.symbol_setting_name , b.symbol_setting_name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -205,10 +205,10 @@ const CloseOrder = () => {
       },
     },
     {
-      title:<span className="dragHandler">Order Type</span>,
-      dataIndex: 'order_type',
+      title:<span className="dragHandler">Type</span>,
+      dataIndex: 'type',
       key: '12',
-      sorter: (a, b) =>  ColumnSorter(a.order_type , b.order_type),
+      sorter: (a, b) =>  ColumnSorter(a.type , b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

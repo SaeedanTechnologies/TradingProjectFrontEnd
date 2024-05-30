@@ -106,7 +106,7 @@ const TradingAccountPendingOrderEntry = () => {
   const setStatesForEditMode = async (payload, success)=>{
       if (success) {
         setIsLoading(true)
-        const selectedSymbolList =  symbolsList?.find((x)=> x.name === payload?.symbol)
+        const selectedSymbolList =  symbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
         setSymbol(selectedSymbolList);
         setOpen_price(payload.open_price);
         const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -177,7 +177,7 @@ const TradingAccountPendingOrderEntry = () => {
 
     setIsLoading(false)
     if (success) {
-    const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
+    const selectedSymbolList =  SymbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
     setSymbol(selectedSymbolList);
     setOpen_price(payload.open_price);
     const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -212,7 +212,7 @@ const TradingAccountPendingOrderEntry = () => {
     try {
     
         const PendingData = {
-        symbol: symbol.name ? symbol.name : '',
+        symbol: symbol.feed_fetch_name ? symbol.feed_fetch_name : '',
         feed_name: symbol.feed_name ? symbol.feed_name : '',
         order_type: order_type.value ? order_type.value :'',
         type:  type.value ? type.value : '',
@@ -261,7 +261,7 @@ const TradingAccountPendingOrderEntry = () => {
               description: 'Pending Order Updated Successfully',
               key: 2
             })
-            navigate('/single-trading-accounts/details/pending-order')
+            setIsDisabled(true)
           } else {
             setIsLoading(false)
             CustomNotification({

@@ -449,14 +449,16 @@ const SymbolSettingsEntry = () => {
         if (res !== undefined) {
           if (success) {
               dispatch(updateSymbolSettings(payload))
-            clearFields();
+            // clearFields();
             CustomNotification({
               type: 'success',
               title: 'success',
               description: 'Symbol Setting Updated Successfully',
               key: 2
             })
-            navigate('/symbol-settings')
+            setIsLoading(false)
+            setIsDisabled(true)
+
           } else {
             setIsLoading(false)
             CustomNotification({

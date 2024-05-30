@@ -77,9 +77,9 @@ const CloseOrder = ({totalSwap, grandProfit}) => {
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
-      dataIndex: 'symbol',
+      dataIndex: 'symbol_setting_name',
       key: '1',
-      sorter: (a, b) => ColumnSorter(a.symbol , b.symbol),
+      sorter: (a, b) => ColumnSorter(a.symbol_setting_name , b.symbol_setting_name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -89,10 +89,10 @@ const CloseOrder = ({totalSwap, grandProfit}) => {
 
     },
     {
-      title:<span className="dragHandler">Order Type</span>,
-      dataIndex: 'order_type',
+      title:<span className="dragHandler">Type</span>,
+      dataIndex: 'type',
       key: '2',
-      sorter: (a, b) =>  ColumnSorter(a.order_type - b.order_type),
+      sorter: (a, b) =>  ColumnSorter(a.type - b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

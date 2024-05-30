@@ -110,7 +110,7 @@ const TradingAccountLiveOrderEntry = () => {
   const setStatesForEditMode = async (payload, success)=>{
       if (success) {
         setIsLoading(true)
-        const selectedSymbolList =  symbolsList?.find((x)=> x.name === payload?.symbol)
+        const selectedSymbolList =  symbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
         setSymbol(selectedSymbolList);
         setOpen_price(payload.open_price);
         const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -180,7 +180,7 @@ const TradingAccountLiveOrderEntry = () => {
 
     setIsLoading(false)
     if (success) {
-    const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
+    const selectedSymbolList =  SymbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
     setSymbol(selectedSymbolList);
     setOpen_price(payload.open_price);
     const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -221,7 +221,7 @@ const TradingAccountLiveOrderEntry = () => {
 
   const handleSubmit = async () => {
      const SymbolData = {
-        symbol: symbol?.name || '',
+        symbol: symbol?.feed_fetch_name || '',
         feed_name: symbol?.feed_name||'',
         order_type: order_type?.value||'',
         type:  type?.value||'',
@@ -271,6 +271,7 @@ const TradingAccountLiveOrderEntry = () => {
               description: 'Live Order Updated Successfully',
               key: 2
             })
+            setIsDisabled(true)
          
           } else {
             setIsLoading(false)

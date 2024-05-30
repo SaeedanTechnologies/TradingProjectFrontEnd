@@ -94,9 +94,9 @@ const PendingOrder = () => {
   const columns = [
     {
       title:<span className="dragHandler">Symbol</span>,
-      dataIndex: 'symbol',
+      dataIndex: 'symbol_setting_name',
       key: '5',
-      sorter: (a, b) => ColumnSorter(a.symbol , b.symbol ),
+      sorter: (a, b) => ColumnSorter(a.symbol_setting_name , b.symbol_setting_name ),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -105,18 +105,7 @@ const PendingOrder = () => {
       },
 
     },
-    {
-      title:<span className="dragHandler">Order Type</span>,
-      dataIndex: 'order_type',
-      key: '1',
-      sorter: (a, b) => ColumnSorter(a.order_type , b.order_type ),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+    
     {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',

@@ -222,7 +222,10 @@ const SymbolGroupEntry = () => {
              description: 'Symbol Setting Updated Successfully',
              key: 2
            })
-           navigate('/symbol-groups')
+           setIsLoading(false)
+           setIsDisabled(true)
+
+
        }
        else
        {

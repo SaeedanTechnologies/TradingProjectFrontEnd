@@ -18,6 +18,7 @@ import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
 import { deletePendingOrderById,setPendingOrdersSelectedIds,updatePendingOrder } from '../../store/TradeOrders';
+import axios from 'axios';
 
 
 
@@ -105,7 +106,7 @@ const PendingOrderEntry = () => {
   const setStatesForEditMode = async (payload, success)=>{
       if (success) {
         setIsLoading(true)
-        const selectedSymbolList =  symbolsList?.find((x)=> x.name === payload?.symbol)
+        const selectedSymbolList =  symbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
         setSymbol(selectedSymbolList);
         setOpen_price(payload.open_price);
         const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -175,7 +176,7 @@ const PendingOrderEntry = () => {
 
     setIsLoading(false)
     if (success) {
-    const selectedSymbolList =  SymbolsList?.find((x)=> x.name === payload?.symbol)
+    const selectedSymbolList =  SymbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
     setSymbol(selectedSymbolList);
     setOpen_price(payload.open_price);
     const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -205,28 +206,22 @@ const PendingOrderEntry = () => {
       setIsDisabled(true)
     }
   },[])
-
+  // #region handle submit
   const handleSubmit = async () => {
     try {
-    
-        const PendingData = {
-        symbol: symbol.name ? symbol.name : '',
-        feed_name: symbol.feed_name ? symbol.feed_name : '',
-        order_type: order_type.value ? order_type.value :'',
-        type:  type.value ? type.value : '',
-        volume: String(volume) ? String(volume) : '',
+      const PendingData = {
+        symbol: symbol?.feed_fetch_name ? symbol?.feed_fetch_name : '',
+        feed_name: symbol?.feed_name ? symbol?.feed_name : '',
+        order_type: order_type?.value ? order_type?.value :'',
+        type:  type?.value ? type?.value : '',
+        volume: volume ? String(volume) : '',
         comment,
-        open_time:time,
+        // open_time:open_time,
         takeProfit: String(takeProfit === "" ? "" : takeProfit),
         stopLoss: String(stopLoss === "" ? "" : stopLoss),
         trading_account_id,
         brand_id
       }
-
-   
-
-        
-
       if (PendingOrdersRowsIds?.length === 1 && parseInt(PendingOrdersRowsIds[0]) === 0) { // save 
         setIsLoading(true)
         const res = await SymbolSettingPost(PendingData, token);
@@ -260,7 +255,7 @@ const PendingOrderEntry = () => {
               description: 'Pending Order Updated Successfully',
               key: 2
             })
-            navigate('/pending-orders')
+            setIsDisabled(true)
           } else {
             setIsLoading(false)
             CustomNotification({
@@ -275,7 +270,8 @@ const PendingOrderEntry = () => {
       }
       
 
-    } catch (err) {
+    } 
+    catch (err) {
       const validationErrors = {};
       err.inner?.forEach(error => {
         validationErrors[error.path] = error.message;

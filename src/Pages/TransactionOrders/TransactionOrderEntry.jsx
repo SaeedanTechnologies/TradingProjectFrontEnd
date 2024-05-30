@@ -492,6 +492,8 @@ else
               description: 'Transaction Order Updated Successfully',
               key: 2
             })
+            setIsDisabled(true)
+
           } else {
             setIsLoading(false)
             CustomNotification({
