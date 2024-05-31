@@ -10,6 +10,7 @@ export const tradingAccountGroup = createSlice({
         setTradingAccountGroupData: (state, action) => {
             state.tradingAccountGroupData = action.payload
         },
+      
         // setTradingAccountGroupSelectedIDs: (state,action) => {
         //     state.selectedRowsIds = action.payload
         // },

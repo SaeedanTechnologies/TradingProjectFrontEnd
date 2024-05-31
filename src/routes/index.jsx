@@ -56,6 +56,9 @@ import TradingAccountTransactionOrderEntry from '../Pages/TradingAccount/Trading
 import MBTradingOrderEntry from '../Pages/TradingAccountGroup/MBTradingOrderEntry';
 import MassDipositWidthdrawEntry from '../Pages/TradingAccountGroup/MassDipositWidthdrawEntry'
 import ActivityLogin from '../Pages/ActivityLogin/ActivityLogin';
+import UserIP from '../Pages/Settings/UserIP'
+import BannedIP from '../Pages/Settings/BannedIP';
+import AdminIP from '../Pages/Settings/AdminIP';
 
 export const router = createBrowserRouter([
   {
@@ -66,7 +69,7 @@ export const router = createBrowserRouter([
       { path: "/", element: <Navigate to="sign-in" replace /> }
     ],
   },
-
+    
   {
     path: "/",
     element: <RootLayout />,
@@ -132,6 +135,9 @@ export const router = createBrowserRouter([
       { path: "/margin-levels", element: <MarginCallsLevel /> },
       { path: "/change-password", element: <ChangePassword /> },
       { path: "/Chart", element: <TradingViewChart  /> },
+      {path:"/user-ip",  element:<UserIP/>},
+      {path:"/banned-ip", element:<BannedIP/>},
+      {path:"/admin-ip", element:<AdminIP/>},
     ],
   },
 ]);

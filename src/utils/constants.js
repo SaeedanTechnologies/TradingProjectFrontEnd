@@ -704,6 +704,7 @@ export const GetCurrentDate = () => {
 }
 
 export const LeverageList = [
+  { value:'0',  title:'0:0' },
   { value: '1', title: '1:1' },
   { value: '2', title: '2:1' },
   { value: '3', title: '3:1' },

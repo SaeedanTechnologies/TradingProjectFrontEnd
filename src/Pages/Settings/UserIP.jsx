@@ -1,3 +1,6 @@
+
+
+
 import { Space, theme } from 'antd';
 import {DeleteOutlined, EyeOutlined} from '@ant-design/icons';
 import React from 'react'
@@ -6,11 +9,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import CustomTable from '../../components/CustomTable';
 import { Divider, Tab, Tabs } from '@mui/material';
 import {useState} from 'react'
-import AdminIP from './AdminIP'
-import BrandIP from './BannedIP'
-import UserIP from './UserIP';
 
-const Firewall = () => {
+
+const UserIP = () => {
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState('0');
@@ -75,28 +76,7 @@ const Firewall = () => {
     // Add more data objects as needed
   ];
   
-    const items = [
-    {
-      key: '1',
-      label: 'User IP',
-      component: <UserIP />,
-      path: '/user-ip',
-    },
-    {
-      key: '2',
-      label: 'Admin IP',
-      component: <AdminIP />,
-      path: '/admin-ip',
-    },
-    {
-      key: '3',
-      label: 'Banned IP',
-      component: <BrandIP />,
-      path: "/banned-ip",
-    },
-    
    
-  ];
 
   const headerStyle = {
     background: TableHeaderColor,
@@ -121,33 +101,11 @@ const Firewall = () => {
         className='cursor-pointer'
         onClick={()=> navigate(-1)}
         />
-      <h1 className='text-2xl font-semibold'>Firewall IP Restrictions</h1>
+      <h1 className='text-2xl font-semibold'>User IP Restrictions</h1>
 
     </div>
 
-      <div className="mt-4">
-        <Tabs 
-          value={activeTab}
-          onChange={onChange}
-          TabIndicatorProps={{ style: { backgroundColor: '#1CAC70' } }}
-          sx={{
-            '& .MuiTab-root': {
-              textTransform: 'none',
-              fontSize: '14px',
-              mb: -2,
-            },
-            '& .Mui-selected': {
-              color: '#1CAC70 !important', // Ensure that the selected tab retains the custom color
-            },
-          }}
-          aria-label="tabs example"
-        >
-          {items.map(item => (
-            
-            <Tab sx={{ fontSize: "14px", textTransform: "none", mb: -2, fontWeight:'bold' }} label={item.label} key={item.key} value={item.key} /> 
-          ))}
-        </Tabs>
-      </div>
+   
 
     <div className='mt-4'>
           <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
@@ -156,4 +114,4 @@ const Firewall = () => {
   )
 }
 
-export default Firewall
+export default UserIP
