@@ -15,6 +15,7 @@ const LiveOrderEntry = () => {
   } = theme.useToken();
   const navigate = useNavigate()
   const [SymbolList, setSymbolList] = useState(AutocompleteDummyData)
+  
   const [SelectedSymbol, setSelectedSymbol] = useState(null)
 
   const [TypeList, setTypeList] = useState([

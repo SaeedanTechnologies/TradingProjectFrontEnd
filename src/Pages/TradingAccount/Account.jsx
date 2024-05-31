@@ -14,18 +14,20 @@ import CustomModal from '../../components/CustomModal';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import { PlusOutlined   } from '@ant-design/icons';
 import SymbolSettingModal from './SymbolSettingModal';
-
+import {TextField,Chip,Paper,Typography  } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const Account = () => {
   const token = useSelector(({user})=> user?.user?.token )
   const dispatch = useDispatch()
   const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
+  const tradingAccountDataGroupLeverage = useSelector(({ tradingAccountGroup }) => tradingAccountGroup?.tradingAccountGroupData?.symbols_leverage)
+   let remainingCount  = tradingAccountDataGroupLeverage?.length-2
   const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const tradingAccountGroupData = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const { token: { colorBG,   }} = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [symbolModalOpen,setSymbolModalOpen] =  useState(false)
-  //
   const [tradingAccountGroupList,setTradingAccountGroupList] = useState([])
   const [selectedTradingAccountGroup,setSelectedTradingAccountGroup] = useState(null)
   const [selectedLeverage,setSelectedLeverage] = useState(null)
@@ -89,7 +91,6 @@ const ChkBoxesControl = [
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res
       if(success){
-          // debugger;
         const selectedGroup =  GroupsList?.find(x=> x.id === payload.trading_group_id)
         const selectedLeverage = LeverageList.find(x=>x.title === leverage) 
         setSelectedTradingAccountGroup(selectedGroup)
@@ -122,8 +123,11 @@ const ChkBoxesControl = [
     }
   };
 
-  const handleSubmit = async()=> {
+  const ListItem = styled('li')(({ theme }) => ({
+  margin: theme.spacing(0.5),
+}));
 
+  const handleSubmit = async()=> {
     try{
         setIsLoading(true)
        const tradingAccountData ={
@@ -133,7 +137,8 @@ const ChkBoxesControl = [
         enable :  enable ? 1 : 0,
         enable_password_change :  enable_password_change ? 1 : 0,
         enable_investor_trading :  enable_investor_trading ? 1 : 0 ,
-        change_password_at_next_login : change_password_at_next_login ? 1 :0
+        change_password_at_next_login : change_password_at_next_login ? 1 :0,
+        symbols_leverage:tradingAccountDataGroupLeverage
       }
       
       const res = await  Update_Trading_Account(trading_account_id, tradingAccountData, token)
@@ -246,9 +251,55 @@ const ChkBoxesControl = [
                   onChange={(event)=>setPassword(event.target.value)}
                 />  
 
+                <div >
+                  <CustomButton
+                      Text={'Symbols For Leverages'}
+                      style={{
+                      padding:"20px",
+                      borderRadius: '8px',
+                      display:'flex',
+                      flexDirection:'row'
+                      }}
+                      icon={ <PlusOutlined />}
+                      onClickHandler={()=>setSymbolModalOpen(true)}
+                    />
+                </div>  
+
+
                 <div>
-                   <PlusOutlined />
-                </div>    
+               
+
+                 <Paper
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'start',
+                        flexWrap: 'wrap',
+                        listStyle: 'none',
+                        p: 0.5,
+                        m: 0,
+                      }}
+                    >
+                  {tradingAccountDataGroupLeverage.length && tradingAccountDataGroupLeverage?.slice(0, 2).map((option,index) => {
+                   
+
+                  return (
+                      <ListItem key={option?.name}>
+                        <Chip
+                          label={`${option?.name} ${index >= 2 ? `+${countingLabel}` : ''}`}
+                        />
+                      </ListItem>
+                   )
+                  })}
+                  {remainingCount > 0 && (
+                      <ListItem>
+                        <Chip
+                          label={`+${remainingCount}`}
+                        />
+                      </ListItem>
+                    )}
+                 
+                 </Paper> 
+                </div>  
                
 
               </div>  
@@ -292,9 +343,7 @@ const ChkBoxesControl = [
                       footer={null}
                       
                     >
-                      <SymbolSettingModal setIsModalOpen={ setSymbolModalOpen}
-/>
-
+                      <SymbolSettingModal setIsModalOpen={ setSymbolModalOpen}/>
 
                     </CustomModal>
 
