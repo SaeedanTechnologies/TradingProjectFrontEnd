@@ -165,6 +165,16 @@ const BrandList = () => {
       key: '9',
       render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => openPermissions(record)}>Permissions</span>
      },
+     {
+      title:<span className="dragHandler">Brand Login Activity</span>,
+      dataIndex: 'brand_login_activity', 
+      key: '10',
+      render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }}  onClick={(e) => {
+        e.stopPropagation(); // Prevent row click event
+        brandLoginActivity(record);
+      }}>Brand Login Activity</span>
+      
+    },
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -182,7 +192,9 @@ const BrandList = () => {
 
 
 
-   
+   const brandLoginActivity = () => {
+    console.log("inside")
+   }
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
@@ -230,6 +242,10 @@ const BrandList = () => {
     navigate('/brand-permissions')
     const payload = { user_id:user.user_id,permissions:user.user.permissions} 
     dispatch(setBrandUser(payload))
+  }
+  const brnadLoginActivity = (record) => {
+    navigate('/brand-permissions')
+    console.log(record)
   }
 
   useEffect(() => {

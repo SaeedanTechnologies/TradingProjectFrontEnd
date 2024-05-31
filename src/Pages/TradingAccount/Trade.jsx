@@ -22,7 +22,7 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
-import {calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
+import {addZeroAfterOne, addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
 import moment from 'moment';
 
 import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
@@ -39,7 +39,7 @@ const Trade = ({ CurrentPage }) => {
   
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   
-  const {value: accountLeverage} = LeverageList?.find(x=> x?.title === leverage) ||  { value: '1', title: '1:1' }
+  const {value: accountLeverage} = LeverageList?.find(x=> x?.title === leverage) ||  { value: '0', title: '0:0' }
 
   // console.log('trading_group_id',trading_group_id)
 
@@ -50,6 +50,7 @@ const Trade = ({ CurrentPage }) => {
   const [type,setType] = useState(null);
   const [volume,setVolume] = useState('');
   const [lotstep,setLotStep] = useState('');
+  const [margin, setMargin] = useState(0)
   const [volumerange,setVolumeRange] = useState({
     min_vol: '',
     max_vol: ''
@@ -62,7 +63,8 @@ const Trade = ({ CurrentPage }) => {
   const [stop_limit_price,setStop_limit_price] = useState('')
   const [pricing, setPricing] = useState({ openPrice: '', askPrice: '' });
   const [connected, setConnected] = useState(true);
-  const [lot_size, setLotSize] = useState('')
+  const [lot_size, setLotSize] = useState(0)
+  const [d_lot, setD_lot] = useState(0)
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
@@ -88,6 +90,10 @@ const Trade = ({ CurrentPage }) => {
   };
 
   const handleVolumeChange = (newValue) => {
+    setLotSize(symbol?.lot_size * newValue)
+                    setD_lot(newValue)
+                    const pipValue = addZeroBeforeOne(symbol?.pip) * parseFloat(newValue) * parseFloat(symbol?.lot_size)
+                    setPipVal(pipValue)
     setVolume(newValue)
   }
   
@@ -498,9 +504,11 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    setLotSize(value?.lot_size * value?.vol_min)
+                    setD_lot(value?.vol_min)
+                    const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
+                    setPipVal(pipValue)
                     
-                    setLotSize(value?.lot_size)
-                    setPipVal(value?.pip)
                     setVolumeRange({
                       ...volumerange,
                       min_vol: value?.vol_min,
@@ -513,8 +521,16 @@ useEffect(() => {
                     setSymbol(value)
                       if(value?.feed_name === 'binance'){
                       
-                      fetchBinancehData(value?.feed_fetch_name, value?.pip)
+                      fetchBinancehData(value?.feed_fetch_name, value?.pip).then((result) => {
+                      
+                        const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
+                        const margin_val = calculateMargin(res, accountLeverage);
+                        setMargin(margin_val)
+                      }).catch((err) => {
+                        console.log(err)
+                      });
                       if (value && connected) {
+                        
                       // setSymbol(value)
                       // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       fetchData(value, connected, value?.pip);
@@ -721,21 +737,21 @@ useEffect(() => {
           <div className="flex-1 ml-2 ">
             <div className="mb-4">
                   <CandleStickChart symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
-                  {Symbol.length > 0 && <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
+            <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
                       <div className='flex justify-between'>
-                      <span >1 Lots</span>
-                      <span>1000 units</span>
+                      <span >{d_lot} Lots</span>
+                      <span>{lot_size.toFixed(2)} units</span>
                       </div>
                       <div className='flex justify-between'>
                       <span >Pips Value</span>
-                      <span>USDT 0.01</span>
+                      <span>USDT {pipVal.toFixed(2)}</span>
                       </div>
                       <div className='flex justify-between'>
                       <span >Required Margin</span>
-                      <span>USDT 967.143</span>
+                      <span>{isNaN(margin) ? "0.00" : parseFloat(margin).toFixed(2)}</span>
                       </div>
                     
-                  </div>}
+                  </div>
               {/* <BinanceBidAsk symbol={"BTCUSD"}/> */}
             </div>
             {/* Your chart content */}

@@ -8,7 +8,7 @@ import TableActions from "./TableActions";
 import CustomNotification from "../../components/CustomNotification";
 import CustomModal from "../../components/CustomModal";
 import { Autocomplete, TextField } from "@mui/material";
-import { GenericDelete, MassCloseOrders } from "../../utils/_APICalls";
+import { GenericDelete, MassCloseOrders, UpdateMultiTradeOrder } from "../../utils/_APICalls";
 import Swal from "sweetalert2";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
 import { setTradingAccountGroupData } from "../../store/tradingAccountGroupSlice";
@@ -524,11 +524,17 @@ handleClearSearch = () => {
         })
       }
   }
+  //#region Mass close order handler
   async MassCloseOrdersHandler (){
+    const selectedData = this.state.data.filter(item => this.state.selectedRowKeys.includes(item.id))
+    const modifiedData = selectedData.map(item => {
+      return {
+          ...item,
+          order_type: 'close'
+      };
+  });
     if (this.state.selectedRowKeys.length > 0) {
-      const Params = {
-       ids: this.state.selectedRowKeys
-      }
+      const Params  = {orders:modifiedData}
      this.setState({isLoading: true})
      Swal.fire({
       title: "Are you sure?",
@@ -540,7 +546,7 @@ handleClearSearch = () => {
       confirmButtonText: "Yes, Close it!"
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const res = await MassCloseOrders(Params, this.props.token)
+        const res = await UpdateMultiTradeOrder(Params, this.props.token)
         const { data: { success, message, payload } } = res
         this.setState({isLoading: false})
         if (success) {

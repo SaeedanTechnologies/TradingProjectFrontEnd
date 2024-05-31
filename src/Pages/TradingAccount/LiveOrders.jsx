@@ -13,7 +13,6 @@ import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginC
 import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
-
 const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
   // debugger;
   
@@ -22,7 +21,7 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const test = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData)
-  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '1', title: '1:1' }
+  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '0', title: '0:0' }
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
   const location = useLocation()
   const { pathname } = location
@@ -255,7 +254,13 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
     const intervalId = setInterval(async () => {
       try {
         if(liveOrdersData.length > 0){
-          const Params  = {orders:liveOrdersData}
+          const modifiedData = liveOrdersData.map(item => {
+            return {
+                ...item,
+                order_type: ''
+            };
+        });
+          const Params  = {orders:modifiedData}
           const res = await UpdateMultiTradeOrder(Params, token);
         }
        
@@ -293,7 +298,7 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
-                  <Table.Summary.Cell index={0} colSpan={8}>
+                  <Table.Summary.Cell index={0} colSpan={9}>
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {isNaN(balance) ? 0 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;

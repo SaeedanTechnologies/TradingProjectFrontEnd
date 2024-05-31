@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import CustomNotification from "../components/CustomNotification";
+import axios from "axios";
 
 
 export const CustomDeleteDeleteHandler = async (id, token, _API,setIsLoading,fetchData)=>{
@@ -77,7 +78,7 @@ export const CustomBulkDeleteHandler = async( Params, token, _API, setLoading,su
 }
 
 export const ColumnSorter = (a,b)=>{
-     
+      
       return a?.toString().localeCompare(b?.toString());
 }
 
@@ -171,12 +172,20 @@ export function numberFormat(number, decimals) {
   const fixedNumber = number.toFixed(decimals);
   return parseFloat(fixedNumber).toLocaleString('en-US', { minimumFractionDigits: decimals });
 }
-function addZeroAfterOne(num) {
+export function addZeroAfterOne(num) {
   let resultStr = '1';
   for (let i = 0; i < num; i++) {
           resultStr += '0';
   }
   return parseInt(resultStr);
+}
+export function addZeroBeforeOne(num) {
+  let resultStr = '0.';
+  for (let i = 0; i < num-1; i++) {
+    resultStr += '0';
+  }
+  resultStr +="1";
+  return parseFloat(resultStr);
 }
 
 
@@ -259,3 +268,12 @@ export const getValidationMsg = (msg, payload)=>{
   }
 }
 
+export const getCurrentIP = async () => {
+  try {
+    const response = await axios.get('https://api.ipify.org?format=json');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching the IP address', error);
+    return null;
+  }
+}

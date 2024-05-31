@@ -19,6 +19,7 @@ const SettingsMenu = () => {
   {id:1, title:'FireWall (IP Restriction)', path:'/firewall',  display: userRole === 'admin' ? 'show' : 'hide'},
   { id:2, title:'Margin Call Levels', path:'/margin-levels',  display: userRole === 'admin' ? 'show' : 'hide'},
   {id:3, title:'Change Password', path:'/change-password',  display: 'show'},
+  {id:4, title:'Login Activity', path:'/login-activity',  display: 'show'},
 
 ];
 

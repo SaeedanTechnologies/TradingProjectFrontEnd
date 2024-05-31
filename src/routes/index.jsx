@@ -55,6 +55,7 @@ import TradingAccountPendingOrderEntry from '../Pages/TradingAccount/TradingAcco
 import TradingAccountTransactionOrderEntry from '../Pages/TradingAccount/TradingAccountTransactionOrderEntry';
 import MBTradingOrderEntry from '../Pages/TradingAccountGroup/MBTradingOrderEntry';
 import MassDipositWidthdrawEntry from '../Pages/TradingAccountGroup/MassDipositWidthdrawEntry'
+import ActivityLogin from '../Pages/ActivityLogin/ActivityLogin';
 
 export const router = createBrowserRouter([
   {
@@ -102,8 +103,10 @@ export const router = createBrowserRouter([
           { path: "personal-data", element: <PersonalData /> },
           { path: "account-security", element: <Account /> },
           { path: "transaction-order", element: <TransactionOrder /> },
+          {path:"login-activity", element:<ActivityLogin />}
         ]
       },
+      {path:"/login-activity", element:<ActivityLogin />},
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
       { path: "/live-orders", element: <LiveOrders /> },
       { path:"/live-orders-entry", element:<LiveOrdersEntery/>},

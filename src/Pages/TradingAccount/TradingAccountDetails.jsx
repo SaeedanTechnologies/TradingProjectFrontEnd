@@ -16,6 +16,7 @@ import { LeverageList } from '../../utils/constants';
 import { setLiveOrdersData } from '../../store/LiveOrderSlice';
 import PendingOrder from './PendingOrder';
 import { Divider, Tab, Tabs } from '@mui/material';
+import ActivityLogin from '../ActivityLogin/ActivityLogin';
 
 const TradingAccountDetails = () => {
   const dispatch = useDispatch();
@@ -34,15 +35,13 @@ const TradingAccountDetails = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { tradeId } = useParams();
-  
   const [activeTab, setActiveTab] = useState('1');
   const [isLoading, setIsLoading] = useState(false);
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0]);
   const { leverage } = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData);
-  const { value: accountLeverage } = LeverageList?.find(x => x?.title === leverage || { value: '', title: '' },);
+  const { value: accountLeverage } = LeverageList?.find(x => x?.title === leverage) || { value:"0", title: '0:0' };
 
-  const setManipulatedData = async (data) => {
-    
+  const setLiveManipulatedData = async (data) => {
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
@@ -74,11 +73,26 @@ const TradingAccountDetails = () => {
   
     return updatedData;
   }
+  const setCloseManipulatedData = (data) => {
+    
+    let totalProfit = 0;
+    let _totalSwap = 0;
+    data.map((val)=> {
+      totalProfit += parseFloat(val.profit);
+      _totalSwap += parseFloat(val.swap);
+      return{...val}
+    })
+    setGrandProfit(totalProfit.toFixed(2));
+    setTotalSwap(_totalSwap.toFixed(2));
+  
+
+  return data;
+}
   const items = [
     {
       key: '1',
       label: 'Live Orders',
-      component: <LiveOrders setManipulatedData={setManipulatedData} grandProfit={grandProfit} lotSize={grandVolumn} isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <LiveOrders setManipulatedData={setLiveManipulatedData} grandProfit={grandProfit} lotSize={grandVolumn} isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} margin={grandMargin} totalSwap={totalSwap} />,
       path: '/single-trading-accounts/details/live-order',
       display: CheckBrandPermission(userPermissions, userRole, 'live_orders_read') ? 'show' : 'hide'
     },
@@ -92,14 +106,14 @@ const TradingAccountDetails = () => {
     {
       key: '3',
       label: 'Pending Order',
-      component: <PendingOrder setManipulatedData={setManipulatedData}  grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <PendingOrder   grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
       path: "/single-trading-accounts/details/pending-order",
       display: CheckBrandPermission(userPermissions, userRole, 'close_orders_read') ? 'show' : 'hide'
     },
     {
       key: '4',
       label: 'Close Order',
-      component: <CloseOrder setManipulatedData={setManipulatedData} grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <CloseOrder setManipulatedData={setCloseManipulatedData} grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
       path: "/single-trading-accounts/details/close-order",
       display: CheckBrandPermission(userPermissions, userRole, 'close_orders_read') ? 'show' : 'hide'
     },
@@ -122,6 +136,13 @@ const TradingAccountDetails = () => {
       label: 'Transaction Orders',
       component: <TransactionOrder />,
       path: "/single-trading-accounts/details/transaction-order",
+      display: CheckBrandPermission(userPermissions, userRole, 'transaction_orders_read') ? 'show' : 'hide'
+    },
+    {
+      key: '8',
+      label: 'Login Activity',
+      component: <ActivityLogin />,
+      path: "/single-trading-accounts/details/login-activity",
       display: CheckBrandPermission(userPermissions, userRole, 'transaction_orders_read') ? 'show' : 'hide'
     },
   ];
