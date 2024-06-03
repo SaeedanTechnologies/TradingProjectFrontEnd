@@ -59,6 +59,8 @@ import ActivityLogin from '../Pages/ActivityLogin/ActivityLogin';
 import UserIP from '../Pages/Settings/UserIP'
 import BannedIP from '../Pages/Settings/BannedIP';
 import AdminIP from '../Pages/Settings/AdminIP';
+import Active_IP_List from '../Pages/Settings/Active_IP_List';
+import Blocked_IP_List from '../Pages/Settings/Blocked_IP_List';
 
 export const router = createBrowserRouter([
   {
@@ -133,9 +135,8 @@ export const router = createBrowserRouter([
       { path: "/min-charts", element: <MinChart /> },
       { path: "/settings", element: <Settings /> },
       { path: "/firewall", element: <Firewall />, children:[
-            {path:"user-ip",  element:<UserIP/>},
-            {path:"banned-ip", element:<BannedIP/>},
-            {path:"admin-ip", element:<AdminIP/>},
+            {path:"active-ip-list",  element:<Active_IP_List/>},
+            {path:"blocked-ip-list", element:<Blocked_IP_List/>},
       ]
     },
       { path: "/margin-levels", element: <MarginCallsLevel /> },
