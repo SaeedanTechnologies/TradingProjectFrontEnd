@@ -20,6 +20,7 @@ import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 // import { setTradeSettingsData, setTradeSettingsSelecetdIDs } from '../../store/tradeGroupsSlice';
 import {setTradeGroupsData, setTradeGroupsSelectedIDs} from '../../store/tradeGroupsSlice'
 import { setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
+import { All_TradingAccountList } from '../../utils/_TradingAPICalls';
 
 
 
@@ -204,7 +205,7 @@ const Index = () => {
       render: (text, record) => {
         const { trading_accounts } = record
         return (
-          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => showAccountModal(trading_accounts)}>View Accounts</span>
+          <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }} onClick={() => viewAccounts(record)}>View Accounts</span>
         )
       },
       // sorter:(a, b) =>  ColumnSorter(a.trading_accounts,b.trading_accounts),
@@ -297,6 +298,20 @@ const Index = () => {
       SetSearchQueryList({brand_id:userBrand.public_key})
     }
   }, [])
+
+ 
+  const viewAccounts = async(record)=>{
+    const searchValues = {
+      trading_group_id:record.id
+    }
+    try {
+      const res = await All_TradingAccountList(token,searchValues);
+      const { data: { message, success, payload } } = res
+      showAccountModal(payload)
+    } catch (error) {
+      console.error('Error fetching symbol groups:', error);
+    }
+  }
 
   // useEffect(() => {
   //   const newCols = columns.filter(x => checkedList.includes(x.key));

@@ -11,14 +11,17 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import { CheckBrandPermission, calculateMargin, calculateNights, calculateProfitLoss, getCurrentDateTime, getOpenPriceFromAPI } from "../../utils/helpers";
+import { CheckBrandPermission, calculateMargin, calculateNights, calculateProfitLoss, conditionalLeverage, getCurrentDateTime, getOpenPriceFromAPI } from "../../utils/helpers";
 import { LeverageList } from '../../utils/constants';
 import { setLiveOrdersData } from '../../store/LiveOrderSlice';
 import PendingOrder from './PendingOrder';
 import { Divider, Tab, Tabs } from '@mui/material';
 import ActivityLogin from '../ActivityLogin/ActivityLogin';
+import { getOptions } from 'highcharts';
 
 const TradingAccountDetails = () => {
+
+
   const dispatch = useDispatch();
   const [liveOrders, setLiveOrders] = useState([]);
   const [CurrentPage, setCurrentPage] = useState(1);
@@ -39,7 +42,10 @@ const TradingAccountDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0]);
   const { leverage } = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData);
-  const { value: accountLeverage } = LeverageList?.find(x => x?.title === leverage) || { value:"0", title: '0:0' };
+
+  
+
+   
 
   const setLiveManipulatedData = async (data) => {
       let totalProfit = 0;
@@ -55,7 +61,7 @@ const TradingAccountDetails = () => {
         const profit = parseFloat(calculateProfitLoss(currentPrice, parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
         totalProfit += parseFloat(profit);
         const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.open_price).toFixed(2));
-        const margin = calculateMargin(res, accountLeverage);
+        const margin = calculateMargin(res, conditionalLeverage(x?.trading_account,x?.symbol_setting));
         const totalNights = calculateNights(x.created_at, currentDateTime);
         const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0);
         _totalSwap += parseFloat(Calswap ?? 0);
@@ -88,6 +94,11 @@ const TradingAccountDetails = () => {
 
   return data;
 }
+
+
+
+
+
   const items = [
     {
       key: '1',

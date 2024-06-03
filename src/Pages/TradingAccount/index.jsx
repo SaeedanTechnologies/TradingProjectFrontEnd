@@ -67,10 +67,10 @@ const Index = ({ title, direction }) => {
       
     },
     {
-      title:<span className="dragHandler">Trading Group Id</span>,
-      dataIndex: 'trading_group_id',
+      title:<span className="dragHandler">Trading Group </span>,
+      dataIndex: 'group_name',
       key: '2',
-      sorter: (a, b) => ColumnSpaceSorter(a.trading_group_id, b.trading_group_id ),
+      sorter: (a, b) => ColumnSpaceSorter(a.group_name, b.group_name ),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

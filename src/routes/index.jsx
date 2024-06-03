@@ -96,7 +96,7 @@ export const router = createBrowserRouter([
       { path: "/single-trading-accounts/details/close-order-entry", element:<TradingAccountCloseOrderEntry/> },
       { path: "/single-trading-accounts/details/pending-order-entry", element:<TradingAccountPendingOrderEntry/> },
       { path :"/single-trading-accounts/details/transaction-order-entry", element:<TradingAccountTransactionOrderEntry/>},
-     
+      // single-trading-accounts/details
       {
         path: "/single-trading-accounts/details", element: <TradingAccountDetails />, children: [
           { path: "live-order", element: <LiveOrders /> },
@@ -109,6 +109,7 @@ export const router = createBrowserRouter([
           {path:"login-activity", element:<ActivityLogin />}
         ]
       },
+      //
       {path:"/login-activity", element:<ActivityLogin />},
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
       { path: "/live-orders", element: <LiveOrders /> },
@@ -131,13 +132,16 @@ export const router = createBrowserRouter([
       { path: "/ticket-charts", element: <TicketCharts /> },
       { path: "/min-charts", element: <MinChart /> },
       { path: "/settings", element: <Settings /> },
-      { path: "/firewall", element: <Firewall /> },
+      { path: "/firewall", element: <Firewall />, children:[
+            {path:"user-ip",  element:<UserIP/>},
+            {path:"banned-ip", element:<BannedIP/>},
+            {path:"admin-ip", element:<AdminIP/>},
+      ]
+    },
       { path: "/margin-levels", element: <MarginCallsLevel /> },
       { path: "/change-password", element: <ChangePassword /> },
       { path: "/Chart", element: <TradingViewChart  /> },
-      {path:"/user-ip",  element:<UserIP/>},
-      {path:"/banned-ip", element:<BannedIP/>},
-      {path:"/admin-ip", element:<AdminIP/>},
+      
     ],
   },
 ]);
