@@ -27,6 +27,7 @@ const TradingAccountDetails = () => {
   const [grandVolumn, setGrandVolumn] = useState(0); 
   const [grandMargin, setGrandMargin] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
+  const [totalCommission, setTotalCommission] = useState(0)
   const [totalSwap, setTotalSwap] = useState(0);
   const token = useSelector(({user}) => user?.user?.token);
   const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
@@ -42,10 +43,12 @@ const TradingAccountDetails = () => {
   const { value: accountLeverage } = LeverageList?.find(x => x?.title === leverage) || { value:"0", title: '0:0' };
 
   const setLiveManipulatedData = async (data) => {
+    debugger;
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
       let _totalSwap = 0;
+      let t_commission = 0;
       const currentDateTime = getCurrentDateTime();
       const updatedData = await Promise.all(data.map(async (x) => {
         const { askPrice, bidPrice } = await getOpenPriceFromAPI(x.symbol, x.feed_name);
@@ -60,15 +63,18 @@ const TradingAccountDetails = () => {
         const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0);
         _totalSwap += parseFloat(Calswap ?? 0);
         const swap = Calswap > 0 ? -Calswap : Calswap;
+        const comm = parseFloat(x?.symbol_setting_commission ?? 0);
+        t_commission += comm;
         totalMargin += parseFloat(margin);
         totalVolumn += parseFloat(res);
-        return { ...x, swap, profit, currentPrice, open_price };
+        return { ...x, swap, profit, currentPrice, open_price, comm };
       }));
       
       setGrandProfit(totalProfit.toFixed(2));
       setGrandVolumn(totalVolumn.toFixed(2));
       setGrandMargin(totalMargin.toFixed(2));
       setTotalSwap(_totalSwap.toFixed(2));
+      setTotalCommission(t_commission.toFixed(2));
     
   
     return updatedData;
@@ -92,7 +98,18 @@ const TradingAccountDetails = () => {
     {
       key: '1',
       label: 'Live Orders',
-      component: <LiveOrders setManipulatedData={setLiveManipulatedData} grandProfit={grandProfit} lotSize={grandVolumn} isLoading={isLoading} setIsLoading={setIsLoading} CurrentPage={CurrentPage} lastPage={lastPage} totalRecords={totalRecords} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <LiveOrders setManipulatedData={setLiveManipulatedData} 
+      grandProfit={grandProfit} 
+      lotSize={grandVolumn} 
+      isLoading={isLoading} 
+      setIsLoading={setIsLoading} 
+      CurrentPage={CurrentPage} 
+      lastPage={lastPage} 
+      totalRecords={totalRecords}
+      margin={grandMargin} 
+      totalSwap={totalSwap}
+      grandCommsion = {totalCommission}
+      />,
       path: '/single-trading-accounts/details/live-order',
       display: CheckBrandPermission(userPermissions, userRole, 'live_orders_read') ? 'show' : 'hide'
     },

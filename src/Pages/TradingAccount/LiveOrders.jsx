@@ -13,8 +13,8 @@ import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginC
 import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
-const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
-  // debugger;
+const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
+  
   
   const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0])
   const token = useSelector(({ user }) => user?.user?.token)
@@ -72,6 +72,20 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
       key: '3',
       
       sorter: (a, b) =>  ColumnSorter(a.volume , b.volume),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+      render: (text)=> <span style={{color:"red"}}>{text}</span>
+    },
+    {
+      title: <span className="dragHandler">Open Time</span>,
+      dataIndex: 'open_time',
+      key: '3',
+      
+      sorter: (a, b) =>  ColumnSorter(a.open_time , b.open_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -159,6 +173,19 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
       dataIndex: 'profit',
       key: 'profit',
       sorter: (a, b) => ColumnSorter(a.profit , b.profit),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
+    },
+    {
+      title: <span className="dragHandler">Commission</span>,
+      dataIndex: 'symbol_setting_commission',
+      key: 'symbol_setting_commission',
+      sorter: (a, b) => ColumnSorter(a.symbol_setting_commission , b.symbol_setting_commission),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -298,14 +325,13 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
-                  <Table.Summary.Cell index={0} colSpan={9}>
+                  <Table.Summary.Cell index={0} colSpan={10}>
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {isNaN(balance) ? 0 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
                       Equity: {isNaN(calculateEquity(balance, grandProfit, credit, bonus)) ? 0 : calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName} &nbsp;
                       Credit: {isNaN(credit) ? 0 : parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
                       Bonus: {isNaN(bonus) ? 0 : parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
-                      
                       <span> Margin: {isNaN(margin) ? 0 : margin}</span>&nbsp;
                       Free Margin: {isNaN(calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)} &nbsp;
                        <span>Margin Level: {isNaN(calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)} %</span>
@@ -313,6 +339,8 @@ const   LiveOrders = ({ setManipulatedData, isLoading, setIsLoading, grandProfit
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
                   <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(grandCommsion) ? 0 : grandCommsion}</Table.Summary.Cell>
+
                 </Table.Summary.Row>
               </Table.Summary>
             )}

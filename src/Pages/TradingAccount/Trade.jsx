@@ -36,7 +36,7 @@ const Trade = ({ CurrentPage }) => {
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0])
   const trading_group_id = useSelector(({group}) => group?.tradingGroupData?.id)
-  
+  const stop_out = useSelector((state)=>state?.tradingAccountGroup?.tradingAccountGroupData?.brand?.stop_out)
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   
   const {value: accountLeverage} = LeverageList?.find(x=> x?.title === leverage) ||  { value: '0', title: '0:0' }
@@ -46,11 +46,13 @@ const Trade = ({ CurrentPage }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
   const [symbol, setSymbol] = useState(null);
-  const [order_type, setOrder_type] = useState(null);
+  const [order_type, setOrder_type] = useState(TradeOrderTypes.slice(0,2)[1]);
   const [type,setType] = useState(null);
   const [volume,setVolume] = useState('');
   const [lotstep,setLotStep] = useState('');
-  const [margin, setMargin] = useState(0)
+  const [margin, setMargin] = useState(0);
+  const [m_loader, setM_loader] = useState(true)
+
   const [volumerange,setVolumeRange] = useState({
     min_vol: '',
     max_vol: ''
@@ -223,7 +225,28 @@ const Trade = ({ CurrentPage }) => {
   const handleSubmit = (typeReceive) => {
       const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
       const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
-      // const margin = calculateMargin(res, accountLeverage)
+
+      const margin = calculateMargin(res, accountLeverage)
+      if(margin < Number(stop_out)) {
+        CustomNotification({ 
+            type: "error", 
+            title: "Validation", 
+            description: 'Margin must be greater than your stop out', 
+            key: 1 
+          })
+      }
+      else{
+          balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+          createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
+          typeReceive === 'buy' ? 
+          (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
+          createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
+          createOrder(typeReceive)
+          :
+          createOrder(typeReceive)
+          :
+          CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
+        }
       // if(margin > balance || balance === 0 ){
       // CustomNotification({ 
       //   type: "error", 
@@ -231,17 +254,18 @@ const Trade = ({ CurrentPage }) => {
       //   description: 'Margin must be less than your balance', 
       //   key: 1 
       // })
-      // }else{
-        balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
-        createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
-        typeReceive === 'buy' ? 
-        (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
-        createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
-        createOrder(typeReceive)
-        :
-        createOrder(typeReceive)
-        :
-        CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
+      // }
+      // else{
+      //   balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+      //   createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
+      //   typeReceive === 'buy' ? 
+      //   (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
+      //   createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
+      //   createOrder(typeReceive)
+      //   :
+      //   createOrder(typeReceive)
+      //   :
+      //   CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
       // }
    
   }
@@ -315,7 +339,6 @@ useEffect(() => {
   const fetchBinancehData = async (symbol, pip) => {
     try {
       const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
-
       // if(feed_name === 'binance') {
         const response = await axios.get(endPoint);
         const data = response?.data;
@@ -324,11 +347,13 @@ useEffect(() => {
         //   openPrice: data?.bidPrice,
         //   askPrice: data?.askPrice
         // })
+       
         setPricing({
           ...pricing,
           openPrice: parseFloat(data?.bidPrice).toFixed(pip),
           askPrice: parseFloat(data?.askPrice).toFixed(pip)
         })
+        
         setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
       // }
       // else {
@@ -348,7 +373,6 @@ useEffect(() => {
       // if(feed_name === 'binance') {
         const response = await axios.get(endPoint1);
         const data = response?.data;
-        console.log(data)
 
         setPricing({
           ...pricing,
@@ -504,6 +528,7 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    
                     setLotSize(value?.lot_size * value?.vol_min)
                     setD_lot(value?.vol_min)
                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
@@ -520,13 +545,15 @@ useEffect(() => {
                     setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                     setSymbol(value)
                       if(value?.feed_name === 'binance'){
-                      
+                      setM_loader(true)
                       fetchBinancehData(value?.feed_fetch_name, value?.pip).then((result) => {
-                      
+                        
                         const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
                         const margin_val = calculateMargin(res, accountLeverage);
                         setMargin(margin_val)
+                        setM_loader(false)
                       }).catch((err) => {
+                        setM_loader(false)
                         console.log(err)
                       });
                       if (value && connected) {
@@ -748,7 +775,10 @@ useEffect(() => {
                       </div>
                       <div className='flex justify-between'>
                       <span >Required Margin</span>
-                      <span>{isNaN(margin) ? "0.00" : parseFloat(margin).toFixed(2)}</span>
+                      {
+                        m_loader ? <span>Please Wait</span>:
+                        <span>{isNaN(margin) ? "0.00" : parseFloat(margin).toFixed(2)}</span>
+                      }
                       </div>
                     
                   </div>
