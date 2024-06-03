@@ -13,7 +13,7 @@ import CustomAutocomplete from '../../components/CustomAutocomplete';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { useNavigate } from 'react-router-dom';
 import { deleteBrandById, setBrandData, setBrandSelectedIDs, updateBrandsData } from '../../store/BrandsSlice';
-import { CustomBulkDeleteHandler } from '../../utils/helpers';
+import {  CustomBulkDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { EditOutlined } from '@mui/icons-material';
 

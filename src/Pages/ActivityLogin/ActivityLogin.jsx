@@ -6,20 +6,14 @@ import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 
 import { Link } from 'react-router-dom';
-import { Save_Transaction_Order, Get_Transaction_Orders } from '../../utils/_TransactionOrderAPI';
 import { useDispatch, useSelector } from 'react-redux';
 import { TransactionOrderValidationSchema } from '../../utils/validations';
 import moment from 'moment'
-import CustomNotification from '../../components/CustomNotification';
-import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
-import { TextField, Input, InputAdornment, FormControl, Select, InputLabel, MenuItem } from '@mui/material';
 import { CheckBrandPermission, ColumnSorter, getCurrentIP } from "../../utils/helpers";
-import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
-import { AddnewStyle } from '../Brand/style';
-import CustomModal from '../../components/CustomModal';
-import { Search_Transaction_Ordcer } from '../../utils/_SymbolSettingAPICalls';
 import { setTransactionOrdersSelectedIds,setTransactionOrdersData } from '../../store/TradingAccountListSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
+import { UserLoginActivities } from '../../utils/_APICalls';
+
 
 
 const ActivityLogin = () => {
@@ -49,14 +43,30 @@ const ActivityLogin = () => {
   const [lastPage, setLastPage] = useState(1)
   const [isUpdated, setIsUpdated] = useState(true)
   const [totalRecords, setTotalRecords] = useState(0)
+  const [activitiesData,setActivitiesData] = useState([])
+
   
   const columns = [
+
     {
-      title: <span className="dragHandler">Time</span>,
-      dataIndex: 'time',
+      title: <span className="dragHandler">User ID</span>,
+      dataIndex: 'user_id',
       key: '1',
+      sorter: (a, b) => a.user_id - b.user_id,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    {
+      title: <span className="dragHandler">Created Time</span>,
+      dataIndex: 'created_at',
+      key: '2',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
-      sorter: (a, b) =>  ColumnSorter(a.name , b.name),
+      sorter: (a, b) =>  ColumnSorter(a.created_at , b.created_at),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -67,9 +77,9 @@ const ActivityLogin = () => {
     },
     {
       title: <span className="dragHandler">Ip Address</span>,
-      dataIndex: 'ip_adress',
-      key: '2',
-      sorter: (a, b) => ColumnSorter(a.email, b.email),
+      dataIndex: 'ip_address',
+      key: '3',
+      sorter: (a, b) => ColumnSorter(a.ip_address, b.ip_address),
        sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -78,24 +88,25 @@ const ActivityLogin = () => {
       },
 
     },
-    {
-      title: <span className="dragHandler">Mac Address</span>,
-      dataIndex: 'mac_address',
-      key: '3',
-      sorter: (a, b) => ColumnSorter(a.phone, b.phone),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-
-    },
-    {
-      title: <span className="dragHandler">Type</span>,
-      dataIndex: 'type',
+     {
+      title: <span className="dragHandler">Login Time</span>,
+      dataIndex: 'login_time',
       key: '4',
-      sorter: (a, b) => ColumnSorter(a.country, b.country),
+      sorter: (a, b) => ColumnSorter(a.login_time, b.login_time),
+       sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    
+    {
+      title: <span className="dragHandler">Updated Time</span>,
+      dataIndex: 'updated_at',
+      key: '5',
+      sorter: (a, b) => ColumnSorter(a.updated_at , b.updated_at),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -104,19 +115,32 @@ const ActivityLogin = () => {
       },
 
     },
-    {
-      title: <span className="dragHandler">Location</span>,
-      dataIndex: 'location',
-      key: '5',
-      sorter: (a, b) =>ColumnSorter( a.type , b.type),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+  
   ];
+
+    const fetchActivityLogins = async (page) => {
+      // debugger
+    setIsLoading(true)
+    const mData = await UserLoginActivities(token,page)
+    const { data: { message, payload, success } } = mData
+    
+      
+    if (success) {
+
+      
+
+      setActivitiesData(payload?.data)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
+      setIsLoading(false)
+      setIsUpdated(false)
+
+
+    }
+  }
+
+
   useEffect(() => {
     (async ()=> {
         setIsLoading(true)
@@ -124,8 +148,20 @@ const ActivityLogin = () => {
         setCurrent_IP(ip.ip)
         setIsLoading(false)
 
+        // SetSearchQueryList({
+        //   page:CurrentPage,
+        //   perPage
+        // })
+
     })()
   }, [])
+
+
+    useEffect(() => {
+    setIsUpdated(true)
+    fetchActivityLogins(CurrentPage)
+  }, [perPage])
+
    const [newColumns , setNewColumns] = useState(columns)
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
@@ -146,7 +182,7 @@ const ActivityLogin = () => {
   }
 
   const onPageChange = (page) =>{
-    // FetchData(page)
+    // fetchActivityLogins(page)
   }
 
  
@@ -179,12 +215,12 @@ const ActivityLogin = () => {
       <div className='rounded-lg' style={{ backgroundColor: colorBG }}>
 
         <div className="mb-4 grid grid-cols-1  gap-4 mt-4">
-          {/* <CustomTable columns={columns} data={transactionOrders} headerStyle={headerStyle} /> */}
 
           <CustomTable
             direction="/single-trading-accounts/details/login-activity-entry"
-            formName="Transaction Order"
+            formName="Login Activities"
             columns={newColumns}
+            data = {activitiesData}
             headerStyle={headerStyle}
             total={totalRecords}
             setTotalRecords={setTotalRecords}
@@ -192,20 +228,23 @@ const ActivityLogin = () => {
             current_page={CurrentPage}
             token={token}
             isUpated={isUpdated}
-            setSelecetdIDs={setTransactionOrdersSelectedIds}
-            setTableData = {setTransactionOrdersData}
-            table_name= "transaction_orders"
+            // setSelecetdIDs={setTransactionOrdersSelectedIds}
+            // setTableData = {setTransactionOrdersData}
+            table_name= "user_login_activities"
             setSortDirection = {setSortDirection}
             perPage={perPage}
             setPerPage={setPerPage}
-            SearchQuery = {Search_Transaction_Ordcer}
-            SearchQueryList={SearchQueryList}
+            SearchQuery = {UserLoginActivities}
+            // SearchQueryList={SearchQueryList}
             // LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
-            editPermissionName="transaction_orders_update"
-            deletePermissionName="transaction_orders_delete"
+            // editPermissionName="transaction_orders_update"
+            // deletePermissionName="transaction_orders_delete"
           />
+
+
+
         </div>
 
       </div>

@@ -14,6 +14,12 @@ export const Logout = async(token) =>{
    return response
 }
 
+export const UserLoginActivities = async(token,page = 1, perPage = 10, searchValues)=>{
+  const queryParams = new URLSearchParams(searchValues).toString();
+  const res = await  _API(`${apiUrl}/auth/user_login_activities?page=${page}&per_page=${perPage}&${queryParams}`,'get',[],token)
+  return res
+}
+
 //Brads
 export const SaveBrands = async(BrandData, token)=>{
   const res = await _API(`${apiUrl}/admin/brands`,'post',BrandData, token)
@@ -62,3 +68,5 @@ export const UpdateMultiTradeOrder = async(Params, token)=>{
   const res = await  _API(`${apiUrl}/admin/update_multi_trade_order`,'post',Params,token)
   return res
 }
+
+

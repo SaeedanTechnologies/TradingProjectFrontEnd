@@ -135,3 +135,10 @@ export const Delete_Trade_Order = async(id,token)=>{
    const res = await _API(`${apiUrl}/admin/trade_orders/${id}`,'delete',[],token)
   return res
 }
+
+export const All_TradingAccountList = async (token, searchValues = {}) => {
+  const searchParams = new URLSearchParams(searchValues);
+  const apiUrlWithParams = `${apiUrl}/admin/getAllTradingAccountList?${searchParams.toString()}`;
+  const res = await _API(apiUrlWithParams, 'get', [], token);
+  return res;
+};

@@ -13,7 +13,7 @@ import UserIP from './UserIP';
 const Firewall = () => {
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const navigate = useNavigate()
-    const [activeTab, setActiveTab] = useState('0');
+    const [activeTab, setActiveTab] = useState('1');
 
 
   const columns = [
@@ -80,19 +80,19 @@ const Firewall = () => {
       key: '1',
       label: 'User IP',
       component: <UserIP />,
-      path: '/user-ip',
+      path: '/firewall/user-ip',
     },
     {
       key: '2',
       label: 'Admin IP',
       component: <AdminIP />,
-      path: '/admin-ip',
+      path: '/firewall/admin-ip',
     },
     {
       key: '3',
       label: 'Banned IP',
       component: <BrandIP />,
-      path: "/banned-ip",
+      path: "/firewall/banned-ip",
     },
     
    

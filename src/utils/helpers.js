@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import CustomNotification from "../components/CustomNotification";
 import axios from "axios";
-
+import { LeverageList } from "./constants";
 
 export const CustomDeleteDeleteHandler = async (id, token, _API,setIsLoading,fetchData)=>{
 
@@ -122,6 +122,8 @@ export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{
   return true;
 }
 
+
+
 export const getOpenPrice = (symbol) => {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket('wss://stream.binance.com:9443/ws');
@@ -225,10 +227,44 @@ export const calculateMargin = (lotSize,accountLeverage)=>{
  return parseFloat(parseFloat(lotSize)/parseFloat(accountLeverage)).toFixed(2)
 }
 export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
-  // debugger
   const equity = (parseFloat(balance) + parseFloat(grandProfit) + parseFloat(credit) + parseFloat(bonus)).toFixed(2);
   return equity
 }
+
+export const conditionalLeverage =(trading_account,symbol_setting)=>{
+    // debugger;
+    let leverage;
+
+    const trading_account_symbol_leverage  = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.id)) || { value:'', title: '' }
+    const trading_account_leverage  = LeverageList?.find(x => x?.title === trading_account?.leverage) || { value:'', title: '' }
+    const trading_account_group_leverage  = LeverageList?.find(x => x?.title === trading_account?.group?.mass_leverage) || { value:'', title: '' }
+    const symbol_setting_leverage  = LeverageList?.find(x => x?.title === symbol_setting?.leverage) || { value:'', title: '' }
+    const symbol_setting_group_leverage  = LeverageList?.find(x => x?.title === symbol_setting?.group?.leverage) || { value:'', title: '' }
+  
+   
+    if(trading_account_symbol_leverage.value){
+      leverage = trading_account_symbol_leverage.value;
+    }else if (trading_account_leverage.value){
+      leverage = trading_account_leverage.value;
+    }
+    else if(trading_account_group_leverage.value){
+      leverage = trading_account_group_leverage.value;
+    }
+    else if(symbol_setting_leverage.value){
+          leverage = symbol_setting_leverage.value;
+    }
+    else if(symbol_setting_group_leverage.value){
+       leverage = symbol_setting_group_leverage.value;
+    }
+    	else{
+        leverage = 1
+      }
+     return leverage
+
+
+   }
+
+
 export const calculateNights = (startDate, endDate)=>{
   
     const endTimestamp = new Date(endDate).getTime();
