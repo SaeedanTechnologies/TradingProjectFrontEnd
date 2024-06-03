@@ -49,7 +49,6 @@ const TradingAccountDetails = () => {
    
 
   const setLiveManipulatedData = async (data) => {
-    debugger;
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
