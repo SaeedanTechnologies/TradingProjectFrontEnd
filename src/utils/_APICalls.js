@@ -20,6 +20,11 @@ export const UserLoginActivities = async(token,page = 1, perPage = 10, searchVal
   return res
 }
 
+export const SingleUserLoginActivities = async(token, id)=>{
+  const res = await  _API(`${apiUrl}/auth/user_login_activities/${id}`,'get',[],token)
+  return res
+}
+
 //Brads
 export const SaveBrands = async(BrandData, token)=>{
   const res = await _API(`${apiUrl}/admin/brands`,'post',BrandData, token)
