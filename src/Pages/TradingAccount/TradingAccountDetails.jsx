@@ -43,7 +43,6 @@ const TradingAccountDetails = () => {
   const { value: accountLeverage } = LeverageList?.find(x => x?.title === leverage) || { value:"0", title: '0:0' };
 
   const setLiveManipulatedData = async (data) => {
-    debugger;
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;

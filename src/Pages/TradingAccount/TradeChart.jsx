@@ -5,7 +5,8 @@ const TradeChart = () => {
 
  
   return (
-   <h1>TradeChart</h1>
+   <h1>
+    TradeChart</h1>
   )
 }
 

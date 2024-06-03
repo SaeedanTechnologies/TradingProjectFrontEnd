@@ -51,8 +51,6 @@ const Trade = ({ CurrentPage }) => {
   const [volume,setVolume] = useState('');
   const [lotstep,setLotStep] = useState('');
   const [margin, setMargin] = useState(0);
-  const [m_loader, setM_loader] = useState(true)
-
   const [volumerange,setVolumeRange] = useState({
     min_vol: '',
     max_vol: ''
@@ -533,7 +531,6 @@ useEffect(() => {
                     setD_lot(value?.vol_min)
                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
                     setPipVal(pipValue)
-                    
                     setVolumeRange({
                       ...volumerange,
                       min_vol: value?.vol_min,
@@ -544,16 +541,12 @@ useEffect(() => {
                     if (value) {
                     setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                     setSymbol(value)
-                      if(value?.feed_name === 'binance'){
-                      setM_loader(true)
-                      fetchBinancehData(value?.feed_fetch_name, value?.pip).then((result) => {
-                        
+                      if(value?.feed_name === 'binance'){ 
+                      fetchBinancehData(value?.feed_fetch_name, value?.pip).then((result) => {                
                         const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
                         const margin_val = calculateMargin(res, accountLeverage);
                         setMargin(margin_val)
-                        setM_loader(false)
                       }).catch((err) => {
-                        setM_loader(false)
                         console.log(err)
                       });
                       if (value && connected) {
@@ -775,10 +768,7 @@ useEffect(() => {
                       </div>
                       <div className='flex justify-between'>
                       <span >Required Margin</span>
-                      {
-                        m_loader ? <span>Please Wait</span>:
-                        <span>{isNaN(margin) ? "0.00" : parseFloat(margin).toFixed(2)}</span>
-                      }
+                      <span>{isNaN(margin) ? "0.00" : parseFloat(margin).toFixed(2)}</span>
                       </div>
                     
                   </div>
