@@ -56,6 +56,7 @@ import TradingAccountTransactionOrderEntry from '../Pages/TradingAccount/Trading
 import MBTradingOrderEntry from '../Pages/TradingAccountGroup/MBTradingOrderEntry';
 import MassDipositWidthdrawEntry from '../Pages/TradingAccountGroup/MassDipositWidthdrawEntry'
 import ActivityLogin from '../Pages/ActivityLogin/ActivityLogin';
+import ActivityLoginEntry from '../Pages/ActivityLogin/ActivityLoginEntry';
 import UserIP from '../Pages/Settings/UserIP'
 import BannedIP from '../Pages/Settings/BannedIP';
 import AdminIP from '../Pages/Settings/AdminIP';
@@ -108,11 +109,14 @@ export const router = createBrowserRouter([
           { path: "personal-data", element: <PersonalData /> },
           { path: "account-security", element: <Account /> },
           { path: "transaction-order", element: <TransactionOrder /> },
-          {path:"login-activity", element:<ActivityLogin />}
+          { path:"login-activity", element:<ActivityLogin />},
+          { path:"login-activity-entry",element:<ActivityLoginEntry />}
         ]
       },
+      
       //
-      {path:"/login-activity", element:<ActivityLogin />},
+      { path:"/login-activity", element:<ActivityLogin />},
+      { path:"/login-activity-entry",element:<ActivityLoginEntry />},
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },
       { path: "/live-orders", element: <LiveOrders /> },
       { path:"/live-orders-entry", element:<LiveOrdersEntery/>},

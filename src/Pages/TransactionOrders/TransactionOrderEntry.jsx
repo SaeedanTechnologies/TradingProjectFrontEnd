@@ -405,6 +405,7 @@ else
    else{
      if(currentIndex < ArrangedTransactionOrdersData?.length - 1){
        handleNext()
+       
      }
      else{
        handlePrevious()
