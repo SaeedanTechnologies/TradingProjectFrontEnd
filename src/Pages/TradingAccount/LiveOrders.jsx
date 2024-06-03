@@ -21,7 +21,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const test = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData)
-  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '0', title: '0:0' }
+  const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '', title: '' }
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
   const location = useLocation()
   const { pathname } = location

@@ -1,7 +1,7 @@
 import { Spin, theme } from 'antd';
 import React, { useState, useEffect } from 'react'
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes, LeverageList } from '../../utils/constants';
+import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes, LeverageList, CurrenciesList } from '../../utils/constants';
 
 import { PlusCircleOutlined } from '@ant-design/icons';
 
@@ -68,7 +68,7 @@ const Trade = ({ CurrentPage }) => {
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
-
+  const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
 
   // const [manualpricing, setManualPricing] = useState({ openPrice: null, askPrice: null });
   const [errors, setErrors] = useState({});
@@ -764,7 +764,7 @@ useEffect(() => {
                       </div>
                       <div className='flex justify-between'>
                       <span >Pips Value</span>
-                      <span>USDT {pipVal.toFixed(2)}</span>
+                      <span>{CurrencyName} {pipVal.toFixed(2)}</span>
                       </div>
                       <div className='flex justify-between'>
                       <span >Required Margin</span>
