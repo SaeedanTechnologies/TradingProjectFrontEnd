@@ -1,109 +1,53 @@
 import { Space, theme } from 'antd';
-import {DeleteOutlined, EyeOutlined} from '@ant-design/icons';
-import React from 'react'
+import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import React, { useEffect } from 'react';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import CustomTable from '../../components/CustomTable';
 import { Divider, Tab, Tabs } from '@mui/material';
-import {useState} from 'react'
-import AdminIP from './AdminIP'
-import BrandIP from './BannedIP'
+import { useState } from 'react';
+import AdminIP from './AdminIP';
+import BrandIP from './BannedIP';
 import UserIP from './UserIP';
+import Active_IP_List from './Active_IP_List';
+import Blocked_IP_List from './Blocked_IP_List';
 
 const Firewall = () => {
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
-  const navigate = useNavigate()
-    const [activeTab, setActiveTab] = useState('1');
+  const navigate = useNavigate();
+  const location = useLocation();
 
-
-  const columns = [
-    {
-      title: 'Date & Time',
-      dataIndex: 'DateTime',
-      key: '1',
-    },
-    {
-      title: 'Value 1',
-      dataIndex: 'value1',
-      key: '2',
-    },
-    {
-      title: 'Value 2',
-      dataIndex: 'value2',
-      key: '3'
-    },
-    {
-      title: 'Value 3',
-      dataIndex: 'value3',
-      key: '4',
-    },
-    {
-      title: 'value4',
-      dataIndex: 'Value 4',
-      key: '5',
-    },
-    {
-      title: 'Actions',
-      dataIndex: 'type',
-      key: '9',
-      render: (_, record) => (
-        <Space size="middle" className='cursor-pointer'>
-          <Link to="/"><EyeOutlined style={{fontSize:"24px", color: colorPrimary }} /></Link>
-          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} />
-        </Space>
-      ),
-    },
-  ];
-  
-  const data = [
+  // Define the items with paths
+  const items = [
     {
       key: '1',
-      DateTime: '9:30',
-      value1: 'Buy',
-      value2: '1000',
-      value3: '125.50',
-      'Value 4': '124.50',
+      label: 'Active IP List',
+      component: <Active_IP_List />,
+      path: '/firewall/active-ip-list',
     },
     {
       key: '2',
-      DateTime: '10:00',
-      value1: 'Sell',
-      value2: '500',
-      value3: '127.00',
-      'Value 4': '128.00',
+      label: 'Blocked IP List',
+      component: <Blocked_IP_List />,
+      path: '/firewall/blocked-ip-list',
     },
-    // Add more data objects as needed
-  ];
-  
-    const items = [
-    {
-      key: '1',
-      label: 'User IP',
-      component: <UserIP />,
-      path: '/firewall/user-ip',
-    },
-    {
-      key: '2',
-      label: 'Admin IP',
-      component: <AdminIP />,
-      path: '/firewall/admin-ip',
-    },
-    {
-      key: '3',
-      label: 'Banned IP',
-      component: <BrandIP />,
-      path: "/firewall/banned-ip",
-    },
-    
-   
   ];
 
-  const headerStyle = {
-    background: TableHeaderColor,
-    color: 'black',
+  // Get the initial active tab from the current path
+  const getInitialActiveTab = () => {
+    const currentPath = location.pathname;
+    const currentItem = items.find(item => item.path === currentPath);
+    return currentItem ? currentItem.key : '1';
   };
 
-    const onChange = (event, key) => {
+  const [activeTab, setActiveTab] = useState(getInitialActiveTab);
+
+  useEffect(() => {
+    // Sync the active tab with the current path when the location changes
+    setActiveTab(getInitialActiveTab());
+  }, [location.pathname]);
+
+  const onChange = (event, key) => {
     const selectedItem = items.find(item => item.key === key);
     if (selectedItem && selectedItem.path) {
       setActiveTab(key);
@@ -111,22 +55,25 @@ const Firewall = () => {
     }
   };
 
+  const headerStyle = {
+    background: TableHeaderColor,
+    color: 'black',
+  };
 
   return (
     <div className='p-8' style={{ backgroundColor: colorBG }}>
-    <div className='flex items-center gap-3'>
-     <img 
-        src={ARROW_BACK_CDN} 
-        alt='back icon' 
-        className='cursor-pointer'
-        onClick={()=> navigate(-1)}
+      <div className='flex items-center gap-3'>
+        <img
+          src={ARROW_BACK_CDN}
+          alt='back icon'
+          className='cursor-pointer'
+          onClick={() => navigate(-1)}
         />
-      <h1 className='text-2xl font-semibold'>Firewall IP Restrictions</h1>
-
-    </div>
+        <h1 className='text-2xl font-semibold'>Firewall IP Restrictions</h1>
+      </div>
 
       <div className="mt-4">
-        <Tabs 
+        <Tabs
           value={activeTab}
           onChange={onChange}
           TabIndicatorProps={{ style: { backgroundColor: '#1CAC70' } }}
@@ -137,23 +84,26 @@ const Firewall = () => {
               mb: -2,
             },
             '& .Mui-selected': {
-              color: '#1CAC70 !important', // Ensure that the selected tab retains the custom color
+              color: '#1CAC70 !important',
             },
           }}
           aria-label="tabs example"
         >
           {items.map(item => (
-            
-            <Tab sx={{ fontSize: "14px", textTransform: "none", mb: -2, fontWeight:'bold' }} label={item.label} key={item.key} value={item.key} /> 
+            <Tab
+              sx={{ fontSize: "14px", textTransform: "none", mb: -2, fontWeight: 'bold' }}
+              label={item.label}
+              key={item.key}
+              value={item.key}
+            />
           ))}
         </Tabs>
       </div>
-
-    <div className='mt-4'>
-          <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
+      <div>
+        <Outlet />
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
-export default Firewall
+export default Firewall;
