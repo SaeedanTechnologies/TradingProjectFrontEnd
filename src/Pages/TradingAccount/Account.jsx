@@ -279,7 +279,7 @@ const ChkBoxesControl = [
                         m: 0,
                       }}
                     >
-                  {tradingAccountDataGroupLeverage.length && tradingAccountDataGroupLeverage?.slice(0, 2).map((option,index) => {
+                  {!!tradingAccountDataGroupLeverage.length && tradingAccountDataGroupLeverage?.slice(0, 2).map((option,index) => {
                    
 
                   return (
