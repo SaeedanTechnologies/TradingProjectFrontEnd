@@ -30,3 +30,7 @@ export const getActiveIPs = async (token) => {
     const res = await _API(`${apiUrl}/admin/add_to_block_list`, 'post', data, token)
     return res
   }
+  export const addIp_To_List = async (data, token) => {
+    const res = await _API(`${apiUrl}/admin/add_to_ip_list`, 'post', data, token)
+    return res
+  }

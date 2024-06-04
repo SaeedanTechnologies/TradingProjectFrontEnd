@@ -94,6 +94,31 @@ const TransactionOrders = () => {
 
     },
     {
+      title:<span className="dragHandler">OrderID</span>,
+      dataIndex: 'id',
+      key: '2',
+      sorter:(a, b) => a?.id - b?.id,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
+      title:<span className="dragHandler">Date & Time</span>,
+      dataIndex: 'created_at',
+      key: '300',
+      sorter:(a, b) =>  ColumnSorter(a.created_at,b.created_at),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    {
       title:<span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '7',
