@@ -192,9 +192,7 @@ const BrandList = () => {
 
 
 
-   const brandLoginActivity = () => {
-    console.log("inside")
-   }
+
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
@@ -206,9 +204,9 @@ const BrandList = () => {
     const { data: { message, payload, success } } = mData
     
       setIsLoading(false)
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setTotalRecords(payload.total)
+      setCurrentPage(payload?.current_page)
+      setLastPage(payload?.last_page)
+      setTotalRecords(payload?.total)
       setIsUpdated(false)
     if (success) {
 
@@ -240,12 +238,13 @@ const BrandList = () => {
 
   const openPermissions = (user)=>{
     navigate('/brand-permissions')
-    const payload = { user_id:user.user_id,permissions:user.user.permissions} 
+    const payload = { user_id:user.user_id,permissions:user?.user?.permissions} 
     dispatch(setBrandUser(payload))
   }
-  const brnadLoginActivity = (record) => {
-    navigate('/brand-permissions')
-    console.log(record)
+  const brandLoginActivity = (record) => {
+    navigate('/brand-login-activity')
+        const payload = { user_id:record.user_id,permissions:[]} 
+    dispatch(setBrandUser(payload))
   }
 
   useEffect(() => {

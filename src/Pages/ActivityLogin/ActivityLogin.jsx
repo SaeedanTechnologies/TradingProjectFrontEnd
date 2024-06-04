@@ -1,16 +1,14 @@
 import { Space, Tag, theme, Spin } from 'antd';
 import React, { useState, useEffect } from 'react'
-import { PlusCircleOutlined, DeleteOutlined, CaretUpOutlined, CaretDownOutlined  } from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined  } from '@ant-design/icons';
 import CustomAutocomplete from '../../components/CustomAutocomplete';
 import CustomButton from '../../components/CustomButton';
 import CustomTable from '../../components/CustomTable';
 
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { TransactionOrderValidationSchema } from '../../utils/validations';
 import moment from 'moment'
 import { CheckBrandPermission, ColumnSorter, getCurrentIP } from "../../utils/helpers";
-import { setTransactionOrdersSelectedIds,setTransactionOrdersData } from '../../store/TradingAccountListSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import { UserLoginActivities } from '../../utils/_APICalls';
 import { setLoginActivitySelectedRowsIds,setActivityLoginData } from '../../store/ActivityLoginSlice';
@@ -31,13 +29,7 @@ const ActivityLogin = () => {
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
   const [SearchQueryList,SetSearchQueryList]= useState({})
-  const [OperationsList, setOperationList] = useState([
-    { "label": "Balance", "value": "balance" },
-    { "label": "Commission", "value": "commission" },
-    { "label": "Tax", "value": "tax" },
-    { "label": "Credit", "value": "credit" },
-    { "label": "Bonus", "value": "bonus" }
-  ])
+
   const [isLoading, setIsLoading] = useState(false)
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -116,6 +108,9 @@ const ActivityLogin = () => {
     
     if (success) {
       setActivitiesData(payload?.data)
+      setCurrentPage(payload.current_page)
+      setLastPage(payload.last_page)
+      setTotalRecords(payload.total)
       
       setIsLoading(false)
       setIsUpdated(false)
@@ -125,10 +120,10 @@ const ActivityLogin = () => {
 
   useEffect(() => {
     (async ()=> {
-        setIsLoading(true)
-        const ip = await getCurrentIP()
-        setCurrent_IP(ip.ip)
-        setIsLoading(false)
+        // setIsLoading(true)
+        // const ip = await getCurrentIP()
+        // setCurrent_IP(ip.ip)
+        // setIsLoading(false)
 
         // SetSearchQueryList({
         //   page:CurrentPage,
@@ -141,7 +136,7 @@ const ActivityLogin = () => {
 
     useEffect(() => {
     setIsUpdated(true)
-    fetchActivityLogins(CurrentPage)
+    // fetchActivityLogins(CurrentPage)
   }, [perPage])
 
    const [newColumns , setNewColumns] = useState(columns)
@@ -179,14 +174,11 @@ const ActivityLogin = () => {
   setNewColumns(newCols)
   }, [checkedList]);
 
-//   const LoadingHandler = React.useCallback((isLoading)=>{
-//     setIsLoading(isLoading)
-//   },[])
+  const LoadingHandler = React.useCallback((isLoading)=>{
+    setIsLoading(isLoading)
+  },[])
 
-  const defaultProps = {
-    options: OperationsList,
-    getOptionLabel: (option) => option.label ? option.label : "",
-  };
+  
 
   const closeTransactionOrder = () => {
     setIsModalOpen(false)
@@ -208,7 +200,6 @@ const ActivityLogin = () => {
             headerStyle={headerStyle}
             total={totalRecords}
             setTotalRecords={setTotalRecords}
-            onPageChange={onPageChange}
             current_page={CurrentPage}
             token={token}
             isUpated={isUpdated}
@@ -219,8 +210,8 @@ const ActivityLogin = () => {
             perPage={perPage}
             setPerPage={setPerPage}
             SearchQuery = {UserLoginActivities}
-            // SearchQueryList={SearchQueryList}
-            // LoadingHandler={LoadingHandler}
+            SearchQueryList={SearchQueryList}
+            LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
             // editPermissionName="transaction_orders_update"

@@ -179,11 +179,10 @@ const fetchActivityLogin = async () => {
  const setStatesForEditMode = async (payload, success)=>{
       if (success) {
         setIsLoading(true)
- 
         setIp_address(payload?.ip_address)
         setMac_address(payload?.mac_address)
         setLogin_time(payload?.login_time)
-        setLogin_time(payload?.logout_time)
+        setLogout_time(payload?.logout_time)
       
         setIsLoading(false)
       }
@@ -191,10 +190,10 @@ const fetchActivityLogin = async () => {
   }
 
 useEffect(() => {
-    if (ActivityLoginIds.length === 1 && parseInt(ActivityLoginIds[0]) === 0) { // save
+    if (ActivityLoginIds?.length === 1 && parseInt(ActivityLoginIds[0]) === 0) { // save
        setIsDisabled(false)
-    } else if (ActivityLoginIds.length === 1 && parseInt(ActivityLoginIds[0]) !== 0) { // single edit
-      const cIndex = ArrangedActivityLoginData.findIndex(item => parseInt(item.id) === parseInt(ActivityLoginIds[0]))
+    } else if (ActivityLoginIds?.length === 1 && parseInt(ActivityLoginIds[0]) !== 0) { // single edit
+      const cIndex = ArrangedActivityLoginData?.findIndex(item => parseInt(item.id) === parseInt(ActivityLoginIds[0]))
       setCurrentIndex(cIndex)
       setIsDisabled(true)
         
@@ -211,7 +210,7 @@ useEffect(() => {
 
   //#region HandleNExt
   const handleNext = async () => {
-    if (currentIndex < ArrangedActivityLoginData.length - 1) {
+    if (currentIndex < ArrangedActivityLoginData?.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedActivityLoginData[currentIndex + 1];
       dispatch(setLoginActivitySelectedRowsIds([payload.id]))
@@ -372,12 +371,12 @@ else
               />
               {
                 isDisabled ? <h1 className='text-2xl font-semibold'>Activity Login</h1> :
-                  <h1 className='text-2xl font-semibold'>{ActivityLoginIds.length === 1 && parseInt(ActivityLoginIds[0]) === 0 ? 'Add Activity Login' : 'Edit Activity Login'}</h1>
+                  <h1 className='text-2xl font-semibold'>{ActivityLoginIds?.length === 1 && parseInt(ActivityLoginIds[0]) === 0 ? 'Add Activity Login' : 'Edit Activity Login'}</h1>
               }
             </div>
             {/* toolbar */}
-            {(isDisabled && ActivityLoginIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-            {(ActivityLoginIds.length === 1 && parseInt(ActivityLoginIds[0]) !== 0)  &&
+            {(isDisabled && ActivityLoginIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
+            {(ActivityLoginIds?.length === 1 && parseInt(ActivityLoginIds[0]) !== 0)  &&
               <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
             {isDisabled && <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />}
               {isDisabled && <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />}
@@ -441,7 +440,7 @@ else
           {
               !isDisabled && <div className='flex justify-center sm:justify-end flex-wrap items-center gap-4 mt-6'>
              <CustomButton
-              Text={ ActivityLoginIds.length === 1 && parseInt(ActivityLoginIds[0]) === 0 ? 'Submit' : 'Update'}
+              Text={ ActivityLoginIds?.length === 1 && parseInt(ActivityLoginIds[0]) === 0 ? 'Submit' : 'Update'}
               style={{
                 padding: '16px',
                 height: '48px',

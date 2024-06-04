@@ -57,9 +57,13 @@ import MBTradingOrderEntry from '../Pages/TradingAccountGroup/MBTradingOrderEntr
 import MassDipositWidthdrawEntry from '../Pages/TradingAccountGroup/MassDipositWidthdrawEntry'
 import ActivityLogin from '../Pages/ActivityLogin/ActivityLogin';
 import ActivityLoginEntry from '../Pages/ActivityLogin/ActivityLoginEntry';
+import TradingAccountActivityLogin from '../Pages/TradingAccount/ActivityLogin';
+import TradingAccountActivityLoginEntry from '../Pages/TradingAccount/TradingAccountActivityLoginEntry';
 import UserIP from '../Pages/Settings/UserIP'
 import BannedIP from '../Pages/Settings/BannedIP';
 import AdminIP from '../Pages/Settings/AdminIP';
+import BrandActivityLogin from '../Pages/Brand/BrandActivityLogin';
+import BrandActivityLoginEntry from '../Pages/Brand/BrandActivityLoginEntry'
 import Active_IP_List from '../Pages/Settings/Active_IP_List';
 import Blocked_IP_List from '../Pages/Settings/Blocked_IP_List';
 
@@ -83,6 +87,8 @@ export const router = createBrowserRouter([
       { path: "/brand-entry", element: <BrandEntry /> },
       { path: "/brand-permissions", element: <BrandPermissions /> },
       { path: "/brand-settings", element: <BrandSettings /> },
+      { path: "/brand-login-activity", element:<BrandActivityLogin/>},
+      {path:  "/brand-login-activity-entry", element:<BrandActivityLoginEntry/>},
       { path: "/trading-accounts", element: <TradingAccount direction={1} title="Trading Account List" /> },
       { path: "/trading-accounts/:id", element: <TradingAccountEntry /> },
       { path: "/trading-accounts-entry",element: <TradingAccountsEntry/>},
@@ -99,7 +105,7 @@ export const router = createBrowserRouter([
       { path: "/single-trading-accounts/details/close-order-entry", element:<TradingAccountCloseOrderEntry/> },
       { path: "/single-trading-accounts/details/pending-order-entry", element:<TradingAccountPendingOrderEntry/> },
       { path :"/single-trading-accounts/details/transaction-order-entry", element:<TradingAccountTransactionOrderEntry/>},
-      // single-trading-accounts/details
+      { path:"/single-trading-accounts/details/login-activity-entry",element:<TradingAccountActivityLoginEntry />},
       {
         path: "/single-trading-accounts/details", element: <TradingAccountDetails />, children: [
           { path: "live-order", element: <LiveOrders /> },
@@ -109,12 +115,12 @@ export const router = createBrowserRouter([
           { path: "personal-data", element: <PersonalData /> },
           { path: "account-security", element: <Account /> },
           { path: "transaction-order", element: <TransactionOrder /> },
-          { path:"login-activity", element:<ActivityLogin />},
-          { path:"login-activity-entry",element:<ActivityLoginEntry />}
+          { path:"login-activity", element:<TradingAccountActivityLogin />},
+       
         ]
       },
       
-      //
+      
       { path:"/login-activity", element:<ActivityLogin />},
       { path:"/login-activity-entry",element:<ActivityLoginEntry />},
       { path: "/single-trading-accounts/details/live-order/:orderId", element: <EditLiveOrder /> },

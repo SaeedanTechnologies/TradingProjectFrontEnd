@@ -8,19 +8,20 @@ import { useSelector,useDispatch } from 'react-redux';
 import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg'
 import { LeftOutlined, RightOutlined, EditOutlined,CaretDownOutlined } from '@ant-design/icons';
 import CustomNotification from '../../components/CustomNotification';
-import { deleteActivityLoginById ,setLoginActivitySelectedRowsIds,updateActivityLogin} from '../../store/TradingAccountListSlice';
-
+import { deleteBrandById, setBrandLoginActivitySelectedRowsIds, updateBrandActivityLogin } from '../../store/BrandsSlice'
 import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
-import { GenericDelete, GenericEdit, SingleTradingLoginActivities } from '../../utils/_APICalls';
+import { GenericDelete, GenericEdit, SingleUserLoginActivities } from '../../utils/_APICalls';
 
 
 
-const TradingAccountActivityLoginEntry = () => {
+const BrandActivityLoginEntry = () => {
   const page = localStorage.getItem("page")
     const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const token = useSelector(({ user }) => user?.user?.token)
-    const trading_account_id = useSelector((state)=> state?.trade?.trading_account_id) 
     const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+      const user_id = useSelector((state)=> state?.brand?.user_id)
+
+
     const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
     const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const dispatch = useDispatch()
@@ -47,8 +48,8 @@ const TradingAccountActivityLoginEntry = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [ CurrentPage,setCurrentPage] = useState(1)
 
-  const ActivityLoginIds = useSelector(({ activityLogin }) => activityLogin.selectedActivityRowsIds)
-  const ActivityLoginData = useSelector(({activityLogin})=> activityLogin.activityLoginData)
+  const ActivityLoginIds = useSelector(({ brands }) => brands?.selectedActivityRowsIds)
+  const ActivityLoginData = useSelector(({ brands })=> brands?.activityLoginData)
   const ArrangedActivityLoginData= ActivityLoginData;
   
   const Control = [
@@ -170,7 +171,7 @@ const TradingAccountActivityLoginEntry = () => {
 const fetchActivityLogin = async () => {
 
     setIsLoading(true)
-    const res = await SingleTradingLoginActivities(token,ActivityLoginIds[0] )
+    const res = await SingleUserLoginActivities(token,ActivityLoginIds[0] )
     const { data: { message, payload, success } } = res
     setIsLoading(false)
     setStatesForEditMode(payload, success)
@@ -213,7 +214,7 @@ useEffect(() => {
     if (currentIndex < ArrangedActivityLoginData?.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       const payload = ArrangedActivityLoginData[currentIndex + 1];
-      dispatch(setLoginActivitySelectedRowsIds([payload.id]))
+      dispatch(setBrandLoginActivitySelectedRowsIds([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
@@ -233,7 +234,7 @@ useEffect(() => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedActivityLoginData[currentIndex - 1];
-      dispatch(setLoginActivitySelectedRowsIds([payload.id]))
+      dispatch(setBrandLoginActivitySelectedRowsIds([payload.id]))
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
@@ -266,9 +267,9 @@ else
        description: message,
        key: "a4",
      })
-     dispatch(deleteActivityLoginById(ArrangedActivityLoginData[currentIndex]?.id))
+     dispatch(deleteBrandById(ArrangedActivityLoginData[currentIndex]?.id))
      if(ArrangedActivityLoginData?.length === 0 || ArrangedActivityLoginData === undefined || ArrangedActivityLoginData === null){
-      navigate("/single-trading-accounts/details/login-activity")
+      navigate("/brand-login-activity-entry")
    }
    else{
      if(currentIndex < ArrangedActivityLoginData?.length - 1){
@@ -319,7 +320,7 @@ else
         };
         setIsLoading(true)
         const Params = {
-          table_name: 'trading_account_login_activities',
+          table_name: 'user_login_activities',
           table_ids: isCompleteSelect === "true" ? [] : ActivityLoginIds,
           ...activityLoginData
         }
@@ -328,7 +329,7 @@ else
         setIsLoading(false)
         if (res !== undefined) {
           if (success) {
-            dispatch(updateActivityLogin(payload))
+            dispatch(updateBrandActivityLogin(payload))
             CustomNotification({
               type: 'success',
               title: 'success',
@@ -367,7 +368,7 @@ else
                 src={ARROW_BACK_CDN}
                 alt='back icon'
                 className='cursor-pointer'
-                onClick={() => navigate("/single-trading-accounts/details/login-activity")}
+                onClick={() => navigate("/brand-login-activity")}
               />
               {
                 isDisabled ? <h1 className='text-2xl font-semibold'>Activity Login</h1> :
@@ -475,4 +476,4 @@ else
   )
 }
 
-export default TradingAccountActivityLoginEntry
+export default BrandActivityLoginEntry

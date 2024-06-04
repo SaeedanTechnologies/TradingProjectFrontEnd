@@ -10,7 +10,9 @@ export const tradingAccountSlice = createSlice({
         selectedPendingOrdersRowsIds:null,
         pendingOrdersData:[],
         selectedTransactionOrdersRowsIds:null,
-        transactionOrdersData:[]
+        transactionOrdersData:[],
+        selectedActivityRowsIds: null,
+        activityLoginData: [],
 
 },
   reducers: {
@@ -105,11 +107,33 @@ export const tradingAccountSlice = createSlice({
       state.transactionOrdersData = state.transactionOrdersData.filter(order => order.id !== idToDelete);
     },
 
-
+     setLoginActivitySelectedRowsIds : (state,action) => {
+        state.selectedActivityRowsIds = action.payload
+    },
+     setActivityLoginData: (state,action) => {
+        state.activityLoginData = action.payload
+    },
+     updateActivityLogin : (state, action) => {
+          const updatedDataArray = action.payload; // assuming payload is an array of objects
+          updatedDataArray.forEach(updatedData => {
+            const index = state.activityLoginData.findIndex(item => item.id === updatedData.id);
+            if (index !== -1) {
+              state.activityLoginData[index] = {
+                ...state.activityLoginData[index],
+                ...updatedData,
+              };
+            }
+          });
+    },
+    deleteActivityLoginById: (state, action) => {
+      const idToDelete = action.payload;
+      state.activityLoginData = state.activityLoginData.filter(activity => activity.id !== idToDelete);
+    },
   },
 })
 
-export const {setLiveOrdersSelectedIds, setLiveOrdersData,updateLiveOrder, deleteLiveOrderById,setCloseOrdersSelectedIds,setCloseOrdersData,updateCloseOrder,deleteCloseOrderById,setPendingOrdersData,setPendingOrdersSelectedIds,updatePendingOrder,deletePendingOrderById, setTransactionOrdersSelectedIds,setTransactionOrdersData,updateTransactionOrders,deleteTransactionOrderById } = tradingAccountSlice.actions
+
+export const {setLiveOrdersSelectedIds, setLiveOrdersData,updateLiveOrder, deleteLiveOrderById,setCloseOrdersSelectedIds,setCloseOrdersData,updateCloseOrder,deleteCloseOrderById,setPendingOrdersData,setPendingOrdersSelectedIds,updatePendingOrder,deletePendingOrderById, setTransactionOrdersSelectedIds,setTransactionOrdersData,updateTransactionOrders,deleteTransactionOrderById,setLoginActivitySelectedRowsIds,setActivityLoginData,updateActivityLogin,deleteActivityLoginById } = tradingAccountSlice.actions
 
 export default tradingAccountSlice.reducer
 

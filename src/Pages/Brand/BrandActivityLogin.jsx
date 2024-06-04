@@ -7,14 +7,15 @@ import { useSelector } from 'react-redux';
 import moment from 'moment'
 import {  ColumnSorter, getCurrentIP } from "../../utils/helpers";
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
-import { TradingAccountLoginActivities } from '../../utils/_APICalls';
-import { setLoginActivitySelectedRowsIds,setActivityLoginData } from '../../store/ActivityLoginSlice';
+import { UserLoginActivities } from '../../utils/_APICalls';
+import { setBrandLoginActivitySelectedRowsIds,setBrandActivityLoginData } from '../../store/BrandsSlice.js'
 
 
-const ActivityLogin = () => {
+const BrandActivityLogin = () => {
 
 
   const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0])
+  const user_id = useSelector(({brands})=> brands?.user?.user_id)
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
@@ -94,7 +95,7 @@ const ActivityLogin = () => {
       // debugger
     setIsLoading(true)
       
-    const mData = await TradingAccountLoginActivities(token,page)
+    const mData = await UserLoginActivities(token,page)
     const { data: { message, payload, success } } = mData
     
     if (success) {
@@ -115,9 +116,8 @@ const ActivityLogin = () => {
         // const ip = await getCurrentIP()
         // setCurrent_IP(ip.ip)
         // setIsLoading(false)
-
         SetSearchQueryList({
-          trading_account_id
+          user_id
         })
 
     })()
@@ -141,16 +141,6 @@ const ActivityLogin = () => {
   };
 
 
- 
-
-
-  const clearFields = () => {
-    
-  }
-
-  const onPageChange = (page) =>{
-    // fetchActivityLogins(page)
-  }
 
 
 
@@ -165,9 +155,7 @@ const ActivityLogin = () => {
 
 
 
-  const closeTransactionOrder = () => {
-    setIsModalOpen(false)
-  }
+  
 
   return (
     <Spin spinning={isLoading} size="large">
@@ -178,7 +166,7 @@ const ActivityLogin = () => {
         <div className="mb-4 grid grid-cols-1 gap-4 mt-4">
 
           <CustomTable
-            direction="/single-trading-accounts/details/login-activity-entry"
+            direction="/brand-login-activity-entry"
             formName="Login Activities"
             columns={newColumns}
             data = {activitiesData}
@@ -188,13 +176,13 @@ const ActivityLogin = () => {
             current_page={CurrentPage}
             token={token}
             isUpated={isUpdated}
-            setSelecetdIDs={setLoginActivitySelectedRowsIds}
-            setTableData = {setActivityLoginData}
-            table_name= "trading_account_login_activities"
+            setSelecetdIDs={setBrandLoginActivitySelectedRowsIds}
+            setTableData = {setBrandActivityLoginData}
+            table_name= "user_login_activities"
             setSortDirection = {setSortDirection}
             perPage={perPage}
             setPerPage={setPerPage}
-            SearchQuery = {TradingAccountLoginActivities}
+            SearchQuery = {UserLoginActivities}
             SearchQueryList={SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
@@ -212,4 +200,4 @@ const ActivityLogin = () => {
   )
 }
 
-export default ActivityLogin
+export default BrandActivityLogin

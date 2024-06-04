@@ -16,7 +16,7 @@ import { LeverageList } from '../../utils/constants';
 import { setLiveOrdersData } from '../../store/LiveOrderSlice';
 import PendingOrder from './PendingOrder';
 import { Divider, Tab, Tabs } from '@mui/material';
-import ActivityLogin from '../ActivityLogin/ActivityLogin';
+import ActivityLogin from './ActivityLogin';
 import { getOptions } from 'highcharts';
 
 const TradingAccountDetails = () => {
