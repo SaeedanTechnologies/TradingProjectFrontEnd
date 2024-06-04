@@ -655,7 +655,6 @@ handleClearSearch = () => {
   };
   render() {
     const { columns, selectedRowKeys } = this.state;
-    
     const combinedColumns = columns.map((stateCol, index) => ({
       ...stateCol,
       onHeaderCell: (column) => ({
@@ -774,23 +773,31 @@ handleClearSearch = () => {
           handleCancel={this.handleCancel}
         >
         <Autocomplete
-          multiple
-          id="columns"
-          options={this.state.dropDownColumns}
-          getOptionLabel={(option) => option?.title ? option?.title : '' }
-          value={this.state.selectedColumns  ?  this.state.selectedColumns  : []}
-          onChange={(e, value) => {
-            if(value){
-              this.setState({selectedColumns: value })
-            }else{
-              this.setState({selectedColumns: null })
-            }
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Columns" placeholder="Columns" variant="standard" />
-          )}
-          fullWidth
-        />
+        multiple
+        id="columns"
+        options={this.state.dropDownColumns}
+        getOptionLabel={(option) => option?.title ? option?.title : ''}
+        value={this.state.selectedColumns}
+        onChange={(e, value) => {
+          if (value) {
+            this.setState({ selectedColumns: value });
+          } else {
+            this.setState({ selectedColumns: [] });
+          }
+        }}
+        renderInput={(params) => (
+          <TextField {...params} label="Columns" placeholder="Columns" variant="standard" />
+        )}
+        renderOption={(props, option, { selected }) => (
+          <div
+            {...props}
+            className={`option ${selected ? 'selected' : ''}`}
+          >
+            {option.title}
+          </div>
+        )}
+        fullWidth
+      />
         <div className="flex justify-end gap-4 mt-4">
         <CustomButton
          Text={'Submit'}

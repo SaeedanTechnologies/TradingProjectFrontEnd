@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
-import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, ColumnSorter } from '../../utils/helpers';
+import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, ColumnSorter, getCurrentDateTime } from '../../utils/helpers';
 import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
@@ -172,38 +172,17 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: 'swap',
-      sorter: (a, b) => ColumnSorter(a.swap , b.swap),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
     },
     {
       title: <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: 'profit',
-      sorter: (a, b) => ColumnSorter(a.profit , b.profit),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     {
       title: <span className="dragHandler">Commission</span>,
       dataIndex: 'commission',
       key: 'commission',
-      sorter: (a, b) => a.commission - b.commission,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
    
@@ -228,6 +207,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     background: TableHeaderColor,
     color: 'black',
   };
+
 
  const onPageChange = (page) =>{
       // fetchLiveOrder(page)
@@ -337,7 +317,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
-                  <Table.Summary.Cell index={0} colSpan={10}>
+                  <Table.Summary.Cell index={0} colSpan={11}>
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {isNaN(balance) ? 0 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;

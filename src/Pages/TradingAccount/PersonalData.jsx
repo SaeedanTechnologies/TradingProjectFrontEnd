@@ -25,7 +25,7 @@ const PersonalData = () => {
   
   const { token: { colorBG,  }} = theme.useToken();
   const [name,setName] = useState('')
-  const [registration_time,setRegistration_time ] =  useState(moment().format('YYYY-MM-DD'))
+  const [registration_time,setRegistration_time ] =  useState("")
   const [email,setEmail] = useState('')
   
   const [phone,setPhone] = useState('')
@@ -76,7 +76,8 @@ const fetchSingleTradeAccount= async()=>{
         SetSelectedCountry(selectedCountry)
         setPhone(payload?.phone)
         const registeredDate = payload?.registration_time.split(" ")[0]
-        setRegistration_time(registeredDate)
+        const formattedDate = moment(registeredDate).format('YYYY-MM-DD');
+        setRegistration_time(formattedDate)
         const branderCustomer = customersList?.find(x=> x.id === payload?.brand_customer_id) 
         SetSelectedCustomerBrand(branderCustomer)
       }
@@ -164,15 +165,17 @@ const fetchSingleTradeAccount= async()=>{
         />
         </div>
         <div>
+          
          <CustomTextField
           name='date'
           type={'date'}
           varient='standard'
           label='Registered Date'
           value={registration_time}
-          onChange={e => handleInputChange('registration_time', e.target.value)}
+          onChange={(e) => setRegistration_time(e.target.value)}
         
         />
+        
         </div>
          <div>
          <CustomTextField

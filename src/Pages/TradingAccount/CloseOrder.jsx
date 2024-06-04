@@ -220,37 +220,16 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
       title:<span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '12',
-      sorter: (a, b) => a.swap - b.swap,
-       sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
      },
      {
         title:<span className="dragHandler">Profit</span>,
         dataIndex: 'profit',
         key: '13',
-        sorter: (a, b) => a.profit - b.profit,
-        sortDirections: ['ascend', 'descend'],
-        sortIcon: (sortDir) => {
-          if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-          if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-          return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-        },
      },
      {
       title: <span className="dragHandler">Commission</span>,
       dataIndex: 'commission',
       key: 'commission',
-      sorter: (a, b) => ColumnSorter(a.commission , b.commission),
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     // {
@@ -317,7 +296,7 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
             summary={() => (
               <Table.Summary fixed>
                 <Table.Summary.Row className='bg-gray-300'>
-                  <Table.Summary.Cell index={0} colSpan={11}>
+                  <Table.Summary.Cell index={0} colSpan={12}>
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {isNaN(balance) ? 0.00 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;

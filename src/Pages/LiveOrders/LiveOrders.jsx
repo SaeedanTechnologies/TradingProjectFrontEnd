@@ -4,7 +4,7 @@ import CustomTable from '../../components/CustomTable';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Delete_Trade_Order, Get_Trade_Order, Search_Live_Order } from '../../utils/_TradingAPICalls';
-import { ColumnSorter, ColumnSpaceSorter, CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { ColumnSorter, ColumnSpaceSorter, CustomDeleteDeleteHandler, calculateNights, getCurrentDateTime } from '../../utils/helpers';
 import { setLiveOrdersSelectedIds,setLiveOrdersData, } from '../../store/TradeOrders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
@@ -87,7 +87,18 @@ const LiveOrders = () => {
     }
     
   }, [])
+  const setLiveManipulatedData =  (data) => {
+    const currentDateTime = getCurrentDateTime();
+    const updatedData = data.map((x) => {
+    const totalNights = calculateNights (x.created_at, currentDateTime);
+    const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0);
+    const swap = Calswap > 0 ? -Calswap : Calswap;
+      return { ...x, swap, };
+    });
+  
 
+  return updatedData;
+}
   const columns = [
 
     // {
@@ -302,6 +313,7 @@ const LiveOrders = () => {
           SearchQueryList = {SearchQueryList}
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
+          searchQueryManipulation = {setLiveManipulatedData}
           setLastPage={setLastPage}
           editPermissionName="live_orders_update"
           deletePermissionName="live_orders_delete"

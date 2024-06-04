@@ -27,3 +27,11 @@
 
 
 
+.option {
+  padding: 5px 10px;
+}
+
+.selected {
+  background-color: #4f4f4f !important;
+  color: white;
+}

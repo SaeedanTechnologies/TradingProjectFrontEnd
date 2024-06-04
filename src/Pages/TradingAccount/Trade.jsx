@@ -97,12 +97,7 @@ const Trade = ({ CurrentPage }) => {
                     setPipVal(pipValue)
     setVolume(newValue)
   }
-  const getListCommission = () => {
-    // const comm = symbolsList.find((x)=>x.)
-  }
-  useEffect(()=> {
-    console.log("CALEEd")
-  },[symbol])
+
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
@@ -533,6 +528,7 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    console.log(value, "THIS IS VALUEs")
                     setLotSize(value?.lot_size * value?.vol_min)
                     setD_lot(value?.vol_min)
                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)

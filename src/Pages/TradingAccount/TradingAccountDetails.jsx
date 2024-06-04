@@ -71,7 +71,7 @@ const TradingAccountDetails = () => {
         t_commission += comm;
         totalMargin += parseFloat(margin);
         totalVolumn += parseFloat(res);
-        return { ...x, swap, profit, currentPrice, open_price, comm };
+        return { ...x, swap, profit, currentPrice, open_price };
       }));
       
       setGrandProfit(totalProfit.toFixed(2));
