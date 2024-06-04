@@ -51,6 +51,18 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
     },
+    {
+      title:<span className="dragHandler">OrderID</span>,
+      dataIndex: 'id',
+      key: '2222',
+      sorter:(a, b) => a?.id - b?.id,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
     {  
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
@@ -183,9 +195,9 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     },
     {
       title: <span className="dragHandler">Commission</span>,
-      dataIndex: 'symbol_setting_commission',
-      key: 'symbol_setting_commission',
-      sorter: (a, b) => ColumnSorter(a.symbol_setting_commission , b.symbol_setting_commission),
+      dataIndex: 'commission',
+      key: 'commission',
+      sorter: (a, b) => a.commission - b.commission,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;

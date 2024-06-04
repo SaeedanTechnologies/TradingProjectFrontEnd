@@ -43,7 +43,6 @@ const TradingAccountDetails = () => {
   const [isLoading, setIsLoading] = useState(false);
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0]);
   const { leverage } = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData);
-
   
 
    
@@ -68,7 +67,7 @@ const TradingAccountDetails = () => {
         const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0);
         _totalSwap += parseFloat(Calswap ?? 0);
         const swap = Calswap > 0 ? -Calswap : Calswap;
-        const comm = parseFloat(x?.symbol_setting_commission ?? 0);
+        const comm = parseFloat(x?.commission ?? 0);
         t_commission += comm;
         totalMargin += parseFloat(margin);
         totalVolumn += parseFloat(res);
@@ -85,18 +84,19 @@ const TradingAccountDetails = () => {
     return updatedData;
   }
   const setCloseManipulatedData = (data) => {
-    
     let totalProfit = 0;
     let _totalSwap = 0;
+    let t_commission = 0;
     data.map((val)=> {
       totalProfit += parseFloat(val.profit);
       _totalSwap += parseFloat(val.swap);
-      return{...val}
+      const comm = parseFloat(val?.commission ?? 0);
+        t_commission += comm;
+      return{...val, t_commission, _totalSwap }
     })
     setGrandProfit(totalProfit.toFixed(2));
     setTotalSwap(_totalSwap.toFixed(2));
-  
-
+    setTotalCommission(t_commission);
   return data;
 }
 
@@ -140,7 +140,13 @@ const TradingAccountDetails = () => {
     {
       key: '4',
       label: 'Close Order',
-      component: <CloseOrder setManipulatedData={setCloseManipulatedData} grandProfit={grandProfit} margin={grandMargin} totalSwap={totalSwap} />,
+      component: <CloseOrder 
+      setManipulatedData={setCloseManipulatedData} 
+      grandProfit={grandProfit} 
+      margin={grandMargin} 
+      totalSwap={totalSwap}
+      grandCommsion = {totalCommission}
+      />,
       path: "/single-trading-accounts/details/close-order",
       display: CheckBrandPermission(userPermissions, userRole, 'close_orders_read') ? 'show' : 'hide'
     },

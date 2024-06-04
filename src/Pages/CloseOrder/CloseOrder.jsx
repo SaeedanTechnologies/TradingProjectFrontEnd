@@ -133,6 +133,18 @@ const CloseOrder = () => {
       },
     },
     {
+      title:<span className="dragHandler">OrderID</span>,
+      dataIndex: 'id',
+      key: '2',
+      sorter:(a, b) => a?.id - b?.id,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
       title:<span className="dragHandler">Open Time</span>,
       dataIndex: 'open_time',
       key: '4',
@@ -169,6 +181,18 @@ const CloseOrder = () => {
       },
     },
     {
+      title:<span className="dragHandler">Close Price</span>,
+      dataIndex: 'close_price',
+      key: '11',
+      sorter: (a, b) => a.close_price - b.close_price,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
       title:<span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '14',
@@ -180,18 +204,7 @@ const CloseOrder = () => {
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
-    {
-      title:<span className="dragHandler">Closed Price</span>,
-      dataIndex: 'close_price',
-      key: '11',
-      sorter: (a, b) => a.close_price - b.close_price,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-      },
-    },
+   
     {
       title:<span className="dragHandler">Reason</span>,
       dataIndex: 'reason',
@@ -263,6 +276,20 @@ const CloseOrder = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+
+    },
+    {
+      title: <span className="dragHandler">Commission</span>,
+      dataIndex: 'commission',
+      key: 'commission',
+      sorter: (a, b) => ColumnSorter(a.commission , b.commission),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     // {
     //   title:<span className="dragHandler">Type</span>,

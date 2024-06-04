@@ -65,6 +65,7 @@ const Trade = ({ CurrentPage }) => {
   const [connected, setConnected] = useState(true);
   const [lot_size, setLotSize] = useState(0)
   const [d_lot, setD_lot] = useState(0)
+  const [commission, setCommission] = useState("")
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
@@ -96,7 +97,12 @@ const Trade = ({ CurrentPage }) => {
                     setPipVal(pipValue)
     setVolume(newValue)
   }
-  
+  const getListCommission = () => {
+    // const comm = symbolsList.find((x)=>x.)
+  }
+  useEffect(()=> {
+    console.log("CALEEd")
+  },[symbol])
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
@@ -175,7 +181,9 @@ const Trade = ({ CurrentPage }) => {
         trading_account_id,
         open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
         open_time: moment().format('MM/DD/YYYY hh:mm A'),
-        brand_id
+        brand_id,
+        commission:commission,
+
       }
       
       const TradeGroupSymbolData = {
@@ -191,6 +199,7 @@ const Trade = ({ CurrentPage }) => {
         trading_group_id: trading_group_id,
         open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
         open_time: new Date().toISOString(),
+        commission:commission,
         // brand_id
       }
       setIsLoading(true)
@@ -223,9 +232,8 @@ const Trade = ({ CurrentPage }) => {
   const handleSubmit = (typeReceive) => {
       const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
       const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
-
       const margin = calculateMargin(res, accountLeverage)
-      if(margin < Number(stop_out)) {
+      if(margin > Number(stop_out) ) {
         CustomNotification({ 
             type: "error", 
             title: "Validation", 
@@ -276,9 +284,8 @@ const Trade = ({ CurrentPage }) => {
       // debugger;
       const { data: { message, success, payload } } = res
       // setSymbolsList(payload).data
-
+      
       setSymbolsList(payload)
-
       setIsLoading(false)
 
     } catch (error) {
@@ -526,11 +533,11 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    
                     setLotSize(value?.lot_size * value?.vol_min)
                     setD_lot(value?.vol_min)
                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
                     setPipVal(pipValue)
+                    setCommission(value?.commission)
                     setVolumeRange({
                       ...volumerange,
                       min_vol: value?.vol_min,

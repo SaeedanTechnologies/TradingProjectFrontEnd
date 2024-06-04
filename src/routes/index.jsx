@@ -57,11 +57,10 @@ import MBTradingOrderEntry from '../Pages/TradingAccountGroup/MBTradingOrderEntr
 import MassDipositWidthdrawEntry from '../Pages/TradingAccountGroup/MassDipositWidthdrawEntry'
 import ActivityLogin from '../Pages/ActivityLogin/ActivityLogin';
 import ActivityLoginEntry from '../Pages/ActivityLogin/ActivityLoginEntry';
-import UserIP from '../Pages/Settings/UserIP'
-import BannedIP from '../Pages/Settings/BannedIP';
-import AdminIP from '../Pages/Settings/AdminIP';
 import Active_IP_List from '../Pages/Settings/Active_IP_List';
-import Blocked_IP_List from '../Pages/Settings/Blocked_IP_List';
+import Active_IP_List_Entry from '../Pages/TradingAccount/Active_IP_List_Entry';
+
+
 
 export const router = createBrowserRouter([
   {
@@ -140,9 +139,10 @@ export const router = createBrowserRouter([
       { path: "/settings", element: <Settings /> },
       { path: "/firewall", element: <Firewall />, children:[
             {path:"active-ip-list",  element:<Active_IP_List/>},
-            {path:"blocked-ip-list", element:<Blocked_IP_List/>},
+            
       ]
     },
+    {path:"/firewall/active-ip-list-entry", element:<Active_IP_List_Entry />},
       { path: "/margin-levels", element: <MarginCallsLevel /> },
       { path: "/change-password", element: <ChangePassword /> },
       { path: "/Chart", element: <TradingViewChart  /> },

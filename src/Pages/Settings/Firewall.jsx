@@ -10,7 +10,6 @@ import AdminIP from './AdminIP';
 import BrandIP from './BannedIP';
 import UserIP from './UserIP';
 import Active_IP_List from './Active_IP_List';
-import Blocked_IP_List from './Blocked_IP_List';
 
 const Firewall = () => {
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
@@ -25,12 +24,6 @@ const Firewall = () => {
       component: <Active_IP_List />,
       path: '/firewall/active-ip-list',
     },
-    {
-      key: '2',
-      label: 'Blocked IP List',
-      component: <Blocked_IP_List />,
-      path: '/firewall/blocked-ip-list',
-    },
   ];
 
   // Get the initial active tab from the current path
@@ -43,7 +36,6 @@ const Firewall = () => {
   const [activeTab, setActiveTab] = useState(getInitialActiveTab);
 
   useEffect(() => {
-    // Sync the active tab with the current path when the location changes
     setActiveTab(getInitialActiveTab());
   }, [location.pathname]);
 
