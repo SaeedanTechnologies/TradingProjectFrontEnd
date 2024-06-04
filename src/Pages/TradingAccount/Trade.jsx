@@ -235,7 +235,6 @@ const Trade = ({ CurrentPage }) => {
   const handleSubmit = (typeReceive) => {
       const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
       const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
-      debugger
       const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol))
       if(margin > Number(stop_out) ) {
         CustomNotification({ 
