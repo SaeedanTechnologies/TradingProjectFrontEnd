@@ -22,8 +22,9 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
-import {addZeroAfterOne, addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin } from '../../utils/helpers';
+import {addZeroAfterOne, addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage } from '../../utils/helpers';
 import moment from 'moment';
+
 
 import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 import CandleStickChart from '../../components/CandleStickChart';
@@ -66,6 +67,8 @@ const Trade = ({ CurrentPage }) => {
   const [lot_size, setLotSize] = useState(0)
   const [d_lot, setD_lot] = useState(0)
   const [commission, setCommission] = useState("")
+  const [trading_account,set_trading_account] = useState(null)
+  
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
@@ -232,7 +235,8 @@ const Trade = ({ CurrentPage }) => {
   const handleSubmit = (typeReceive) => {
       const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
       const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
-      const margin = calculateMargin(res, accountLeverage)
+      debugger
+      const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol))
       if(margin > Number(stop_out) ) {
         CustomNotification({ 
             type: "error", 
@@ -303,6 +307,7 @@ const Trade = ({ CurrentPage }) => {
 
     setIsLoading(false)
     if (success) {
+      set_trading_account(payload)
       setBrand_id(payload?.brand_id)
 
     }

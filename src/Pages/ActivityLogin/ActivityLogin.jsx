@@ -37,7 +37,7 @@ const ActivityLogin = () => {
   const [totalRecords, setTotalRecords] = useState(0)
   const [activitiesData,setActivitiesData] = useState([])
 
-  
+
   const columns = [
 
    
@@ -121,7 +121,7 @@ const ActivityLogin = () => {
   useEffect(() => {
     (async ()=> {
         // setIsLoading(true)
-        // const ip = await getCurrentIP()
+        const ip = await getCurrentIP()
         // setCurrent_IP(ip.ip)
         // setIsLoading(false)
 
@@ -129,7 +129,8 @@ const ActivityLogin = () => {
         //   page:CurrentPage,
         //   perPage
         // })
-
+      
+  
     })()
   }, [])
 
