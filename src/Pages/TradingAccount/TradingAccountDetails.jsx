@@ -126,7 +126,7 @@ const TradingAccountDetails = () => {
     {
       key: '2',
       label: 'Trade',
-      component: <Trade  CurrentPage={CurrentPage} />,
+      component: <Trade  CurrentPage={CurrentPage} trade_type="single" />,
       path: '/single-trading-accounts/details/symbol',
       display: CheckBrandPermission(userPermissions, userRole, 'live_orders_create') ? 'show' : 'hide'
     },

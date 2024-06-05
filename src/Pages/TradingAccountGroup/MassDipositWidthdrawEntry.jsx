@@ -21,9 +21,9 @@ import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroup
 const TransactionOrderEntry = () => {
     const isCompleteSelect = localStorage.getItem("isCompleteSelect")
     const token = useSelector(({ user }) => user?.user?.token)
-    const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
-    const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-    const userBrand = useSelector((state)=> state?.user?.user?.brand)
+    // const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
+    // const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
+    // const userBrand = useSelector((state)=> state?.user?.user?.brand)
     const tradeWithdrawCurrentData = useSelector(({tradeWithdrawGroups})=>tradeWithdrawGroups?.tradeWithdrawCurrentData)
     const dispatch = useDispatch()
 

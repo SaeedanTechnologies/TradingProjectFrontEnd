@@ -14,7 +14,7 @@ import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 
 const MBTradingOrder = () => {
   const token = useSelector(({ user }) => user?.user?.token)
-  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds && state?.tradeGroups?.selectedRowsIds[0])
+  const trading_group_id = useSelector((state) => state?.tradingAccountGroup?.selectedRowsIds ? state?.tradingAccountGroup?.selectedRowsIds[0] : 0)
   const {token: { colorBG, TableHeaderColor, colorPrimary },} = theme.useToken();
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
@@ -47,12 +47,12 @@ const MBTradingOrder = () => {
   }
 
   const onPageChange = () =>{
-    FetchTradeGroup()
+    // FetchTradeGroup()
   }
 
-  useEffect(() => {
-    FetchTradeGroup()
-  }, [])
+  // useEffect(() => {
+  //   FetchTradeGroup()
+  // }, [])
 
   const LoadingHandler = React.useCallback((isLoading)=>{
     setIsLoading(isLoading)
@@ -236,7 +236,7 @@ const MBTradingOrder = () => {
 
 
   useEffect(() => {
-      SetSearchQueryList({token, trading_group_id})
+      SetSearchQueryList({trading_group_id})
   }, [])
 
   return (

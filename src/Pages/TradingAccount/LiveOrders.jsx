@@ -25,8 +25,9 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
   const location = useLocation()
   const { pathname } = location
-
-
+  const equity_g = calculateEquity(balance, grandProfit, credit, bonus)
+  const free_margin = calculateFreeMargin(equity_g, margin)
+  const margin_level =  calculateMarginCallPer(equity_g, margin)
       const [CurrentPage, setCurrentPage] = useState(1)
     const [lastPage, setLastPage] = useState(1)
     const [isUpdated, setIsUpdated] = useState(true)
@@ -34,7 +35,9 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     const [perPage, setPerPage] = useState(10)
     const [SearchQueryList,SetSearchQueryList]= useState({})
     const [sortDirection, setSortDirection] = useState("")
-
+    const checkNaN = (val) => {
+      return isNaN(val) ? 0 : parseFloat(val).toFixed(2)
+    }
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
@@ -257,12 +260,9 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     SetSearchQueryList({trading_account_id,order_types:['market']})
   }, [pathname])
   useEffect(()=>{
-    const res = calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage)
-    
-    if(parseFloat(res) < parseFloat(brand_margin_call)){
-      UpdateTradingAccountStatus()
-    }
-  }, [balance,grandProfit,lotSize,accountLeverage])
+    UpdateTradingAccountStatus()
+   
+  }, [balance,grandProfit,lotSize,accountLeverage, equity_g, credit,bonus, margin, free_margin, margin_level, totalSwap ])
 
     const LoadingHandler = React.useCallback((isLoading)=>{
     setIsLoading(isLoading)
@@ -291,11 +291,18 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     return () => clearInterval(intervalId);
   }, []);
 
+  //#region Update Trading Account 
   const UpdateTradingAccountStatus = async()=>{
     const Params = {
-      status: "margin_call", 
-      margin_level_percentage:calculateMarginCallPer(balance,grandProfit,lotSize,accountLeverage),
-      equity:calculateEquity(balance, grandProfit, credit, bonus)
+      margin_level_percentage:margin_level,
+      equity:equity_g,
+      balance:balance,
+      credit:credit,
+      bonus:bonus,
+      commission:grandCommsion,
+      profit:grandProfit,
+      swap:totalSwap,
+      ...(margin_level < brand_margin_call && { status: "margin_call" })
     }
     const res = await Put_Trading_Account(id, Params, token)
     
@@ -320,19 +327,18 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
                   <Table.Summary.Cell index={0} colSpan={11}>
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
-                      Balance: {isNaN(balance) ? 0 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
-                      Equity: {isNaN(calculateEquity(balance, grandProfit, credit, bonus)) ? 0 : calculateEquity(balance, grandProfit, credit, bonus)} {CurrencyName} &nbsp;
-                      Credit: {isNaN(credit) ? 0 : parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
-                      Bonus: {isNaN(bonus) ? 0 : parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
-                      <span> Margin: {isNaN(margin) ? 0 : margin}</span>&nbsp;
-                      Free Margin: {isNaN(calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateFreeMargin(calculateEquity(balance, grandProfit, credit, bonus), margin)} &nbsp;
-                       <span>Margin Level: {isNaN(calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)) ? 0 : calculateMarginCallPer(calculateEquity(balance, grandProfit, credit, bonus), margin)} %</span>
+                      Balance: {checkNaN(balance)} {CurrencyName} &nbsp;
+                      Equity: {checkNaN(equity_g)} {CurrencyName} &nbsp;
+                      Credit: {checkNaN(credit)} {CurrencyName} &nbsp;
+                      Bonus: {checkNaN(bonus)} {CurrencyName} &nbsp;
+                      <span> Margin: {checkNaN(margin)}</span>&nbsp;
+                      Free Margin: {checkNaN(free_margin)} &nbsp;
+                       <span>Margin Level: {checkNaN(margin_level)} %</span>
                     </span>
                   </Table.Summary.Cell>
-                  <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
-                  <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell>
-                  <Table.Summary.Cell>{isNaN(grandCommsion) ? 0 : grandCommsion}</Table.Summary.Cell>
-
+                  <Table.Summary.Cell>{checkNaN(totalSwap)}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{checkNaN(grandProfit)}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{checkNaN(grandCommsion)}</Table.Summary.Cell>
                 </Table.Summary.Row>
               </Table.Summary>
             )}

@@ -6,14 +6,18 @@ export const deleteOrder = async (id, token) => {
     return res
 }
 
-export const GET_Group_Trade_Order = async (token, trading_group_id) => {
-    const res = await _API(`${apiUrl}/admin/group_trade_orders?trading_group_id=${trading_group_id}`, 'get', [], token)
-    return res
+export const GET_Group_Trade_Order = async (token, page = 1, perPage = 10,searchValues) => {
+const queryParams = new URLSearchParams(searchValues).toString();
+  const apiUrlWithParams = `${apiUrl}/admin/group_trade_orders?page=${page}&per_page=${perPage}&${queryParams}`;
+  const res = await _API(apiUrlWithParams, 'get', [], token);
+  return res;
 }
 
-export const GET_Group_Transaction_Order = async (token, trading_group_id) => {
-    const res = await _API(`${apiUrl}/admin/group_transaction_orders?trading_group_id=${trading_group_id}`, 'get', [], token)
-    return res
+export const GET_Group_Transaction_Order = async (token, page = 1, perPage = 10,searchValues) => {
+    const queryParams = new URLSearchParams(searchValues).toString();
+  const apiUrlWithParams = `${apiUrl}/admin/group_transaction_orders?page=${page}&per_page=${perPage}&${queryParams}`;
+  const res = await _API(apiUrlWithParams, 'get', [], token);
+  return res;
 }
 
 export const GET_Min_Chart_Data = async (token, page = 1, perPage = 10, searchValues) => {

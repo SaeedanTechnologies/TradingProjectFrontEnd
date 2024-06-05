@@ -39,7 +39,7 @@ const Index = ({ title, direction }) => {
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
-
+//
 
   const [SearchQueryList,SetSearchQueryList]= useState({})
 

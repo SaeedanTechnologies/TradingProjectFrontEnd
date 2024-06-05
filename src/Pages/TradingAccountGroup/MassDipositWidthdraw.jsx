@@ -15,7 +15,7 @@ import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 
 const MassDipositWidthdraw = () => {
   const token = useSelector(({ user }) => user?.user?.token)
-  const trading_group_id = useSelector((state) => state?.tradeWithdrawGroups?.selectedRowsIds && state?.tradeWithdrawGroups?.selectedRowsIds[0])
+  const trading_group_id = useSelector((state) => state?.tradingAccountGroup?.selectedRowsIds ? state?.tradingAccountGroup?.selectedRowsIds[0] : 0)
   const { id, name } = useSelector(({ group }) => group?.tradingGroupData)
 
   const {
@@ -34,28 +34,28 @@ const MassDipositWidthdraw = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
 
   const getTransectionOrder = async () => {
-    try {
-      setIsLoading(true)
-      // const res = await GET_Group_Transaction_Order(token, trading_group_id)
-      const res = await GET_Group_Transaction_Order(token, id)
-      const { data: { message, payload, success, } } = res
-      setIsLoading(false)
-      setTransactionOrder(payload.data)
-      setTotalRecords(payload.total)
-      setCurrentPage(payload.current_page)
-      setLastPage(payload.last_page)
-      setIsUpdated(false)
-    }
-    catch (error) {
-      console.error('Error fetching trade Mass Withdraw groups:', error);
-    }
+    // try {
+    //   setIsLoading(true)
+    //   // const res = await GET_Group_Transaction_Order(token, trading_group_id)
+    //   const res = await GET_Group_Transaction_Order(token, id)
+    //   const { data: { message, payload, success, } } = res
+    //   setIsLoading(false)
+    //   setTransactionOrder(payload.data)
+    //   setTotalRecords(payload.total)
+    //   setCurrentPage(payload.current_page)
+    //   setLastPage(payload.last_page)
+    //   setIsUpdated(false)
+    // }
+    // catch (error) {
+    //   console.error('Error fetching trade Mass Withdraw groups:', error);
+    // }
   }
 
   const onPageChange = () => {
-    getTransectionOrder()
+    // getTransectionOrder()
   }
 
-  useEffect(() => { getTransectionOrder() }, [])
+  // useEffect(() => { getTransectionOrder() }, [])
 
   const LoadingHandler = React.useCallback((isLoading) => {
     setIsLoading(isLoading)
@@ -162,7 +162,7 @@ const MassDipositWidthdraw = () => {
 
 
     useEffect(() => {
-      SetSearchQueryList({token, id})
+      SetSearchQueryList({trading_group_id})
   }, [])
 
   

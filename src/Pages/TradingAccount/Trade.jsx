@@ -24,22 +24,22 @@ import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import {addZeroAfterOne, addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage } from '../../utils/helpers';
 import moment from 'moment';
-
-
 import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 import CandleStickChart from '../../components/CandleStickChart';
+import CustomModal from '../../components/CustomModal';
 
-const Trade = ({ CurrentPage }) => {
+const Trade = ({ trade_type}) => {
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
   const navigate = useNavigate();
-  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0])
-  const trading_group_id = useSelector(({group}) => group?.tradingGroupData?.id)
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0] : 0)
+  const trading_group_id = useSelector((state) => state?.tradingAccountGroup?.selectedRowsIds ? state?.tradingAccountGroup?.selectedRowsIds[0] : 0)
   const stop_out = useSelector((state)=>state?.tradingAccountGroup?.tradingAccountGroupData?.brand?.stop_out)
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error_message, setErrorMessage] = useState('');
   const {value: accountLeverage} = LeverageList?.find(x=> x?.title === leverage) ||  { value: '0', title: '0:0' }
 
   // console.log('trading_group_id',trading_group_id)
@@ -68,7 +68,7 @@ const Trade = ({ CurrentPage }) => {
   const [d_lot, setD_lot] = useState(0)
   const [commission, setCommission] = useState("")
   const [trading_account,set_trading_account] = useState(null)
-  
+  const [rcvd_type, setrcvdType] = useState("")
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
@@ -154,7 +154,8 @@ const Trade = ({ CurrentPage }) => {
     setStop_limit_price('')
   }
 
-  const createOrder = async (typeReceive) => {
+  //region Create Order
+  const createOrder = async (typeReceive, skip=false) => {
     try {
       await TradeValidationSchema.validate({
         symbol,
@@ -198,10 +199,11 @@ const Trade = ({ CurrentPage }) => {
         open_price: String((connected && typeReceive ==='buy') ? `${pricing.openPrice}` : (connected && typeReceive ==='sell') ? `${pricing.askPrice}` : open_price),
         open_time: new Date().toISOString(),
         commission:commission,
+        skip:skip
         // brand_id
       }
       setIsLoading(true)
-      const res = await (!CurrentPage ? Post_Group_Trade_Order(TradeGroupSymbolData, token) : Post_Trade_Order(SymbolData, token))
+      const res = await ( trade_type === "group" ? Post_Group_Trade_Order(TradeGroupSymbolData, token) : Post_Trade_Order(SymbolData, token))
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
@@ -213,7 +215,10 @@ const Trade = ({ CurrentPage }) => {
       else {
         setIsLoading(false)
         CustomNotification({ type: "error", title: "Live Order", description: message, key: 1 })
-
+        if (trade_type === "group") {
+          setIsModalOpen(true)
+          setErrorMessage(payload?.balance)
+        }
       }
 
     } catch (err) {
@@ -227,30 +232,38 @@ const Trade = ({ CurrentPage }) => {
     }
   }
 
-  const handleSubmit = (typeReceive) => {
-      const tradePrice = (connected && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
-      const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
-      const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol))
-      if(margin > Number(stop_out) ) {
-        CustomNotification({ 
-            type: "error", 
-            title: "Validation", 
-            description: 'Margin must be greater than your stop out', 
-            key: 1 
-          })
-      }
-      else{
-          balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
-          createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
-          typeReceive === 'buy' ? 
-          (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
-          createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
-          createOrder(typeReceive)
-          :
-          createOrder(typeReceive)
-          :
-          CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
+  const handleSubmit = (typeReceive, skip) => {
+    setrcvdType(typeReceive)
+    const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
+    if(trade_type === "single") {
+        const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
+        const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol))
+        if(margin < Number(stop_out) ) {
+          CustomNotification({ 
+              type: "error", 
+              title: "Validation", 
+              description: 'Margin must be greater than your stop out', 
+              key: 1 
+            })
         }
+        else{
+            balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
+            createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Sell)", description: 'Stop Loss should be greater and Take Profit should be less than Price', key: 1 }) :
+            typeReceive === 'buy' ? 
+            (stopLoss < (connected ? pricing.askPrice : open_price ) && takeProfit > (connected ? pricing.askPrice : open_price )) ?
+            createOrder(typeReceive) : CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater and Stop Loss should be less than Price', key: 1 }) :
+            createOrder(typeReceive)
+            :
+            createOrder(typeReceive)
+            :
+            CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
+          }
+      }
+      else 
+      {
+        createOrder(typeReceive, skip)
+      }
+      
       // if(margin > balance || balance === 0 ){
       // CustomNotification({ 
       //   type: "error", 
@@ -270,8 +283,7 @@ const Trade = ({ CurrentPage }) => {
       //   createOrder(typeReceive)
       //   :
       //   CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
-      // }
-   
+      //
   }
 
   const fetchSymbolSettings = async () => {
@@ -496,11 +508,40 @@ useEffect(() => {
     //   CustomNotification({ type: "error", title: "Opps", description: `${symbol?.feed_name} not configured yet`, key: 1 })
     // }
   }
-
+  const closeWithdrawOrder = () => {
+    setIsModalOpen(false)
+  }
 
   return (
     <Spin spinning={isLoading} size="large">
+        <CustomModal
+          isModalOpen={isModalOpen}
+          title={'Mass Sell/Buy'}
+          // handleOk={handleOk}
+          handleCancel={closeWithdrawOrder}
+          footer={[]}
+          width={400}
 
+        >
+          <div
+      dangerouslySetInnerHTML={{ __html: error_message }}
+    /><br />
+          Do You still want to Proceed?
+          <div className="mb-4 flex justify-center gap-4 mt-4">
+                <CustomButton
+                  Text={"Cancel"}
+                  style={{ height: "48px", width:'206px', backgroundColor: "#D52B1E", borderColor: "#D52B1E", borderRadius: "8px" }}
+                  onClickHandler={() => setIsModalOpen(false)}
+                />
+                <CustomButton Text={"Proceed"}
+                  style={{ height: "48px", width:'206px', borderRadius: "8px" }}
+                  onClickHandler={() => {
+                    setIsModalOpen(false)
+                    handleSubmit(rcvd_type, true)
+                  }}
+                />
+              </div>
+        </CustomModal>
       <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
         <div className='flex gap-3 justify-between'>
           <div className='flex gap-3 w-full'>
@@ -532,7 +573,6 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    console.log(value, "THIS IS VALUEs")
                     setLotSize(value?.lot_size * value?.vol_min)
                     setD_lot(value?.vol_min)
                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)

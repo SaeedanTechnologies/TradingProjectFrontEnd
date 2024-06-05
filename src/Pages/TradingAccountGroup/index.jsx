@@ -21,6 +21,7 @@ import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import {setTradeGroupsData, setTradeGroupsSelectedIDs} from '../../store/tradeGroupsSlice'
 import { setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
 import { All_TradingAccountList } from '../../utils/_TradingAPICalls';
+import { setTradingAccountGroupData, setTradingAccountGroupSelectedIDs } from '../../store/tradingAccountGroupSlice';
 
 
 
@@ -153,7 +154,7 @@ const Index = () => {
       dataIndex: 'MBS',
       key: '5',
       render: (text, record) => <span onClick={()=>{
-        dispatch(setTradeGroupsSelectedIDs(record.id))
+        dispatch(setTradingAccountGroupSelectedIDs([record.id]))
         navigate('/trading-group/mb-to')
       }}  style={{ color: colorPrimary, fontWeight: '600' }}>View Details</span>,
       // sorter:(a, b) =>  ColumnSorter(a.MBS,b.MBS),
@@ -174,8 +175,7 @@ const Index = () => {
       render: (_, record) => (
         <span
         onClick={()=>{
-          dispatch(setTradeWithdrawGroupsSelectedIDs(record.id))
-          handleMassDepositWithdrawClick(record.id, record.name)
+          dispatch(setTradingAccountGroupSelectedIDs([record.id]))
           navigate('/trading-group/mass-deposit')
         }}
           // to={`/trading-group/mass-deposit/${record.id}`}
@@ -319,12 +319,12 @@ const Index = () => {
   //   }, [checkedList]);
 
   const onPageChange = () =>{
-    if(userRole === 'brand' ){
-      fetchData(userBrand?.public_key)
-    }
-    else{
-      fetchData(null)
-    }
+    // if(userRole === 'brand' ){
+    //   fetchData(userBrand?.public_key)
+    // }
+    // else{
+    //   fetchData(null)
+    // }
   }
 
   const DeleteHandler = async (id) => {
@@ -398,8 +398,8 @@ const Index = () => {
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token={token}
-            setSelecetdIDs={setTradeGroupsSelectedIDs}
-            setTableData = {setTradeGroupsData}
+            setSelecetdIDs={setTradingAccountGroupSelectedIDs}
+            setTableData = {setTradingAccountGroupData}
             isUpated={isUpdated}
             editPermissionName="active_account_group_update"
             deletePermissionName="active_account_group_delete"

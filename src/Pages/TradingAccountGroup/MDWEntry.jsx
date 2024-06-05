@@ -19,8 +19,8 @@ import CustomModal from '../../components/CustomModal';
 
 const MDWEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token);
-  const trading_account_id = useSelector((state) => state?.trade?.trading_account_id);
-  const { id, name } = useSelector(({ group }) => group?.tradingGroupData)
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0] : 0)
+  const trading_group_id = useSelector((state) => state?.tradingAccountGroup?.selectedRowsIds ? state?.tradingAccountGroup?.selectedRowsIds[0] : 0)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
@@ -91,7 +91,7 @@ const MDWEntry = () => {
         comment,
         currency,
         name: '',
-        trading_group_id: id,
+        trading_group_id: trading_group_id,
         skip: skip,
         group: name,
         type,
@@ -100,7 +100,7 @@ const MDWEntry = () => {
       }
       setIsLoading(true)
 
-      const res = await Save_Group_Order(TransactionOrderGroupData, id, token)
+      const res = await Save_Group_Order(TransactionOrderGroupData, trading_group_id, token)
       const { data: { message, payload, success } } = res
       if (success) {
         setIsLoading(false)
