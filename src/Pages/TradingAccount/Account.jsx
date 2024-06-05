@@ -7,7 +7,7 @@ import CustomButton from '../../components/CustomButton';
 import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 import { useDispatch, useSelector } from 'react-redux';
 import { LeverageList } from '../../utils/constants';
-import { Get_Single_Trading_Account,  Update_Trading_Account } from '../../utils/_TradingAPICalls';
+import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
 import CustomNotification from '../../components/CustomNotification';
 import ChangePasswordModal from './ChangePasswordModal';
 import CustomModal from '../../components/CustomModal';
@@ -16,6 +16,7 @@ import { PlusOutlined   } from '@ant-design/icons';
 import SymbolSettingModal from './SymbolSettingModal';
 import {TextField,Chip,Paper,Typography  } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { GenericEdit } from '../../utils/_APICalls';
 
 const Account = () => {
   const token = useSelector(({user})=> user?.user?.token )
@@ -38,6 +39,7 @@ const Account = () => {
   const [enable_investor_trading,setEnable_investor_trading] = useState(0);
   const [change_password_at_next_login,setChange_password_at_next_login] = useState(0)
   const [isLoading,setIsLoading ] = useState(false)
+
 
 
 const ChkBoxesControl = [
@@ -77,6 +79,7 @@ const ChkBoxesControl = [
     setIsLoading(true)
     const group_response = await ALL_Trading_Account_Group_List(token)
     const {data: { payload, success}} = group_response
+
     setIsLoading(false)
     if(success){
       setTradingAccountGroupList(payload)
@@ -138,11 +141,20 @@ const ChkBoxesControl = [
         enable_password_change :  enable_password_change ? 1 : 0,
         enable_investor_trading :  enable_investor_trading ? 1 : 0 ,
         change_password_at_next_login : change_password_at_next_login ? 1 :0,
-        symbols_leverage:tradingAccountDataGroupLeverage
+        symbols_leverage: tradingAccountDataGroupLeverage
       }
       
-      const res = await  Update_Trading_Account(trading_account_id, tradingAccountData, token)
-       const {data: {message, payload, success}} = res
+
+
+        const Params = {
+          table_name: 'trading_accounts',
+          table_ids: [selectedTradingAccountGroup?.id],
+          ...tradingAccountData
+        }
+        const res = await GenericEdit(Params, token)
+        const { data: { message, success, payload } } = res;
+
+
        if(success)
     {
       const updatedAccountData = {
@@ -187,6 +199,8 @@ const ChkBoxesControl = [
 
   useEffect(()=>{
     fetchTradingAccountGroups()
+    
+    
   
   },[])
 
@@ -269,7 +283,7 @@ const ChkBoxesControl = [
                 <div>
                
 
-                 <Paper
+                  <Paper
                       sx={{
                         display: 'flex',
                         justifyContent: 'start',
@@ -279,7 +293,7 @@ const ChkBoxesControl = [
                         m: 0,
                       }}
                     >
-                  {!!tradingAccountDataGroupLeverage.length && tradingAccountDataGroupLeverage?.slice(0, 2).map((option,index) => {
+                  {!!tradingAccountDataGroupLeverage.length && tradingAccountDataGroupLeverage?.slice(0, 2)?.map((option,index) => {
                    
 
                   return (
@@ -298,7 +312,7 @@ const ChkBoxesControl = [
                       </ListItem>
                     )}
                  
-                 </Paper> 
+                 </Paper>  
                 </div>  
                
 
