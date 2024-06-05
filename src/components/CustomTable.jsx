@@ -22,6 +22,7 @@ const CustomTable = ({searchQueryManipulation, columns, data, current_page, tota
   };
   useEffect(()=>{
     if(setTableData){
+      // debugger
       if(data?.length > 0){
         dispatch(setTableData(data))
       }

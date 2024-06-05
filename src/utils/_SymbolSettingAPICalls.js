@@ -28,8 +28,10 @@ export const All_Setting_Data = async (token, page = 1, perPage = 10, searchValu
     return res;
 };
 
-export const AllSymbelSettingList = async (token) => {
-    const apiUrlWithParams = `${apiUrl}/admin/getAllSymbelSettingList`;
+export const AllSymbelSettingList = async (token,params={}) => {
+    
+    const queryParams = new URLSearchParams(params).toString();
+    const apiUrlWithParams = `${apiUrl}/admin/getAllSymbelSettingList?${queryParams}`;
     const res = await _API(apiUrlWithParams, 'get', [], token);
     return res;
 };
