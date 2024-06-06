@@ -147,7 +147,7 @@ export const router = createBrowserRouter([
       { path: "/min-charts", element: <MinChart /> },
       { path: "/settings", element: <Settings /> },
       { path: "/firewall", element: <Firewall />, children:[
-            {path:"active-ip-list",  element:<Active_IP_List/>},
+      {path:"active-ip-list",  element:<Active_IP_List/>},
             
       ]
     },

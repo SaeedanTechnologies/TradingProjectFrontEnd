@@ -14,19 +14,23 @@ import CustomModal from '../../components/CustomModal';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import { PlusOutlined   } from '@ant-design/icons';
 import SymbolSettingModal from './SymbolSettingModal';
-import {TextField,Chip,Paper,Typography  } from '@mui/material';
+import {Chip,Paper,Switch   } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { GenericEdit } from '../../utils/_APICalls';
+import { alpha } from '@mui/material/styles';
+
+
 
 const Account = () => {
   const token = useSelector(({user})=> user?.user?.token )
   const dispatch = useDispatch()
-  const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0] )
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
+
   const tradingAccountDataGroupLeverage = useSelector(({ tradingAccountGroup }) => tradingAccountGroup?.tradingAccountGroupData?.symbols_leverage)
-   let remainingCount  = tradingAccountDataGroupLeverage?.length-2
+  let remainingCount  = tradingAccountDataGroupLeverage?.length-2
   const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
   const tradingAccountGroupData = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
-  const { token: { colorBG,   }} = theme.useToken();
+  const { token: { colorBG,colorPrimary,colorSuccess   }} = theme.useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [symbolModalOpen,setSymbolModalOpen] =  useState(false)
   const [tradingAccountGroupList,setTradingAccountGroupList] = useState([])
@@ -39,6 +43,8 @@ const Account = () => {
   const [enable_investor_trading,setEnable_investor_trading] = useState(0);
   const [change_password_at_next_login,setChange_password_at_next_login] = useState(0)
   const [isLoading,setIsLoading ] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(true)
+
 
 
 
@@ -57,7 +63,6 @@ const ChkBoxesControl = [
     value:enable_password_change,
     key:'enable_password_change'
   },
- 
   {
     id:7,
     control:'CustomCheckbox',
@@ -207,6 +212,28 @@ const ChkBoxesControl = [
   return (
       <Spin spinning={isLoading} size="large">
         <div className='p-8 border border-gray-300 rounded-lg' style={{ backgroundColor: colorBG }}>
+            <div className="flex flex-row justify-end w-full">
+              <div></div>
+               <Switch
+                checked={!isDisabled}
+                onChange={()=>setIsDisabled(prev=> !prev)}
+                inputProps={{ 'aria-label': 'controlled' }}
+                sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: colorPrimary,
+                      '&:hover': {
+                        backgroundColor: alpha(colorPrimary, colorSuccess),
+                      },
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: colorPrimary,
+                    },
+
+                }}
+              />
+              
+            </div>
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-4">
               <div>
                  <CustomAutocomplete
@@ -215,7 +242,7 @@ const ChkBoxesControl = [
                       variant="standard"
                       options={tradingAccountGroupList}
                       value={selectedTradingAccountGroup}
-
+                      disabled={isDisabled}
                       getOptionLabel={(option) => option.name ? option.name : ""}
                       onChange={(event, value) => {
                         if(value)
@@ -224,7 +251,7 @@ const ChkBoxesControl = [
                             }
                           else
                             setSelectedTradingAccountGroup(null)                                                        
-                            }}
+                      }}
                     />   
               </div>
 
@@ -235,6 +262,7 @@ const ChkBoxesControl = [
                       variant="standard"
                       options={LeverageList}
                       value={selectedLeverage}
+                      disabled={isDisabled}
                       getOptionLabel={(option) => option.title ? option.title : ""}
                       onChange={(event, value) => {
                         if(value)
@@ -248,7 +276,7 @@ const ChkBoxesControl = [
               </div>
 
                 <div className='bg-white shadow-md py-6 px-4'>
-                  {ChkBoxesControl.map(item=><CustomCheckbox key={item.id} label={item.label}
+                  {ChkBoxesControl.map(item=><CustomCheckbox key={item.id} label={item.label} disabled={isDisabled}
                   checked={item.value} onChange={(event)=> handleInputChange(item.key, event.target.checked)}
                    /> )}
                 </div>
@@ -259,13 +287,14 @@ const ChkBoxesControl = [
                   label="Password"
                   variant="standard"
                   value={password}
+                  disabled={isDisabled}
                   showClickable={true}
                   showModal={showModal}
                   readOnly={true}
                   onChange={(event)=>setPassword(event.target.value)}
                 />  
 
-                <div >
+            {!isDisabled && <div>
                   <CustomButton
                       Text={'Symbols For Leverages'}
                       style={{
@@ -277,7 +306,7 @@ const ChkBoxesControl = [
                       icon={ <PlusOutlined />}
                       onClickHandler={()=>setSymbolModalOpen(true)}
                     />
-                </div>  
+                </div> }  
 
 
                 <div>
@@ -293,7 +322,7 @@ const ChkBoxesControl = [
                         m: 0,
                       }}
                     >
-                  {!!tradingAccountDataGroupLeverage.length && tradingAccountDataGroupLeverage?.slice(0, 2)?.map((option,index) => {
+                  {!!tradingAccountDataGroupLeverage?.length && tradingAccountDataGroupLeverage?.slice(0, 2)?.map((option,index) => {
                    
 
                   return (
@@ -328,6 +357,7 @@ const ChkBoxesControl = [
                       marginTop: '50px',
                       borderRadius: '8px',
                       }}
+                      disabled={isDisabled}
                       onClickHandler={handleSubmit}
                     />
 
@@ -335,6 +365,7 @@ const ChkBoxesControl = [
                       isModalOpen={isModalOpen}
                       handleOk={handleOk}
                       handleCancel={handleCancel}
+                      disabled={isDisabled}
                       title={''}
                       width={800}
                       footer={null}

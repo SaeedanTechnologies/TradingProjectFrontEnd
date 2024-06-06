@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import CustomTable from '../../components/CustomTable';
-import { Link, useNavigate } from 'react-router-dom';
+import {  useNavigate } from 'react-router-dom';
 import { Space, Spin, theme } from 'antd';
 import { headerStyle } from '../MainLayout/style';
-import {DeleteOutlined, EyeOutlined} from '@ant-design/icons';
 import { Search_Active_IP, addToBlack_List, getActiveIPs } from '../../utils/_IPAddress';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { ColumnSorter } from '../../utils/helpers';
-import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined,PlusCircleOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
-import { Button, Box } from '@mui/material';
+import {  Box } from '@mui/material';
 import CustomNotification from '../../components/CustomNotification';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { setIPAddressSelectedIds, setIpAddressData } from '../../store/IpAdressSlice';
+import CustomButton from '../../components/CustomButton';
 const Active_IP_List = () => {
     const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const token = useSelector(({ user }) => user?.user?.token)
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [isUpdated, setIsUpdated] = useState(true)
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [totalRecords, setTotalRecords] = useState(0)
   const [perPage, setPerPage] = useState(10)
+  const [sortDirection, setSortDirection] = useState("")
+
+  const dispatch= useDispatch()
   const navigate = useNavigate()
   const getActiveIpData = async() => {
       try{
@@ -61,40 +64,47 @@ const Active_IP_List = () => {
         setIsLoading(isLoading)
       },[])
      
+
+      const navigateToEntry = ()=>{
+        navigate("/firewall/active-ip-list-entry")
+        dispatch(setIPAddressSelectedIds([0]))
+      }
     
   return (
     <Spin spinning={isLoading} size="large">
       <Box sx={{display:'flex', justifyContent:'flex-end'}}>
-        <Button
-        onClick={()=>navigate("/firewall/active-ip-list-entry")} 
-        variant="contained" 
-        endIcon={<AddCircleIcon />} sx={{
-          background:"#1cac70",
-          '&:hover': {
-          background:"#1cac70",
-          }
-        }}>
-          Add Ip
-        </Button>
+   
+
+        <CustomButton
+            Text='Add IP'
+            style={{ height: '48px', }}
+            icon={<PlusCircleOutlined />}
+            onClickHandler={navigateToEntry}
+          />
+
       </Box>
       <div className='mt-4'>
           <CustomTable 
-          direction="/firewall/active-ip-list-entry"
-          formName = "Active Ips" 
-          columns={columns} 
-          data={data} 
-          headerStyle={headerStyle}
-          total={totalRecords}
-          setTotalRecords={setTotalRecords}
-          LoadingHandler={LoadingHandler}
-          SearchQuery = {Search_Active_IP}
-        //   onPageChange = {onPageChange}
-          current_page={CurrentPage}
-          setCurrentPage={setCurrentPage}
-          token = {token}
-          table_name="ip_list"
-          setSelecetdIDs={setIPAddressSelectedIds}
-          setTableData={setIpAddressData}
+            direction="/firewall/active-ip-list-entry"
+            formName = "Active Ips" 
+            columns={columns} 
+            data={data} 
+            headerStyle={headerStyle}
+            total={totalRecords}
+            setTotalRecords={setTotalRecords}
+            current_page={CurrentPage}
+            token = {token}
+            isUpated={isUpdated}
+            setSortDirection = {setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery = {Search_Active_IP}
+            LoadingHandler={LoadingHandler}
+            //onPageChange = {onPageChange}
+            setCurrentPage={setCurrentPage}
+            table_name="ip_list"
+            setSelecetdIDs={setIPAddressSelectedIds}
+            setTableData={setIpAddressData}
           />
     </div>
     </Spin>

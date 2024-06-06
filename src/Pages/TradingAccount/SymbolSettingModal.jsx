@@ -40,7 +40,8 @@ const SymbolSettingModal = ({setIsModalOpen}) => {
           };
 
 
-    const handleSymbolGroupLeverage = (index,leverage)=>{
+    const 
+    handleSymbolGroupLeverage = (index,leverage)=>{
       setSymbolGroupsList(prevList=>{
       
         const updatedList = [...prevList];
@@ -75,7 +76,7 @@ const SymbolSettingModal = ({setIsModalOpen}) => {
 
     const fetchSingleTradeOrder = async () => {
         setIsLoading(true)
-
+        // debugger
         const { data:{ payload:SymbolGroupsList } } = await ALL_Symbol_Group_List(token);
         setSymbolGroupsList(SymbolGroupsList)
          
@@ -170,7 +171,7 @@ useEffect(()=>{
                             label="Symbol Group Leverage"
                               name='Symbol Group'
                               options={LeverageList}
-                              value={ LeverageList.find(leverage=> leverage.title ===symbolGroup?.selectedLeverage?.title)}
+                              value={tradingAccountSymbolLeverages?.find((x)=>x.id=== symbolGroup.id)?.selectedLeverage||null}
                               renderInput={(params) => <TextField {...params} label="Select Symbol Group"  sx={{
                                 '& legend': { display: 'none' },
                                 '& .MuiInputLabel-shrink': { opacity: 0, transition: "all 0.2s ease-in" }
@@ -202,7 +203,7 @@ useEffect(()=>{
                                         label="Select Leverage"
                                         name='Leverage'
                                         options={LeverageList}
-                                        value={LeverageList.find(leverage=> leverage.title=== symbolGroup[index]?.settings[settingKey]?.selectedLeverage.title)}
+                                        value={tradingAccountSymbolLeverages?.find((x)=>x.id=== symbolGroup.id)?.settings?.find((x)=>x.id===setting?.id)?.selectedLeverage||null}
                                         renderInput={(params) => <TextField {...params} label="Leverage"  sx={{
                                           '& legend': { display: 'none' },
                                           '& .MuiInputLabel-shrink': { opacity: 0, transition: "all 0.2s ease-in" }
