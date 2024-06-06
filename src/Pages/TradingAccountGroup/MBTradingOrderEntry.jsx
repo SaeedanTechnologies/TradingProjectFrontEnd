@@ -241,6 +241,7 @@ const MBTradingOrdersEntery = () => {
         setIsLoading(true)
         const Params = {
           table_name: 'trade_orders',
+          column_name:"group_unique_id",
           table_ids: isCompleteSelect === "true" ? [] : TradeGroupRowsIds,
           ...SymbolData
         }

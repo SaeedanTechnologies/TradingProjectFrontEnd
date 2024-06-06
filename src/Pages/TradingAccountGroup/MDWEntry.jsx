@@ -93,7 +93,6 @@ const MDWEntry = () => {
         name: '',
         trading_group_id: trading_group_id,
         skip: skip,
-        group: name,
         type,
         status: "requested"
 

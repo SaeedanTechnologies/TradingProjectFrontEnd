@@ -231,7 +231,6 @@ const Trade = ({ trade_type}) => {
       setErrors(validationErrors);
     }
   }
-
   const handleSubmit = (typeReceive, skip) => {
     setrcvdType(typeReceive)
     const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
@@ -242,9 +241,17 @@ const Trade = ({ trade_type}) => {
           CustomNotification({ 
               type: "error", 
               title: "Validation", 
-              description: 'Margin must be greater than your stop out', 
+              description: 'Margin must be greater than your brand stop out', 
               key: 1 
             })
+        }
+        else if (margin < trading_account.equity){
+          CustomNotification({ 
+            type: "error", 
+            title: "Validation", 
+            description: 'Margin must be greater than or equal to your acount equity', 
+            key: 1 
+          })
         }
         else{
             balance > 0 ? (stopLoss !== "" || takeProfit !== "") ?  typeReceive === 'sell' ? (stopLoss > (connected ? pricing.askPrice : open_price ) && takeProfit < (connected ? pricing.askPrice : open_price )) ?
@@ -363,14 +370,13 @@ useEffect(() => {
         //   openPrice: data?.bidPrice,
         //   askPrice: data?.askPrice
         // })
-       
         setPricing({
-          ...pricing,
           openPrice: parseFloat(data?.bidPrice).toFixed(pip),
           askPrice: parseFloat(data?.askPrice).toFixed(pip)
         })
         
         setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
+        return data;
       // }
       // else {
       //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
@@ -381,7 +387,6 @@ useEffect(() => {
       console.error(error);
     }
   };
-
   const fetchFcsapiData = async (symbol, key, pip) => {
     try {
       const endPoint1= `https://fcsapi.com/api-v3/${key}/latest?id=${symbol?.toLowerCase()}&access_key=lg8vMu3Zi5mq8YOMQiXYgV`
@@ -391,7 +396,7 @@ useEffect(() => {
         const data = response?.data;
 
         setPricing({
-          ...pricing,
+          // ...pricing,
           openPrice: parseFloat(data?.response[0]?.o).toFixed(pip),
           askPrice: parseFloat(data?.response[0]?.c).toFixed(pip)
         })
@@ -488,7 +493,7 @@ useEffect(() => {
           // console.log('Ask Price:', data.askPrice);
           if(symbol?.feed_name === 'binance'){
             setPricing({
-            ...pricing,
+            // ...pricing,
             openPrice: parseFloat(data?.bidPrice).toFixed(pip),
             askPrice: parseFloat(data?.askPrice).toFixed(pip)
           })
@@ -589,9 +594,9 @@ useEffect(() => {
                     setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                     setSymbol(value)
                       if(value?.feed_name === 'binance'){ 
-                      fetchBinancehData(value?.feed_fetch_name, value?.pip).then((result) => {                
-                        const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
-                        const margin_val = calculateMargin(res, accountLeverage);
+                      fetchBinancehData(value?.feed_fetch_name, value?.pip, value).then((result) => {                
+                        const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(result?.askPrice)).toFixed(2));
+                        const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
                         setMargin(margin_val)
                       }).catch((err) => {
                         console.log(err)

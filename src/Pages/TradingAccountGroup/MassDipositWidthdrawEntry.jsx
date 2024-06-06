@@ -390,7 +390,6 @@ else
 
  const handleSubmit = async () => {
 
-    debugger
     try {
       
       if (TradeWithdrawGroupIds?.length < 2) {

@@ -1,4 +1,4 @@
-import { theme, Spin, Table } from 'antd';
+import { theme, Spin, Table, Space } from 'antd';
 import React, {useState, useEffect } from 'react'
 
 import CustomTable from '../../components/CustomTable';
@@ -10,9 +10,13 @@ import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
 import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, ColumnSorter, getCurrentDateTime } from '../../utils/helpers';
-import { UpdateMultiTradeOrder } from '../../utils/_APICalls';
+import { GenericDelete, UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
+import { CloseOutlined, DeleteOutlined } from '@mui/icons-material';
+import { EyeOutlined  } from '@ant-design/icons';
+import Swal from 'sweetalert2';
+
 const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
   
   
@@ -189,18 +193,75 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
    
-    // {
-    //   title: 'Actions',
-    //   dataIndex: 'actions',
-    //   key: 'actions',
-    //   render: (_, record) => (
-    //     <Space size="middle" className='cursor-pointer'>
-    //       <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} onClick={() => CancelLiveOrder(record.id)} />
-    //     </Space >
-    //   ),
-    // },
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="middle" className='cursor-pointer'>
+          <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} 
+          />
+          <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} />
+          <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} 
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteHandler(record.id);
+          }}
+          />
+        </Space >
+        
+      ),
+    },
   ];
+  const deleteHandler = async (id) => {
+    const params = {
+      table_name:"trade_orders",
+      table_ids : [id]
+    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1CAC70",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async( result )=> {
+      if (result.isConfirmed) {
+        setIsLoading(true)
+        const res = await GenericDelete(params, token)
+        const { data: { success, message, payload } } = res
+        setIsLoading(false)
+        if(success) {
+          CustomNotification({
+            type: "success",
+            title: "Deleted",
+            description: message,
+            key: "a4",
+          })
+        }
+        else {
+          const errorMsg = getValidationMsg(message, payload)
+          if(errorMsg) 
+            CustomNotification({
+              type: "error",
+              title: "Oppssss..",
+              description: errorMsg,
+              key: "b4",
+            })
+          else
+          CustomNotification({
+            type: "error",
+            title: "Oppssss..",
+            description: message,
+            key: "b4",
+          })
+        }
+      }
+    })
+    
 
+  }
   
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
@@ -313,7 +374,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
          <CustomTable
             direction="/single-trading-accounts/details/live-order-entry"
             formName = "Trading Live Orders" 
-            columns={newColumns}
+            columns={columns}
             // data={tradeOrder} 
             headerStyle={headerStyle}
             total={totalRecords}
@@ -339,6 +400,8 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
                   <Table.Summary.Cell>{checkNaN(totalSwap)}</Table.Summary.Cell>
                   <Table.Summary.Cell>{checkNaN(grandProfit)}</Table.Summary.Cell>
                   <Table.Summary.Cell>{checkNaN(grandCommsion)}</Table.Summary.Cell>
+                  <Table.Summary.Cell></Table.Summary.Cell>
+                
                 </Table.Summary.Row>
               </Table.Summary>
             )}

@@ -238,7 +238,7 @@ const TradingAccountLiveOrderEntry = () => {
         brand_id
       }
     try {
-       
+       // yahan wo krna ha 
       if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save 
         setIsLoading(true)
         const res = await SymbolSettingPost(SymbolGroupData, token);

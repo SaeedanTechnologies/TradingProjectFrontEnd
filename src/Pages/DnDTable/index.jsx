@@ -473,6 +473,7 @@ handleClearSearch = () => {
           confirmButtonText: "Yes, delete it!"
         }).then(async (result) => {
           if (result.isConfirmed) {
+            //
             const res = await GenericDelete(Params, this.props.token)
             const { data: { success, message, payload } } = res
             this.setState({isLoading: false})

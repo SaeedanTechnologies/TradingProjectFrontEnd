@@ -58,7 +58,7 @@ const BinanceBidAsk = (symbol, connected) => {
         const parsedMessage = JSON.parse(message.data);
 
         const { b, a } = parsedMessage.data;
-        console.table([a,b])
+        // console.table([a,b])
         callback({ bidPrice:b, askPrice: a });
       } catch (error) {
         console.error('Error parsing message:', error);

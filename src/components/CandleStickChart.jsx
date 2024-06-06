@@ -1,134 +1,66 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
+import axios from 'axios';
 
-
-const CandleStickChart = () => {
+const CandleStickChart = ({ symbol, connected, pricing }) => {
+  const [askPrice, setAskPrice] = useState([]);
+  const [bidPrice, setBidPrice] = useState([]);
   useEffect(() => {
-    const options = {
-      title: {
-        text: ''
-      },
-      xAxis: {
-        overscroll: 500000,
-        range: 4 * 200000,
-        gridLineWidth: 1
-      },
-      rangeSelector: {
-        buttons: [{
-          type: 'minute',
-          count: 15,
-          text: '15m'
-        }, {
-          type: 'hour',
-          count: 1,
-          text: '1h'
-        }, {
-          type: 'all',
-          count: 1,
-          text: 'All'
-        }],
-        selected: 1,
-        inputEnabled: false
-      },
-      navigator: {
-        xAxis: {
-          overscroll: 500000
-        },
-        series: {
-          color: '#000000'
-        }
-      },
-      series: [{
-        type: 'candlestick',
-        color: '#FF7F7F',
-        upColor: '#90EE90',
-        lastPrice: {
-          enabled: true,
-          label: {
-            enabled: true,
-            backgroundColor: '#FF7F7F'
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://api.binance.com/api/v3/klines', {
+          params: {
+            symbol: symbol ? symbol : "",
+            interval: '1d',
+            limit: 500,
           }
-        }
-      }]
-    };
-
-    const getNewPoint = (i, data) => {
-      if(data){
-         const lastPoint = data[data?.length - 1];
-  
-      if (i === 0 || i % 10 === 0) {
-        return [
-          lastPoint[0] + 60000,
-          lastPoint[4],
-          lastPoint[4],
-          lastPoint[4],
-          lastPoint[4]
-        ];
-      }
-  
-      const updatedLastPoint = data[data?.length - 1];
-      const newClose = Highcharts.correctFloat(
-        lastPoint[4] + Highcharts.correctFloat(Math.random() - 0.5, 2),
-        4
-      );
-  
-      return [
-        updatedLastPoint[0],
-        data[data?.length - 2][4],
-        newClose >= updatedLastPoint[2] ? newClose : updatedLastPoint[2],
-        newClose <= updatedLastPoint[3] ? newClose : updatedLastPoint[3],
-        newClose
-      ];
+        });
+        const data = response.data;
+        const askList = data.map(item => parseFloat(item[1])); // Extract ask price
+        const bidList = data.map(item => parseFloat(item[4])); // Extract bid price
+        setAskPrice(askList);
+        setBidPrice(bidList);
+      } catch (err) {
+        console.log(err);
       }
     };
-  
-    options.chart = {
-      events: {
-        load() {
-          const chart = this;
-          const series = chart.series[0];
-  
-          let i = 0;
-  
-          setInterval(() => {
-            const data = series?.options?.data;
-            if(data){
-              const newPoint = getNewPoint(i, data);
-              const lastPoint = data[data?.length - 1];
     
-              if (lastPoint[0] !== newPoint[0]) {
-                series.addPoint(newPoint);
-              } else {
-                series.options.data[data?.length - 1] = newPoint;
-                series.setData(data);
-              }
-            }
-            i++;
-          }, 100);
-        }
+    fetchData();
+  }, [symbol]);
+  useEffect(() => {
+    setAskPrice(prevAskPrice => [...prevAskPrice, pricing.askPrice]);
+    setBidPrice(prevBidPrice => [...prevBidPrice, pricing.bidPrice]);
+  }, [pricing.askPrice, pricing.bidPrice]);
+  const options = {
+    title: {
+      text: 'Ask Price vs Bid Price'
+    },
+    series: [
+      {
+        name: 'Ask Price',
+        data: askPrice,
+        type: 'line',
+        color: '#FF7F7F'
+      },
+      {
+        name: 'Bid Price',
+        data: bidPrice,
+        type: 'line',
+        color: '#90EE90'
       }
-    };
-  
-    options.series[0].data = [
-      [1317888000000, 372.5101, 375, 372.2, 372.52],
-      [13178880000, 372.5101, 375, 372.2, 372.52],
-      // Add more data here...
-    ];
-  
-    Highcharts.stockChart('stock-chart-container', options);
+    ],
+    xAxis: {
+      type: 'datetime',
+    },
+    yAxis: {
+      title: {
+        text: 'Price'
+      }
+    }
+  };
 
-    // Clean up
-    return () => {
-      Highcharts.charts.forEach(chart => {
-        if (chart) {
-          chart.destroy();
-        }
-      });
-    };
-  }, []); // Empty dependency array to run the effect only once on mount
-
-  return <div id="stock-chart-container" style={{height:"300px",width:"100%",minWidth:"200px"}}/>;
+  return <HighchartsReact highcharts={Highcharts} options={options} />;
 };
 
 export default CandleStickChart;
