@@ -593,7 +593,7 @@ useEffect(() => {
                     setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                     setSymbol(value)
                       if(value?.feed_name === 'binance'){ 
-                      fetchBinancehData(value?.feed_fetch_name, value?.pip, value).then((result) => {                
+                      fetchBinancehData(value?.feed_fetch_name, value?.pip,).then((result) => {                
                         const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(result?.askPrice)).toFixed(2));
                         const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
                         setMargin(margin_val)

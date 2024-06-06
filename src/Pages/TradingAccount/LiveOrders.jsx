@@ -74,7 +74,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '2',
-      render:(text)=><span style={{color:colorPrimary}}>{moment(text).format('MM/DD/YYYY HH:mm:ss')}</span>,
+      render:(text)=><span style={{color:colorPrimary}}>{text}</span>,
       sorter: (a, b) =>  ColumnSorter(a.type , b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
