@@ -133,7 +133,6 @@ const Trade = ({ trade_type}) => {
 
   const clearFields = () => {
     setSymbol(null);
-    setOrder_type(null);
     setType(null);
     setVolume('');
     setOpen_price('');
