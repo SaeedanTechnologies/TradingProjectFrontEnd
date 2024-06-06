@@ -232,10 +232,10 @@ export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
 }
 
 export const conditionalLeverage =(trading_account,symbol_setting)=>{
-    // debugger;
     let leverage;
 
-    const trading_account_symbol_leverage  = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.id)) || { value:'', title: '' }
+    const trading_account_symbol_leverage  = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.settings?.find((x)=>x.id === symbol_setting?.id)?.leverage) || { value:'', title: '' }
+    const trading_account_symbol_group_leverage = LeverageList?.find(x=>x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.leverage)
     const trading_account_leverage  = LeverageList?.find(x => x?.title === trading_account?.leverage) || { value:'', title: '' }
     const trading_account_group_leverage  = LeverageList?.find(x => x?.title === trading_account?.group?.mass_leverage) || { value:'', title: '' }
     const symbol_setting_leverage  = LeverageList?.find(x => x?.title === symbol_setting?.leverage) || { value:'', title: '' }
@@ -244,6 +244,8 @@ export const conditionalLeverage =(trading_account,symbol_setting)=>{
    
     if(trading_account_symbol_leverage.value){
       leverage = trading_account_symbol_leverage.value;
+    }else if(trading_account_symbol_group_leverage.value){
+      leverage = trading_account_symbol_group_leverage.value;
     }else if (trading_account_leverage.value){
       leverage = trading_account_leverage.value;
     }

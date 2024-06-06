@@ -41,7 +41,7 @@ const TradingAccountDetails = () => {
   const { tradeId } = useParams();
   const [activeTab, setActiveTab] = useState('1');
   const [isLoading, setIsLoading] = useState(false);
-  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds[0]);
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
   const { leverage } = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData);
   
 

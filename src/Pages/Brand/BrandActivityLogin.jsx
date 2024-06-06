@@ -14,7 +14,8 @@ import { setBrandLoginActivitySelectedRowsIds,setBrandActivityLoginData } from '
 const BrandActivityLogin = () => {
 
 
-  const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0])
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
+
   const user_id = useSelector(({brands})=> brands?.user?.user_id)
   const token = useSelector(({ user }) => user?.user?.token)
   const {
@@ -158,10 +159,13 @@ const BrandActivityLogin = () => {
   
 
   return (
-    <Spin spinning={isLoading} size="large">
-      <div className='rounded-lg' style={{ backgroundColor: colorBG }}>
 
-        <h1 className='text-2xl font-bold'>Activity Login</h1>
+       
+
+    <Spin spinning={isLoading} size="large">
+      <div className='p-8 w-full rounded-lg' style={{ backgroundColor: colorBG }}>
+
+        <h1 className='text-2xl font-bold'>Brand Activity Login</h1>
 
         <div className="mb-4 grid grid-cols-1 gap-4 mt-4">
 

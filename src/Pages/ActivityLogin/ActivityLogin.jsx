@@ -187,7 +187,7 @@ const ActivityLogin = () => {
 
   return (
     <Spin spinning={isLoading} size="large">
-      <div className='rounded-lg' style={{ backgroundColor: colorBG }}>
+      <div className='p-8 w-full rounded-lg' style={{ backgroundColor: colorBG }}>
 
         <h1 className='text-2xl font-bold'>Activity Login</h1>
 

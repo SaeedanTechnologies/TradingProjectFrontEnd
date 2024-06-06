@@ -20,7 +20,7 @@ import Swal from 'sweetalert2';
 const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
   
   
-  const trading_account_id = useSelector((state)=> state?.trade?.selectedRowsIds[0])
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
