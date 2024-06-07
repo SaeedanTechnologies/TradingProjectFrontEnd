@@ -221,18 +221,18 @@ export const calculateMarginCallPer  = (equity, margin)=>{
  return parseFloat((equity/margin)*100).toFixed(2)
 }
 export const calculateFreeMargin = (equity, margin) =>{
-  return parseFloat((parseFloat(equity) - parseFloat(margin))).toFixed(2)
+  return parseFloat((parseFloat(equity) - parseFloat(margin)))
 }
 export const calculateMargin = (lotSize,accountLeverage)=>{
- return parseFloat(parseFloat(lotSize)/parseFloat(accountLeverage)).toFixed(2)
+ return parseFloat(parseFloat(lotSize)/parseFloat(accountLeverage))
 }
 export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
   const equity = (parseFloat(balance) + parseFloat(grandProfit) + parseFloat(credit) + parseFloat(bonus)).toFixed(2);
   return equity
 }
 
-export const conditionalLeverage =(trading_account,symbol_setting)=>{
-    let leverage;
+export const conditionalLeverage =(trading_account,symbol_setting)=>{ 
+     let leverage;
 
     const trading_account_symbol_leverage  = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.settings?.find((x)=>x.id === symbol_setting?.id)?.leverage) || { value:'', title: '' }
     const trading_account_symbol_group_leverage = LeverageList?.find(x=>x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.leverage)
