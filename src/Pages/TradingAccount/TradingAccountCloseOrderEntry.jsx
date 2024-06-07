@@ -108,7 +108,6 @@ const TradingAccountCloseOrderEntry = () => {
 
 
   const setStatesForEditMode = async (payload, success)=>{
-    debugger
       if (success) {
         setIsLoading(true)
         const selectedSymbolList =  symbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)

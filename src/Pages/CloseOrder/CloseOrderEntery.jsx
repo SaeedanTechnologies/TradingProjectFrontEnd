@@ -18,6 +18,7 @@ import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
 import { deleteCloseOrderById,setCloseOrdersSelectedIds,updateCloseOrder } from '../../store/TradeOrders';
+import moment from 'moment';
 
 
 
@@ -116,8 +117,11 @@ const CloseOrderEntery = () => {
         const selectedSymbolList =  symbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
         setSymbol(selectedSymbolList);
         setOpen_price(payload.open_price);
-        setOpenTime(payload.open_time)
-        setCloseTime(payload.close_time)
+        const formattedOpenTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm')
+        const formattedCloseTime = moment(payload?.close_time).format('YYYY-MM-DDTHH:mm')
+
+        setOpenTime(formattedOpenTime)
+        setCloseTime(formattedCloseTime)
         setClosePrice(payload.close_price)
         setReason(payload.reason)
         const selectedOrderType =  TradeOrderTypes.find((x=>x.value === payload?.order_type))
@@ -196,8 +200,10 @@ const CloseOrderEntery = () => {
     setOrder_type(selectedOrderType);
     const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
-    setOpenTime(payload?.open_time)
-    setCloseTime(payload?.close_time)
+    const formattedOpenTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm')
+    const formattedCloseTime = moment(payload?.close_time).format('YYYY-MM-DDTHH:mm')
+    setOpenTime(formattedOpenTime)
+    setCloseTime(formattedCloseTime)
     setOpen_price(payload?.open_price)
     setClosePrice(payload?.close_price)
     setVolume(payload?.volume);

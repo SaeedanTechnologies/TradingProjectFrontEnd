@@ -86,7 +86,7 @@ const MassDipositWidthdraw = () => {
 
   const columns = [
     {
-      title: 'Time',
+      title: <span className="dragHandler">Time</span>,
       dataIndex: 'created_at',
       key: 'created_at',
       render: (text) => <a>{moment(text).format("YYYY-MM-DD HH:mm")}</a>,
@@ -100,7 +100,7 @@ const MassDipositWidthdraw = () => {
     },
 
     {
-      title: 'Type',
+      title: <span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '3',
       sorter:(a, b) => ColumnSorter(a?.type , b?.type),
@@ -112,7 +112,7 @@ const MassDipositWidthdraw = () => {
       },
     },
     {
-      title: 'Amount',
+      title: <span className="dragHandler">Amount</span>,
       dataIndex: 'amount',
       key: '4',
       sorter:(a, b) => a?.amount - b?.amount,
@@ -124,7 +124,7 @@ const MassDipositWidthdraw = () => {
       },
     },
     {
-      title: 'Currency',
+      title: <span className="dragHandler">Currency</span> ,
       dataIndex: 'currency',
       key: '5',
       sorter:(a, b) => ColumnSorter(a?.currency , b?.currency),
@@ -136,7 +136,7 @@ const MassDipositWidthdraw = () => {
       },
     },
     {
-      title: 'Method',
+      title: <span className="dragHandler">Method</span>,
       dataIndex: 'method',
       key: '6',
       sorter:(a, b) => ColumnSorter(a?.method , b?.method),

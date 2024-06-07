@@ -243,7 +243,7 @@ const TradingGroupEntry = () => {
 
   const handleSumbit = async () => {
     try {
-      if (TradingAccountGroupsIds.length < 2) {
+      if (TradingAccountGroupsIds?.length < 2) {
       await validationSchema.validate({
         SymbolGroup: SelectedGroup,
         name,
@@ -262,7 +262,7 @@ const TradingGroupEntry = () => {
 
        }
 
-       if (TradingAccountGroupsIds.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0 || TradingAccountGroupsIds[0] === undefined) { // save
+       if (TradingAccountGroupsIds?.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0 || TradingAccountGroupsIds[0] === undefined) { // save
         setIsLoading(true)
         const res = await SaveTradingAccountGroups(TradingGroupData, token)
         const { data: { message, payload, success } } = res
@@ -401,12 +401,12 @@ const TradingGroupEntry = () => {
           />
           {
             isDisabled ? <h1 className='text-2xl font-semibold'>Preview Trading Account Group</h1> :
-              <h1 className='text-2xl font-semibold'>{TradingAccountGroupsIds.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0 ? 'Add Trading Account Group' : 'Edit Trading Account Group'}</h1>
+              <h1 className='text-2xl font-semibold'>{TradingAccountGroupsIds?.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0 ? 'Add Trading Account Group' : 'Edit Trading Account Group'}</h1>
           }
         </div>
         {/* toolbar */}
-        {(isDisabled && TradingAccountGroupsIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-        {(TradingAccountGroupsIds.length === 1 && parseInt(TradingAccountGroupsIds[0]) !== 0 && isDisabled)  &&
+        {(isDisabled && TradingAccountGroupsIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
+        {(TradingAccountGroupsIds?.length === 1 && parseInt(TradingAccountGroupsIds[0]) !== 0 && isDisabled)  &&
           <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
          <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
           <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
@@ -546,7 +546,7 @@ const TradingGroupEntry = () => {
       </div>
       {!isDisabled && <div className='flex items-center justify-end gap-4'>
       <CustomButton
-          Text={ TradingAccountGroupsIds.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0 ? 'Submit' : 'Update'}
+          Text={ TradingAccountGroupsIds?.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0 ? 'Submit' : 'Update'}
           style={submitStyle}
           onClickHandler={handleSumbit}
           disabled={isDisabled}
