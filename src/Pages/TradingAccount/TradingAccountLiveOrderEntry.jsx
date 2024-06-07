@@ -20,6 +20,7 @@ import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
 import { deleteLiveOrderById,setLiveOrdersSelectedIds,updateLiveOrder }  from '../../store/TradingAccountListSlice'
+import moment from 'moment';
 
 const TradingAccountLiveOrderEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -189,7 +190,9 @@ const TradingAccountLiveOrderEntry = () => {
     const selectedType = LiveOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
     setVolume(payload?.volume);
-    setOpenTime(payload?.open_time)
+    const openTime = payload?.open_time.split(" ")[0]
+    const formattedTime = moment(openTime).format('YYYY-MM-DD');
+    setOpenTime(formattedTime)
     setTakeProfit(payload?.takeProfit);
     setStopLoss(payload?.stopLoss);
     setComment(payload?.comment);
@@ -239,6 +242,13 @@ const TradingAccountLiveOrderEntry = () => {
       }
     try {
        // yahan wo krna ha 
+       if(type.value === "sell" && takeProfit > stopLoss) {
+        CustomNotification({ type: "error", title: "Live Order", description: 'Stop Loss should be greater than Take Profit', key: 1 })
+      }
+      else if(type.value === "buy" && takeProfit < stopLoss) {
+        CustomNotification({ type: "error", title: "Live Order (Buy)", description: 'Take Profit should be greater than Stop Loss', key: 1 }) 
+      }
+      else{
       if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save 
         setIsLoading(true)
         const res = await SymbolSettingPost(SymbolGroupData, token);
@@ -286,6 +296,7 @@ const TradingAccountLiveOrderEntry = () => {
         }
 
       }
+    }
     } catch (err) {
       const validationErrors = {};
       err.inner?.forEach(error => {

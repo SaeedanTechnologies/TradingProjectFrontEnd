@@ -18,6 +18,7 @@ import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
 import { deleteLiveOrderById, setLiveOrdersSelectedIds,updateLiveOrder } from '../../store/TradeOrders';
+import moment from 'moment';
 
 
 
@@ -111,6 +112,7 @@ const LiveOrdersEntery = () => {
 
 
   const setStatesForEditMode = async (payload, success)=>{
+
       if (success) {
         setIsLoading(true)
         const selectedSymbolList =  symbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
@@ -122,7 +124,9 @@ const LiveOrdersEntery = () => {
         setType(selectedType);
         setVolume(payload?.volume);
         setSwap(payload?.swap)
-        setOpenTime(payload?.open_time)
+        const openTime = payload?.open_time.split(" ")[0]
+        const formattedTime = moment(openTime).format('YYYY-MM-DD');
+        setOpenTime(formattedTime)
         setTakeProfit(payload?.takeProfit);
         setStopLoss(payload?.stopLoss);
         setComment(payload?.comment);
@@ -536,7 +540,7 @@ const handleLossChange = (newValue) => {
                         onChange={(e) =>setOpen_price (e.target.value)}
                       />
                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
-                    </div>
+            </div>
                   </>
                 }
             
