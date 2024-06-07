@@ -119,7 +119,8 @@ const TradingAccountLiveOrderEntry = () => {
         const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
         setType(selectedType);
         setVolume(payload?.volume);
-        setOpenTime(payload?.open_time)
+        const formattedTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm');
+        setOpenTime(formattedTime)
         setTakeProfit(payload?.takeProfit);
         setStopLoss(payload?.stopLoss);
         setComment(payload?.comment);
@@ -190,8 +191,7 @@ const TradingAccountLiveOrderEntry = () => {
     const selectedType = LiveOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
     setVolume(payload?.volume);
-    const openTime = payload?.open_time.split(" ")[0]
-    const formattedTime = moment(openTime).format('YYYY-MM-DD');
+    const formattedTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm')
     setOpenTime(formattedTime)
     setTakeProfit(payload?.takeProfit);
     setStopLoss(payload?.stopLoss);

@@ -112,7 +112,7 @@ const LiveOrdersEntery = () => {
 
 
   const setStatesForEditMode = async (payload, success)=>{
-
+  
       if (success) {
         setIsLoading(true)
         const selectedSymbolList =  symbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
@@ -124,8 +124,7 @@ const LiveOrdersEntery = () => {
         setType(selectedType);
         setVolume(payload?.volume);
         setSwap(payload?.swap)
-        const openTime = payload?.open_time.split(" ")[0]
-        const formattedTime = moment(openTime).format('YYYY-MM-DD');
+        const formattedTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm');
         setOpenTime(formattedTime)
         setTakeProfit(payload?.takeProfit);
         setStopLoss(payload?.stopLoss);
@@ -145,6 +144,7 @@ const LiveOrdersEntery = () => {
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
+
         setStatesForEditMode(payload, true)
       }, 3000)
     }else{
@@ -198,7 +198,11 @@ const LiveOrdersEntery = () => {
     setType(selectedType);
     setVolume(payload?.volume);
     setSwap(payload?.swap)
-    setOpenTime(payload?.open_time)
+  
+
+     const formattedTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm');
+     setOpenTime(formattedTime)
+
     setTakeProfit(payload?.takeProfit);
     setStopLoss(payload?.stopLoss);
     setComment(payload?.comment);
@@ -218,9 +222,9 @@ const LiveOrdersEntery = () => {
 
   useEffect(()=>{
    
-     if (LiveOrdersRowsIds.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save
+     if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save
       setIsDisabled(false)
-    } else if (LiveOrdersRowsIds.length === 1 && parseInt(LiveOrdersRowsIds[0]) !== 0) { // single edit
+    } else if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) !== 0) { // single edit
       const cIndex = ArrangedLiveOrdersData.findIndex(item => parseInt(item.id) === parseInt(LiveOrdersRowsIds[0]))
       setCurrentIndex(cIndex)
       setIsDisabled(true)
@@ -475,7 +479,7 @@ const handleLossChange = (newValue) => {
                 {errors.volume && <span style={{ color: 'red' }}>{errors.volume}</span>}
             </div>
                 {
-                  LiveOrdersRowsIds.length > 1 ?
+                  LiveOrdersRowsIds?.length > 1 ?
                   null :
                   <>
             <div>

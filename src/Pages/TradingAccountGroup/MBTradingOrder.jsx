@@ -64,7 +64,7 @@ const MBTradingOrder = () => {
   };
   const columns = [
     {
-      title: 'Symbol',
+      title:<span className="dragHandler">Symbol</span> ,
       dataIndex: 'symbol',
       key: '1',
       sorter:(a, b) => ColumnSorter(a?.symbol , b?.symbol),
@@ -76,7 +76,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'Open Time',
+      title:<span className="dragHandler">Open Time</span> ,
       dataIndex: 'open_time',
       key: '2',
       sorter:(a, b) => ColumnSorter(a?.open_time , b?.open_time),
@@ -88,7 +88,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'Close Time',
+      title: <span className="dragHandler">Close Time</span>,
       dataIndex: 'close_time',
       key: '3',
       sorter:(a, b) => ColumnSorter(a?.close_time , b?.close_time),
@@ -101,7 +101,7 @@ const MBTradingOrder = () => {
       
     },
     {
-      title: 'Type',
+      title:<span className="dragHandler">Type</span> ,
       dataIndex: 'type',
       key: '4',
       sorter:(a, b) => ColumnSorter(a?.type , b?.type),
@@ -113,7 +113,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'Volume',
+      title: <span className="dragHandler">Volume</span> ,
       dataIndex: 'volume',
       key: '5',
       sorter:(a, b) => a?.volume - b?.volume,
@@ -125,7 +125,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'Open Price',
+      title: <span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '6',
       sorter:(a, b) => a?.open_price - b?.open_price,
@@ -137,7 +137,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'SL',
+      title:  <span className="dragHandler">SL</span>,
       dataIndex: 'stopLoss',
       key: '7',
       sorter:(a, b) => a?.stopLoss - b?.stopLoss,
@@ -149,7 +149,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'TP',
+      title: <span className="dragHandler">TP</span>,
       dataIndex: 'takeProfit',
       key: '8',
       sorter:(a, b) => a?.takeProfit - b?.takeProfit,
@@ -161,7 +161,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'Close Price',
+      title: <span className="dragHandler">Close Price</span>,
       dataIndex: 'close_price',
       key: '9',
       sorter:(a, b) => a?.close_price - b?.close_price,
@@ -173,7 +173,7 @@ const MBTradingOrder = () => {
       },
     },
     {
-      title: 'Profit',
+      title:  <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '10',
       sorter:(a, b) => a?.profit - b?.profit,
@@ -267,7 +267,7 @@ const MBTradingOrder = () => {
             direction="/trading-group/mb-to-entry"
             columns={newColumns}
             column_name="group_unique_id" 
-            data={tradeOrder} 
+            // data={tradeOrder} 
             headerStyle={headerStyle} 
             formName = "Mass Buy"
             total={totalRecords}

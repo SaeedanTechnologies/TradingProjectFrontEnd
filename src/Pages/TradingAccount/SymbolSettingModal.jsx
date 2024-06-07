@@ -130,6 +130,13 @@ const SymbolSettingModal = ({setIsModalOpen}) => {
        
   };
 
+    const handleAccordionChange = (panel) => (event, isExpanded) => {
+    if ( !event.target.closest('.MuiAutocomplete-root') &&
+      !event.target.closest('.MuiAutocomplete-popupIndicator')) {
+      handleChange(panel)(event, isExpanded);
+    }
+  }
+
 
 useEffect(()=>{
     fetchSingleTradeOrder()
@@ -156,7 +163,7 @@ useEffect(()=>{
                 /> */}
 
                 {symbolGroupsList?.map((symbolGroup,index)=>(
-                  <Accordion key={symbolGroup.id} expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
+                  <Accordion key={symbolGroup.id} expanded={expanded === `panel${index}`} onChange={handleAccordionChange(`panel${index}`)}>
                     <AccordionSummary
                       expandIcon={<DownOutlined />}
                       aria-controls={`panel${index}bh-content`}
@@ -181,7 +188,14 @@ useEffect(()=>{
                                 onChange={(e, value) => {
 
                                   handleSymbolGroupLeverage(index,value)
+                                   e.stopPropagation();
                             }}
+                                  onClick={(e) => {
+                                     e.stopPropagation();
+                                  }}
+                                  onFocus={(e) => {
+                                    e.stopPropagation();
+                                  }}
                         />
                     </Stack>
                     </AccordionSummary>

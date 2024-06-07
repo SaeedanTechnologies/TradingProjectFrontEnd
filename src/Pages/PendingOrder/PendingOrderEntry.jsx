@@ -19,6 +19,7 @@ import CustomStopLossTextField from '../../components/CustomStopLossTextField';
 import { Get_Single_Trade_Order } from '../../utils/_TradingAPICalls';
 import { deletePendingOrderById,setPendingOrdersSelectedIds,updatePendingOrder } from '../../store/TradeOrders';
 import axios from 'axios';
+import moment from 'moment';
 
 
 
@@ -119,7 +120,8 @@ const PendingOrderEntry = () => {
         setComment(payload?.comment);
         setBrand_id(payload?.brand_id)
         setIsLoading(false)
-        setTime(payload.open_time)
+        const formattedOpenTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm')
+        setTime(formattedOpenTime)
       }
    
   }
@@ -189,7 +191,8 @@ const PendingOrderEntry = () => {
     setComment(payload?.comment);
     setBrand_id(payload?.brand_id)
     setTrading_account_id(payload?.trading_account_id)
-    setTime(payload.open_time)
+    const formattedOpenTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm')
+    setTime(formattedOpenTime)
     }
   }
 
