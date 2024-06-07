@@ -16,6 +16,7 @@ import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingA
 import { CloseOutlined, DeleteOutlined } from '@mui/icons-material';
 import { EyeOutlined  } from '@ant-design/icons';
 import Swal from 'sweetalert2';
+import { updateTradingAccountGroupBalance } from '../../store/tradingAccountGroupSlice';
 
 const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
   
@@ -41,7 +42,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     const [sortDirection, setSortDirection] = useState("")
     const [refresh_data, setRefreshData] = useState(false)
     const checkNaN = (val) => {
-      return isNaN(val) ? 0 : parseFloat(val).toFixed(2)
+      return (isNaN(val) || !isFinite(val)) ? 0 : parseFloat(val).toFixed(2)
     }
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
@@ -75,7 +76,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '2',
-      render:(text)=><span style={{color:colorPrimary}}>{text}</span>,
+      render: (text)=> <span className={`${text === "sell" ? 'text-red-600' : 'text-green-600'}`}>{text}</span>,
       sorter: (a, b) =>  ColumnSorter(a.type , b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -112,7 +113,6 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
-      render: (text)=> <span style={{color:"red"}}>{text}</span>
     },
     {
       title: <span className="dragHandler">Open Price</span>,
@@ -270,11 +270,11 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   }
 
   const closeHandler = async (record) => {
-    setIsLoading(true)
     const modifiedData =[{
       ...record,
       order_type: 'close'
   }]
+  
   const Params  = {orders:modifiedData}
   Swal.fire({
     title: "Are you sure?",
@@ -286,12 +286,15 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     confirmButtonText: "Yes, Close it!"
   }).then(async(result)=> {
     if (result.isConfirmed) {
+    setIsLoading(true)
       const res = await UpdateMultiTradeOrder(Params,token)
       const { data: { success, message, payload } } = res
       setIsLoading(false)
       if (success) {
         // const res = await Search_Live_Order(token,CurrentPage,totalRecords, SearchQueryList  )
         // dispatch(setLiveOrdersData(res?.data?.payload?.data))
+        const updated_balance = Number(balance) + Number(record.profit)
+        dispatch(updateTradingAccountGroupBalance(updated_balance))
         setRefreshData(true)
         CustomNotification({
           type: "success",
@@ -374,7 +377,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   useEffect(()=>{
     UpdateTradingAccountStatus()
    
-  }, [balance,grandProfit,lotSize,accountLeverage, equity_g, credit,bonus, margin, free_margin, margin_level, totalSwap ])
+  }, [grandProfit,lotSize,accountLeverage, equity_g, margin, free_margin, margin_level, totalSwap ])
 
     const LoadingHandler = React.useCallback((isLoading)=>{
     setIsLoading(isLoading)
@@ -408,9 +411,6 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     const Params = {
       margin_level_percentage:margin_level,
       equity:equity_g,
-      balance:balance,
-      credit:credit,
-      bonus:bonus,
       commission:grandCommsion,
       profit:grandProfit,
       swap:totalSwap,

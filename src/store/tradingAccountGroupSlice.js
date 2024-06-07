@@ -8,6 +8,7 @@ export const tradingAccountGroup = createSlice({
         selectedRowsIds:null
     },
     reducers: {
+      //Hello Jee
         setTradingAccountGroupData: (state, action) => {
             state.tradingAccountGroupData = action.payload
         },
@@ -40,11 +41,16 @@ export const tradingAccountGroup = createSlice({
         deleteTradingAccountGroupById: (state, action) => {
           const idToDelete = action.payload;
           state.AllTradingAccountGroupData = state.AllTradingAccountGroupData.filter(item => item.id !== idToDelete);
-        }
+        },
+        updateTradingAccountGroupBalance: (state, action) => {
+          state.tradingAccountGroupData.balance = action.payload;
+      }
     },
 })
 
 export const { setTradingAccountGroupData, setTradingAccountGroupSelectedIDs, 
-  deleteTradingAccountGroupById, updateTradingAccountGroupData,setAllTradingAccountGroupData} = tradingAccountGroup.actions
+  deleteTradingAccountGroupById, updateTradingAccountGroupData,setAllTradingAccountGroupData,
+  updateTradingAccountGroupBalance
+} = tradingAccountGroup.actions
 
 export default tradingAccountGroup.reducer

@@ -319,13 +319,16 @@ const Index = () => {
   //   }, [checkedList]);
 
   const onPageChange = () =>{
-    // if(userRole === 'brand' ){
-    //   fetchData(userBrand?.public_key)
-    // }
-    // else{
-    //   fetchData(null)
-    // }
+    if(userRole === 'brand' ){
+      fetchData(userBrand?.public_key)
+    }
+    else{
+      fetchData(null)
+    }
   }
+  useEffect(()=> {
+    onPageChange()
+  }, [perPage])
 
   const DeleteHandler = async (id) => {
     setIsLoading(true)

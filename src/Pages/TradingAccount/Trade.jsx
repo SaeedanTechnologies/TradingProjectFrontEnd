@@ -84,11 +84,10 @@ const Trade = ({ trade_type}) => {
   const calculatedMargin = requiredMargin(volume,accountLeverage)
 
   const Margin= calculateMargin(lotSize,accountLeverage)
-
+  //region profitChange
   const handleProfitChange = (newValue) => {
     setTakeProfit(newValue);
   };
-
   const handleLossChange = (newValue) => {
     setStopLoss(newValue);
   };
@@ -100,7 +99,7 @@ const Trade = ({ trade_type}) => {
                     setPipVal(pipValue)
     setVolume(newValue)
   }
-
+  //#region inputChange
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
@@ -130,7 +129,7 @@ const Trade = ({ trade_type}) => {
         break;
     }
   };
-
+  // #region clearFields
   const clearFields = () => {
     setSymbol(null);
     // setOrder_type(null);
@@ -153,7 +152,7 @@ const Trade = ({ trade_type}) => {
     setLotStep('')
     setStop_limit_price('')
   }
-
+  
   //region Create Order
   const createOrder = async (typeReceive, skip=false) => {
     try {
@@ -231,6 +230,8 @@ const Trade = ({ trade_type}) => {
       setErrors(validationErrors);
     }
   }
+  
+  //region handleSubmit
   const handleSubmit = (typeReceive, skip) => {
     setrcvdType(typeReceive)
     const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
@@ -292,7 +293,7 @@ const Trade = ({ trade_type}) => {
       //   CustomNotification({ type: "error", title: "Live Order", description: `Insufficient Balance. You balance should be greater than $${calculatedMargin.toFixed(2)} but you have $${balance}`, key: 1 })
       //
   }
-
+  //region fetch symbol settings
   const fetchSymbolSettings = async () => {
     try {
       setIsLoading(true)
