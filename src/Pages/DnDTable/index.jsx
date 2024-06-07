@@ -108,7 +108,11 @@ class DnDTable extends Component {
       ignoreSelector: "react-resizable-handle",
     };
   }
+  callSearchHandler() {
+    this.SearchHandler(this.props.current)
+  }
   async SearchHandler(currentPage){
+    // debugger;
     //  this.setState({isLoading: true})
     const queryParams = {
       ...this.state.searchValues,
@@ -135,6 +139,7 @@ class DnDTable extends Component {
       }
     }
   }
+ 
   componentDidMount() {
     this.useEffect()
   }
@@ -306,7 +311,8 @@ handleClearSearch = () => {
         }
     }
   }
-
+  // closeOrderHandler = () => {
+  // }
   handleInputChange = (dataIndex, value) => {
     this.setState(prevState => ({
         searchValues: {

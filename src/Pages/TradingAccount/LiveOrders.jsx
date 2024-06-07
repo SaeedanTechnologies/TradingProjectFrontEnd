@@ -5,7 +5,7 @@ import CustomTable from '../../components/CustomTable';
 import { MinusCircleOutlined,CaretUpOutlined, CaretDownOutlined  } from '@ant-design/icons';
 import { useLocation, } from 'react-router-dom';
 import { Put_Trade_Order, Put_Trading_Account,Search_Live_Order } from '../../utils/_TradingAPICalls';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
@@ -19,7 +19,7 @@ import Swal from 'sweetalert2';
 
 const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
   
-  
+  const dispatch = useDispatch()
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
@@ -32,13 +32,14 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   const equity_g = calculateEquity(balance, grandProfit, credit, bonus)
   const free_margin = calculateFreeMargin(equity_g, margin)
   const margin_level =  calculateMarginCallPer(equity_g, margin)
-      const [CurrentPage, setCurrentPage] = useState(1)
+  const [CurrentPage, setCurrentPage] = useState(1)
     const [lastPage, setLastPage] = useState(1)
     const [isUpdated, setIsUpdated] = useState(true)
     const [totalRecords, setTotalRecords] = useState(0)
     const [perPage, setPerPage] = useState(10)
     const [SearchQueryList,SetSearchQueryList]= useState({})
     const [sortDirection, setSortDirection] = useState("")
+    const [refresh_data, setRefreshData] = useState(false)
     const checkNaN = (val) => {
       return isNaN(val) ? 0 : parseFloat(val).toFixed(2)
     }
@@ -200,6 +201,10 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
           <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} 
+           onClick={(e) => {
+            e.stopPropagation();
+            closeHandler(record);
+          }}
           />
           <EyeOutlined style={{ fontSize: "24px", color: colorPrimary }} />
           <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} 
@@ -233,6 +238,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
         const { data: { success, message, payload } } = res
         setIsLoading(false)
         if(success) {
+        setRefreshData(true)
           CustomNotification({
             type: "success",
             title: "Deleted",
@@ -261,6 +267,50 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     })
     
 
+  }
+
+  const closeHandler = async (record) => {
+    setIsLoading(true)
+    const modifiedData =[{
+      ...record,
+      order_type: 'close'
+  }]
+  const Params  = {orders:modifiedData}
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#1CAC70",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, Close it!"
+  }).then(async(result)=> {
+    if (result.isConfirmed) {
+      const res = await UpdateMultiTradeOrder(Params,token)
+      const { data: { success, message, payload } } = res
+      setIsLoading(false)
+      if (success) {
+        // const res = await Search_Live_Order(token,CurrentPage,totalRecords, SearchQueryList  )
+        // dispatch(setLiveOrdersData(res?.data?.payload?.data))
+        setRefreshData(true)
+        CustomNotification({
+          type: "success",
+          title: "Order Closed",
+          description: message,
+          key: "a4",
+        })
+      } else {
+        CustomNotification({
+          type: "error",
+          title: "Oppssss..",
+          description: message,
+          key: "b4",
+        })
+      }
+
+    }
+  })
+  
   }
   
   const defaultCheckedList = columns.map((item) => item.key);
@@ -317,9 +367,10 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   }, [checkedList]);
 
   useEffect(() => {
+    // debugger;
     // fetchLiveOrder(CurrentPage)
     SetSearchQueryList({trading_account_id,order_types:['market']})
-  }, [pathname])
+  }, [])
   useEffect(()=>{
     UpdateTradingAccountStatus()
    
@@ -418,9 +469,10 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
-           
+            refreshData={refresh_data}
             editPermissionName="live_orders_update"
             deletePermissionName="live_orders_delete"
+            setRefreshData={setRefreshData}
             
           />
       </div>

@@ -6,13 +6,24 @@ import DnDTable from '../Pages/DnDTable';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch,useSelector } from 'react-redux';
 
-const CustomTable = ({searchQueryManipulation, columns, data, current_page, total, headerStyle, onPageChange, 
+const CustomTable = ({setRefreshData,refreshData, searchQueryManipulation, columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData,setCurrentData, setTotalRecords,setCurrentPage, setLastPage,
   table_name, setSortDirection, perPage, setPerPage, editPermissionName,
    deletePermissionName, SearchQuery,SearchQueryList,LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId}) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
+  const childRef = useRef(null);
+  useEffect(()=> {
+    if(refreshData) {
+      callChildFunction()
+      return(
+        setRefreshData(false)
+      )
+    }
+  }, [refreshData])
+  const callChildFunction = () => {
+    childRef.current.callSearchHandler()
+  };
     const user = useSelector((state)=>state?.user?.user?.user)
 
 
@@ -70,6 +81,8 @@ const CustomTable = ({searchQueryManipulation, columns, data, current_page, tota
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
           user={user}
+          refreshData={refreshData}
+          ref={childRef}
         />
         {/* {
           direction !== "/single-trading-accounts/details/live-orders" &&  <div style={{ textAlign: 'right', marginTop: 16 }}>

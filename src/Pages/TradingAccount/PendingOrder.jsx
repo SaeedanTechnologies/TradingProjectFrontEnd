@@ -188,7 +188,7 @@ const PendingOrder = ({setManipulatedData,grandProfit, totalSwap}) => {
 
   useEffect(()=>{
 
-         fetchPendingOrder(CurrentPage)
+        //  fetchPendingOrder(CurrentPage)
         SetSearchQueryList({trading_account_id,order_types:['pending']})
   
   },[])
