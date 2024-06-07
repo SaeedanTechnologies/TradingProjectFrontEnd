@@ -109,6 +109,8 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+      render: (text)=> <span className={`${text === "sell" ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
+
     },
     // {
     //   title:<span className="dragHandler">Order No</span>,
@@ -225,6 +227,7 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
         title:<span className="dragHandler">Profit</span>,
         dataIndex: 'profit',
         key: '13',
+      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
      },
      {
       title: <span className="dragHandler">Commission</span>,
@@ -285,7 +288,7 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
         <CustomTable
             direction="/single-trading-accounts/details/close-order-entry"
             formName = "Trading Close Orders" 
-            columns={newColumns}
+            columns={columns}
             // data={closeOrders} 
             headerStyle={headerStyle}
             total={totalRecords}
@@ -306,7 +309,7 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
                   </Table.Summary.Cell>
                    <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
                   <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell> 
-                  <Table.Summary.Cell>{isNaN(grandCommsion) ? 0 : grandCommsion}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(grandCommsion) ? 0 : grandCommsion.toFixed(2)}</Table.Summary.Cell>
                 </Table.Summary.Row>
               </Table.Summary>
             )}
