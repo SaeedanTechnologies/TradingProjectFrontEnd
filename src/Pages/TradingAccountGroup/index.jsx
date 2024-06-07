@@ -21,7 +21,6 @@ import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import {setTradeGroupsData, setTradeGroupsSelectedIDs} from '../../store/tradeGroupsSlice'
 import { setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
 import { All_TradingAccountList } from '../../utils/_TradingAPICalls';
-import { setTradingAccountGroupData, setTradingAccountGroupSelectedIDs } from '../../store/tradingAccountGroupSlice';
 
 
 
@@ -154,7 +153,7 @@ const Index = () => {
       dataIndex: 'MBS',
       key: '5',
       render: (text, record) => <span onClick={()=>{
-        dispatch(setTradingAccountGroupSelectedIDs([record.id]))
+        dispatch(setTradeGroupsSelectedIDs([record.id]))
         navigate('/trading-group/mb-to')
       }}  style={{ color: colorPrimary, fontWeight: '600' }}>View Details</span>,
       // sorter:(a, b) =>  ColumnSorter(a.MBS,b.MBS),
@@ -175,7 +174,7 @@ const Index = () => {
       render: (_, record) => (
         <span
         onClick={()=>{
-          dispatch(setTradingAccountGroupSelectedIDs([record.id]))
+          dispatch(setTradeGroupsSelectedIDs([record.id]))
           navigate('/trading-group/mass-deposit')
         }}
           // to={`/trading-group/mass-deposit/${record.id}`}
@@ -398,8 +397,8 @@ const Index = () => {
             onPageChange = {onPageChange}
             current_page={CurrentPage}
             token={token}
-            setSelecetdIDs={setTradingAccountGroupSelectedIDs}
-            setTableData = {setTradingAccountGroupData}
+            setSelecetdIDs={setTradeGroupsSelectedIDs}
+            setTableData = {setTradeGroupsData}
             isUpated={isUpdated}
             editPermissionName="active_account_group_update"
             deletePermissionName="active_account_group_delete"

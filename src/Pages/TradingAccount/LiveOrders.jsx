@@ -111,7 +111,8 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
-      render: (text)=> <span style={{color:"red"}}>{text}</span>
+      // render: (text)=> <span style={{color:"red"}}>{text}</span>,
+      // render: (_, record) => ,
     },
     {
       title: <span className="dragHandler">Open Price</span>,

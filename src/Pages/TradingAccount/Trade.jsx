@@ -29,6 +29,7 @@ import CandleStickChart from '../../components/CandleStickChart';
 import CustomModal from '../../components/CustomModal';
 
 const Trade = ({ trade_type}) => {
+  
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
@@ -231,10 +232,12 @@ const Trade = ({ trade_type}) => {
     }
   }
   const handleSubmit = (typeReceive, skip) => {
+ 
     setrcvdType(typeReceive)
+      //  debugger
     const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
     if(trade_type === "single") {
-        const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ).toFixed(2))
+        const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ))
         const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol))
         if(margin < Number(stop_out) ) {
           CustomNotification({ 
@@ -577,7 +580,7 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    setLotSize(value?.lot_size * value?.vol_min)
+                    setLotSize(value?.lot_size)
                     setD_lot(value?.vol_min)
                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
                     setPipVal(pipValue)
@@ -811,15 +814,15 @@ useEffect(() => {
             <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
                       <div className='flex justify-between'>
                       <span >{d_lot} Lots</span>
-                      <span>{lot_size.toFixed(2)} units</span>
+                      <span>{parseFloat(lot_size)?.toFixed(2)} units</span>
                       </div>
                       <div className='flex justify-between'>
                       <span >Pips Value</span>
-                      <span>{CurrencyName} {pipVal.toFixed(2)}</span>
+                      <span>{CurrencyName} {parseFloat(pipVal)?.toFixed(2)}</span>
                       </div>
                       <div className='flex justify-between'>
                       <span >Required Margin</span>
-                      <span>{isNaN(margin) ? "0.00" : parseFloat(margin).toFixed(2)}</span>
+                      <span>{isNaN(margin) ? "0.00" : parseFloat(margin)?.toFixed(2)}</span>
                       </div>
                     
                   </div>
