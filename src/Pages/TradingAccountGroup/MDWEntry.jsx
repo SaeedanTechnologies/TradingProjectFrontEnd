@@ -20,7 +20,7 @@ import CustomModal from '../../components/CustomModal';
 const MDWEntry = () => {
   const token = useSelector(({ user }) => user?.user?.token);
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0] : 0)
-  const trading_group_id = useSelector((state) => state?.tradingAccountGroup?.selectedRowsIds ? state?.tradingAccountGroup?.selectedRowsIds[0] : 0)
+  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds ? state?.tradeGroups?.selectedRowsIds[0] : 0)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();

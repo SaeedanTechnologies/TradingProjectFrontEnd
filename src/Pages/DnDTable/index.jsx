@@ -134,7 +134,7 @@ class DnDTable extends Component {
       this.props.dispatch(this.props.setTableData(data))
       localStorage.setItem('isCompleteSelect', JSON.stringify(false));
       if(this.state.isCompleteSelect) {
-        const allRowKeys = payload.data.map((row) => row.id);
+        const allRowKeys = payload?.data?.map((row) => row.id);
         this.setState({ selectedRowKeys: allRowKeys });
       }
     }
@@ -208,7 +208,7 @@ handleClearSearch = () => {
     firstColumnHeaderCell.appendChild(button);
     }
     this.setState({buttonCreated: true})
-    const columnsWithChildren = this.props.columns.map(column => ({
+    const columnsWithChildren = this.props.columns?.map(column => ({
       ...column,
       children: [ // inputs
           {
@@ -238,7 +238,7 @@ handleClearSearch = () => {
   }));
   this.setState({columns: columnsWithChildren})
     try{
-      const ColumnsData = columnsWithChildren.map(x=>{
+      const ColumnsData = columnsWithChildren?.map(x=>{
         return {
           key: x.key, 
           dataIndex: x.dataIndex,
@@ -265,7 +265,7 @@ handleClearSearch = () => {
         });
         
         console.log(selectedCols)
-        const filteredColumns = selectedCols.map(selectedColumn => {
+        const filteredColumns = selectedCols?.map(selectedColumn => {
           const column = columnMap[selectedColumn.dataIndex];
           return column;
         });
@@ -292,7 +292,7 @@ handleClearSearch = () => {
     if (prevProps.columns !== this.props.columns) {
       this.setState({ columns: this.props.columns });
     }else if(prevProps.data !== this.props.data && this.state.isCompleteSelect){
-       const allRowKeys = this.props.data.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
+       const allRowKeys = this.props.data?.map((row) => this.props.column_name ? row[this.props.column_name] : row.id);
         this.setState({ selectedRowKeys: allRowKeys });
     }
     if(this.props?.data?.length > 0 && prevProps.data !== this.props.data){
@@ -399,7 +399,7 @@ handleClearSearch = () => {
   }
   handleSaveChanges() { 
     if (this.state.isRearangments) {
-      const ColumnsData = this.state.columns.map(x=>{
+      const ColumnsData = this.state.columns?.map(x=>{
         return {
           key: x.key, 
           dataIndex: x.dataIndex,
@@ -431,8 +431,7 @@ handleClearSearch = () => {
     ()=>{
       localStorage.setItem('isCompleteSelect', JSON.stringify(this.state.isCompleteSelect));
       if (this.state.isCompleteSelect) {
-        const allRowKeys = this.props.data.map((row) => this.props?.column_name ? row[this.props?.column_name] : row.id);
-        this.setState({ selectedRowKeys: allRowKeys });
+        const allRowKeys = this.props.data?.map((row) => this.props?.column_name ? row[this.props?.column_name] : row.id);        this.setState({ selectedRowKeys: allRowKeys });
         
       } else {
         this.setState((prevState)=>({isSelectAll:!prevState.isSelectAll}))
@@ -532,7 +531,7 @@ handleClearSearch = () => {
   //#region Mass close order handler
   async MassCloseOrdersHandler (){
     const selectedData = this.state.data.filter(item => this.state.selectedRowKeys.includes(item.id))
-    const modifiedData = selectedData.map(item => {
+    const modifiedData = selectedData?.map(item => {
       return {
           ...item,
           order_type: 'close'
@@ -596,7 +595,7 @@ handleClearSearch = () => {
       name: this.props.formName + this.props.user.id,
      
     }}
-    const ColumnsData = this.state.columns.map(x=>{
+    const ColumnsData = this.state.columns?.map(x=>{
       return {
         key: x.key, 
         dataIndex: x.dataIndex,
@@ -607,7 +606,7 @@ handleClearSearch = () => {
   // Sort array A based on the index of keys in array B
   // if values length is less then its means remove column , if greater means add columns , in case of remove column remove column from columns data else add column
   if(values.length > ColumnsData.length){
-    const keysInB = new Set(ColumnsData.map(item => item.key));
+    const keysInB = new Set(ColumnsData?.map(item => item.key));
     values.forEach(item => {
         if (!keysInB.has(item.key)) {
           ColumnsData.push(item);
@@ -660,7 +659,7 @@ handleClearSearch = () => {
   };
   render() {
     const { columns, selectedRowKeys } = this.state;
-    const combinedColumns = columns.map((stateCol, index) => ({
+    const combinedColumns = columns?.map((stateCol, index) => ({
       ...stateCol,
       onHeaderCell: (column) => ({
         width: column.width,
