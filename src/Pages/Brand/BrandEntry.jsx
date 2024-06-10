@@ -16,6 +16,11 @@ import { deleteBrandById, setBrandData, setBrandSelectedIDs, updateBrandsData } 
 import {  CustomBulkDeleteHandler } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { EditOutlined } from '@mui/icons-material';
+import { ChangingPassword } from '../../utils/_SettingAPI';
+import { alpha } from '@mui/material/styles';
+import { Switch } from '@mui/material';
+import CustomPassowordField from '../../components/CustomPassowordField';
+
 
 
 const BrandEntry = () => {
@@ -25,7 +30,7 @@ const BrandEntry = () => {
     const BrandGroupData = useSelector(({brands})=> brands?.brandData)
    const ArrangedBrandData = BrandGroupData;
 
-    const {token: { colorBG },} = theme.useToken()
+    const {token: { colorBG,colorPrimary,colorSuccess  }} = theme.useToken()
     const navigate = useNavigate()
     const dispatch  = useDispatch()
   const token = useSelector(({ user }) => user?.user?.token)
@@ -34,9 +39,16 @@ const BrandEntry = () => {
   const [disabledDomain, setDisabledDomain] = useState(true);
   const [marginCall, setMarginCall] = useState('');
   const [leverage, setLeverage] = useState('');
+  const [user_id,setUser_id]= useState('')
+  
+  const [newPassword,setNewPassword] =  useState('');
   const [errors, setErrors] = useState({}); 
   const [isLoading, setIsLoading] = useState(false)
   const [isDisabled, setIsDisabled] = useState(false)
+  const [isPasswordDisable,setIsPasswordDisable] = useState(true)
+
+
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [stop_out,setStop_out]= useState('')
   const fetchData = async (page) => {
@@ -60,6 +72,11 @@ const BrandEntry = () => {
     leverage: Yup.object().required('Leverage is required'),
   });
 
+  const passwordValidationSchema = Yup.object().shape({
+    newPassword: Yup.string().required('New password is required'),
+   
+  });
+
   const handleInputChange = (fieldName, value) => {
     setErrors(prevErrors => ({ ...prevErrors, [fieldName]: '' }));
     switch (fieldName) {
@@ -77,6 +94,9 @@ const BrandEntry = () => {
         break;
         case 'stop_out':
           setStop_out(value);
+        break;
+        case 'newPassword':
+        setNewPassword(value);
         break;
       default:
         break;
@@ -100,7 +120,6 @@ const BrandEntry = () => {
 }
 
   const handleSubmit = async () => {
-    debugger
     try {
        
       const BrandData = {
@@ -192,6 +211,52 @@ const BrandEntry = () => {
     }
   };
 
+    const handleChangePassword = async () => {
+    try {
+      await passwordValidationSchema.validate({
+        newPassword,
+      }, { abortEarly: false });
+
+      setIsLoading(true);
+
+      const passwordData = {
+        new_password: newPassword,
+        user_id,
+      };
+
+      const res = await ChangingPassword(passwordData, token);
+      const { data: { message, success } } = res;
+
+      setIsLoading(false);
+
+      if (success) {
+        CustomNotification({
+          type: 'success',
+          title: 'Password Changed Successfully',
+          description: message,
+          key: 1
+        });
+        fetchDataWRTID()
+      } else {
+        CustomNotification({
+          type: 'error',
+          title: 'Password Changed Failed',
+          description: message,
+          key: 2
+        });
+      }
+
+    } catch (err) {
+      const validationErrors = {};
+      err.inner?.forEach(error => {
+        validationErrors[error.path] = error.message;
+      });
+      setErrors(validationErrors);
+      setIsLoading(false);
+    }
+  };
+
+
   const handlePrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
@@ -245,6 +310,7 @@ const BrandEntry = () => {
       setName(payload?.name)
       setDomain(payload?.domain)
       setMarginCall(payload?.margin_call)
+      setNewPassword(payload?.user?.original_password)
     }
   }
 
@@ -331,7 +397,9 @@ const BrandEntry = () => {
       setDomain(payload.domain)
       setMarginCall(payload.margin_call)
       setStop_out(payload.stop_out)
-    //   setLeverage(payload.leverage)
+      setUser_id(payload.user_id)
+      setNewPassword(payload?.user?.original_password)
+      //   setLeverage(payload.leverage)
     } else {
       notifyError(message)
     }
@@ -376,8 +444,6 @@ const BrandEntry = () => {
         
         </div>
       <div className='flex flex-col gap-6'>
-
-        {/* <Typography></Typography> */}
 
 
         <CustomTextField
@@ -458,6 +524,10 @@ const BrandEntry = () => {
           />
           
         </div> */}
+        
+       
+
+     
 
        {!isDisabled && 
   
@@ -491,6 +561,59 @@ const BrandEntry = () => {
 
         </div>
       }
+
+         <div className='mb-6 flex flex-col gap-6'>
+
+          <div className="flex flex-row justify-between">
+          <div></div>
+          <Switch
+                checked={!isPasswordDisable}
+                onChange={()=>setIsPasswordDisable(prev=> !prev)}
+                inputProps={{ 'aria-label': 'controlled' }}
+                sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: colorPrimary,
+                      '&:hover': {
+                        backgroundColor: alpha(colorPrimary, colorSuccess),
+                      },
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: colorPrimary,
+                    },
+
+                }}
+          />
+        </div>
+
+        <CustomPassowordField
+          label={'New Password'}
+          value={newPassword}
+          disabled={isPasswordDisable}
+          onChange={(e) => handleInputChange('newPassword', e.target.value)}
+          name={"newPassword"}
+        />
+        {errors.newPassword && <span style={{ color: 'red' }}>{errors.newPassword}</span>}
+
+        {!isPasswordDisable && <div className='flex flex-row justify-end'>
+            <div></div>
+          <CustomButton
+            Text='Change Password'
+            style={{
+              padding: '16px',
+              height: '48px',
+              width: '200px',
+              marginTop:"10px",
+              borderRadius: '8px', 
+            }}
+            onClickHandler={handleChangePassword}
+            loading={isLoading}
+          /> 
+        </div>
+        }
+         
+
+        
+      </div>
 
         <ToastContainer />
       </div>

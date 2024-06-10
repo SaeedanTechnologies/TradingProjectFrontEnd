@@ -440,9 +440,9 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
                       Balance: {checkNaN(balance)} {CurrencyName} &nbsp;
-                      Equity: {checkNaN(equity_g)} {CurrencyName} &nbsp;
-                      Credit: {checkNaN(credit)} {CurrencyName} &nbsp;
-                      Bonus: {checkNaN(bonus)} {CurrencyName} &nbsp;
+                      Equity: {checkNaN(equity_g)} &nbsp;
+                      Credit: {checkNaN(credit)}  &nbsp;
+                      Bonus: {checkNaN(bonus)}  &nbsp;
                       <span> Margin: {checkNaN(margin)}</span>&nbsp;
                       Free Margin: {checkNaN(free_margin)} &nbsp;
                        <span>Margin Level: {checkNaN(margin_level)} %</span>
