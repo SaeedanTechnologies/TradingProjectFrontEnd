@@ -71,13 +71,14 @@ const SymbolSettingsEntry = () => {
   const [lotSteps, setLotSteps] = useState('')
   const [volMin, setVolMin] = useState('')
   const [volMax, setVolMax] = useState('')
-  const [commission, setCommission] = useState('')
+  const [commission, setCommission] = useState(0)
   const [EnabledList] = useState([
     { id: 1, title: 'Yes' },
     { id: 2, title: 'No' },
   ])
   const [selectedPip,setSelectedPip] = useState(null)
-  const [Selectedenable, setSelectedEnable] = useState(null)
+  const initialSelectedEnable = EnabledList.find(option => option.title === 'Yes');
+  const [Selectedenable, setSelectedEnable] = useState(initialSelectedEnable)
   const [isLoading, setIsLoading] = useState(false)
   const [askValue, setAskValue] = useState('')
   const [bidValue, setBidValue] = useState('')
@@ -787,6 +788,7 @@ const SymbolSettingsEntry = () => {
                 disabled={isDisabled}
                 value={lotSize}
                 varient="standard"
+                s_value={true}
                 onChange={(e) => handleInputChange("lotSize", e.target.value)}
               />
               {errors.lot_size && <span style={{ color: 'red' }}>{errors.lot_size}</span>}
@@ -800,6 +802,7 @@ const SymbolSettingsEntry = () => {
                 value={lotSteps}
                 type={'number'}
                 varient="standard"
+                s_value={true}
                 onChange={(e) => handleInputChange("lotSteps", e.target.value)}
               />
               {errors.lot_step && <span style={{ color: 'red' }}>{errors.lot_step}</span>}
@@ -817,6 +820,7 @@ const SymbolSettingsEntry = () => {
                 }}
                 type={'number'}
                 varient="standard"
+                s_value={true}
                 onChange={(e) => handleInputChange("volMin", e.target.value)}
               />
               {errors.vol_min && <span style={{ color: 'red' }}>{errors.vol_min}</span>}
@@ -831,6 +835,7 @@ const SymbolSettingsEntry = () => {
                 InputProps={{
                   inputProps: { min: 0, max: 100 },
                 }}
+                s_value={true}
                 type={'number'}
                 varient="standard"
                 onChange={(e) => handleInputChange("volMax", e.target.value)}
@@ -846,6 +851,7 @@ const SymbolSettingsEntry = () => {
                 value={commission}
                 type={'number'}
                 varient="standard"
+                s_value={true}
                 onChange={(e) => handleInputChange("commission", e.target.value)}
               />
               {errors.commission && <span style={{ color: 'red' }}>{errors.commission}</span>}

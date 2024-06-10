@@ -22,7 +22,7 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
-import {addZeroAfterOne, addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage } from '../../utils/helpers';
+import {addZeroAfterOne, addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage, calculateMarginCallPer } from '../../utils/helpers';
 import moment from 'moment';
 import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 import CandleStickChart from '../../components/CandleStickChart';
@@ -36,14 +36,14 @@ const Trade = ({ trade_type}) => {
   } = theme.useToken();
   const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0] : 0)
-  const trading_group_id = useSelector((state) => state?.tradingAccountGroup?.selectedRowsIds ? state?.tradingAccountGroup?.selectedRowsIds[0] : 0)
+  const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds ? state?.tradeGroups?.selectedRowsIds[0] : 0)
   const stop_out = useSelector((state)=>state?.tradingAccountGroup?.tradingAccountGroupData?.brand?.stop_out)
   const {balance, currency, leverage, brand_margin_call, id} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error_message, setErrorMessage] = useState('');
   const {value: accountLeverage} = LeverageList?.find(x=> x?.title === leverage) ||  { value: '0', title: '0:0' }
-
-  // console.log('trading_group_id',trading_group_id)
+  const equity = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData.equity)
+  const marg = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData.margin)
 
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
@@ -98,6 +98,10 @@ const Trade = ({ trade_type}) => {
                     setD_lot(newValue)
                     const pipValue = addZeroBeforeOne(symbol?.pip) * parseFloat(newValue) * parseFloat(symbol?.lot_size)
                     setPipVal(pipValue)
+                    const res = (parseFloat(parseFloat(newValue) * parseFloat(symbol?.lot_size) * parseFloat(pricing?.askPrice)).toFixed(2));
+                    const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
+                    setMargin(margin_val)
+                    // const margin_level =  calculateMarginCallPer(equity, margin)
     setVolume(newValue)
   }
   //#region inputChange
@@ -234,14 +238,14 @@ const Trade = ({ trade_type}) => {
   
   //region handleSubmit
   const handleSubmit = (typeReceive, skip) => {
- 
+    //From here
     setrcvdType(typeReceive)
       //  debugger
-    const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
+    // const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
     if(trade_type === "single") {
-        const res = (parseFloat(parseFloat(volume) * parseFloat(lot_size) * tradePrice ))
-        const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol))
-        if(margin < Number(stop_out) ) {
+       
+        const margin_level = calculateMarginCallPer(equity, marg)
+        if(margin_level < Number(stop_out) ) {
           CustomNotification({ 
               type: "error", 
               title: "Validation", 
@@ -249,7 +253,8 @@ const Trade = ({ trade_type}) => {
               key: 1 
             })
         }
-        else if (margin < trading_account.equity){
+        else 
+        if (margin_level < trading_account.equity){
           CustomNotification({ 
             type: "error", 
             title: "Validation", 
@@ -598,7 +603,7 @@ useEffect(() => {
                     setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                     setSymbol(value)
                       if(value?.feed_name === 'binance'){ 
-                      fetchBinancehData(value?.feed_fetch_name, value?.pip,).then((result) => {                
+                      fetchBinancehData(value?.feed_fetch_name, value?.pip,).then((result) => {
                         const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(result?.askPrice)).toFixed(2));
                         const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
                         setMargin(margin_val)
@@ -715,6 +720,7 @@ useEffect(() => {
                         type="number"
                         sx={numberInputStyle}
                         varient={'standard'}
+                        s_value={true}
                         onChange={e => handleInputChange('open_price', e.target.value)}
                       />
                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}

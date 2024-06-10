@@ -44,13 +44,20 @@ export const tradingAccountGroup = createSlice({
         },
         updateTradingAccountGroupBalance: (state, action) => {
           state.tradingAccountGroupData.balance = action.payload;
-      }
+      },
+      updateMultipleFields: (state, action) => {
+        state.tradingAccountGroupData = {
+            ...state.tradingAccountGroupData,
+            ...action.payload
+        };
+    }
     },
 })
 
 export const { setTradingAccountGroupData, setTradingAccountGroupSelectedIDs, 
   deleteTradingAccountGroupById, updateTradingAccountGroupData,setAllTradingAccountGroupData,
-  updateTradingAccountGroupBalance
+  updateTradingAccountGroupBalance,
+  updateMultipleFields
 } = tradingAccountGroup.actions
 
 export default tradingAccountGroup.reducer

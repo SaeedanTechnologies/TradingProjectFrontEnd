@@ -63,7 +63,8 @@ class DnDTable extends Component {
       searchValues: {},
       buttonCreated: false, 
       isSearching: true, 
-      isClear: false
+      isClear: false,
+      
     };
     this.setIsRearangments = this.setIsRearangments.bind(this);
     this.setIsMassEdit = this.setIsMassEdit.bind(this);
@@ -498,6 +499,7 @@ handleClearSearch = () => {
                 key: "a4",
               })
             } else {
+              
               const errorMsg = getValidationMsg(message, payload)
               if(errorMsg) 
                 CustomNotification({

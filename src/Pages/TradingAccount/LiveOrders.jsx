@@ -16,7 +16,7 @@ import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingA
 import { CloseOutlined, DeleteOutlined } from '@mui/icons-material';
 import { EyeOutlined  } from '@ant-design/icons';
 import Swal from 'sweetalert2';
-import { updateTradingAccountGroupBalance } from '../../store/tradingAccountGroupSlice';
+import { updateMultipleFields, updateTradingAccountGroupBalance } from '../../store/tradingAccountGroupSlice';
 
 const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize,margin, totalSwap }) => {
   
@@ -25,7 +25,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
   const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
-  const test = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData)
+  // const prev_data = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData)
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '', title: '' }
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
   const location = useLocation()
@@ -33,6 +33,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   const equity_g = calculateEquity(balance, grandProfit, credit, bonus)
   const free_margin = calculateFreeMargin(equity_g, margin)
   const margin_level =  calculateMarginCallPer(equity_g, margin)
+  //check
   const [CurrentPage, setCurrentPage] = useState(1)
     const [lastPage, setLastPage] = useState(1)
     const [isUpdated, setIsUpdated] = useState(true)
@@ -417,7 +418,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       ...(margin_level < brand_margin_call && { status: "margin_call" })
     }
     const res = await Put_Trading_Account(id, Params, token)
-    
+    dispatch(updateMultipleFields(Params))
   }
   return (
     <Spin spinning={isLoading} size="large">
@@ -473,7 +474,6 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
             editPermissionName="live_orders_update"
             deletePermissionName="live_orders_delete"
             setRefreshData={setRefreshData}
-            
           />
       </div>
     </Spin>

@@ -114,7 +114,6 @@ export const ColumnSpaceSorter = (a, b) => {
 
 
 export const CheckBrandPermission = (permissions,userRole,permissionName ) =>{
-
   if(userRole ===  'brand') {
     const res =   permissions?.find((permission)=>permission?.name === permissionName);  
    return res? true : false;
@@ -228,6 +227,7 @@ export const calculateMargin = (lotSize,accountLeverage)=>{
 }
 export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
   const equity = (parseFloat(balance) + parseFloat(grandProfit) + parseFloat(credit) + parseFloat(bonus)).toFixed(2);
+  localStorage.setItem("equity_g", equity)
   return equity
 }
 

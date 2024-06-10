@@ -70,6 +70,7 @@ const TradingAccountDetails = () => {
         const comm = parseFloat(x?.commission ?? 0);
         t_commission += comm;
         totalMargin += parseFloat(margin);
+        localStorage.setItem("margin", totalMargin)
         totalVolumn += parseFloat(res);
         return { ...x, swap, profit, currentPrice, open_price };
       }));
