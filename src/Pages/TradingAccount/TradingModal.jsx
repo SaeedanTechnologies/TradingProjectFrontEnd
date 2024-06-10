@@ -365,13 +365,14 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
 
 
   const handleSubmission = async () => {
+    // debugger
     try {
 
-      //  await TradingAccountValidationSchema.validate({
-      //   brand_id,
-      //   leverage
-      // }, { abortEarly: false });
-      // setErrors({});
+       await TradingAccountValidationSchema.validate({
+         currency:tradingAccount.currency?.value,
+         leverage:tradingAccount.leverage?.value
+      }, { abortEarly: false });
+      setErrors({});
       const selectedBrand =  brandList?.find((brand)=>brand?.public_key === tradingAccount?.brand_id?.public_key)
 
       const formPayload = {

@@ -123,7 +123,7 @@ const SymbolSettingModal = ({setIsModalOpen}) => {
     // console.log(leverageSettings)
     
   const handleSelectLeverages = async () => {
-    debugger
+    // debugger
       const payload = {...tradingAccountData, symbols_leverage:symbolGroupsList}
       dispatch(setTradingAccountGroupData((payload)))
       setIsModalOpen(false)

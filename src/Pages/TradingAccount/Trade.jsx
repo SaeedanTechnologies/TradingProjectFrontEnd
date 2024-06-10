@@ -232,7 +232,6 @@ const Trade = ({ trade_type}) => {
     }
   }
   
-  //region handleSubmit
   const handleSubmit = (typeReceive, skip) => {
  
     setrcvdType(typeReceive)
@@ -249,11 +248,11 @@ const Trade = ({ trade_type}) => {
               key: 1 
             })
         }
-        else if (margin < trading_account.equity){
+        else if (margin < Number(trading_account.equity)){
           CustomNotification({ 
             type: "error", 
             title: "Validation", 
-            description: 'Margin must be greater than or equal to your acount equity', 
+            description: 'Margin must be greater than or equal to your account equity', 
             key: 1 
           })
         }
