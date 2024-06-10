@@ -309,7 +309,7 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
                   </Table.Summary.Cell>
                    <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
                   <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell> 
-                  <Table.Summary.Cell>{isNaN(grandCommsion) ? 0 : grandCommsion.toFixed(2)}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{isNaN(grandCommsion) ? 0 : parseFloat(grandCommsion).toFixed(2)}</Table.Summary.Cell>
                 </Table.Summary.Row>
               </Table.Summary>
             )}

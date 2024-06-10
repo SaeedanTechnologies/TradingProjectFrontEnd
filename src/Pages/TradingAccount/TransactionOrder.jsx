@@ -352,6 +352,7 @@ const TransactionOrder = () => {
     setMethod('balance')
     // fetchTransactionOrder(CurrentPage)
      SetSearchQueryList({trading_account_id})
+
     fetchSingleTradeAccount()
 
 

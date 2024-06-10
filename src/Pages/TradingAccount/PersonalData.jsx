@@ -65,7 +65,7 @@ const fetchSingleTradeAccount= async()=>{
       setIsLoading(true)
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res
-      // debugger
+   
       const { data: {payload:customersList } } = await GetAllBrandsCustomerList(token, tradingAccountGroupData?.brand_id)
       setBrandCustomerList(customersList)
 
@@ -108,14 +108,16 @@ const fetchSingleTradeAccount= async()=>{
         setIsLoading(true)
         setErrors({});
        const tradingAccountData = {
-                                  name,
-                                  email,
-                                  country:SelectedCountry?.label,
-                                  phone,
-                                  registration_time,
-                                  brand_customer_id:SelectedCustomerBrand?.id,
-                                  currency:SelectedCustomerBrand?.currency
-                                  }
+        
+          name,
+          email,
+          country:SelectedCountry?.label,
+          phone,
+          registration_time,
+          brand_customer_id:SelectedCustomerBrand?.id,
+          currency:SelectedCustomerBrand?.currency || ""
+        
+        }
        
         const res = await  Put_Trading_Account(trading_account_id, tradingAccountData, token)
        const {data: {message, payload, success}} = res

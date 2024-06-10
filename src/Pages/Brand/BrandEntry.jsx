@@ -100,6 +100,7 @@ const BrandEntry = () => {
 }
 
   const handleSubmit = async () => {
+    debugger
     try {
        
       const BrandData = {
@@ -142,7 +143,8 @@ const BrandEntry = () => {
          table_ids: isCompleteSelect === "true" ? [] : BrandIds,
          ...BrandData
       }
-      const res = await GenericEdit(Params, token)
+      if(parseFloat(marginCall)>parseFloat(stop_out)){
+        const res = await GenericEdit(Params, token)
         const { data: { message, success, payload } } = res;
         if (success)
         {
@@ -167,6 +169,18 @@ const BrandEntry = () => {
               key: `abc`
             })
         }
+      }else{
+        CustomNotification({
+            type: 'error',
+            title: 'error',
+            description: 'Margin Call must be greater than stop out',
+            key: 2
+          })
+
+          setIsLoading(false)
+    
+      }
+      
     }
       
     } catch (err) {
