@@ -77,6 +77,7 @@ const Trade = ({ trade_type}) => {
   const [commission, setCommission] = useState("")
   const [trading_account,set_trading_account] = useState(null)
   const [rcvd_type, setrcvdType] = useState("")
+  const [time_state, setTimeState] = useState("1m")
   // const [rerenderCount, setRerenderCount] = useState(0);
   // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
@@ -531,7 +532,9 @@ useEffect(() => {
   const closeWithdrawOrder = () => {
     setIsModalOpen(false)
   }
-
+  const handleChipClick = (option) => {
+    setTimeState(option)
+  }
   return (
     <Spin spinning={isLoading} size="large">
         <CustomModal
@@ -842,6 +845,7 @@ useEffect(() => {
                       <ListItem key={option}>
                         <Chip
                           label={`${option}`}
+                          onClick={()=>handleChipClick(option)}
                         />
                       </ListItem>
                    )
@@ -850,7 +854,9 @@ useEffect(() => {
                  
                  </Paper> 
               }
-                  <CandleStickChart symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
+                  <CandleStickChart 
+                  interval={time_state}
+                  symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
             <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
                       <div className='flex justify-between'>
                       <span >{d_lot} Lots</span>
