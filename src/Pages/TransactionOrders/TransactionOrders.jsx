@@ -94,6 +94,19 @@ const TransactionOrders = () => {
 
     },
     {
+      title:<span className="dragHandler">Brand</span>,
+      dataIndex: 'brand_name',
+      key: '4',
+      sorter:(a, b) =>  ColumnSorter(a.brand_name,b.brand_name),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+
+    },
+    {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
       key: '2',

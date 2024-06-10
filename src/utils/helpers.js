@@ -232,7 +232,8 @@ export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
 }
 
 export const conditionalLeverage =(trading_account,symbol_setting)=>{ 
-     let leverage;
+    
+    let leverage;
 
     const trading_account_symbol_leverage  = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.settings?.find((x)=>x.id === symbol_setting?.id)?.leverage) || { value:'', title: '' }
     const trading_account_symbol_group_leverage = LeverageList?.find(x=>x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.leverage)
@@ -258,10 +259,10 @@ export const conditionalLeverage =(trading_account,symbol_setting)=>{
     else if(symbol_setting_group_leverage?.value){
        leverage = symbol_setting_group_leverage?.value;
     }
-    	else{
+    else{
         leverage = 1
-      }
-     return leverage
+    }
+    return leverage
 
 
    }

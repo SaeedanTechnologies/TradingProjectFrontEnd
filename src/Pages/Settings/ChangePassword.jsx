@@ -12,6 +12,7 @@ import CustomNotification from '../../components/CustomNotification';
 const ChangePassword = () => {
   const token = useSelector(({ user }) => user?.user?.token);
   const originalPassword = useSelector(({ user }) => user?.user?.user?.original_password);
+  const user_id = useSelector(({user})=>user?.user?.user?.id)
 
   const { token: { colorBG } } = theme.useToken();
   const navigate = useNavigate();
@@ -75,7 +76,8 @@ const ChangePassword = () => {
       setErrors({});
 
       const passwordData = {
-        new_password: newPassword
+        new_password: newPassword,
+        user_id
       };
 
       const res = await ChangingPassword(passwordData, token);

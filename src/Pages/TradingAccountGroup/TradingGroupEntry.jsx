@@ -130,7 +130,6 @@ const TradingGroupEntry = () => {
       getAccountList(userBrand.public_key)
     } 
     else{
-          getAccountList(null)
           getBrandsList()
     }
     if(TradingAccountGroupsIds?.length === 1 && parseInt(TradingAccountGroupsIds[0]) === 0){ 

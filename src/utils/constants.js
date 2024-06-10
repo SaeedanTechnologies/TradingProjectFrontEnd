@@ -517,6 +517,8 @@ export const GrowthChartFilter = [
   },
 ]
 
+export const TradeTimeChips = ['1m','5m','30m','1h']
+
 export const BarChartConfig = {
   chart: {
     type: 'column',

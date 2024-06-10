@@ -310,8 +310,6 @@ const ChkBoxesControl = [
 
 
                 <div>
-               
-
                   <Paper
                       sx={{
                         display: 'flex',

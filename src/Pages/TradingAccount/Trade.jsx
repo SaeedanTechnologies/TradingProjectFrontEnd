@@ -4,6 +4,9 @@ import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
 import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes, LeverageList, CurrenciesList } from '../../utils/constants';
 
 import { PlusCircleOutlined } from '@ant-design/icons';
+import {Chip,Paper } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { TradeTimeChips} from '../../utils/constants'
 
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
@@ -44,6 +47,10 @@ const Trade = ({ trade_type}) => {
   const {value: accountLeverage} = LeverageList?.find(x=> x?.title === leverage) ||  { value: '0', title: '0:0' }
   const equity = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData.equity)
   const marg = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData.margin)
+
+    const ListItem = styled('li')(({ theme }) => ({
+  margin: theme.spacing(0.5),
+}));
 
   const [isLoading, setIsLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
@@ -236,7 +243,6 @@ const Trade = ({ trade_type}) => {
     }
   }
   
-  //region handleSubmit
   const handleSubmit = (typeReceive, skip) => {
     //From here
     setrcvdType(typeReceive)
@@ -258,7 +264,7 @@ const Trade = ({ trade_type}) => {
           CustomNotification({ 
             type: "error", 
             title: "Validation", 
-            description: 'Margin must be greater than or equal to your acount equity', 
+            description: 'Margin must be greater than or equal to your account equity', 
             key: 1 
           })
         }
@@ -818,6 +824,32 @@ useEffect(() => {
           </div>
           <div className="flex-1 ml-2 ">
             <div className="mb-4">
+              {
+                  <Paper
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flexWrap: 'wrap',
+                        listStyle: 'none',
+                        p: 0.5,
+                        m: 0,
+                      }}
+                    >
+                  {TradeTimeChips.map((option,index) => {
+                   
+
+                  return (
+                      <ListItem key={option}>
+                        <Chip
+                          label={`${option}`}
+                        />
+                      </ListItem>
+                   )
+                  })}
+                 
+                 
+                 </Paper> 
+              }
                   <CandleStickChart symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
             <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
                       <div className='flex justify-between'>
