@@ -235,8 +235,7 @@ export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
 }
 
 export const balanceCheck = (currentTradingAccountData)=>{
-  return (
-    (
+  const result = (
       parseFloat(currentTradingAccountData?.free_margin)
       -
       parseFloat(currentTradingAccountData?.credit)
@@ -244,7 +243,9 @@ export const balanceCheck = (currentTradingAccountData)=>{
       parseFloat(currentTradingAccountData?.bonus)
     )
     *
-    parseFloat(currentTradingAccountData?.brand?.margin_call)
+   ( parseFloat(currentTradingAccountData?.brand?.margin_call)/100)
+  return (
+     result
   )
 
 }
