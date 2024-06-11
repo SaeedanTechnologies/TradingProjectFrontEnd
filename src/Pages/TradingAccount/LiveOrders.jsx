@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
-import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, ColumnSorter, getCurrentDateTime } from '../../utils/helpers';
+import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, checkNaN, ColumnSorter, getCurrentDateTime } from '../../utils/helpers';
 import { GenericDelete, UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
@@ -42,9 +42,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     const [SearchQueryList,SetSearchQueryList]= useState({})
     const [sortDirection, setSortDirection] = useState("")
     const [refresh_data, setRefreshData] = useState(false)
-    const checkNaN = (val) => {
-      return (isNaN(val) || !isFinite(val)) ? 0 : parseFloat(val).toFixed(2)
-    }
+    
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();

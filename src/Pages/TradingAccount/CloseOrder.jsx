@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import { Delete_Trade_Order, Get_Trade_Order,Search_Close_Order } from '../../utils/_TradingAPICalls';
-import { CustomDeleteDeleteHandler } from '../../utils/helpers';
+import { CustomDeleteDeleteHandler, checkNaN } from '../../utils/helpers';
 import { setCloseOrdersSelectedIds,setCloseOrdersData } from '../../store/TradingAccountListSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { ColumnSorter } from '../../utils/helpers';
@@ -302,14 +302,14 @@ const CloseOrder = ({setManipulatedData, totalSwap, grandProfit, grandCommsion})
                   <Table.Summary.Cell index={0} colSpan={12}>
                     <span className='text-sm font-bold text-arial'>
                       <MinusCircleOutlined /> 
-                      Balance: {isNaN(balance) ? 0.00 : parseFloat(balance).toFixed(2)} {CurrencyName} &nbsp;
-                      Credit: {isNaN(credit) ? 0.00 : parseFloat(credit).toFixed(2)} {CurrencyName} &nbsp;
-                      Bonus: {isNaN(bonus) ? 0.00 : parseFloat(bonus).toFixed(2)} {CurrencyName} &nbsp;
+                      Balance: {checkNaN(balance)} {CurrencyName} &nbsp;
+                      Credit: {checkNaN(credit)} {CurrencyName} &nbsp;
+                      Bonus: {checkNaN(bonus)} {CurrencyName} &nbsp;
                     </span>
                   </Table.Summary.Cell>
-                   <Table.Summary.Cell>{isNaN(totalSwap) ? 0 : totalSwap}</Table.Summary.Cell>
-                  <Table.Summary.Cell>{isNaN(grandProfit) ? 0 : grandProfit}</Table.Summary.Cell> 
-                  <Table.Summary.Cell>{isNaN(grandCommsion) ? 0 : parseFloat(grandCommsion).toFixed(2)}</Table.Summary.Cell>
+                   <Table.Summary.Cell>{checkNaN(totalSwap)}</Table.Summary.Cell>
+                  <Table.Summary.Cell>{checkNaN(grandProfit)}</Table.Summary.Cell> 
+                  <Table.Summary.Cell>{checkNaN(grandCommsion)}</Table.Summary.Cell>
                 </Table.Summary.Row>
               </Table.Summary>
             )}

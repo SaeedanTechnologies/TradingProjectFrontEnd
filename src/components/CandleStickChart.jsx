@@ -3,13 +3,14 @@ import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 import axios from 'axios';
 
-const CandleStickChart = ({ symbol, connected, pricing, interval="1m" }) => {
+const CandleStickChart = ({ symbol, connected, pricing, interval="1m", setLoading }) => {
   console.log(interval, "+_______________")
   const [askPrice, setAskPrice] = useState([]);
   const [bidPrice, setBidPrice] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const response = await axios.get('https://api.binance.com/api/v3/klines', {
           params: {
             symbol: symbol ? symbol : "",
@@ -18,11 +19,13 @@ const CandleStickChart = ({ symbol, connected, pricing, interval="1m" }) => {
           }
         });
         const data = response.data;
+        setLoading(false)
         const askList = data.map(item => parseFloat(item[1])); // Extract ask price
         const bidList = data.map(item => parseFloat(item[4])); // Extract bid price
         setAskPrice(askList);
         setBidPrice(bidList);
       } catch (err) {
+        setLoading(false)
         console.log(err);
       }
     };
