@@ -231,6 +231,21 @@ export const calculateEquity = (balance,grandProfit, credit, bonus)=>{
   return equity
 }
 
+export const balanceCheck = (currentTradingAccountData)=>{
+  return (
+    (
+      parseFloat(currentTradingAccountData?.free_margin)
+      -
+      parseFloat(currentTradingAccountData?.credit)
+      -
+      parseFloat(currentTradingAccountData?.bonus)
+    )
+    *
+    parseFloat(currentTradingAccountData?.brand?.margin_call)
+  )
+
+}
+
 export const conditionalLeverage =(trading_account,symbol_setting)=>{ 
     
     let leverage;
