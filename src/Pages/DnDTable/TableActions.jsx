@@ -34,7 +34,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
       ),
     },
-    (selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName) && direction ==='/single-trading-accounts/details/live-order-entry') &&{
+    (selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName) && (direction ==='/single-trading-accounts/details/live-order-entry' || direction ==="/live-orders-entry")) &&{
       key: '5',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassCloseOrdersHandler}>   Close  </button>
