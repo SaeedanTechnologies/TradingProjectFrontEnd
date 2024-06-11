@@ -154,6 +154,18 @@ const LiveOrders = () => {
       },
     },
     {
+      title:<span className="dragHandler">Brand Name</span>,
+      dataIndex: 'brand_name',
+      key: '2222',
+      sorter:(a, b) => a?.id - b?.id,
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+      },
+    },
+    {
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '2',
@@ -204,6 +216,18 @@ const LiveOrders = () => {
       },
     },
     {
+      title: <span className="dragHandler">Current Price</span>,
+      dataIndex: 'currentPrice',
+      key: 'currentPrice',
+      sorter: (a, b) => ColumnSorter(a.currentPrice , b.currentPrice),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+    },
+    {
       title:<span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
       key: '4',
@@ -250,6 +274,18 @@ const LiveOrders = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
+    },
+    {
+      title: <span className="dragHandler">Profit</span>,
+      dataIndex: 'profit',
+      key: 'profit',
+      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
+    },
+    {
+      title: <span className="dragHandler">Commission</span>,
+      dataIndex: 'commission',
+      key: 'commission',
+      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
   // {
     //   title: 'Actions',

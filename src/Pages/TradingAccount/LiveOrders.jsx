@@ -71,6 +71,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
+    
     {  
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
@@ -125,6 +126,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
       },
     },
+    //
     {
       title: <span className="dragHandler">Current Price</span>,
       dataIndex: 'currentPrice',

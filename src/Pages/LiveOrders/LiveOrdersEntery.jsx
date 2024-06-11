@@ -47,6 +47,7 @@ const LiveOrdersEntery = () => {
     const [order_type, setOrder_type] = useState(null);
     const [type,setType] = useState(null);
     const [volume,setVolume] = useState(0.01);
+    const [profit, setProfit] = useState("")
     const [takeProfit,setTakeProfit] = useState('');
     const [stopLoss,setStopLoss] = useState('');
     const [comment,setComment] = useState('');
@@ -123,6 +124,7 @@ const LiveOrdersEntery = () => {
         const selectedType = PendingOrderTypes.find((x)=>x.value === payload?.type)
         setType(selectedType);
         setVolume(payload?.volume);
+        setProfit(payload?.profit)
         setSwap(payload?.swap)
         const formattedTime = moment(payload?.open_time).format('YYYY-MM-DDTHH:mm');
         setOpenTime(formattedTime)
@@ -197,6 +199,7 @@ const LiveOrdersEntery = () => {
     const selectedType = LiveOrderTypes.find((x)=>x.value === payload?.type)
     setType(selectedType);
     setVolume(payload?.volume);
+    setProfit(payload?.profit)
     setSwap(payload?.swap)
   
 
@@ -541,6 +544,7 @@ const handleLossChange = (newValue) => {
                         disabled={isDisabled}
                         sx={numberInputStyle}
                         varient={'standard'}
+                        s_value={true}
                         onChange={(e) =>setOpen_price (e.target.value)}
                       />
                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
@@ -600,8 +604,17 @@ const handleLossChange = (newValue) => {
                 value={swap}
                 disabled={isDisabled}
                 onChange={ (e) => setSwap(e.target.value)}
+                s_value={true}
                  />
-
+            </div>
+            <div>
+              <CustomNumberTextField
+                      label="Profit"
+                      value={profit}
+                      onChange={(e)=>setProfit(e.target.value)}
+                      disabled={isDisabled}
+                      fullWidth/>
+                {errors.profit && <span style={{ color: 'red' }}>{errors.profit}</span>}
             </div>
             <div>
             <label>Open Time</label>

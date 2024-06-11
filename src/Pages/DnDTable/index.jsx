@@ -530,15 +530,29 @@ handleClearSearch = () => {
         })
       }
   }
+   getCurrentFormattedTime() {
+    const now = new Date();
+    const options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    };
+    return now.toLocaleString('en-US', options);
+  }
   //#region Mass close order handler
   async MassCloseOrdersHandler (){
     const selectedData = this.state.data.filter(item => this.state.selectedRowKeys.includes(item.id))
     const modifiedData = selectedData?.map(item => {
       return {
-          ...item,
-          order_type: 'close'
+        ...item,
+        order_type: 'close',
+        close_time: this.getCurrentFormattedTime(),
+        close_price: item.currentPrice
       };
-  });
+    });
     if (this.state.selectedRowKeys.length > 0) {
       const Params  = {orders:modifiedData}
      this.setState({isLoading: true})

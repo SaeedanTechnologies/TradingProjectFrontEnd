@@ -251,22 +251,12 @@ const Trade = ({ trade_type}) => {
       //  debugger
     // const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
     if(trade_type === "single") {
-       
         const margin_level = calculateMarginCallPer(equity, marg)
-        if(margin_level < Number(stop_out) ) {
-          CustomNotification({ 
-              type: "error", 
-              title: "Validation", 
-              description: 'Margin must be greater than your brand stop out', 
-              key: 1 
-            })
-        }
-        else 
-        if (margin_level < trading_account.equity){
+        if(margin_level > equity || margin_level < Number(stop_out)) {
           CustomNotification({ 
             type: "error", 
             title: "Validation", 
-            description: 'Margin must be greater than or equal to your account equity', 
+            description: 'Margin must be lesser than equity and greater than brand stop out', 
             key: 1 
           })
         }
@@ -375,7 +365,11 @@ useEffect(() => {
   //   setOpen_price(bidPrice);
   // };
 
-
+  useEffect(()=> {
+                    const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(open_price)).toFixed(2));
+                    const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
+                    setMargin(margin_val)
+  }, [open_price])
   const fetchBinancehData = async (symbol, pip) => {
     try {
       const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
@@ -731,7 +725,12 @@ useEffect(() => {
                         sx={numberInputStyle}
                         varient={'standard'}
                         s_value={true}
-                        onChange={e => handleInputChange('open_price', e.target.value)}
+                        onChange={(e)=> {
+                          setOpen_price(e.target.value)
+                          const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(e.target.value)).toFixed(2));
+                          const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
+                          setMargin(margin_val)
+                        }}
                       />
                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
                     </div>
@@ -842,7 +841,8 @@ useEffect(() => {
                   {TradeTimeChips.map((option,index) => {
                     const isSelected = time_state === option;
                     return (
-                      <ListItem key={option}>
+                      <ListItem 
+                      key={option}>
                         <Chip
                         disabled={!symbol?.feed_fetch_name || loading}
                           label={`${option}`}
