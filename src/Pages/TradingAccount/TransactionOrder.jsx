@@ -239,11 +239,14 @@ const TransactionOrder = () => {
   }
 
   const handleSubmit = async (type) => {
-     // debugger
     let isApplicable = true;
 
     if (type === 'withdraw')
     {
+      if(method === 'balance' && parseFloat(amount) >  balanceCheck( currentTradingAccountData)){
+             CustomNotification({ type: "error", title: "Transaction Failed", description: `You can only withdraw this amount ${ balanceCheck( currentTradingAccountData)}`, key: 1 })
+             return;
+      }
       isApplicable = parseFloat(currentTradingAccountData[method]) >= amount;
       if (!isApplicable) {
         // setIsModalOpen(false)
@@ -286,11 +289,7 @@ const TransactionOrder = () => {
         // for update redux value
         if (type === 'withdraw' ) {
 
-          if(method === 'balance' && parseFloat(amount) >  balanceCheck( currentTradingAccountData)){
-             CustomNotification({ type: "error", title: "Transaction Failed", description: `You can only withdraw this amount ${ balanceCheck( currentTradingAccountData)}`, key: 1 })
-             return;
-          }
-
+        
           const cBal = parseFloat(currentTradingAccountData[method]) - parseFloat(amount)
           const updatedAccountData = {
             ...currentTradingAccountData,
