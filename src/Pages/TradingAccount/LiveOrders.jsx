@@ -408,12 +408,12 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   //#region Update Trading Account 
   const UpdateTradingAccountStatus = async()=>{
     const Params = {
-      margin_level_percentage:margin_level,
-      equity:equity_g,
-      commission:grandCommsion,
-      profit:grandProfit,
-      swap:totalSwap,
-      free_margin:free_margin,
+      margin_level_percentage:checkNaN(margin_level),
+      equity: checkNaN(equity_g) ,
+      commission: checkNaN(grandCommsion),
+      profit:checkNaN(grandProfit),
+      swap: checkNaN(totalSwap),
+      free_margin:checkNaN(free_margin),
       ...(margin_level < brand_margin_call && { status: "margin_call" })
     }
     const res = await Put_Trading_Account(id, Params, token)
