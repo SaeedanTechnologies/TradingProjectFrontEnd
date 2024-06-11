@@ -219,6 +219,9 @@ export const requiredMargin = (volume,accountLeverage) =>{
 export const calculateMarginCallPer  = (equity, margin)=>{
  return parseFloat((equity/margin)*100).toFixed(2)
 }
+export const checkNaN = (val) => {
+  return (isNaN(val) || !isFinite(val)) ? 0 : parseFloat(val).toFixed(2)
+}
 export const calculateFreeMargin = (equity, margin) =>{
   return parseFloat((parseFloat(equity) - parseFloat(margin)))
 }

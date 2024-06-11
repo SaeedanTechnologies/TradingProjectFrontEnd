@@ -53,6 +53,7 @@ const Trade = ({ trade_type}) => {
 }));
 
   const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [symbolsList, setSymbolsList] = useState([])
   const [symbol, setSymbol] = useState(null);
   const [order_type, setOrder_type] = useState(TradeOrderTypes.slice(0,2)[1]);
@@ -735,7 +736,7 @@ useEffect(() => {
                       {errors.open_price && <span style={{ color: 'red' }}>{errors.open_price}</span>}
                     </div>
                   :  
-                  <TradePrice label={'Price'} askPrice={pricing?.askPrice ?? ''} />  
+                  <TradePrice askPrice={pricing?.askPrice ?? ''} />  
                   // <TradePrice label={'Open Price / Ask Price'} openPrice={pricing?.openPrice ?? ''} askPrice={pricing?.askPrice ?? ''} />  
                 }
 
@@ -839,13 +840,14 @@ useEffect(() => {
                       }}
                     >
                   {TradeTimeChips.map((option,index) => {
-                   
-
-                  return (
+                    const isSelected = time_state === option;
+                    return (
                       <ListItem key={option}>
                         <Chip
+                        disabled={!symbol?.feed_fetch_name || loading}
                           label={`${option}`}
                           onClick={()=>handleChipClick(option)}
+                          style={{ backgroundColor: isSelected ? '#1CAC70' : 'default', color: isSelected ? '#fff' : 'default' }}
                         />
                       </ListItem>
                    )
@@ -856,7 +858,11 @@ useEffect(() => {
               }
                   <CandleStickChart 
                   interval={time_state}
-                  symbol={symbol?.feed_fetch_name} connected={true} pricing = {pricing}/>
+                  symbol={symbol?.feed_fetch_name} 
+                  connected={true} 
+                  pricing = {pricing}
+                  setLoading={setLoading}
+                  />
             <div className='flex flex-col bg-white shadow-lg rounded-lg p-2 text-md font-bold text-gray-400 gap-3'>
                       <div className='flex justify-between'>
                       <span >{d_lot} Lots</span>
