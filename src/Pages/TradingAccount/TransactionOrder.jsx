@@ -14,7 +14,7 @@ import moment from 'moment'
 import CustomNotification from '../../components/CustomNotification';
 import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
 import { TextField, Input, InputAdornment, FormControl, Select, InputLabel, MenuItem } from '@mui/material';
-import { CheckBrandPermission, ColumnSorter } from "../../utils/helpers";
+import { balanceCheck, CheckBrandPermission, ColumnSorter } from "../../utils/helpers";
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import { AddnewStyle } from '../Brand/style';
 import CustomModal from '../../components/CustomModal';
@@ -239,10 +239,11 @@ const TransactionOrder = () => {
   }
 
   const handleSubmit = async (type) => {
-    // debugger
+     // debugger
     let isApplicable = true;
 
-    if ( type === 'withdraw') {
+    if (type === 'withdraw')
+    {
       isApplicable = parseFloat(currentTradingAccountData[method]) >= amount;
       if (!isApplicable) {
         // setIsModalOpen(false)
@@ -283,7 +284,13 @@ const TransactionOrder = () => {
         setIsLoading(false)
         setIsModalOpen(false)
         // for update redux value
-        if (type === 'withdraw') {
+        if (type === 'withdraw' ) {
+
+          if(method === 'balance' && parseFloat(amount) >  balanceCheck( currentTradingAccountData)){
+             CustomNotification({ type: "error", title: "Transaction Failed", description: 'Insufficient balance ', key: 1 })
+             return;
+          }
+
           const cBal = parseFloat(currentTradingAccountData[method]) - parseFloat(amount)
           const updatedAccountData = {
             ...currentTradingAccountData,

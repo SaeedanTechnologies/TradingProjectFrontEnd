@@ -415,6 +415,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       commission:grandCommsion,
       profit:grandProfit,
       swap:totalSwap,
+      free_margin:free_margin,
       ...(margin_level < brand_margin_call && { status: "margin_call" })
     }
     const res = await Put_Trading_Account(id, Params, token)
