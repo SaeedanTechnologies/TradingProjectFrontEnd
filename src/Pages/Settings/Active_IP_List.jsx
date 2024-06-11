@@ -23,6 +23,7 @@ const Active_IP_List = () => {
   const [totalRecords, setTotalRecords] = useState(0)
   const [perPage, setPerPage] = useState(10)
   const [sortDirection, setSortDirection] = useState("")
+  const [SearchQueryList,SetSearchQueryList]= useState({})
 
   const dispatch= useDispatch()
   const navigate = useNavigate()
@@ -47,10 +48,34 @@ const Active_IP_List = () => {
       const columns = [
         
         {
-          title: 'IP',
+          title: <span className="dragHandler">IP</span>,
           dataIndex: 'ip_address',
-          key: '2',
+          key: '1',
           sorter: (a, b) =>  ColumnSorter(a.ip_address , b.ip_address),
+          sortDirections: ['ascend', 'descend'],
+          sortIcon: (sortDir) => {
+            if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+            if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+            return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+          },
+        },
+        {
+          title: <span className="dragHandler">Brand</span>,
+          dataIndex: 'brand_name',
+          key: '2',
+          sorter: (a, b) =>  ColumnSorter(a.brand_name , b.brand_name),
+          sortDirections: ['ascend', 'descend'],
+          sortIcon: (sortDir) => {
+            if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+            if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+            return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+          },
+        },
+        {
+          title: <span className="dragHandler">Status</span>,
+          dataIndex: 'status',
+          key: '3',
+          sorter: (a, b) =>  ColumnSorter(a.status , b.status),
           sortDirections: ['ascend', 'descend'],
           sortIcon: (sortDir) => {
             if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
@@ -60,6 +85,12 @@ const Active_IP_List = () => {
         },
         
       ];
+
+    const [newColumns , setNewColumns] = useState(columns)
+    const defaultCheckedList = columns.map((item) => item.key);
+    const [checkedList, setCheckedList] = useState(defaultCheckedList);
+
+
       const LoadingHandler = React.useCallback((isLoading)=>{
         setIsLoading(isLoading)
       },[])
@@ -69,6 +100,13 @@ const Active_IP_List = () => {
         navigate("/firewall/active-ip-list-entry")
         dispatch(setIPAddressSelectedIds([0]))
       }
+
+  
+   useEffect(() => {
+        const newCols = columns.filter(x => checkedList.includes(x.key));
+        setNewColumns(newCols)
+        }, [checkedList]);
+
     
   return (
     <Spin spinning={isLoading} size="large">
@@ -87,7 +125,7 @@ const Active_IP_List = () => {
           <CustomTable 
             direction="/firewall/active-ip-list-entry"
             formName = "Active Ips" 
-            columns={columns} 
+            columns={newColumns} 
             data={data} 
             headerStyle={headerStyle}
             total={totalRecords}
@@ -99,6 +137,7 @@ const Active_IP_List = () => {
             perPage={perPage}
             setPerPage={setPerPage}
             SearchQuery = {Search_Active_IP}
+            SearchQueryList = {SearchQueryList}
             LoadingHandler={LoadingHandler}
             //onPageChange = {onPageChange}
             setCurrentPage={setCurrentPage}

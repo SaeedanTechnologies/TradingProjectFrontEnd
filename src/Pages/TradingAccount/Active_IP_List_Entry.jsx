@@ -11,6 +11,10 @@ import CustomButton from '../../components/CustomButton'
 import { LeftOutlined, RightOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { deleteIpAddressData, setIPAddressSelectedIds, updateIpAddressData } from '../../store/IpAdressSlice'
 import { CustomBulkDeleteHandler } from '../../utils/helpers'
+import CustomAutocomplete from '../../components/CustomAutocomplete'
+import { GetBrandsList } from '../../utils/_BrandListAPI'
+import * as Yup from 'yup';
+
 
 const Active_IP_List_Entry = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -20,11 +24,48 @@ const Active_IP_List_Entry = () => {
   const IpAddressData = useSelector(({ ipAddress })=> ipAddress.ipAddressData)
   const ArrangedIpAddressData = IpAddressData;
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
+    const [errors, setErrors] = useState({}); 
+
 
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isDisabled, setIsDisabled] = useState(false)
+  const [SelectedBrand,SetSelectedBrand]  = useState(null)
+
+  const [brandList, setBrandList] = useState([])
+  const [EnabledList,SetEnabledList] = useState([
+    { id: 1, title: 'Yes', },
+    { id: 2, title: 'No' },
+  ])
+  const [Selectedenable, setSelectedEnable] = useState()
+  
+
   const dispatch = useDispatch()
+
+   
+   const validationSchema = Yup.object().shape({
+   
+    ip: Yup.string().required('Ip Address is required'),
+    
+    SelectedBrand: Yup.object().required('Select Brand is required'),
+ 
+    Selectedenable: Yup.object().required('Select Enabled Status is required'),
+  });
+
+  const getBrandsList = async (brandId) => {
+    setIsLoading(true)
+    const res = await GetBrandsList(token)
+    const { data: { success, message, payload } } = res
+    setIsLoading(false)
+    if (success) {
+      setBrandList(payload)
+      
+      const brand= payload?.find(x=>x.id===brandId)
+
+      SetSelectedBrand(brand)
+    }
+  }
+
 
 
 
@@ -87,9 +128,22 @@ const deleteHandler = ()=>{
   const {token: { colorBG },} = theme.useToken();
   
   const handleSubmit = async (e) => {
+
     e.preventDefault()
-    const params = {
-        ip_address:ip
+
+      try {
+      await validationSchema.validate({
+         ip,
+        SelectedBrand,
+        Selectedenable
+      }, { abortEarly: false });
+
+      setErrors({});
+      
+         const params = {
+        ip_address:ip,
+        brand_id: SelectedBrand?.public_key,
+        status:  Selectedenable?.title,
     }
    
 
@@ -139,6 +193,15 @@ const deleteHandler = ()=>{
         }
 
       }
+     
+
+    } catch (err) {
+      const validationErrors = {};
+      err.inner.forEach(error => {
+        validationErrors[error.path] = error.message;
+      });
+      setErrors(validationErrors);
+    }
 
 
 
@@ -163,6 +226,8 @@ const cancelHandler= ()=>{
       setTimeout(()=>{
         setIsLoading(false)
         setIp(payload?.ip_address)
+        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
+        setSelectedEnable(selectedEnab)
       }, 3000)
     }else{
        CustomNotification({
@@ -182,7 +247,9 @@ const cancelHandler= ()=>{
       setIsLoading(true)
       setTimeout(()=>{
         setIsLoading(false)
-         setIp(payload?.ip_address)
+        setIp(payload?.ip_address)
+        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(payload.enabled) ? 1 : 2));
+        setSelectedEnable(selectedEnab)
       }, 3000)
       
     }else{
@@ -198,10 +265,17 @@ const cancelHandler= ()=>{
 
  useEffect(()=>{
     if (IpAddressRowsIds?.length === 1 && parseInt(IpAddressRowsIds[0]) !== 0) { // single edit
+       getBrandsList(IpAddressData[0]?.brand?.id)
+      
+
       const cIndex = IpAddressData.findIndex(item => parseInt(item.id) === parseInt(IpAddressRowsIds[0]))
       setCurrentIndex(cIndex)
+
+
       setIsDisabled(true)
        setIp(IpAddressData[0]?.ip_address)
+        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(IpAddressData[0]?.enabled) ? 1 : 2));
+        setSelectedEnable(selectedEnab)
     } 
  },[])
 
@@ -243,16 +317,74 @@ const cancelHandler= ()=>{
             </div>
             <form onSubmit={handleSubmit}>
             <div className='grid grid-cols-1 sm:grid-cols-1 gap-8 mt-10'>
+              <div>
                 <TextField size='small'
+                fullWidth
                 label="Ip Address"
                 name="ip"
                 variant='standard'
                 value={ip}
-                onChange={(e) => setIp(e.target.value)}
+                onChange={(e) => {setIp(e.target.value)
+                  setErrors(prevErrors => ({ ...prevErrors,ip: '' }));
+                }}
                 disabled={isDisabled}
                 required  
                 />
+                {errors.ip && <span style={{ color: 'red' }}>{errors.ip}</span>}
+              </div>
+
+
+            <div>
+              <CustomAutocomplete
+                label="Enabled"
+                variant="standard"
+                disabled={isDisabled}
+                options={EnabledList}
+                value={Selectedenable}
+                getOptionLabel={(option) => option.title ? option.title : ""}
+                onChange={(event, value) => {
+                  if (value) {
+                  setSelectedEnable(value);
+                  setErrors(prevErrors => ({ ...prevErrors, Selectedenable: "" }))
+                  }
+                  else{
+                    setSelectedEnable(null);
+                  }
+                }}
+
+              />
+               {errors.Selectedenable && <span style={{ color: 'red' }}>{errors.Selectedenable}</span>}
+             </div>
+
+
+              <div>
+                <CustomAutocomplete
+                label="Brand"
+                variant="standard"
+                disabled={isDisabled}
+                options={brandList}
+                value={SelectedBrand}
+                getOptionLabel={(option) => option.name ? option.name : ""}
+                onChange={(event, value) => {
+                  
+                  if (value) {
+                  SetSelectedBrand(value)
+                  setErrors(prevErrors => ({ ...prevErrors, SelectedBrand: "" }))
+                }
+                else {
+                  SetSelectedBrand(null)
+                }
+               
+                }}
+    
+              />
+               {errors.SelectedBrand && <span style={{ color: 'red' }}>{errors.SelectedBrand}</span>}
+             </div> 
+
+
             </div>
+
+           
             <div>
                 {/* <Button 
                 type='submit'

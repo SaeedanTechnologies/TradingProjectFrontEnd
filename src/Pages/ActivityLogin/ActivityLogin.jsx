@@ -21,11 +21,9 @@ const ActivityLogin = () => {
     token: { colorBG, TableHeaderColor, colorPrimary },
   } = theme.useToken();
   const dispatch = useDispatch()
-  const userPermissions = useSelector((state) => state?.user?.user?.user?.permissions)
-    const userBrand = useSelector((state)=> state?.user?.user?.brand)
+    const user_id = useSelector(({user})=>user?.user?.user?.id)
 
-  const currentTradingAccountData = useSelector(({ tradingAccountGroup }) => tradingAccountGroup.tradingAccountGroupData)
-  const [current_ip, setCurrent_IP] = useState("")
+ 
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
   const [SearchQueryList,SetSearchQueryList]= useState({})
@@ -125,10 +123,9 @@ const ActivityLogin = () => {
         // setCurrent_IP(ip.ip)
         // setIsLoading(false)
 
-        // SetSearchQueryList({
-        //   page:CurrentPage,
-        //   perPage
-        // })
+        SetSearchQueryList({
+          user_id
+        })
       
   
     })()

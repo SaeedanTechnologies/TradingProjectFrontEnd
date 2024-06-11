@@ -1,4 +1,4 @@
-import { theme, Spin } from 'antd';
+import { theme, Spin,Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -11,10 +11,13 @@ import CustomButton from '../../../components/CustomButton';
 import { Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
 import { GetAskBidData, GetCryptoData } from '../../../utils/_ExchangeAPI'
 import { useSelector } from 'react-redux';
-import { SelectFeedDataById, UpdateDataFeed, feedDataPost, getFeedServer } from '../../../utils/_DataFeedAPI'
+import { DeleteSymbolData, GetDataFeeds, SelectFeedDataById, UpdateDataFeed, feedDataPost, getFeedServer } from '../../../utils/_DataFeedAPI'
 import CustomNotification from '../../../components/CustomNotification';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { CaretDownOutlined } from '@ant-design/icons';
+import { CustomDeleteDeleteHandler } from '../../../utils/helpers';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 const NewFeedDaata = () => {
     const token = useSelector(({ user }) => user?.user?.token)
@@ -36,6 +39,7 @@ const NewFeedDaata = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [selectedFeed, setSelectedFeed] = useState(null)
     const [isEnabled, setIsEnabled] = useState(true)
+      const [isDisabled, setIsDisabled] = useState(parseInt(id) === 0? false: true)
 
 
     const handleInputChange = (fieldName, value) => {
@@ -57,6 +61,10 @@ const NewFeedDaata = () => {
                 break;
         }
     };
+
+    const fetchData =  () => {
+    navigate('/data-feed')
+  }
 
     const fetchServerData = async () => {
         setIsLoading(true)
@@ -184,18 +192,36 @@ const NewFeedDaata = () => {
         setPassword('');
     };
 
+
+  
+
+
+
+
     return (
         <Spin spinning={isLoading} size="large">``
             <div className='p-8' style={{ backgroundColor: colorBG }}>
-                <div className='flex gap-3 items-center'>
-                    <img
-                        src={ARROW_BACK_CDN}
-                        alt='back icon'
-                        className='cursor-pointer'
-                        onClick={() => navigate(-1)}
-                    />
-                    <h1 className='text-2xl font-semibold'>{parseInt(id) === 0 ? 'Add New Data Feed' : 'Edit Data Feed'}</h1>
+                <div className="flex justify-between">
+                    <div className='flex gap-3 items-center '>
+
+                
+                        <img
+                            src={ARROW_BACK_CDN}
+                            alt='back icon'
+                            className='cursor-pointer'
+                            onClick={() => navigate(-1)}
+                        />
+                        <h1 className='text-2xl font-semibold'>{parseInt(id) === 0 ? 'Add New Data Feed' : 'Edit Data Feed'}</h1>
+
+                    </div> 
+                    { isDisabled && (
+                    <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
+                        <EditOutlined style={{ fontSize: "24px", color: colorPrimary, cursor: 'pointer' }}  onClick={()=>setIsDisabled(false)}/>
+                    </div>  )}
                 </div>
+                
+               
+
                 <div className='border rounded-lg p-4'>
 
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-8'>
@@ -204,6 +230,8 @@ const NewFeedDaata = () => {
                                 key={4}
                                 name={"name"}
                                 label="Name"
+                                disabled={isDisabled}
+                                s_value={true}
                                 varient="standard"
                                 value={name}
                                 onChange={(e) => handleInputChange("name", e.target.value)}
@@ -216,6 +244,7 @@ const NewFeedDaata = () => {
                                 label="Select Feed Name"
                                 variant="standard"
                                 options={feed_name}
+                                disabled={isDisabled}
                                 value={selectedFeed}
                                 getOptionLabel={(option) => option.name ? option.name : ""}
                                 onChange={(event, value) => {
@@ -237,6 +266,7 @@ const NewFeedDaata = () => {
                                     <CustomTextField
                                         name={item.name}
                                         label={item.label}
+                                         disabled={isDisabled}
                                         varient="standard"
                                         onChange={(e) => handleInputChange(item.name, e.target.value)}
                                     />
@@ -249,6 +279,7 @@ const NewFeedDaata = () => {
                             control={
                             <Switch 
                             checked={isEnabled} 
+                             disabled={isDisabled}
                             onChange={(e)=> setIsEnabled(e.target.checked)} />
                             }
                             label="Is Enabled"  
@@ -270,7 +301,7 @@ const NewFeedDaata = () => {
                             }}
                             onClick={() => navigate(-1)}
                         />
-                        <CustomButton
+                        { !isDisabled && <CustomButton
 
                             Text={parseInt(id) === 0 ? 'Submit' : 'Update'}
                             style={{
@@ -281,8 +312,24 @@ const NewFeedDaata = () => {
                                 zIndex: '100'
                             }}
                             onClickHandler={handleSubmit}
-                        // loading={isLoading}
-                        />
+                        />}
+
+                        { parseInt(id) !== 0 &&
+                        <CustomButton
+
+                            Text={'Delete'}
+                            style={{
+                                padding: '16px',
+                                height: '48px',
+                                width: '200px',
+                                borderRadius: '8px',
+                                zIndex: '100',
+                                backgroundColor: "#D52B1E",
+                                borderColor:"#D52B1E"
+                            }}
+                            onClickHandler={()=> CustomDeleteDeleteHandler(id, token, DeleteSymbolData, setIsLoading, fetchData)}
+                        />    
+                    } 
                     </div>
                 </div>
             </div>

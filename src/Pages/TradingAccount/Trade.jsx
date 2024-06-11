@@ -104,14 +104,18 @@ const Trade = ({ trade_type}) => {
 
   const handleVolumeChange = (newValue) => {
     setLotSize(symbol?.lot_size * newValue)
+                    
                     setD_lot(newValue)
                     const pipValue = addZeroBeforeOne(symbol?.pip) * parseFloat(newValue) * parseFloat(symbol?.lot_size)
                     setPipVal(pipValue)
-                    const res = (parseFloat(parseFloat(newValue) * parseFloat(symbol?.lot_size) * parseFloat(pricing?.askPrice)).toFixed(2));
-                    const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
+                   
+
+                    const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.askPrice) / conditionalLeverage(trading_account,symbol)
+                    const margin_val = res * parseFloat(newValue)
+
                     setMargin(margin_val)
                     // const margin_level =  calculateMarginCallPer(equity, margin)
-    setVolume(newValue)
+                    setVolume(newValue)
   }
   //#region inputChange
   const handleInputChange = (fieldName, value) => {
@@ -591,6 +595,7 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
+                    
                     setLotSize(value?.lot_size)
                     setD_lot(value?.vol_min)
                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
@@ -608,8 +613,9 @@ useEffect(() => {
                     setSymbol(value)
                       if(value?.feed_name === 'binance'){ 
                       fetchBinancehData(value?.feed_fetch_name, value?.pip,).then((result) => {
-                        const res = (parseFloat(parseFloat(value?.vol_min) * parseFloat(value?.lot_size) * parseFloat(result?.askPrice)).toFixed(2));
-                        const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
+                        const res  = parseFloat(value?.lot_size) * parseFloat(result?.askPrice) / conditionalLeverage(trading_account,symbol)
+                        const margin_val = res * parseFloat(value?.vol_min)
+                        
                         setMargin(margin_val)
                       }).catch((err) => {
                         console.log(err)
