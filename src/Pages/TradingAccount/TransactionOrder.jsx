@@ -287,7 +287,7 @@ const TransactionOrder = () => {
         if (type === 'withdraw' ) {
 
           if(method === 'balance' && parseFloat(amount) >  balanceCheck( currentTradingAccountData)){
-             CustomNotification({ type: "error", title: "Transaction Failed", description: 'Insufficient balance ', key: 1 })
+             CustomNotification({ type: "error", title: "Transaction Failed", description: `You can only withdraw this amount ${ balanceCheck( currentTradingAccountData)}`, key: 1 })
              return;
           }
 
