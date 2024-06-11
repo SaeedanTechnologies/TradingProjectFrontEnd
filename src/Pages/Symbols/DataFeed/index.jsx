@@ -65,6 +65,8 @@ const Index = () => {
         </div>
         <div className='grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-6'>
           {DataFeedList.map(val => <FeedCard id={val.id} feedName={val.name} feedServer={val.feed_server} enabled={val.enabled} fetchData={fetchData} />)}
+          
+       
         </div>
       </div>
     </Spin>
