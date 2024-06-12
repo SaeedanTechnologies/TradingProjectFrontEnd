@@ -9,6 +9,7 @@ import { useDispatch,useSelector } from 'react-redux';
 const CustomTable = ({setRefreshData,refreshData, searchQueryManipulation, columns, data, current_page, total, headerStyle, onPageChange, 
   direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData,setCurrentData, setTotalRecords,setCurrentPage, setLastPage,
   table_name, setSortDirection, perPage, setPerPage, editPermissionName,
+  hideDeleteEdit,
    deletePermissionName, SearchQuery,SearchQueryList,LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId}) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()

@@ -52,17 +52,17 @@ const Active_IP_List_Entry = () => {
     Selectedenable: Yup.object().required('Select Enabled Status is required'),
   });
 
-  const getBrandsList = async (brandId) => {
+  const getBrandsList = async (brandId = null) => {
     setIsLoading(true)
     const res = await GetBrandsList(token)
     const { data: { success, message, payload } } = res
     setIsLoading(false)
     if (success) {
       setBrandList(payload)
-      
+      if(brandId !==null){
       const brand= payload?.find(x=>x.id===brandId)
-
       SetSelectedBrand(brand)
+      }
     }
   }
 
@@ -266,16 +266,15 @@ const cancelHandler= ()=>{
  useEffect(()=>{
     if (IpAddressRowsIds?.length === 1 && parseInt(IpAddressRowsIds[0]) !== 0) { // single edit
        getBrandsList(IpAddressData[0]?.brand?.id)
-      
-
       const cIndex = IpAddressData.findIndex(item => parseInt(item.id) === parseInt(IpAddressRowsIds[0]))
       setCurrentIndex(cIndex)
-
-
       setIsDisabled(true)
        setIp(IpAddressData[0]?.ip_address)
-        const selectedEnab = EnabledList.find(item => item.id === (parseFloat(IpAddressData[0]?.enabled) ? 1 : 2));
-        setSelectedEnable(selectedEnab)
+      const selectedEnab = EnabledList.find(item => item.id === (parseFloat(IpAddressData[0]?.enabled) ? 1 : 2));
+       setSelectedEnable(selectedEnab)
+    }
+    else {
+      getBrandsList()
     } 
  },[])
 

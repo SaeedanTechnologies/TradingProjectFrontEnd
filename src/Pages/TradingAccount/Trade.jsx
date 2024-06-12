@@ -370,10 +370,10 @@ useEffect(() => {
   // };
 
   useEffect(()=> {
-                    const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(open_price)).toFixed(2));
+                    const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
                     const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
                     setMargin(margin_val)
-  }, [open_price])
+  }, [pricing.openPrice])
   const fetchBinancehData = async (symbol, pip) => {
     try {
       const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${symbol}`
@@ -615,7 +615,6 @@ useEffect(() => {
                       fetchBinancehData(value?.feed_fetch_name, value?.pip,).then((result) => {
                         const res  = parseFloat(value?.lot_size) * parseFloat(result?.askPrice) / conditionalLeverage(trading_account,symbol)
                         const margin_val = res * parseFloat(value?.vol_min)
-                        
                         setMargin(margin_val)
                       }).catch((err) => {
                         console.log(err)
@@ -733,7 +732,7 @@ useEffect(() => {
                         s_value={true}
                         onChange={(e)=> {
                           setOpen_price(e.target.value)
-                          const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(e.target.value)).toFixed(2));
+                          const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
                           const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
                           setMargin(margin_val)
                         }}

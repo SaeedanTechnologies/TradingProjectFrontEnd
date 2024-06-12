@@ -726,6 +726,7 @@ handleClearSearch = () => {
                   direction = {this.props.direction}
                   MassCloseOrdersHandler={this.MassCloseOrdersHandler}
                   addButton = {this.props.addButton}
+                  hideDeleteEdit ={this.props.hideDeleteEdit}
                 />
               ) : (
                 <CustomButton

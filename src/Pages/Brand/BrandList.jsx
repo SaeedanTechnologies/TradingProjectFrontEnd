@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Space, Spin, theme } from 'antd';
 import { DeleteOutlined, EditOutlined, CaretUpOutlined,CaretDownOutlined , PlusCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-
+import { message } from 'antd';
 import CustomTable from '../../components/CustomTable'
 import CustomButton from '../../components/CustomButton'
 import CustomModal from '../../components/CustomModal'
@@ -23,6 +23,7 @@ const BrandList = () => {
   const dispatch = useDispatch();
   
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
+  const i_frame = "<iframe src=\"https://tradingfrontend.saeedantechpvt.com/terminal\" height=\"90px\" width=\"40px\"></iframe>";
 
 
   const columns = [
@@ -175,8 +176,28 @@ const BrandList = () => {
       }}>Brand Login Activity</span>
       
     },
+    {
+      title:<span className="dragHandler">Copy Iframe</span>,
+      dataIndex: 'copy_iframe', 
+      key: '11',
+      render: (_, record) => <span className='cursor-pointer' style={{ color: colorPrimary, fontWeight: '600' }}  onClick={(e) => {
+        e.stopPropagation();
+        copyToClipboard(i_frame)
+      }}>Copy Iframe</span>
+      
+    },
   ];
 
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        message.success('Iframe value copied to clipboard!'); 
+      })
+      .catch((err) => {
+        message.error('Failed to copy!'); // Show error message
+        console.error('Failed to copy: ', err);
+      });
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [BrandsList, setBrandsList] = useState([]) 
   const defaultCheckedList = columns.map((item) => item.key);

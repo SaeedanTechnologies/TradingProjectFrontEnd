@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Autocomplete, TextField,InputAdornment } from '@mui/material'
 import { EditOutlined } from '@mui/icons-material';
 import { numberInputStyle } from '../TradingAccount/style';
-import { CheckBrandPermission, CustomBulkDeleteHandler } from '../../utils/helpers';
+import { CheckBrandPermission, CustomBulkDeleteHandler, addZeroBeforeOne, calculateNumOfPip, calculateProfitLoss, getOpenPriceFromAPI, isIncrement, perPipProfit } from '../../utils/helpers';
 import { GenericEdit,GenericDelete } from '../../utils/_APICalls';
 import CustomNotification from '../../components/CustomNotification';
 import { AllSymbelSettingList,  SymbolSettingPost, UpdateSymbolSettings } from '../../utils/_SymbolSettingAPICalls';
@@ -51,32 +51,17 @@ const TradingAccountLiveOrderEntry = () => {
     const [profit,setProfit] = useState('')
     const [trading_account_id,setTrading_account_id] = useState(0)
     const [open_time, setOpenTime] = useState("")
-
-
-
-  const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  const [symbolName, setSymbolName] = useState('')
-  const [SelectedLeverage, setSelectedLeverage] = useState(null)
-  const [errors, setErrors] = useState({});
-
-  const [selectedFeedName, setSelectedFeedName] = useState(null)
-  const [SelectedSymbol, setSelectedSymbol] = useState(null)
-
-  const [swap, setSwap] = useState('')
-  const [lotSize, setLotSize] = useState('')
-  const [lotSteps, setLotSteps] = useState('')
-  const [volMin, setVolMin] = useState('')
-  const [volMax, setVolMax] = useState('')
-  const [commission, setCommission] = useState('')
-  
-  const [selectedPip,setSelectedPip] = useState(null)
-  const [Selectedenable, setSelectedEnable] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  
-  const [isDisabled, setIsDisabled] = useState(false)
-  const [connected, setConnected] = useState(false);
+    const [per_pip, setPerPip] = useState("")
+    const [no_of_pip, setNo_Ofpip] = useState("")
+    const [open_p_step, setOpen_P_Step] = useState("")
+    const [init_open_price, setInitOpenPrice] = useState("")
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const [pipVal, setpipVal] = useState("");
+    const [errors, setErrors] = useState({});
+    const [swap, setSwap] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const [isDisabled, setIsDisabled] = useState(false)
+    const [connected, setConnected] = useState(false);
 
  
 
@@ -180,7 +165,6 @@ const TradingAccountLiveOrderEntry = () => {
 
     const res = await Get_Single_Trade_Order(LiveOrdersRowsIds[0], token)
     const { data: { message, payload, success } } = res
-
     setIsLoading(false)
     if (success) {
     const selectedSymbolList =  SymbolsList?.find((x)=> x.feed_fetch_name === payload?.symbol)
@@ -198,18 +182,29 @@ const TradingAccountLiveOrderEntry = () => {
     setComment(payload?.comment);
     setTrading_account_id(payload?.trading_account_id)
     setBrand_id(payload?.brand_id)
+    const { askPrice, bidPrice } = await getOpenPriceFromAPI(payload?.symbol, payload?.feed_name);
+    const pipVal = payload?.symbol_setting?.pip ? payload?.symbol_setting?.pip : 5;
+    setpipVal(pipVal)
+    const open_price = parseFloat(payload?.open_price).toFixed(pipVal);
+    setOpen_price(open_price)
+    setInitOpenPrice(open_price)
+    const currentPrice = payload?.type === "sell" ? parseFloat(askPrice).toFixed(pipVal) ?? 0 : parseFloat(bidPrice).toFixed(pipVal) ?? 0;
+    const total_num_of_pip = parseFloat(calculateNumOfPip(currentPrice, parseFloat(payload?.open_price), payload?.type, parseInt(pipVal))).toFixed(2)
+    const profit =calculateProfitLoss(total_num_of_pip, parseFloat(payload?.volume));
+    setProfit(profit)
+    setNo_Ofpip(total_num_of_pip)
+    const per_pip = perPipProfit(profit, total_num_of_pip)
+    setPerPip(per_pip)
+    setOpen_P_Step(addZeroBeforeOne(pipVal))
 
     }
-
-    
-
-
-    
-
-
-
   }
-
+  const onProfitChange = (e) => {
+    const profit = e.target.value
+    const open_p = (addZeroBeforeOne(pipVal) * Number(profit / per_pip)) + Number(init_open_price) 
+    setOpen_price(open_p)
+    setProfit(profit)
+  }
   useEffect(()=>{
    
      if (LiveOrdersRowsIds?.length === 1 && parseInt(LiveOrdersRowsIds[0]) === 0) { // save
@@ -310,6 +305,18 @@ const handleVolumeChange = (newValue) => {
     setVolume(newValue)
   }
   const handleOpenPriceChange = (newValue) => {
+    const is_increment = isIncrement(open_price, newValue)
+    let num_of_pip = 0;
+    if(is_increment) {
+      num_of_pip = Number(no_of_pip) +1
+      setNo_Ofpip(num_of_pip)
+    }
+    else{
+      num_of_pip = Number(no_of_pip) - 1
+      setNo_Ofpip(num_of_pip)
+    }
+    const profit = num_of_pip * per_pip
+    setProfit(profit)
     setOpen_price(newValue)
   }
 const handleProfitChange = (newValue) => {
@@ -542,10 +549,11 @@ const handleLossChange = (newValue) => {
               <CustomNumberTextField
                       label="Open Price"
                       value={open_price}
-                      initialFromState={0.01}
+                      initialFromState={open_price || 0}
                       onChange={handleOpenPriceChange}
                       disabled={isDisabled}
                       fullWidth
+                      step={open_p_step ? parseFloat(open_p_step) : 1}
                     />
                 {errors.volume && <span style={{ color: 'red' }}>{errors.open_price}</span>}
             </div>
@@ -585,6 +593,8 @@ const handleLossChange = (newValue) => {
                 value={comment}
                 disabled={isDisabled}
                 onChange={e => setComment(e.target.value)}
+                s_value={true}
+
                  />
             </div>
 
@@ -596,6 +606,7 @@ const handleLossChange = (newValue) => {
                 value={swap}
                 disabled={isDisabled}
                 onChange={e => setSwap(e.target.value)}
+                s_value={true}
                  />
             </div>
               <div>
@@ -615,7 +626,8 @@ const handleLossChange = (newValue) => {
                 varient={'standard'}
                 value={profit}
                 disabled={isDisabled}
-                onChange={e => setProfit(e.target.value)}
+                onChange={onProfitChange}
+                s_value={true}
                  />
             </div>
 

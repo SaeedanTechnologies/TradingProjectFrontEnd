@@ -180,6 +180,10 @@ export function addZeroAfterOne(num) {
   }
   return parseInt(resultStr);
 }
+export const isIncrement = (old_value, new_value) => {
+return old_value < new_value ? true : false
+}
+
 export function addZeroBeforeOne(num) {
   let resultStr = '0.';
   for (let i = 0; i < num-1; i++) {
@@ -188,16 +192,22 @@ export function addZeroBeforeOne(num) {
   resultStr +="1";
   return parseFloat(resultStr);
 }
-
-
-export const calculateProfitLoss = (currentPrice, entryPrice, direction, volume,pip)=> {
-let profit = 0
+export const perPipProfit = (profit, num_of_pip) => {
+  return (profit / num_of_pip) 
+}
+export const calculateNumOfPip = (currentPrice, entryPrice, direction,pip) => {
+  let profit = 0
 if (direction === 'buy') {
     profit =  (parseFloat(currentPrice).toFixed(pip) - parseFloat(entryPrice).toFixed(pip)) ;
 } else {
      profit= parseFloat(entryPrice).toFixed(pip) - parseFloat(currentPrice).toFixed(pip);  
 }
-return (numberFormat(profit, pip) * addZeroAfterOne(pip)) * volume
+return (numberFormat(profit, pip) * addZeroAfterOne(pip)) 
+}
+export const calculateProfitLoss = (no_of_pip, volume)=> {
+
+return no_of_pip * volume
+
 }
 
 export const calculateLotSize = (num, lotSize, currentPrice)=>{

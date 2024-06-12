@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import moment from 'moment'
 import CustomTextField from "../../components/CustomTextField";
+import { Box, Button } from "@mui/material";
+import { message } from "antd";
 
 
 const SettingsInfo = () => {
@@ -15,23 +17,52 @@ const SettingsInfo = () => {
       {id: 4,    label:'Margin Call',varient:'standard',value:brandDetail.margin_call },
       {id: 5,    label:'Domain', varient: 'standard',value:brandDetail.domain },
     ]
+    const i_frame2 = "<iframe src=\"https://en.wikipedia.org/wiki/Main_Page\" height=\"300px\" width=\"800px\"></iframe>";
 
-  return (
+    const i_frame = <iframe src="https://en.wikipedia.org/wiki/Main_Page" height="300px" width="800px"></iframe>
+    const copyToClipboard = (text) => {
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          message.success('Iframe value copied to clipboard!'); 
+        })
+        .catch((err) => {
+          message.error('Failed to copy!'); // Show error message
+          console.error('Failed to copy: ', err);
+        });
+    };
+    return (
+    <Box>
+
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
         {brandsFields.map((field)=>(
-        
-        <div>
+          
+          <div>
             <CustomTextField
                 name={field.name} 
                 varient={field.varient} 
                 label={field.label}
                 value={field.value}
                 disabled={true}
-                    />
+                s_value={true}
+                />
           </div>             
 
-        ))}
+))}
     </div>
+        <Box sx={{mt:10, height:"50vh", display:'flex', 
+          justifyContent:"center", 
+          alignItems:"center",
+          flexDirection:"column"
+          }}>
+            {i_frame}
+        <Button variant="contained" sx={{mt:5}}
+        onClick={()=>copyToClipboard(i_frame2)}
+        >
+          Copy to clipboard
+        </Button>
+
+        </Box>
+</Box>
    
   )
 }

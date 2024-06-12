@@ -66,7 +66,7 @@ import BrandActivityLogin from '../Pages/Brand/BrandActivityLogin';
 import BrandActivityLoginEntry from '../Pages/Brand/BrandActivityLoginEntry'
 import Active_IP_List from '../Pages/Settings/Active_IP_List';
 import Active_IP_List_Entry from '../Pages/TradingAccount/Active_IP_List_Entry';
-
+import Terminal from '../Pages/Terminal'
 
 
 export const router = createBrowserRouter([
@@ -78,6 +78,7 @@ export const router = createBrowserRouter([
       { path: "/", element: <Navigate to="sign-in" replace /> }
     ],
   },
+  { path: "/terminal", element: <Terminal  /> },
     
   {
     path: "/",

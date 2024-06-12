@@ -11,7 +11,7 @@ import TransactionOrder from './TransactionOrder';
 import { Get_Trade_Order } from '../../utils/_TradingAPICalls';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import { CheckBrandPermission, calculateMargin, calculateNights, calculateProfitLoss, conditionalLeverage, getCurrentDateTime, getOpenPriceFromAPI } from "../../utils/helpers";
+import { CheckBrandPermission, calculateMargin, calculateNights, calculateNumOfPip, calculateProfitLoss, conditionalLeverage, getCurrentDateTime, getOpenPriceFromAPI } from "../../utils/helpers";
 import { LeverageList } from '../../utils/constants';
 import { setLiveOrdersData } from '../../store/LiveOrderSlice';
 import PendingOrder from './PendingOrder';
@@ -59,7 +59,8 @@ const TradingAccountDetails = () => {
         const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
         const open_price = parseFloat(x?.open_price).toFixed(pipVal);
         const currentPrice = x.type === "sell" ? parseFloat(askPrice).toFixed(pipVal) ?? 0 : parseFloat(bidPrice).toFixed(pipVal) ?? 0;
-        const profit = parseFloat(calculateProfitLoss(currentPrice, parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
+        // const profit = parseFloat(calculateProfitLoss(currentPrice, parseFloat(x.open_price), x.type, parseFloat(x.volume), parseInt(pipVal))).toFixed(2);
+        const profit =calculateProfitLoss(parseFloat(calculateNumOfPip(currentPrice, parseFloat(x?.open_price), x?.type, parseInt(pipVal))).toFixed(2), parseFloat(x?.volume));        
         totalProfit += parseFloat(profit);
         const res = (parseFloat(parseFloat(x.volume) * parseFloat(x?.symbol_setting?.lot_size) * x.open_price).toFixed(2));
         const margin = calculateMargin(res, conditionalLeverage(x?.trading_account,x?.symbol_setting));
@@ -80,8 +81,6 @@ const TradingAccountDetails = () => {
       setGrandMargin(totalMargin.toFixed(2));
       setTotalSwap(_totalSwap.toFixed(2));
       setTotalCommission(t_commission.toFixed(2));
-    
-  
     return updatedData;
   }
   const setCloseManipulatedData = (data) => {
