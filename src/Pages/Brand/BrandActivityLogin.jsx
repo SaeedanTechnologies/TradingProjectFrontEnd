@@ -170,7 +170,8 @@ const BrandActivityLogin = () => {
         <div className="mb-4 grid grid-cols-1 gap-4 mt-4">
 
           <CustomTable
-            direction="/brand-login-activity-entry"
+            // direction="/brand-login-activity-entry"
+            hideDeleteEdit={true}
             formName="Login Activities"
             columns={newColumns}
             data = {activitiesData}

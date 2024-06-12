@@ -191,7 +191,7 @@ const ActivityLogin = () => {
         <div className="mb-4 grid grid-cols-1  gap-4 mt-4">
 
           <CustomTable
-            direction="/login-activity-entry"
+            // direction="/login-activity-entry"
             formName="Login Activities"
             columns={newColumns}
             data = {activitiesData}

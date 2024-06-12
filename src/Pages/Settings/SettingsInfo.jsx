@@ -17,9 +17,8 @@ const SettingsInfo = () => {
       {id: 4,    label:'Margin Call',varient:'standard',value:brandDetail.margin_call },
       {id: 5,    label:'Domain', varient: 'standard',value:brandDetail.domain },
     ]
-    const i_frame2 = "<iframe src=\"https://en.wikipedia.org/wiki/Main_Page\" height=\"300px\" width=\"800px\"></iframe>";
+    const i_frame= "<iframe src=\"https://tradingfrontend.saeedantechpvt.com/terminal\"></iframe>";
 
-    const i_frame = <iframe src="https://en.wikipedia.org/wiki/Main_Page" height="300px" width="800px"></iframe>
     const copyToClipboard = (text) => {
       navigator.clipboard.writeText(text)
         .then(() => {
@@ -56,7 +55,7 @@ const SettingsInfo = () => {
           }}>
             {i_frame}
         <Button variant="contained" sx={{mt:5}}
-        onClick={()=>copyToClipboard(i_frame2)}
+        onClick={()=>copyToClipboard(i_frame)}
         >
           Copy to clipboard
         </Button>
