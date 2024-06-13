@@ -24,7 +24,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
   const token = useSelector(({ user }) => user?.user?.token)
   const liveOrdersData = useSelector(({tradingAccount})=> tradingAccount.liveOrdersData)
-  const {balance, currency, leverage, brand_margin_call, id, credit, bonus, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
+  const {balance, currency, leverage, brand_margin_call, id, credit, bonus,total_withdraw, commission, tax} = useSelector(({tradingAccountGroup})=> tradingAccountGroup?.tradingAccountGroupData )
   // const prev_data = useSelector((state)=>state.tradingAccountGroup.tradingAccountGroupData)
   const {value: accountLeverage} = LeverageList?.find(x=> x.title === leverage) ||  { value: '', title: '' }
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
@@ -445,6 +445,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
                       Equity: {checkNaN(equity_g)} &nbsp;
                       Credit: {checkNaN(credit)}  &nbsp;
                       Bonus: {checkNaN(bonus)}  &nbsp;
+                      Total Withdraw: {checkNaN(total_withdraw)}  &nbsp;
                       <span> Margin: {checkNaN(margin)}</span>&nbsp;
                       Free Margin: {checkNaN(free_margin)} &nbsp;
                        <span>Margin Level: {checkNaN(margin_level)} %</span>
