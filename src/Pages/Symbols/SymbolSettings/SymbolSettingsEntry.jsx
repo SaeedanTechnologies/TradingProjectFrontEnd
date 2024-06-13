@@ -369,7 +369,7 @@ const SymbolSettingsEntry = () => {
         speed_max: 'abc',
         lot_size: lotSize || '',
         lot_step: lotSteps || '',
-        commission: commission || '',
+        commission: commission.toString() || '',
         enabled: Selectedenable ? (Selectedenable.title === 'Yes' ? 1 : 0) : 0,
         pip: selectedPip?.value || '',
         leverage: SelectedLeverage?.value || '',
