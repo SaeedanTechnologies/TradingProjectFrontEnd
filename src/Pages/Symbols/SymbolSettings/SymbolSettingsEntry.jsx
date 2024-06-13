@@ -380,7 +380,7 @@ const SymbolSettingsEntry = () => {
         vol_max: volMax || ''
       };
       
-      if (SymbolSettingIds.length === 1 && (parseInt(SymbolSettingIds[0]) === 0 || SymbolSettingIds[0] === undefined))  { // save 
+      if (SymbolSettingIds?.length === 1 && (parseInt(SymbolSettingIds[0]) === 0 || SymbolSettingIds[0] === undefined))  { // save 
           await validationSchema.validate({
           SymbolGroup: selectedGroup,
           symbolName: symbolName,
@@ -569,12 +569,12 @@ const SymbolSettingsEntry = () => {
             />
             {
               isDisabled ? <h1 className='text-2xl font-semibold'>Preview Symbol Setting</h1> :
-                <h1 className='text-2xl font-semibold'>{SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Add Symbol Setting' : 'Edit Symbol Setting'}</h1>
+                <h1 className='text-2xl font-semibold'>{SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Add Symbol Setting' : 'Edit Symbol Setting'}</h1>
             }
           </div>
           {/* toolbar */}
-          {(isDisabled && SymbolSettingIds.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-          {(SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 && isDisabled)  &&
+          {(isDisabled && SymbolSettingIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
+          {(SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 && isDisabled)  &&
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
            <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
             <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
@@ -898,7 +898,7 @@ const SymbolSettingsEntry = () => {
           {
             !isDisabled &&  <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
             <CustomButton
-              Text={ SymbolSettingIds.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Submit' : 'Update'}
+              Text={ SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Submit' : 'Update'}
               style={{
                 padding: '16px',
                 height: '48px',
