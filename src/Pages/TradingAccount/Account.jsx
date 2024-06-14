@@ -50,7 +50,7 @@ const ChkBoxesControl = [
     control:'CustomCheckbox',
     label:'Enable This Account',
     value:enable,
-    key:'enable'
+    key:'enable',
   },
   {
     id:6,

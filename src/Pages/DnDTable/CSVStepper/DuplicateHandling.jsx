@@ -19,7 +19,7 @@ const DuplicateHandling = () => {
     const [backArrowToggle,setBackArrowToggle] = useState(false)
 
 
-    const ChkBoxesControl = [
+ const ChkBoxesControlLeft = [
   {
     id:5,
     control:'CustomCheckbox',
@@ -51,43 +51,56 @@ const DuplicateHandling = () => {
   },
     ]
 
+    const [chkBoxesControlLeft,setChkBoxesControlLeft] = useState(ChkBoxesControlLeft)
+    const [chkBoxesControlRight,setChkBoxesControlRight] = useState([])
+
+
+   
+
   const handleInputChange = (fieldName, value) => {
-    // debugger
+
     switch (fieldName) {
       case 'enable':
-       
-      setEnable(value) 
-      
-
-
+          setEnable(value) 
+         
         break;
         case 'enable_password_change':
          setEnable_password_change(value)
+         
          break;
         case 'enable_investor_trading':
          setEnable_investor_trading(value) 
+         
         break;
         case 'change_password_at_next_login':
         setChange_password_at_next_login(value)
+        
         break;
 
     }
   };
 
   const handleForward = () => {
-  // Handle forward button click logic here
-  setForwardArrowToggle(true)
+    const checkedLeftItems = chkBoxesControlLeft.filter(item => item.value);
+  const updatedLeftArray = chkBoxesControlLeft.filter(item => !item.value);
+  const updatedRightArray = [...chkBoxesControlRight, ...checkedLeftItems];
+
+  setChkBoxesControlLeft(updatedLeftArray);
+  setChkBoxesControlRight(updatedRightArray);
 };
 
-  const handleBack = () => {
-  // Handle back button click logic here
-    setBackArrowToggle(!backArrowToggle)
+ const handleBack = () => {
+    
+ const checkedRightItems = chkBoxesControlRight.filter(item => item.value);
+  const updatedRightArray = chkBoxesControlRight.filter(item => !item.value);
+  const updatedLeftArray = [...chkBoxesControlLeft, ...checkedRightItems];
+
+  setChkBoxesControlLeft(updatedLeftArray);
+  setChkBoxesControlRight(updatedRightArray); 
+
 };
-
-
 
     
-
   return (
     
         <Stack sx={{py:3}}>
@@ -115,8 +128,8 @@ const DuplicateHandling = () => {
                     
                     <Stack direction="row" justifyContent={"space-between"} sx={{width:"70%"}}>
                         <div className='bg-white shadow-md w-[300px] py-6 px-4'>
-                            {ChkBoxesControl.map(item=><CustomCheckbox key={item.id} label={item.label} 
-                            checked={item.value} onChange={(event)=> handleInputChange(item.key, event.target.checked)}
+                            {chkBoxesControlLeft?.map(item=><CustomCheckbox key={item?.id} label={item?.label} 
+                            checked={item?.value} onChange={(event)=> handleInputChange(item?.key, event.target.checked)}
                             /> )}
                         </div>
                         
@@ -134,8 +147,8 @@ const DuplicateHandling = () => {
                         </Stack>
 
                         <div className='bg-white shadow-md w-[300px]  py-6 px-4'>
-                            {ChkBoxesControl.map(item=> forwardArrowToggle && !!item.value && <CustomCheckbox key={item.id} label={item.label} 
-                            checked={item.value} onChange={(event)=> handleInputChange(item.key, event.target.checked)}
+                            {chkBoxesControlRight?.map(item=>  <CustomCheckbox key={item?.id} label={item?.label} 
+                            checked={item?.value} onChange={(event)=> handleInputChange(item?.key, event.target.checked)}
                             /> )}
 
                         </div>

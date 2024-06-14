@@ -110,7 +110,7 @@ export default function CSVStepper() {
         ) : (
           <React.Fragment>
             {renderStepContent(activeStep)}
-            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', mb: 3}}>
                 {activeStep > 0 &&
               <Button
                 color="inherit"
