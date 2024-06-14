@@ -60,9 +60,21 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       },
     },
     {
+      title:<span className="dragHandler">LoginID</span>,
+      dataIndex: 'trading_account_loginId',
+      key: '2',
+      sorter: (a, b) =>  ColumnSorter(a.trading_account_loginId , b.trading_account_loginId),
+      sortDirections: ['ascend', 'descend'],
+      sortIcon: (sortDir) => {
+        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
+        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
+        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+      },
+    },
+    {
       title:<span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
-      key: '2222',
+      key: '3',
       sorter:(a, b) => a?.id - b?.id,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -75,7 +87,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {  
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
-      key: '2',
+      key: '4',
       render: (text)=> <span className={`${text === "sell" ? 'text-red-600' : 'text-green-600'}`}>{text}</span>,
       sorter: (a, b) =>  ColumnSorter(a.type , b.type),
       sortDirections: ['ascend', 'descend'],
@@ -90,7 +102,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
-      key: '3',
+      key: '5',
       
       sorter: (a, b) =>  ColumnSorter(a.volume , b.volume),
       sortDirections: ['ascend', 'descend'],
@@ -104,7 +116,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Open Time</span>,
       dataIndex: 'open_time',
-      key: '3',
+      key: '6',
       
       sorter: (a, b) =>  ColumnSorter(a.open_time , b.open_time),
       sortDirections: ['ascend', 'descend'],
@@ -117,7 +129,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
-      key: 'open_price',
+      key: '7',
       sorter: (a, b) => ColumnSorter(a.open_price , b.open_price),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -130,7 +142,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Current Price</span>,
       dataIndex: 'currentPrice',
-      key: 'currentPrice',
+      key: '8',
       sorter: (a, b) => ColumnSorter(a.currentPrice , b.currentPrice),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -142,7 +154,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Take Profit</span>,
       dataIndex: 'takeProfit',
-      key: 'takeProfit',
+      key: '9',
       sorter: (a, b) => ColumnSorter(a.takeProfit , b.takeProfit),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -155,7 +167,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Stop Loss</span>,
       dataIndex: 'stopLoss',
-      key: 'stopLoss',
+      key: '10',
       sorter: (a, b) => ColumnSorter(a.stopLoss , b.stopLoss),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -168,7 +180,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
-      key: 'comment',
+      key: '11',
       sorter: (a, b) => ColumnSorter(a.comment , b.comment),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
@@ -180,25 +192,25 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
     {
       title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
-      key: 'swap',
+      key: '12',
     },
     {
       title: <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
-      key: 'profit',
+      key: '13',
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     {
       title: <span className="dragHandler">Commission</span>,
       dataIndex: 'commission',
-      key: 'commission',
+      key: '14',
       render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
    
     {
       title: 'Actions',
       dataIndex: 'actions',
-      key: 'actions',
+      key: '15',
       render: (_, record) => (
         <Space size="middle" className='cursor-pointer'>
           <CloseOutlined style={{ fontSize: "24px", color: colorPrimary }} 

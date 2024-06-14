@@ -740,3 +740,7 @@ export const PipsValues = [
       {label:"9",value:9},
 
     ]
+
+    export const DuplicateRecords = [{label:"Skip",value:"skip"},{label:"Merge",value:"merge"}]
+
+    export const CRMFields = [{label:"Skip",value:"skip"},{label:"Merge",value:"merge"}]
