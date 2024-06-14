@@ -45,9 +45,6 @@ const Account = () => {
   const [isLoading,setIsLoading ] = useState(false)
   const [isDisabled, setIsDisabled] = useState(true)
 
-
-
-
 const ChkBoxesControl = [
   {
     id:5,

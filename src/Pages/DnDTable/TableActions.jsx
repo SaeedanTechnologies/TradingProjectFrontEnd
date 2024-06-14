@@ -3,9 +3,12 @@ import { Button, Dropdown, Select, Space } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { CheckBrandPermission } from '../../utils/helpers';
 import { useSelector } from 'react-redux';
+import CustomButton from '../../components/CustomButton';
+import { useNavigate } from 'react-router-dom';
 
 
 const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler,addButton, hideDeleteEdit }) =>{
+  const navigate = useNavigate()
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
@@ -89,7 +92,14 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         
      </Button>
     </Dropdown>
+
+   
     </div>
+     <CustomButton
+        Text={"Import"}
+        className='mb-3'
+        onClickHandler={()=>navigate('/import-csv')}
+      />
     </div>
 );
 }
