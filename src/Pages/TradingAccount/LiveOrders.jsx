@@ -445,15 +445,16 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
                       Equity: {checkNaN(equity_g)} &nbsp;
                       Credit: {checkNaN(credit)}  &nbsp;
                       Bonus: {checkNaN(bonus)}  &nbsp;
-                      Total Withdraw: {checkNaN(total_withdraw)}  &nbsp;
                       <span> Margin: {checkNaN(margin)}</span>&nbsp;
                       Free Margin: {checkNaN(free_margin)} &nbsp;
-                       <span>Margin Level: {checkNaN(margin_level)} %</span>
+                       <span>Margin Level: {checkNaN(margin_level)} %</span> &nbsp;
+                      Total Withdraw: {checkNaN(total_withdraw)}  &nbsp;
                     </span>
                   </Table.Summary.Cell>
                   <Table.Summary.Cell>{checkNaN(totalSwap)}</Table.Summary.Cell>
                   <Table.Summary.Cell>{checkNaN(grandProfit)}</Table.Summary.Cell>
                   <Table.Summary.Cell>{checkNaN(grandCommsion)}</Table.Summary.Cell>
+
                   <Table.Summary.Cell></Table.Summary.Cell>
                 
                 </Table.Summary.Row>

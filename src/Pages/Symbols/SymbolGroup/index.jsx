@@ -207,42 +207,42 @@ const FetchData = async (page) =>{
       setIsUpdated(false)
     }
 }
-const DeleteHandler = async (id)=>{
-  setIsLoading(true)
-  Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#1CAC70",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
-  }).then(async(result) => {
-    if (result.isConfirmed) {
-      const res = await DeleteSymbolsGroup(id, token)
-      const {data:{success, message, payload}} = res
-      setIsLoading(false)
-      if(success){
-        Swal.fire({
-          title: "Deleted!",
-          text: message,
-          icon: "success"
-        });
-        // FetchData(page)
-      }else{
-        Swal.fire({
-          title: "Opps!",
-          text: {message},
-          icon: "error"
-        });
-      }
+// const DeleteHandler = async (id)=>{
+//   setIsLoading(true)
+//   Swal.fire({
+//     title: "Are you sure?",
+//     text: "You won't be able to revert this!",
+//     icon: "warning",
+//     showCancelButton: true,
+//     confirmButtonColor: "#1CAC70",
+//     cancelButtonColor: "#d33",
+//     confirmButtonText: "Yes, delete it!"
+//   }).then(async(result) => {
+//     if (result.isConfirmed) {
+//       const res = await DeleteSymbolsGroup(id, token)
+//       const {data:{success, message, payload}} = res
+//       setIsLoading(false)
+//       if(success){
+//         Swal.fire({
+//           title: "Deleted!",
+//           text: message,
+//           icon: "success"
+//         });
+//         // FetchData(page)
+//       }else{
+//         Swal.fire({
+//           title: "Opps!",
+//           text: {message},
+//           icon: "error"
+//         });
+//       }
      
-    }
-  });
+//     }
+//   });
  
-  setIsLoading(false)
+//   setIsLoading(false)
  
-}
+// }
 
  const onPageChange = (page) =>{
     FetchData(page)

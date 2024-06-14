@@ -424,8 +424,7 @@ handleClearSearch = () => {
   // };
   
   onSelectAllChange(checked, selectedRows) {
-    this.setState({ isSelectAll: checked });
-    
+    this.setState({ isSelectAll: checked }); 
   }
   toggleCompleteSelect() {
     this.setState((prevState) => ({isCompleteSelect: !prevState.isCompleteSelect}),
@@ -683,10 +682,18 @@ handleClearSearch = () => {
       }),
     }));
     
+    // const rowSelection = {
+    //   selectedRowKeys: this.state.selectedRowKeys,
+    //   onChange: this.onSelectChange, 
+    //   onSelectAll: this.onSelectAllChange,
+    // };
     const rowSelection = {
       selectedRowKeys: this.state.selectedRowKeys,
-      onChange: this.onSelectChange, 
+      onChange: this.onSelectChange,
       onSelectAll: this.onSelectAllChange,
+      getCheckboxProps: (record) => ({
+        disabled: (record.id === 1 && this.props.table_name === "symbel_groups"), 
+      }),
     };
     return (
       <>

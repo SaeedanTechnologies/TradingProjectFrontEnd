@@ -261,24 +261,24 @@ export const balanceCheck = (currentTradingAccountData)=>{
 }
 
 export const conditionalLeverage =(trading_account,symbol_setting)=>{ 
-    // console.log(symbol_setting, "++++++++++++++++++++++")
+    debugger  
     let leverage;
     const symbol_group_id = symbol_setting?.group?.id;
-    const trading_account_symbol_leverage  = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.settings?.find((x)=>x.id === symbol_setting?.id)?.leverage) || { value:'', title: '' }
-    const trading_account_symbol_group_leverage = LeverageList?.find(x=>x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.leverage)
+    const trading_account_symbol_leverage  = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.settings?.find((x)=>x.id === symbol_setting?.id)?.selectedLeverage?.title) || { value:'', title: '' }
+    const trading_account_symbol_group_leverage = LeverageList?.find(x=>x?.title === trading_account?.symbols_leverage?.find(x=>x?.id == symbol_setting?.group?.id)?.selectedLeverage?.title) || { value:'', title: '' }
     const trading_account_leverage  = LeverageList?.find(x => x?.title === trading_account?.leverage) || { value:'', title: '' }
     const trading_account_group_leverage  = LeverageList?.find(x => x?.title === trading_account?.group?.mass_leverage) || { value:'', title: '' }
     const symbol_setting_leverage  = LeverageList?.find(x => x?.title === symbol_setting?.leverage) || { value:'', title: '' }
     const symbol_setting_group_leverage  = LeverageList?.find(x => x?.title === symbol_setting?.group?.leverage) || { value:'', title: '' }
   
-    if(trading_account_symbol_leverage?.value && symbol_group_id !== 130){
+    if(trading_account_symbol_leverage?.value && symbol_group_id !== 1){
       leverage = trading_account_symbol_leverage?.value;
-    }else if(trading_account_symbol_group_leverage?.value && symbol_group_id !== 130){
+    }else if(trading_account_symbol_group_leverage?.value && symbol_group_id !== 1){
       leverage = trading_account_symbol_group_leverage?.value;
-    }else if (trading_account_leverage?.value && symbol_group_id === 130){
+    }else if (trading_account_leverage?.value && symbol_group_id === 1){
       leverage = trading_account_leverage?.value;
     }
-    else if(trading_account_group_leverage?.value && symbol_group_id !== 130){
+    else if(trading_account_group_leverage?.value && symbol_group_id !== 1){
       leverage = trading_account_group_leverage?.value;
     }
     else if(symbol_setting_leverage?.value){

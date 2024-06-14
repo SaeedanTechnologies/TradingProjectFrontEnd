@@ -487,7 +487,7 @@ const handlePrevious = async () => {
       },
     ];
     
-    if (ArrangedSymbolGroupsData[currentIndex]?.id !== 130) {
+    if (ArrangedSymbolGroupsData[currentIndex]?.id !== 1) {
       items.push({
         key: '2',
         label: (

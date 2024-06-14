@@ -25,7 +25,6 @@ const Account = () => {
   const token = useSelector(({user})=> user?.user?.token )
   const dispatch = useDispatch()
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
-
   const tradingAccountDataGroupLeverage = useSelector(({ tradingAccountGroup }) => tradingAccountGroup?.tradingAccountGroupData?.symbols_leverage)
   let remainingCount  = tradingAccountDataGroupLeverage?.length-2
   const {leverage} = useSelector(({tradingAccountGroup})=> tradingAccountGroup.tradingAccountGroupData )
@@ -44,7 +43,6 @@ const Account = () => {
   const [change_password_at_next_login,setChange_password_at_next_login] = useState(0)
   const [isLoading,setIsLoading ] = useState(false)
   const [isDisabled, setIsDisabled] = useState(true)
-
 
 
 
@@ -140,7 +138,7 @@ const ChkBoxesControl = [
         setIsLoading(true)
        const tradingAccountData ={
         trading_group_id: selectedTradingAccountGroup?.id,
-        leverage: selectedLeverage?.value,
+        leverage: selectedLeverage?.value ? selectedLeverage?.value : 0,
         password:password,
         enable :  enable ? 1 : 0,
         enable_password_change :  enable_password_change ? 1 : 0,
@@ -164,7 +162,7 @@ const ChkBoxesControl = [
     {
       const updatedAccountData = {
         ...tradingAccountGroupData,
-        leverage: selectedLeverage.title,
+        leverage: selectedLeverage?.title,
       };
       dispatch(setTradingAccountGroupData(updatedAccountData))
       CustomNotification({ type:"success", title:"Security Account", description:message, key:1 })
@@ -172,11 +170,12 @@ const ChkBoxesControl = [
     }   
     else{
       CustomNotification({ type:"error", title:"Security Account", description:message, key:1 })
-
       setIsLoading(false)
     }    
     
     }catch(err){
+      
+      setIsLoading(false)
       CustomNotification({ type:"error", title:"Security Account", description:err.message, key:1 })
     }
   }
@@ -243,7 +242,7 @@ const ChkBoxesControl = [
                       options={tradingAccountGroupList}
                       value={selectedTradingAccountGroup}
                       disabled={isDisabled}
-                      getOptionLabel={(option) => option.name ? option.name : ""}
+                      getOptionLabel={(option) => option?.name ? option?.name : ""}
                       onChange={(event, value) => {
                         if(value)
                             {
@@ -263,7 +262,7 @@ const ChkBoxesControl = [
                       options={LeverageList}
                       value={selectedLeverage}
                       disabled={isDisabled}
-                      getOptionLabel={(option) => option.title ? option.title : ""}
+                      getOptionLabel={(option) => option?.title ? option?.title : ""}
                       onChange={(event, value) => {
                         if(value)
                             {

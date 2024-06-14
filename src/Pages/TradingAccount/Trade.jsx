@@ -94,7 +94,7 @@ const Trade = ({ trade_type}) => {
                     setPipVal(pipValue)
                    
 
-                    const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.askPrice) / conditionalLeverage(trading_account,symbol)
+                    const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice) / conditionalLeverage(trading_account,symbol)
                     const margin_val = res * parseFloat(newValue)
 
                     setMargin(margin_val)
@@ -239,7 +239,7 @@ const Trade = ({ trade_type}) => {
     if(trade_type === "single") {
       const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * open_price).toFixed(2));
         const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol));
-        if(margin > equity || margin < (Number(stop_out)/100)) {
+        if(margin > equity) {
           CustomNotification({ 
             type: "error", 
             title: "Validation", 
@@ -353,9 +353,11 @@ useEffect(() => {
   // };
 
   useEffect(()=> {
-                    const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
-                    const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
-                    setMargin(margin_val)
+    if(symbol?.feed_fetch_name) {
+      const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice) / conditionalLeverage(trading_account,symbol)
+      const margin_val = res * parseFloat(volume)
+      setMargin(margin_val)
+    }
   }, [pricing.openPrice])
   const fetchBinancehData = async (symbol, pip) => {
     try {
@@ -480,13 +482,7 @@ useEffect(() => {
         const onDataReceived = (data) => {
           if(!data?.bidPrice){
             if(symbol?.feed_name === 'binance'){
-              fetchBinancehData(symbol?.feed_fetch_name, pip).then((result) => {
-                const res  = parseFloat(value?.lot_size) * parseFloat(result?.askPrice) / conditionalLeverage(trading_account,symbol)
-                const margin_val = res * parseFloat(value?.vol_min)
-                setMargin(margin_val)
-              }).catch((err) => {
-                console.log(err)
-              });
+              fetchBinancehData(symbol?.feed_fetch_name, pip)
             }
             else{
 
@@ -704,8 +700,9 @@ useEffect(() => {
                         s_value={true}
                         onChange={(e)=> {
                           setOpen_price(e.target.value)
-                          const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice)).toFixed(2));
-                          const margin_val = calculateMargin(res, conditionalLeverage(trading_account,symbol));
+                          const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice) / conditionalLeverage(trading_account,symbol)
+                          const margin_val = res * parseFloat(volume)
+      
                           setMargin(margin_val)
                         }}
                       />

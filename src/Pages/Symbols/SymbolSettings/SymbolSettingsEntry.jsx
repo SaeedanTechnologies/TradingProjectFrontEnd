@@ -192,8 +192,7 @@ const SymbolSettingsEntry = () => {
         const SelectedFeedNameOption = FeedList?.payload?.data?.find(x => x?.id === payload.data_feed.id)
         if (payload.feed_name === 'binance') {
           const res = await GetCryptoData()
-          const mData = res?.data?.symbols
-          const updatedData = mData.map((item) => {
+          const updatedData = res.map((item) => {
             return { ...item, id: item.symbol };
           });
           setFeedNameFetchList(updatedData)
@@ -873,6 +872,7 @@ const SymbolSettingsEntry = () => {
                 options={PipsValues}
                 value={selectedPip}
                 getOptionLabel={(option) => option.label ? option.label : ""}
+                required
                 onChange={(event, value) => {
                  
                   setSelectedPip(value);
