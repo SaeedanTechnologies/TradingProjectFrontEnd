@@ -212,6 +212,7 @@ const ActivityLogin = () => {
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
+            hideDeleteEdit={true}
             // editPermissionName="transaction_orders_update"
             // deletePermissionName="transaction_orders_delete"
           />

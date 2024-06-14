@@ -11,7 +11,7 @@ import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import { LeverageList, PipsValues } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { ALL_Symbol_Group_List, All_Setting_Data, Feed_Data_List, SelectSymbolSettingsWRTID, SymbolSettingPost, Symbol_Group_List, UpdateSymbolSettings } from '../../../utils/_SymbolSettingAPICalls';
-import { GetAskBidData, GetCryptoData, GetFasciData } from '../../../utils/_ExchangeAPI'
+import { GetAskBidData, GetCryptoData, GetFasciData, SeparateSymbols } from '../../../utils/_ExchangeAPI'
 import { useDispatch, useSelector } from 'react-redux';
 import CustomNotification from '../../../components/CustomNotification';
 import { Autocomplete, TextField,Input,InputAdornment } from '@mui/material'
@@ -34,9 +34,7 @@ const SymbolSettingsEntry = () => {
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const token = useSelector(({ user }) => user?.user?.token)
   const SymbolSettingIds = useSelector(({ symbolSettings }) => symbolSettings.selectedRowsIds)
-  console.log(SymbolSettingIds, "SYMBOL SETTING ID's")
   const SymbolSettingsData = useSelector(({symbolSettings})=> symbolSettings.symbolSettingsData)
-  console.log(SymbolSettingsData, "SYMBOL SETTINGS DATA")
   const ArrangedSymbolSettingsData = SymbolSettingsData;
   const fetchAllSetting = async (page) => {
     try {
@@ -358,7 +356,6 @@ const SymbolSettingsEntry = () => {
     }
   }, []);
   const handleSubmit = async () => {
-    
     try {
      
       const SymbolGroupData = {
@@ -481,15 +478,10 @@ const SymbolSettingsEntry = () => {
   };
   const GetSymbolData = async (direction, access_key) => {
     if (direction === 'binance') {
-      const res = await GetCryptoData()
-      const mData = res?.data?.symbols
-      const updatedData = mData.map((item) => {
-        return { ...item, id: item.symbol };
-      });
-      setFeedNameFetchList(updatedData)
+      const res = await SeparateSymbols()
+      setFeedNameFetchList(res)
     } else if (direction === 'fcsapi') {
       const res = await GetFasciData(access_key)
-
       // setFoxiTypesLists(res)
       setFeedNameFetchList(res)
     }

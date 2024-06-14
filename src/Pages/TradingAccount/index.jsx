@@ -319,36 +319,36 @@ const Index = ({ title, direction }) => {
 
     setIsLoading(false)
     if (success) {
-      const tradingAccounts = payload?.data?.map((item) => ({
-        id: item.id,
-        loginId: item.login_id,
-        trading_group_id: item.trading_group_id,
-        brand: item?.brand?.name,
-        customer: item?.brand_customer,
-        country: item?.country,
-        phone: item?.phone,
-        email: item?.email,
-        leverage: item?.leverage,
-        balance: item?.balance,
-        credit: item?.credit,
-        bonus: item?.bonus,
-        commission: item?.commission,
-        tax: item?.tax,
-        equity: item?.equity,
-        margin_level_percentage: item?.margin_level_percentage,
-        profit: item?.profit,
-        swap: item?.swap,
-        currency: item?.currency,
-        registration_time: item?.registration_time,
-        last_access_time: item.last_access_time ? item.last_access_time : '...',
-        last_access_address_IP: item?.last_access_address_IP ? item.last_access_address_IP : '...' ,
-        brand_public_key: item?.brand?.public_key,
-        brand_leverage: item?.brand?.leverage,
-        brand_margin_call: item?.brand?.margin_call,
+      // const tradingAccounts = payload?.data?.map((item) => ({
+      //   id: item.id,
+      //   loginId: item.login_id,
+      //   trading_group_id: item.trading_group_id,
+      //   brand: item?.brand?.name,
+      //   customer: item?.brand_customer,
+      //   country: item?.country,
+      //   phone: item?.phone,
+      //   email: item?.email,
+      //   leverage: item?.leverage,
+      //   balance: item?.balance,
+      //   credit: item?.credit,
+      //   bonus: item?.bonus,
+      //   commission: item?.commission,
+      //   tax: item?.tax,
+      //   equity: item?.equity,
+      //   margin_level_percentage: item?.margin_level_percentage,
+      //   profit: item?.profit,
+      //   swap: item?.swap,
+      //   currency: item?.currency,
+      //   registration_time: item?.registration_time,
+      //   last_access_time: item.last_access_time ? item.last_access_time : '...',
+      //   last_access_address_IP: item?.last_access_address_IP ? item.last_access_address_IP : '...' ,
+      //   brand_public_key: item?.brand?.public_key,
+      //   brand_leverage: item?.brand?.leverage,
+      //   brand_margin_call: item?.brand?.margin_call,
 
-      }))
+      // }))
       // debugger
-      setTradingAccountsList(tradingAccounts)
+      setTradingAccountsList(payload)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
@@ -548,7 +548,6 @@ const [newColumns , setNewColumns] = useState(renderColumns)
       const channel = pusher.subscribe('trading_accounts');
         channel.bind('update', (data) => {
                 const mData = [data]
-                console.log(data)
                 const isExist = !!marginCall.find(x => x.id === data.id);
                 // debugger
                 if(data.status === 'margin_call' && !isExist ){

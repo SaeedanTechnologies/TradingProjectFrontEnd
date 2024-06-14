@@ -38,6 +38,42 @@ const CandleStickChart = ({ symbol, connected, pricing, interval = "1m", setLoad
     fetchData();
   }, [symbol, interval]);
 
+  useEffect(() => {
+    if (pricing) {
+      const updateData = async () => {
+        try {
+          const response = await axios.get('https://api.binance.com/api/v3/klines', {
+            params: {
+              symbol: symbol ? symbol : "",
+              interval: interval,
+              limit: 1,
+            }
+          });
+          const data = response.data;
+          const newPoint = data.map(item => [
+            item[0], // Timestamp
+            parseFloat(item[1]), // Open
+            parseFloat(item[2]), // High
+            parseFloat(item[3]), // Low
+            parseFloat(item[4]), // Close
+          ])[0];
+
+          setOhlcData(prevOhlcData => {
+            const updatedData = [...prevOhlcData, newPoint];
+            if (updatedData.length > 500) {
+              updatedData.shift();
+            }
+            return updatedData;
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      };
+
+      updateData();
+    }
+  }, [pricing]);
+
   const options = {
     title: {
       text: 'Candlestick Chart'
@@ -59,7 +95,7 @@ const CandleStickChart = ({ symbol, connected, pricing, interval = "1m", setLoad
       }
     },
     rangeSelector: {
-      enabled: false // Disable the date range selector
+      enabled: false 
     },
     navigator: {
       enabled: false

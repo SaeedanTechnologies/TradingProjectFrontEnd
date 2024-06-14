@@ -3,10 +3,32 @@ import { _API } from "./_API"
 import CustomNotification from "../components/CustomNotification"
 
 
+// export const GetCryptoData = async () => {
+//     const res = await axios.get(`https://api.binance.com/api/v3/exchangeInfo`)
+//     return res
+// }
+
 export const GetCryptoData = async () => {
-    const res = await axios.get(`https://api.binance.com/api/v3/exchangeInfo`)
-    return res
-}
+  const res = await axios.get(`https://api.binance.com/api/v3/exchangeInfo`);
+  return res.data.symbols;
+};
+
+export const SeparateSymbols = async () => {
+  const symbols = await GetCryptoData();
+  
+    const fiatQuoteAssets = ['USD', 'USDT', 'EUR', 'BUSD', 'AUD', 'GBP', 'BRL'];
+    
+    const groupedSymbols = symbols.map(item => {
+        if (fiatQuoteAssets.includes(item.quoteAsset)) {
+            return { ...item, group: 'forex' ,id: item.symbol};
+        } else {
+            return { ...item, group: 'crypto',id: item.symbol };
+        }
+    });
+  return  groupedSymbols ;
+};
+
+
 export const GetFasciData = async (access_key) => {
 
   const formatData = (data, group) => {

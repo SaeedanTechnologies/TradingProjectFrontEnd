@@ -429,7 +429,6 @@ const handlePrevious = async () => {
       setSwap(payload.swap);
     }
   }
-
  const deleteHandler = async()=>{
     const Params = {
       table_name:'symbel_groups',
@@ -458,25 +457,44 @@ const handlePrevious = async () => {
    await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading,onSuccessCallBack)
 }
 
-  const items = [
+    // const items = [
+      
+    //   {
+    //     key: '1',
+    //     label: (
+    //       <button rel="noopener noreferrer" onClick={()=>{
+    //         setIsDisabled(false)
+    //       }}>   Edit </button>
+    //     ),
+    //   },
+      
+    //   {
+    //     key: '2',
+    //     label: (
+    //       <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
+    //     ),
+    //   },
     
-    {
-      key: '1',
-      label: (
-        <button rel="noopener noreferrer" onClick={()=>{
-          setIsDisabled(false)
-        }}>   Edit </button>
-      ),
-    },
-    {
-      key: '2',
-      label: (
-        <button  rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
-      ),
-    },
-   
-  ];
-
+    // ];
+    const items = [
+      {
+        key: '1',
+        label: (
+          <button rel="noopener noreferrer" onClick={() => {
+            setIsDisabled(false);
+          }}>Edit</button>
+        ),
+      },
+    ];
+    
+    if (ArrangedSymbolGroupsData[currentIndex]?.id !== 130) {
+      items.push({
+        key: '2',
+        label: (
+          <button rel="noopener noreferrer" onClick={deleteHandler}>Delete</button>
+        ),
+      });
+    }
   useEffect(()=>{
       if(SymbolGroupsIds.length === 1 && parseInt(SymbolGroupsIds[0]) === 0){ // update case
         setIsDisabled(false)
@@ -567,6 +585,7 @@ const handlePrevious = async () => {
           value={symbolGroupName}
            disabled={isDisabled}
           onChange={e => handleInputChange('symbolGroupName', e.target.value)}
+          s_value={true}
         />
          {errors.symbolGroupName && <span style={{ color: 'red' }}>{errors.symbolGroupName}</span>}
          </div>
@@ -600,6 +619,8 @@ const handlePrevious = async () => {
           label='Swap'
           value={Swap}
           onChange={e => handleInputChange('Swap', e.target.value)}
+          s_value={true}
+
         />
         {errors.Swap && <span style={{ color: 'red' }}>{errors.Swap}</span>}
          </div>
@@ -612,6 +633,8 @@ const handlePrevious = async () => {
           label='Lot Size'
           value={LotSize}
           onChange={e => handleInputChange('LotSize', e.target.value)}
+          s_value={true}
+
         />
           {errors.LotSize && <span style={{ color: 'red' }}>{errors.LotSize}</span>}
          </div>
@@ -624,6 +647,8 @@ const handlePrevious = async () => {
           label='Lot Step'
           value={LotStep}
           onChange={e => handleInputChange('LotStep', e.target.value)}
+          s_value={true}
+
         />
         {errors.LotStep && <span style={{ color: 'red' }}>{errors.LotStep}</span>}
        </div>
@@ -636,6 +661,8 @@ const handlePrevious = async () => {
           label='Vol Min'
           value={VolMin}
           onChange={e => handleInputChange('VolMin', e.target.value)}
+          s_value={true}
+
         />
         {errors.VolMin && <span style={{ color: 'red' }}>{errors.VolMin}</span>}
        </div>
@@ -648,6 +675,8 @@ const handlePrevious = async () => {
           label='Vol Max'
           value={VolMax}
           onChange={e => handleInputChange('VolMax', e.target.value)}
+          s_value={true}
+
         />
         {errors.VolMax && <span style={{ color: 'red' }}>{errors.VolMax}</span>}
         </div>

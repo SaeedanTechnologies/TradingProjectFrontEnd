@@ -153,7 +153,7 @@ const ChkBoxesControl = [
 
         const Params = {
           table_name: 'trading_accounts',
-          table_ids: [selectedTradingAccountGroup?.id],
+          table_ids: [trading_account_id],
           ...tradingAccountData
         }
         const res = await GenericEdit(Params, token)

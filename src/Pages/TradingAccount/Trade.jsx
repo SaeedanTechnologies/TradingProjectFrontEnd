@@ -1,17 +1,12 @@
 import { Spin, theme } from 'antd';
 import React, { useState, useEffect } from 'react'
-import ARROW_BACK_CDN from '../../assets/images/arrow-back.svg';
-import { TradeOrderTypes,PendingOrderTypes,MarketOrderTypes, LeverageList, CurrenciesList } from '../../utils/constants';
-
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { TradeOrderTypes,PendingOrderTypes, LeverageList, CurrenciesList } from '../../utils/constants';
 import {Chip,Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { TradeTimeChips} from '../../utils/constants'
-
 import CustomTextField from '../../components/CustomTextField';
 import CustomButton from '../../components/CustomButton';
 import CustomCheckbox from '../../components/CustomCheckbox';
-import { useNavigate } from 'react-router-dom';
 import { TradeValidationSchema } from '../../utils/validations';
 import { numberInputStyle } from './style'
 import { useSelector } from 'react-redux';
@@ -21,13 +16,11 @@ import { AllSymbelSettingList, All_Setting_Data } from '../../utils/_SymbolSetti
 import CustomNotification from '../../components/CustomNotification';
 import BinanceBidAsk from '../../websockets/BinanceBidAsk';
 import axios from 'axios';
-// import BinanceSocket from '../../websockets/BinanceSocket';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
-import {addZeroAfterOne, addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage, calculateMarginCallPer } from '../../utils/helpers';
+import {addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage, calculateMarginCallPer } from '../../utils/helpers';
 import moment from 'moment';
-import establishWebSocketConnection from '../../websockets/FCSAPIWebSocket';
 import CandleStickChart from '../../components/CandleStickChart';
 import CustomModal from '../../components/CustomModal';
 
@@ -37,7 +30,6 @@ const Trade = ({ trade_type}) => {
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
-  const navigate = useNavigate();
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0] : 0)
   const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds ? state?.tradeGroups?.selectedRowsIds[0] : 0)
   const stop_out = useSelector((state)=>state?.tradingAccountGroup?.tradingAccountGroupData?.brand?.stop_out)
@@ -79,21 +71,13 @@ const Trade = ({ trade_type}) => {
   const [trading_account,set_trading_account] = useState(null)
   const [rcvd_type, setrcvdType] = useState("")
   const [time_state, setTimeState] = useState("1m")
-  // const [rerenderCount, setRerenderCount] = useState(0);
-  // const [streamConnected, setStreamConnected] = useState(false);
   const [brand_id,setBrand_id] = useState(-1);
   const {title : CurrencyName} = CurrenciesList?.find(x=> x.value === currency) ||  {label: 'Dollar ($)', value: '$', title: 'USD'}
-
-  // const [manualpricing, setManualPricing] = useState({ openPrice: null, askPrice: null });
   const [errors, setErrors] = useState({});
-
-  //  useBinanceBidAsk({symbol:symbol?.feed_fetch_name, onUpdate:onUpdateBidPrice})
-
   const lotSize = calculateLotSize(volume)
-  
   const calculatedMargin = requiredMargin(volume,accountLeverage)
-
   const Margin= calculateMargin(lotSize,accountLeverage)
+  
   //region profitChange
   const handleProfitChange = (newValue) => {
     setTakeProfit(newValue);
@@ -104,7 +88,7 @@ const Trade = ({ trade_type}) => {
 
   const handleVolumeChange = (newValue) => {
     setLotSize(symbol?.lot_size * newValue)
-                    
+
                     setD_lot(newValue)
                     const pipValue = addZeroBeforeOne(symbol?.pip) * parseFloat(newValue) * parseFloat(symbol?.lot_size)
                     setPipVal(pipValue)
@@ -248,15 +232,14 @@ const Trade = ({ trade_type}) => {
       setErrors(validationErrors);
     }
   }
-  
   const handleSubmit = (typeReceive, skip) => {
     //From here
     setrcvdType(typeReceive)
-      //  debugger
     // const tradePrice = (`connected` && typeReceive ==='buy') ? pricing.openPrice : (connected && typeReceive ==='sell') ? pricing.askPrice : open_price;
     if(trade_type === "single") {
-        const margin_level = calculateMarginCallPer(equity, marg)
-        if(margin_level > equity || margin_level < Number(stop_out)) {
+      const res = (parseFloat(parseFloat(volume) * parseFloat(symbol?.lot_size) * open_price).toFixed(2));
+        const margin = calculateMargin(res, conditionalLeverage(trading_account,symbol));
+        if(margin > equity || margin < (Number(stop_out)/100)) {
           CustomNotification({ 
             type: "error", 
             title: "Validation", 
@@ -389,7 +372,7 @@ useEffect(() => {
           openPrice: parseFloat(data?.bidPrice).toFixed(pip),
           askPrice: parseFloat(data?.askPrice).toFixed(pip)
         })
-        
+        console.log(parseFloat(data?.askPrice).toFixed(pip), "INSIDE SOCKET HELO")
         setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
         return data;
       // }
@@ -497,15 +480,20 @@ useEffect(() => {
         const onDataReceived = (data) => {
           if(!data?.bidPrice){
             if(symbol?.feed_name === 'binance'){
-              fetchBinancehData(symbol?.feed_fetch_name, pipVal)
+              fetchBinancehData(symbol?.feed_fetch_name, pip).then((result) => {
+                const res  = parseFloat(value?.lot_size) * parseFloat(result?.askPrice) / conditionalLeverage(trading_account,symbol)
+                const margin_val = res * parseFloat(value?.vol_min)
+                setMargin(margin_val)
+              }).catch((err) => {
+                console.log(err)
+              });
             }
             else{
-              fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pipVal)
+
+              fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pip)
             }
           }
           else {
-          // console.log('Bid Price:', data.bidPrice);
-          // console.log('Ask Price:', data.askPrice);
           if(symbol?.feed_name === 'binance'){
             setPricing({
             // ...pricing,
@@ -611,27 +599,11 @@ useEffect(() => {
                     if (value) {
                     setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                     setSymbol(value)
-                      if(value?.feed_name === 'binance'){ 
-                      fetchBinancehData(value?.feed_fetch_name, value?.pip,).then((result) => {
-                        const res  = parseFloat(value?.lot_size) * parseFloat(result?.askPrice) / conditionalLeverage(trading_account,symbol)
-                        const margin_val = res * parseFloat(value?.vol_min)
-                        setMargin(margin_val)
-                      }).catch((err) => {
-                        console.log(err)
-                      });
                       if (value && connected) {
-                        
                       // setSymbol(value)
                       // setErrors(prevErrors => ({ ...prevErrors, symbol: "" }))
                       fetchData(value, connected, value?.pip);
                     }
-                      }
-                      else if (value?.feed_name === 'fcsapi'){
-                        fetchData(null, connected, 0); //to stop connection when binance symbol is not selected
-                        // fetchData(value, connected, value?.pip);
-                        // fetchFcsapiSocketData('lg8vMu3Zi5mq8YOMQiXYgV' ,value?.feed_fetch_name, value?.pip)
-                        fetchFcsapiData(value?.feed_fetch_name, value?.feed_fetch_key, value?.pip)
-                      }
 
                       else {
                         CustomNotification({ type: "error", title: "Opps", description: `${value?.feed_name} not configured yet`, key: 1 })

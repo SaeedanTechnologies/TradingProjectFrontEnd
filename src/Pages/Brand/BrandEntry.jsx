@@ -453,6 +453,7 @@ const BrandEntry = () => {
           value={name}
           disabled={isDisabled}
           onChange={e => handleInputChange('name', e.target.value)}
+          s_value={true}
         />
         {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
 
@@ -464,6 +465,8 @@ const BrandEntry = () => {
         //   disabled={isDisabled}
           value={domain}
           onChange={e => handleInputChange('domain', e.target.value)}
+          s_value={true}
+
         />
         {errors.domain && <span style={{ color: 'red' }}>{errors.domain}</span>}
 
@@ -476,6 +479,7 @@ const BrandEntry = () => {
           // }}
           disabled={isDisabled}
           value={marginCall}
+          s_value={true}
           onChange={e => {
             // if(e.target.value >= 0 && e.target.value <= 100){
             //   handleInputChange('marginCall', e.target.value)
@@ -494,6 +498,8 @@ const BrandEntry = () => {
           value={stop_out}
           disabled={isDisabled}
           onChange={e => handleInputChange('stop_out', e.target.value)}
+          s_value={true}
+
         />
 
         <CustomAutocomplete

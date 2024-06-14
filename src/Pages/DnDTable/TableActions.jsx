@@ -5,7 +5,7 @@ import { CheckBrandPermission } from '../../utils/helpers';
 import { useSelector } from 'react-redux';
 
 
-const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler,addButton, hideDeleteEdit=false }) =>{
+const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler,addButton, hideDeleteEdit }) =>{
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
   const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
@@ -22,13 +22,13 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={()=> setIsAddRemove(true)}>  Add Remove Columns  </button>
       ),
     },
-    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && (hideDeleteEdit)  && {
+    selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,editPermissionName) && (!hideDeleteEdit)  && {
       key: '3',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer" onClick={MassEditHandler}>   Edit </button>
       ),
     },
-    (selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName)&& (hideDeleteEdit))  && {
+    (selectedRows?.length > 0 && CheckBrandPermission(userPermissions,userRole,deletePermissionName)&& (!hideDeleteEdit))  && {
       key: '4',
       label: (
         <button className='w-full text-left' rel="noopener noreferrer"  onClick={MassDeleteHandler}>   Delete  </button>
