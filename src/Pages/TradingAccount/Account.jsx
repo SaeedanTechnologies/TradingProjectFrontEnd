@@ -4,7 +4,7 @@ import CustomAutocomplete from '../../components/CustomAutocomplete';
 import CustomPasswordField from '../../components/CustomPassowordField';
 import CustomCheckbox from '../../components/CustomCheckbox';
 import CustomButton from '../../components/CustomButton';
-import { ALL_Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
+import { ALL_Trading_Account_Group_List, Trading_Account_Group_List } from '../../utils/_TradingAccountGroupAPI';
 import { useDispatch, useSelector } from 'react-redux';
 import { LeverageList } from '../../utils/constants';
 import { Get_Single_Trading_Account } from '../../utils/_TradingAPICalls';
@@ -36,7 +36,6 @@ const Account = () => {
   const [selectedTradingAccountGroup,setSelectedTradingAccountGroup] = useState(null)
   const [selectedLeverage,setSelectedLeverage] = useState(null)
   const [password,setPassword] =  useState('')
- 
   const [enable,setEnable] = useState(0);
   const [enable_password_change,setEnable_password_change] = useState(0);
   const [enable_investor_trading,setEnable_investor_trading] = useState(0);
@@ -80,27 +79,30 @@ const ChkBoxesControl = [
 
  const fetchTradingAccountGroups = async()=>{
     setIsLoading(true)
-    const group_response = await ALL_Trading_Account_Group_List(token)
+    const group_response = await Trading_Account_Group_List(token)
     const {data: { payload, success}} = group_response
-
     setIsLoading(false)
     if(success){
-      setTradingAccountGroupList(payload)
+      setTradingAccountGroupList(payload.data)
       if(parseInt(trading_account_id) !== 0){
         fetchSingleAccount(payload)
       }
     }
   }
-
  const fetchSingleAccount= async(GroupsList)=>{
     setIsLoading(true)
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res
       if(success){
-        const selectedGroup =  GroupsList?.find(x=> x.id === payload.trading_group_id)
+        const selectedGroup =  GroupsList?.data?.find(x=> x.id === payload.trading_group_id)
+        // console.log(selectedGroup, "THIS IS SELECTED GROUP")
         const selectedLeverage = LeverageList.find(x=>x.title === leverage) 
         setSelectedTradingAccountGroup(selectedGroup)
-        setSelectedLeverage(selectedLeverage)
+        let s_tradingObj = {
+          value: selectedTradingAccountGroup?.mass_leverage?.split(":")[0],
+          title:selectedTradingAccountGroup?.mass_leverage
+        }
+        setSelectedLeverage(selectedTradingAccountGroup ? s_tradingObj : selectedLeverage)
         setPassword(payload.password)
         payload.enable ? setEnable(true) : setEnable(false) ;
         payload.enable_password_change ? setEnable_password_change(true) : setEnable_password_change(false);
@@ -240,7 +242,7 @@ const ChkBoxesControl = [
                       label="Select Group"
                       variant="standard"
                       options={tradingAccountGroupList}
-                      value={selectedTradingAccountGroup}
+                      value={[selectedTradingAccountGroup]}
                       disabled={isDisabled}
                       getOptionLabel={(option) => option?.name ? option?.name : ""}
                       onChange={(event, value) => {
@@ -260,7 +262,7 @@ const ChkBoxesControl = [
                       label="Select Leverage"
                       variant="standard"
                       options={LeverageList}
-                      value={selectedLeverage}
+                      value={ selectedLeverage}
                       disabled={isDisabled}
                       getOptionLabel={(option) => option?.title ? option?.title : ""}
                       onChange={(event, value) => {
