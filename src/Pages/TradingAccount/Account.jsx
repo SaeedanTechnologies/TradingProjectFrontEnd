@@ -43,15 +43,13 @@ const Account = () => {
   const [isLoading,setIsLoading ] = useState(false)
   const [isDisabled, setIsDisabled] = useState(true)
 
-
-
 const ChkBoxesControl = [
   {
     id:5,
     control:'CustomCheckbox',
     label:'Enable This Account',
     value:enable,
-    key:'enable'
+    key:'enable',
   },
   {
     id:6,
