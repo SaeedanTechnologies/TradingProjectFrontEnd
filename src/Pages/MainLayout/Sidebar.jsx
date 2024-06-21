@@ -254,6 +254,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       display: "show",
       url: "/settings",
     },
+   
   ];
 
   const handleMenuSelect = ({ key }) => {

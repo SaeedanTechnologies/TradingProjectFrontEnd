@@ -17,6 +17,7 @@ import liveOrder from "./LiveOrderSlice";
 import tradingAccount from "./TradingAccountListSlice";
 import activityLogin from "./ActivityLoginSlice"
 import ipAddress from "./IpAdressSlice";
+import terminal from "./terminalSlice" 
 
 const createRootReducer = asyncReducers => {
   const appReducer = combineReducers({
@@ -37,6 +38,7 @@ const createRootReducer = asyncReducers => {
       tradingAccount,
       activityLogin,
       ipAddress,
+      terminal,
       ...asyncReducers
   });
   
