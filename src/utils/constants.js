@@ -742,5 +742,4 @@ export const PipsValues = [
     ]
 
     export const DuplicateRecords = [{label:"Skip",value:"skip"},{label:"Merge",value:"merge"}]
-
     export const CRMFields = [{label:"Skip",value:"skip"},{label:"Merge",value:"merge"}]

@@ -8,14 +8,23 @@ import Typography from '@mui/material/Typography';
 import UploadCSV from './UploadCSV';
 import FieldMapping from './FieldMapping';
 import DuplicateHandling from './DuplicateHandling';
+import { useLocation } from 'react-router-dom';
+import CustomNotification from '../../../components/CustomNotification';
+import { massImport } from '../../../utils/_MassImport';
+import { useSelector } from 'react-redux';
 
 const steps = ['Upload CSV', 'Duplicate Handling', 'Field Mapping'];
 export default function CSVStepper() {
+  const {state} = useLocation()
+  const [csv_file, setCsvFile] = React.useState("")
+  const [selected_values, setSelectedValues] = React.useState("")
+  const [skip, setSkip] = React.useState("skip")
+  const [data_array, setDataArray]= React.useState([])
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
-
+  const token = useSelector(({ user }) => user?.user?.token)
+  const [loading, setIsLoading] = React.useState(false)
   const steps = ['Upload CSV', 'Duplicate Handling', 'Field Mapping'];
-
   const totalSteps = () => {
     return steps.length;
   };
@@ -33,12 +42,19 @@ export default function CSVStepper() {
   };
 
     const handleNext = () => {
+      if(!csv_file) {
+        CustomNotification({ type: "error", title: "Opps", description: `Please upload csv file first`, key: 1 })
+        
+      }
+      else 
     if ( activeStep === steps.length - 1 && !allStepsCompleted()) {
-      // Last step, but not all steps completed
       return;
     }
-    const newActiveStep = activeStep + 1;
+    else {
+      const newActiveStep = activeStep + 1;
     setActiveStep(newActiveStep);
+    }
+    
   };
 
   const handleBack = () => {
@@ -49,11 +65,21 @@ export default function CSVStepper() {
   setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleStep = (step) => () => {
+  const handleStep =  (step) => () => {
     setActiveStep(step);
   };
 
-  const handleComplete = () => {
+  const handleComplete =async () => {
+    const merge = selected_values?.map(obj=>obj.label)
+    const merge_cols = merge.join(",")
+    const params = {
+      table_name:state?.tableName,
+      rows:data_array,
+      marge_col:merge_cols,
+      skip:skip
+    }
+    const res = await massImport(params, token)
+    console.log(res, "THIS IS REPSONSE")
     const newCompleted = completed;
     newCompleted[activeStep] = true;
     setCompleted(newCompleted);
@@ -68,11 +94,11 @@ export default function CSVStepper() {
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
-        return <UploadCSV />;
+        return <UploadCSV setCsv={setCsvFile}/>;
       case 1:
-        return <DuplicateHandling />;
+        return <DuplicateHandling setSelectedValues={setSelectedValues} setSkip={setSkip} />;
       case 2:
-        return <FieldMapping />;
+        return <FieldMapping setDataArray={setDataArray} />;
       default:
         return 'Unknown step';
     }

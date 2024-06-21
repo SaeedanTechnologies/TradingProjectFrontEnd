@@ -734,6 +734,8 @@ handleClearSearch = () => {
                   MassCloseOrdersHandler={this.MassCloseOrdersHandler}
                   addButton = {this.props.addButton}
                   hideDeleteEdit ={this.props.hideDeleteEdit}
+                  backendColumns={this.props.backendColumns}
+                  tableName={this.props.table_name}
                 />
               ) : (
                 <CustomButton
