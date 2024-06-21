@@ -1,17 +1,39 @@
-import { Typography } from '@mui/material'
-import React from 'react'
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import ResponsiveAppbar from './molecules/ResponsiveAppbar'
+import SidebarMenu from './molecules/MenuBar'
+import { Stack } from '@mui/material';
+import { Outlet } from 'react-router-dom';
+import TradingInformation from './molecules/TradingInformation';
 
-const Terminal = () => {
+function ResponsiveDrawer(props) {
+
+
+
+
+
   return (
-    <div style={{
-      height:"100vh",
-      display:"flex", justifyContent:"center", alignItems:'center'
-    }}>
-      <Typography variant='h1'>
-      Terminal
-      </Typography>
-    </div>
-  )
+    <Box sx={{ display: 'flex',flexDirection:"column" }}>
+     <ResponsiveAppbar/>
+     <Stack direction="row">
+      <SidebarMenu/>
+        <Outlet/>
+        <TradingInformation/>
+
+     </Stack>
+     
+    
+    </Box>
+  );
 }
 
-export default Terminal
+ResponsiveDrawer.propTypes = {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * Remove this when copying and pasting into your project.
+   */
+  window: PropTypes.func,
+};
+
+export default ResponsiveDrawer;
