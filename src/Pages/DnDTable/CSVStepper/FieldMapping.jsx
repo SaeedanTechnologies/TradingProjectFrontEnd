@@ -1,10 +1,9 @@
 import { Stack, Table, TableContainer, TableCell, TableHead, TableRow, TableBody, Typography, Paper, TextField } from '@mui/material';
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import { useState } from 'react';
-import { CRMFields } from '../../../utils/constants';
 import { useLocation } from 'react-router-dom';
 
-const FieldMapping = ({ setDataArray }) => {
+const FieldMapping = ({ setDataArray, csvData }) => {
   const { state } = useLocation();
   const headers = localStorage.getItem("headers");
   const formatted = headers ? headers.split(",") : [];
@@ -22,18 +21,20 @@ const FieldMapping = ({ setDataArray }) => {
     if (existingIndex !== -1) {
       updatedFields[existingIndex] = {
         ...updatedFields[existingIndex],
-        crm_fields: value ? value.label : null
+        crm_fields: value ? value.dataIndex : null,
+        crm_label: value ? value.label : null
       };
     } else {
       updatedFields.push({
         header: headersObjects[index].label,
-        crm_fields: value ? value.label : null,
+        crm_fields: value ? value.dataIndex : null,
+        crm_label: value ? value.label : null,
         default_value: ""
       });
     }
 
     setSelectedFields(updatedFields);
-    setDataArray(updatedFields);
+    updateDataArray(updatedFields);
   };
 
   const handleDefaultValueChange = (index, value) => {
@@ -49,12 +50,28 @@ const FieldMapping = ({ setDataArray }) => {
       updatedFields.push({
         header: headersObjects[index].label,
         crm_fields: null,
+        crm_label: null,
         default_value: value
       });
     }
 
     setSelectedFields(updatedFields);
-    setDataArray(updatedFields);
+    updateDataArray(updatedFields);
+  };
+
+  const updateDataArray = (fieldsMapping) => {
+    const mappedData = csvData.map(row => {
+      const newRow = {};
+      fieldsMapping.forEach(mapping => {
+        const header = mapping.header;
+        const crmField = mapping.crm_fields || header;
+        const value = row[header] !== undefined ? row[header] : mapping.default_value;
+        newRow[crmField] = value;
+      });
+      return newRow;
+    });
+
+    setDataArray(mappedData);
   };
 
   return (
@@ -79,12 +96,12 @@ const FieldMapping = ({ setDataArray }) => {
                   <TableCell>{val.label}</TableCell>
                   <TableCell align="left">
                     <CustomAutocomplete
-                      name={`crm_fields_${index}`} // Ensure unique name for each autocomplete
+                      name={`crm_fields_${index}`}
                       label="Select an option"
                       variant="standard"
                       options={state.backendColumns}
                       value={
-                        selectedFields.find(item => item.header === val.label)?.crm_fields || null
+                        state.backendColumns.find(option => option.label === selectedFields.find(item => item.header === val.label)?.crm_label) || null
                       }
                       getOptionLabel={(option) => option.label ? option.label : ""}
                       onChange={(event, value) => handleAutocompleteChange(index, value)}

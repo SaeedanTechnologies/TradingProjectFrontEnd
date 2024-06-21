@@ -5,13 +5,13 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Delete_Trade_Order, Get_Trade_Order, Search_Live_Order } from '../../utils/_TradingAPICalls';
 import { ColumnSorter, ColumnSpaceSorter, CustomDeleteDeleteHandler, calculateNights, calculateNumOfPip, calculateProfitLoss, getCurrentDateTime, getOpenPriceFromAPI } from '../../utils/helpers';
-import { setLiveOrdersSelectedIds,setLiveOrdersData, } from '../../store/TradeOrders';
+import { setLiveOrdersSelectedIds, setLiveOrdersData, } from '../../store/TradeOrders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 
 const LiveOrders = () => {
-  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-  const userBrand = useSelector((state)=> state?.user?.user?.brand)
+  const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state) => state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
   const { token: { colorBG, colorPrimary, TableHeaderColor } } = theme.useToken();
   const [isLoading, setIsLoading] = useState(false)
@@ -25,7 +25,7 @@ const LiveOrders = () => {
   const [sortDirection, setSortDirection] = useState("")
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const [SearchQueryList,SetSearchQueryList]= useState({})
+  const [SearchQueryList, SetSearchQueryList] = useState({})
 
 
   const headerStyle = {
@@ -33,10 +33,10 @@ const LiveOrders = () => {
     color: 'black',
   };
 
-  const fetchLiveOrder = async (brandId,page) => {
+  const fetchLiveOrder = async (brandId, page) => {
     setIsLoading(true)
-    const params = { OrderTypes: ['market'], token,brandId,page}
-    const mData = await Get_Trade_Order(params,page)
+    const params = { OrderTypes: ['market'], token, brandId, page }
+    const mData = await Get_Trade_Order(params, page)
     const { data: { message, payload, success } } = mData
     // debugger
     const allLiveOrders = payload?.data?.map((order) => ({
@@ -66,161 +66,161 @@ const LiveOrders = () => {
 
     }
   }
-    const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchLiveOrder(userBrand.public_key,page)
+  const onPageChange = (page) => {
+    if (userRole === 'brand') {
+      fetchLiveOrder(userBrand.public_key, page)
     }
-    else{
-      fetchLiveOrder(null,page)
+    else {
+      fetchLiveOrder(null, page)
     }
   }
 
-  
-    const LoadingHandler = React.useCallback((isLoading)=>{
+
+  const LoadingHandler = React.useCallback((isLoading) => {
     setIsLoading(isLoading)
-  },[])
+  }, [])
 
   useEffect(() => {
     setIsUpdated(true)
-    if(userRole === 'brand' ){
-      SetSearchQueryList({brand_id:userBrand.public_key})
+    if (userRole === 'brand') {
+      SetSearchQueryList({ brand_id: userBrand.public_key })
     }
-    
+
   }, [])
 
 
-  const setLiveManipulatedData =  async(data) => {
+  const setLiveManipulatedData = async (data) => {
     const currentDateTime = getCurrentDateTime();
-    
-    const updatedData = await Promise.all(data.map(async(x) => {
+
+    const updatedData = await Promise.all(data.map(async (x) => {
       const { askPrice, bidPrice } = await getOpenPriceFromAPI(x.symbol, x.feed_name);
       const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
       const open_price = parseFloat(x?.open_price).toFixed(pipVal);
       const currentPrice = x.type === "sell" ? parseFloat(askPrice).toFixed(pipVal) ?? 0 : parseFloat(bidPrice).toFixed(pipVal) ?? 0;
-      const profit =calculateProfitLoss(parseFloat(calculateNumOfPip(currentPrice, parseFloat(x?.open_price), x?.type, parseInt(pipVal))).toFixed(2), parseFloat(x?.volume));        
+      const profit = calculateProfitLoss(parseFloat(calculateNumOfPip(currentPrice, parseFloat(x?.open_price), x?.type, parseInt(pipVal))).toFixed(2), parseFloat(x?.volume));
 
 
 
-    const totalNights = calculateNights (x.created_at, currentDateTime);
-    const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0);
-    const swap = Calswap > 0 ? -Calswap : Calswap;
-      return { ...x, swap,profit, currentPrice, open_price};
+      const totalNights = calculateNights(x.created_at, currentDateTime);
+      const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0);
+      const swap = Calswap > 0 ? -Calswap : Calswap;
+      return { ...x, swap, profit, currentPrice, open_price };
     }));
-  
 
-  return updatedData;
-}
+
+    return updatedData;
+  }
   const columns = [
     {
-      title:<span className="dragHandler">Symbol</span>,
+      title: <span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol_setting_name',
       key: '1',
-      sorter: (a, b) =>  ColumnSorter(a.symbol_setting_name , b.symbol_setting_name),
+      sorter: (a, b) => ColumnSorter(a.symbol_setting_name, b.symbol_setting_name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">LoginID</span>,
+      title: <span className="dragHandler">LoginID</span>,
       dataIndex: 'trading_account_loginId',
       key: '2',
-      sorter: (a, b) =>  ColumnSorter(a.trading_account_loginId,b.trading_account_loginId),
+      sorter: (a, b) => ColumnSorter(a.trading_account_loginId, b.trading_account_loginId),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       }
     },
     {
-      title:<span className="dragHandler">OrderID</span>,
+      title: <span className="dragHandler">OrderID</span>,
       dataIndex: 'id',
       key: '3',
-      sorter:(a, b) => a?.id - b?.id,
+      sorter: (a, b) => a?.id - b?.id,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Brand Name</span>,
+      title: <span className="dragHandler">Brand Name</span>,
       dataIndex: 'brand_name',
       key: '2222',
-      sorter:(a, b) => a?.id - b?.id,
+      sorter: (a, b) => a?.id - b?.id,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Type</span>,
+      title: <span className="dragHandler">Type</span>,
       dataIndex: 'type',
       key: '4',
-      sorter: (a, b) => ColumnSorter(a.type,b.type),
+      sorter: (a, b) => ColumnSorter(a.type, b.type),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-    },  
+    },
     {
-      title:<span className="dragHandler">Volume</span>,
+      title: <span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
       key: '5',
-      sorter: (a, b) =>  a.volume - b.volume,
+      sorter: (a, b) => a.volume - b.volume,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Open Price</span>,
+      title: <span className="dragHandler">Open Price</span>,
       dataIndex: 'open_price',
       key: '6',
-      sorter: (a, b) =>  a.open_price - b.open_price,
+      sorter: (a, b) => a.open_price - b.open_price,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Open Time</span>,
+      title: <span className="dragHandler">Open Time</span>,
       dataIndex: 'open_time',
       key: '7',
-      sorter: (a, b) =>  a.open_time - b.open_time,
+      sorter: (a, b) => a.open_time - b.open_time,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
       title: <span className="dragHandler">Current Price</span>,
       dataIndex: 'currentPrice',
       key: '8',
-      sorter: (a, b) => ColumnSorter(a.currentPrice , b.currentPrice),
+      sorter: (a, b) => ColumnSorter(a.currentPrice, b.currentPrice),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Stop Loss</span>,
+      title: <span className="dragHandler">Stop Loss</span>,
       dataIndex: 'stopLoss',
       key: '10',
       sorter: (a, b) => a.stopLoss - b.stopLoss,
@@ -228,11 +228,11 @@ const LiveOrders = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Comment</span>,
+      title: <span className="dragHandler">Comment</span>,
       dataIndex: 'comment',
       key: '11',
       sorter: (a, b) => ColumnSorter(a.comment - b.comment),
@@ -240,11 +240,11 @@ const LiveOrders = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Swap</span>,
+      title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '12',
       sorter: (a, b) => ColumnSorter(a.swap - b.swap),
@@ -252,22 +252,22 @@ const LiveOrders = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
       title: <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '13',
-      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
+      render: (text) => <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
     {
       title: <span className="dragHandler">Commission</span>,
       dataIndex: 'commission',
       key: '14',
-      render: (text)=> <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
+      render: (text) => <span className={`${text < 0 ? 'text-red-600' : 'text-green-600'}`}>{text}</span>
     },
-  // {
+    // {
     //   title: 'Actions',
     //   dataIndex: 'actions',
     //   key: 'actions',
@@ -282,73 +282,71 @@ const LiveOrders = () => {
   ];
 
   const backend_columns = [
-    {id:1, dataIndex:"symbol_setting_name", label:"Symbol"},
-    {id:2, dataIndex:"trading_account_loginId", label:"Login Id"},
-    {id:3, dataIndex:"id", label:"OrderId"},
-    {id:4, dataIndex:"brand_name", label:"Brand Name"},
-    {id:5, dataIndex:"type", label:"Type"},
-    {id:6, dataIndex:"volume", label:"Volume"},
-    {id:7, dataIndex:"open_price", label:"Open Price"},
-    {id:8, dataIndex:"open_time", label:"Open Time"},
-    {id:9, dataIndex:"currentPrice", label:"Current Price"},
-    {id:10, dataIndex:"profit", label:"Profit"},
-    {id:11, dataIndex:"stopLoss", label:"Stop Loss"},
-    {id:12, dataIndex:"comment", label:"Comment"},
-    {id:13, dataIndex:"swap", label:"Swap"},
-    {id:14, dataIndex:"commission", label:"Commission"},
+
+    { id: 3, dataIndex: "id", label: "OrderId" },
+    { id: 5, dataIndex: "type", label: "Type" },
+    { id: 6, dataIndex: "volume", label: "Volume" },
+    { id: 7, dataIndex: "open_price", label: "Open Price" },
+    { id: 8, dataIndex: "open_time", label: "Open Time" },
+    { id: 9, dataIndex: "currentPrice", label: "Current Price" },
+    { id: 10, dataIndex: "profit", label: "Profit" },
+    { id: 11, dataIndex: "stopLoss", label: "Stop Loss" },
+    { id: 12, dataIndex: "comment", label: "Comment" },
+    { id: 13, dataIndex: "swap", label: "Swap" },
+    { id: 14, dataIndex: "commission", label: "Commission" },
   ]
 
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
-  const [newColumns , setNewColumns] = useState(columns)
+  const [newColumns, setNewColumns] = useState(columns)
 
- 
 
-   useEffect(() => {
+
+  useEffect(() => {
     setIsUpdated(true)
-    if(userRole === 'brand' ){
-      fetchLiveOrder(userBrand.public_key,CurrentPage)
+    if (userRole === 'brand') {
+      fetchLiveOrder(userBrand.public_key, CurrentPage)
     }
-    else{
-      fetchLiveOrder(null,CurrentPage)
+    else {
+      fetchLiveOrder(null, CurrentPage)
     }
 
   }, [perPage])
 
 
   useEffect(() => {
-  const newCols = columns.filter(x => checkedList.includes(x.key));
-  setNewColumns(newCols)
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
   }, [checkedList]);
- 
+
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8 w-full' style={{ backgroundColor: colorBG }}>
         <h1 className='text-2xl font-bold'>Live Orders</h1>
-          
-         <CustomTable
+
+        <CustomTable
           direction="/live-orders-entry"
-          formName = "Live Orders" 
+          formName="Live Orders"
           columns={newColumns}
-          data={liveOrders} 
+          data={liveOrders}
           headerStyle={headerStyle}
           total={totalRecords}
           setTotalRecords={setTotalRecords}
-          onPageChange = {onPageChange}
+          onPageChange={onPageChange}
           current_page={CurrentPage}
-          token = {token}
+          token={token}
           isUpated={isUpdated}
           setSelecetdIDs={setLiveOrdersSelectedIds}
-          setTableData = {setLiveOrdersData}
-          table_name= "trade_orders"
-          setSortDirection = {setSortDirection}
+          setTableData={setLiveOrdersData}
+          table_name="trade_orders"
+          setSortDirection={setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
-          SearchQuery = {Search_Live_Order}
-          SearchQueryList = {SearchQueryList}
+          SearchQuery={Search_Live_Order}
+          SearchQueryList={SearchQueryList}
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
-          searchQueryManipulation = {setLiveManipulatedData}
+          searchQueryManipulation={setLiveManipulatedData}
           setLastPage={setLastPage}
           editPermissionName="live_orders_update"
           deletePermissionName="live_orders_delete"
