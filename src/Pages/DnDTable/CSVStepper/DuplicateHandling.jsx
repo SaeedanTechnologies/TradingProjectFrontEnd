@@ -1,166 +1,140 @@
-
-import { IconButton, Stack,Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { DuplicateRecords } from '../../../utils/constants'
-import CustomAutocomplete from '../../../components/CustomAutocomplete'
-import CustomCheckbox from '../../../components/CustomCheckbox'
+import { IconButton, Stack, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { DuplicateRecords } from '../../../utils/constants';
+import CustomAutocomplete from '../../../components/CustomAutocomplete';
+import CustomCheckbox from '../../../components/CustomCheckbox';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { useLocation } from 'react-router-dom';
 
-const DuplicateHandling = () => {
+const DuplicateHandling = ({ setSelectedValues, setSkip }) => {
+    const skipOption = { label: 'Skip', value: 'skip' };
+    const [selectDuplicateRecord, setSelectedDuplicateRecord] = useState(skipOption);
+    const headers = localStorage.getItem("headers");
+    const formatted = headers.split(",");
+    const headersObjects = formatted.map((header, index) => ({
+        id: index,
+        label: header,
+        value: false,
+    }));
 
-    const [selectDuplicateRecord,setSelectedDuplicateRecord] =  useState(null)
+    const [chkBoxesControlLeft, setChkBoxesControlLeft] = useState(headersObjects);
+    const [chkBoxesControlRight, setChkBoxesControlRight] = useState([]);
 
-    const [enable,setEnable] = useState(0);
-    const [enable_password_change,setEnable_password_change] = useState(0);
-    const [enable_investor_trading,setEnable_investor_trading] = useState(0);
-    const [change_password_at_next_login,setChange_password_at_next_login] = useState(0)
+    // Helper function to update the selected values in the parent component
+    const updateSelectedValues = () => {
+        const selectedLeftValues = chkBoxesControlLeft.filter(item => item.value).map(item => item.label);
+        const selectedRightValues = chkBoxesControlRight.filter(item => item.value).map(item => item.label);
+        // setSelectedValues({ left: selectedLeftValues, right: selectedRightValues });
+    };
 
+    const handleInputChange = (key, checked, source) => {
+        if (source === 'left') {
+            const updatedLeftBoxes = chkBoxesControlLeft.map(item =>
+                item.id === key ? { ...item, value: checked } : item
+            );
+            setChkBoxesControlLeft(updatedLeftBoxes);
+        } else if (source === 'right') {
+            const updatedRightBoxes = chkBoxesControlRight.map(item =>
+                item.id === key ? { ...item, value: checked } : item
+            );
+            setChkBoxesControlRight(updatedRightBoxes);
+        }
+        // Update selected values after any change
+        updateSelectedValues();
+    };
 
+    const handleForward = () => {
+        const checkedLeftItems = chkBoxesControlLeft.filter(item => item.value);
+        const updatedLeftArray = chkBoxesControlLeft.filter(item => !item.value);
+        const updatedRightArray = [...chkBoxesControlRight, ...checkedLeftItems];
+        setSelectedValues(updatedRightArray)
+        setChkBoxesControlLeft(updatedLeftArray);
+        setChkBoxesControlRight(updatedRightArray);
+        // Update selected values after moving items forward
+        updateSelectedValues();
+    };
 
-    const ChkBoxesControl = [
-  {
-    id:5,
-    control:'CustomCheckbox',
-    label:'Enable This Account',
-    value:enable,
-    key:'enable',
-    left:true,
-    right:false
-  },
-  {
-    id:6,
-    control:'CustomCheckbox',
-    label:'Enable Password Change',
-    value:enable_password_change,
-    key:'enable_password_change',
-    left:true,
-    right:false
-  },
-  {
-    id:7,
-    control:'CustomCheckbox',
-    label:'Enable Investor Trading',
-    value:enable_investor_trading,
-    key:'enable_investor_trading',
-    left:true,
-    right:false
+    const handleBack = () => {
+        const checkedRightItems = chkBoxesControlRight.filter(item => item.value);
+        const updatedRightArray = chkBoxesControlRight.filter(item => !item.value);
+        const updatedLeftArray = [...chkBoxesControlLeft, ...checkedRightItems];
+        setSelectedValues(updatedRightArray)
+        setChkBoxesControlLeft(updatedLeftArray);
+        setChkBoxesControlRight(updatedRightArray);
+        // Update selected values after moving items back
+        updateSelectedValues();
+    };
 
-  },
-  {
-    id:8,
-    control:'CustomCheckbox',
-    label:'Change Password at Next Login',
-    value:change_password_at_next_login,
-    key:'change_password_at_next_login',
-    left:true,
-    right:false
-  },
-  ]
+    // Initial update of selected values
+    useEffect(() => {
+        updateSelectedValues();
+    }, []);
 
-  // console.log('enable',enable)
+    return (
+        <Stack sx={{ py: 3 }}>
+            <Typography sx={{ fontWeight: "500", fontSize: "24px", fontFamily: "poppins", color: "#616365", borderBottom: "2px solid #b2b4b3", pb: 0.5 }}>
+                Duplicating Record Handling
+            </Typography>
 
+            <Stack direction={'column'} sx={{ gap: 8, py: 4 }}>
+                <CustomAutocomplete
+                    name="duplicate_record"
+                    label="Select how duplicate records should be handled"
+                    variant="standard"
+                    options={DuplicateRecords}
+                    value={selectDuplicateRecord}
+                    getOptionLabel={(option) => option.label ? option.label : ""}
+                    onChange={(event, value) => {
+                        if (value) {
+                            setSelectedDuplicateRecord(value);
+                            setSkip(value.value)
+                        } else {
+                            setSelectedDuplicateRecord(null);
+                        }
+                    }}
+                />
+                <Stack sx={{ gap: 4 }}>
+                    <Typography sx={{ fontSize: "18px", fontFamily: "poppins", color: "#616365" }}>
+                        Select the matching fields to find duplicate records
+                    </Typography>
 
-  const [chkBoxesControl,setChkBoxesControl] = useState(ChkBoxesControl)
-
-  const handleInputChange = (fieldName, value) => {
-    debugger;
-
-    switch (fieldName) {
-         
-          case 'enable':
-          setEnable(value) 
-          break;
-         
-          case 'enable_password_change':
-          setEnable_password_change(value)
-          break;
-        
-          case 'enable_investor_trading':
-          setEnable_investor_trading(value) 
-          break;
-
-          case 'change_password_at_next_login':
-          setChange_password_at_next_login(value)
-          break;
-
-    }
-  };
-
-  const handleForward = () => {
-    const updatedControlArray = chkBoxesControl.map(x=>({...x,left: value ? false :true,right:value ? true : false }))
-    setChkBoxesControl(updatedControlArray);
-  
-};
-
- const handleBack = () => {
-    
-     const updatedControlArray = chkBoxesControl.map(x=>({...x,right: value ? false :true,left:value ? true : false }))
-    setChkBoxesControl(updatedControlArray);
-  
-};
-
-    
-  return (
-    
-        <Stack sx={{py:3}}>
-           <Typography sx={{fontWeight:"500",fontSize:"24px",fontFamily:"poppins", color:"#616365",borderBottom:"2px solid #b2b4b3",pb:0.5}}>Duplicating Record Handling</Typography>
-
-            <Stack direction={'column'} sx={{gap:8,py:4 }} >
-                    <CustomAutocomplete
-                      name="duplicate_record"
-                      label="Select how duplicate records should be handled"
-                      variant="standard"
-                      options={DuplicateRecords}
-                      value={selectDuplicateRecord}
-                      getOptionLabel={(option) => option.label ? option.label : ""}
-                      onChange={(event, value) => {
-                        if(value)
-                            {
-                              setSelectedDuplicateRecord(value)
-                            }
-                          else
-                            setSelectedDuplicateRecord(null)                                                        
-                      }}
-                    /> 
-                <Stack sx={{gap:4}}>
-                    <Typography sx={{fontSize:"18px",fontFamily:"poppins", color:"#616365"}}>Select the matching fields to find duplicate records </Typography>
-                    
-                    <Stack direction="row" justifyContent={"space-between"} sx={{width:"70%"}}>
+                    <Stack direction="row" justifyContent={"space-between"} sx={{ width: "70%" }}>
                         <div className='bg-white shadow-md w-[300px] py-6 px-4'>
-                            {chkBoxesControl?.map(item=> item.left && <CustomCheckbox key={item?.id} label={item?.label} 
-                            checked={item?.value} onChange={(event)=> handleInputChange(item?.key, event.target.checked)}
-                            /> )}
+                            {chkBoxesControlLeft.map(item => (
+                                <CustomCheckbox
+                                    key={item.id}
+                                    label={item.label}
+                                    checked={item.value}
+                                    onChange={(event) => handleInputChange(item.id, event.target.checked, 'left')}
+                                />
+                            ))}
                         </div>
-                        
+
                         <Stack alignItems={'center'} justifyContent='center'>
-                          
-                          
                             <IconButton onClick={handleForward}>
-                                <ArrowForwardIcon/>
+                                <ArrowForwardIcon />
                             </IconButton>
-
-                          <IconButton onClick={handleBack}>
-                                <ArrowBackIcon/>
+                            <IconButton onClick={handleBack}>
+                                <ArrowBackIcon />
                             </IconButton>
-
                         </Stack>
 
-                        <div className='bg-white shadow-md w-[300px]  py-6 px-4'>
-                            {chkBoxesControl?.map(item=> item.right && <CustomCheckbox key={item?.id} label={item?.label} 
-                            checked={item?.value} onChange={(event)=> handleInputChange(item?.key, event.target.checked)}
-                            /> )}
-
+                        <div className='bg-white shadow-md w-[300px] py-6 px-4'>
+                            {chkBoxesControlRight.map(item => (
+                                <CustomCheckbox
+                                    key={item.id}
+                                    label={item.label}
+                                    checked={item.value}
+                                    onChange={(event) => handleInputChange(item.id, event.target.checked, 'right')}
+                                />
+                            ))}
                         </div>
-                    </Stack>                  
-                </Stack> 
+                    </Stack>
+                </Stack>
             </Stack>
-             
-        </Stack> 
+        </Stack>
+    );
+};
 
-
-  )
-  
-}
-
-export default DuplicateHandling
+export default DuplicateHandling;

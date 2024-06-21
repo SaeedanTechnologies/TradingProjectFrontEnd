@@ -7,7 +7,7 @@ import CustomButton from '../../components/CustomButton';
 import { useNavigate } from 'react-router-dom';
 
 
-const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler,addButton, hideDeleteEdit }) =>{
+const TableActions = ({tableName,backendColumns,setIsRearangments,  setIsAddRemove, selectedRows, MassEditHandler, MassDeleteHandler, setPerPage, editPermissionName, deletePermissionName, direction, MassCloseOrdersHandler,addButton, hideDeleteEdit }) =>{
   const navigate = useNavigate()
   const [SelectedOption, setSelectedOption] = useState(10)
   const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name)
@@ -45,6 +45,10 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
     },
    
   ];
+  const handleNavigate = () => {
+    // localStorage.setItem("columns", )
+    navigate('/import-csv', {state:{backendColumns, tableName }})
+  }
   const handleChange = (value) => {
     if(value){
       setPerPage(value)
@@ -98,7 +102,7 @@ const TableActions = ({setIsRearangments,  setIsAddRemove, selectedRows, MassEdi
      <CustomButton
         Text={"Import"}
         className='mb-3'
-        onClickHandler={()=>navigate('/import-csv')}
+        onClickHandler={handleNavigate}
       />
     </div>
 );

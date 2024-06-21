@@ -59,9 +59,6 @@ import ActivityLogin from '../Pages/ActivityLogin/ActivityLogin';
 import ActivityLoginEntry from '../Pages/ActivityLogin/ActivityLoginEntry';
 import TradingAccountActivityLogin from '../Pages/TradingAccount/ActivityLogin';
 import TradingAccountActivityLoginEntry from '../Pages/TradingAccount/TradingAccountActivityLoginEntry';
-import UserIP from '../Pages/Settings/UserIP'
-import BannedIP from '../Pages/Settings/BannedIP';
-import AdminIP from '../Pages/Settings/AdminIP';
 import BrandActivityLogin from '../Pages/Brand/BrandActivityLogin';
 import BrandActivityLoginEntry from '../Pages/Brand/BrandActivityLoginEntry'
 import Active_IP_List from '../Pages/Settings/Active_IP_List';

@@ -111,23 +111,6 @@ const LiveOrders = () => {
   return updatedData;
 }
   const columns = [
-
-   
-      
-    // },
-    // {
-    //   title:<span className="dragHandler">OrderID</span>,
-    //   dataIndex: 'id',
-    //   key: '2',
-    //   sorter: (a, b) => a.id - b.id,
-    //    sortDirections: ['ascend', 'descend'],
-    //   sortIcon: (sortDir) => {
-    //     if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-    //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-    //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
-    //   },
-    // },
-
     {
       title:<span className="dragHandler">Symbol</span>,
       dataIndex: 'symbol_setting_name',
@@ -187,9 +170,7 @@ const LiveOrders = () => {
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-    },
-
-    
+    },  
     {
       title:<span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
@@ -236,18 +217,6 @@ const LiveOrders = () => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
-      },
-    },
-    {
-      title:<span className="dragHandler">Profit</span>,
-      dataIndex: 'profit',
-      key: '9',
-      sorter: (a, b) => a.profit - b.profit,
-      sortDirections: ['ascend', 'descend'],
-      sortIcon: (sortDir) => {
-        if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
-        if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
@@ -312,7 +281,22 @@ const LiveOrders = () => {
     // },
   ];
 
-
+  const backend_columns = [
+    {id:1, dataIndex:"symbol_setting_name", label:"Symbol"},
+    {id:2, dataIndex:"trading_account_loginId", label:"Login Id"},
+    {id:3, dataIndex:"id", label:"OrderId"},
+    {id:4, dataIndex:"brand_name", label:"Brand Name"},
+    {id:5, dataIndex:"type", label:"Type"},
+    {id:6, dataIndex:"volume", label:"Volume"},
+    {id:7, dataIndex:"open_price", label:"Open Price"},
+    {id:8, dataIndex:"open_time", label:"Open Time"},
+    {id:9, dataIndex:"currentPrice", label:"Current Price"},
+    {id:10, dataIndex:"profit", label:"Profit"},
+    {id:11, dataIndex:"stopLoss", label:"Stop Loss"},
+    {id:12, dataIndex:"comment", label:"Comment"},
+    {id:13, dataIndex:"swap", label:"Swap"},
+    {id:14, dataIndex:"commission", label:"Commission"},
+  ]
 
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
@@ -368,6 +352,7 @@ const LiveOrders = () => {
           setLastPage={setLastPage}
           editPermissionName="live_orders_update"
           deletePermissionName="live_orders_delete"
+          backendColumns={backend_columns}
         />
       </div>
     </Spin>
