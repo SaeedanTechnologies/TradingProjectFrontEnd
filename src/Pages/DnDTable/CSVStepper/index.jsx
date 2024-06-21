@@ -15,11 +15,12 @@ import { useSelector } from 'react-redux';
 
 const steps = ['Upload CSV', 'Duplicate Handling', 'Field Mapping'];
 export default function CSVStepper() {
-  const {state} = useLocation()
+  const { state } = useLocation()
   const [csv_file, setCsvFile] = React.useState("")
+  const [csvData, setCSVdata] = React.useState("")
   const [selected_values, setSelectedValues] = React.useState("")
   const [skip, setSkip] = React.useState("skip")
-  const [data_array, setDataArray]= React.useState([])
+  const [data_array, setDataArray] = React.useState([])
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
   const token = useSelector(({ user }) => user?.user?.token)
@@ -40,43 +41,42 @@ export default function CSVStepper() {
   const allStepsCompleted = () => {
     return completedSteps() === totalSteps();
   };
+  const handleNext = () => {
+    if (!csv_file) {
+      CustomNotification({ type: "error", title: "Opps", description: `Please upload csv file first`, key: 1 })
 
-    const handleNext = () => {
-      if(!csv_file) {
-        CustomNotification({ type: "error", title: "Opps", description: `Please upload csv file first`, key: 1 })
-        
+    }
+    else
+      if (activeStep === steps.length - 1 && !allStepsCompleted()) {
+        return;
       }
-      else 
-    if ( activeStep === steps.length - 1 && !allStepsCompleted()) {
-      return;
-    }
-    else {
-      const newActiveStep = activeStep + 1;
-    setActiveStep(newActiveStep);
-    }
-    
+      else {
+        const newActiveStep = activeStep + 1;
+        setActiveStep(newActiveStep);
+      }
+
   };
 
   const handleBack = () => {
-     if (activeStep === 0) {
-    // If active step is already the first step, don't move back
-    return;
-  }
-  setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (activeStep === 0) {
+      // If active step is already the first step, don't move back
+      return;
+    }
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleStep =  (step) => () => {
+  const handleStep = (step) => () => {
     setActiveStep(step);
   };
 
-  const handleComplete =async () => {
-    const merge = selected_values?.map(obj=>obj.label)
-    const merge_cols = merge.join(",")
+  const handleComplete = async () => {
+    const merge = []
+    const merge_cols = merge
     const params = {
-      table_name:state?.tableName,
-      rows:data_array,
-      marge_col:merge_cols,
-      skip:skip
+      table_name: state?.tableName,
+      rows: data_array,
+      marge_col: merge_cols,
+      skip: skip
     }
     const res = await massImport(params, token)
     console.log(res, "THIS IS REPSONSE")
@@ -94,18 +94,18 @@ export default function CSVStepper() {
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
-        return <UploadCSV setCsv={setCsvFile}/>;
+        return <UploadCSV setCsv={setCsvFile} setCSVdata={setCSVdata} />;
       case 1:
         return <DuplicateHandling setSelectedValues={setSelectedValues} setSkip={setSkip} />;
       case 2:
-        return <FieldMapping setDataArray={setDataArray} />;
+        return <FieldMapping setDataArray={setDataArray} csvData={csvData} />;
       default:
         return 'Unknown step';
     }
   };
 
   return (
-    <Box sx={{ width: '100%', p: 6,backgroundColor: "#fff" }}>
+    <Box sx={{ width: '100%', p: 6, backgroundColor: "#fff" }}>
       <Stepper nonLinear activeStep={activeStep} sx={{
         '.MuiStepIcon-root': {
           '&.Mui-active': {
@@ -113,7 +113,7 @@ export default function CSVStepper() {
             // Set background color to green for the active step
           },
         },
-        }} >
+      }} >
         {steps.map((label, index) => (
           <Step key={label} completed={completed[index]}>
             <StepButton color="inherit" onClick={handleStep(index)}>
@@ -136,30 +136,30 @@ export default function CSVStepper() {
         ) : (
           <React.Fragment>
             {renderStepContent(activeStep)}
-            <Box sx={{ display: 'flex', flexDirection: 'row', mb: 3}}>
-                {activeStep > 0 &&
-              <Button
-                color="inherit"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                sx={{ mr: 1,color:'#1CAC70', }}
-              >
-                Back
-              </Button>
-               }
+            <Box sx={{ display: 'flex', flexDirection: 'row', mb: 3 }}>
+              {activeStep > 0 &&
+                <Button
+                  color="inherit"
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  sx={{ mr: 1, color: '#1CAC70', }}
+                >
+                  Back
+                </Button>
+              }
               <Box sx={{ flex: '1 1 auto' }} />
-            
-              {activeStep === steps.length-1 ?
-                
-                  <Button onClick={handleComplete} sx={{color:'#fff',backgroundColor:"#1CAC70",'&:hover':{backgroundColor:'#0fb600'} }}>
-                    Import
-                  </Button>
+
+              {activeStep === steps.length - 1 ?
+
+                <Button onClick={handleComplete} sx={{ color: '#fff', backgroundColor: "#1CAC70", '&:hover': { backgroundColor: '#0fb600' } }}>
+                  Import
+                </Button>
                 :
-                <Button onClick={handleNext} sx={{ color:'#fff',backgroundColor:"#1CAC70",'&:hover':{backgroundColor:'#0fb600'}  }}>
+                <Button onClick={handleNext} sx={{ color: '#fff', backgroundColor: "#1CAC70", '&:hover': { backgroundColor: '#0fb600' } }}>
                   Next
                 </Button>
 
-                }
+              }
             </Box>
           </React.Fragment>
         )}

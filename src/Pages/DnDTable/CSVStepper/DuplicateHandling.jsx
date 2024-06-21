@@ -8,13 +8,16 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useLocation } from 'react-router-dom';
 
 const DuplicateHandling = ({ setSelectedValues, setSkip }) => {
+    const { state } = useLocation();
+    console.log(state.backendColumns[0].label, 'ddddd')
     const skipOption = { label: 'Skip', value: 'skip' };
     const [selectDuplicateRecord, setSelectedDuplicateRecord] = useState(skipOption);
-    const headers = localStorage.getItem("headers");
-    const formatted = headers.split(",");
-    const headersObjects = formatted.map((header, index) => ({
-        id: index,
-        label: header,
+    // const headers = localStorage.getItem("headers");
+    // console.log(headers, 'headers')
+    // const formatted = headers.split(",");
+    const headersObjects = state.backendColumns.map((state) => ({
+        id: state.dataIndex,
+        label: state.label,
         value: false,
     }));
 

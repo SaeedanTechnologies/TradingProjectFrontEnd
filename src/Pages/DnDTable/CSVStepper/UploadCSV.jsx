@@ -2,11 +2,13 @@ import { useState, useRef } from 'react';
 import { Button, FormControlLabel, Radio, RadioGroup, Stack, Typography } from '@mui/material';
 import Papa from 'papaparse';
 import Computer_Icon from '../../../assets/images/computer.svg';
+import { result } from 'lodash';
 
-const UploadCSV = ({setCsv}) => {
+const UploadCSV = ({ setCsv, setCSVdata }) => {
   const [csvFile, setCsvFile] = useState(null);
   const [delimiter, setDelimiter] = useState(',');
-  const [csvHeaders, setCsvHeaders] = useState([]); // State to store CSV headers
+  const [csvHeaders, setCsvHeaders] = useState([]);
+
   const csvRef = useRef(null);
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -18,7 +20,10 @@ const UploadCSV = ({setCsv}) => {
         complete: (results) => {
           if (results.data.length) {
             setCsvHeaders(results.data[0]);
+            // console.log(results, 'result')
+            setCSVdata(results)
             localStorage.setItem("headers", results.data[0])
+            // localStorage.setItem("headers2", results.data)
           } else {
             alert('CSV file is empty.');
             setCsvFile(null);
@@ -69,8 +74,10 @@ const UploadCSV = ({setCsv}) => {
             Select from Computer
           </Button>
         </Stack>
-        <Typography sx={{ml:"75%", fontSize: "16px", fontFamily: "poppins", 
-            color: "#616365", mt: -3, fontWeight:'bold' }}>
+        <Typography sx={{
+          ml: "75%", fontSize: "16px", fontFamily: "poppins",
+          color: "#616365", mt: -3, fontWeight: 'bold'
+        }}>
           {csvFile ? csvFile.name : 'No file selected'}
         </Typography>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 5 }}>
