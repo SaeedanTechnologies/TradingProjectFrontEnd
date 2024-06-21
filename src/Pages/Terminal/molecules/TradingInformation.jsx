@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Stack, Typography, Tab, Tabs } from '@mui/material';
+import { Box, Stack, Typography, Tab, Tabs,Grid } from '@mui/material';
 import CustomButton from '../../../components/CustomButton';
 import Information from './Information';
 import TablesTabs from './TablesTabs';
 import TradeChart from './TradeChart';
+import TradingHours from './TradingHours'
 
 const TradingInformation = () => {
   const [activeTab, setActiveTab] = useState('1');
@@ -39,9 +40,9 @@ const TradingInformation = () => {
   ];
 
   return (
-    <Stack sx={{  p: 3, pr: 5,width:"100%" }}>
-      <Box sx={{ display: "flex" }}>
-        <Tabs
+    <Grid container columnGap={4} rowGap={4}> 
+        <Grid item xs={12} >
+            <Tabs
           value={activeTab}
           onChange={onChange}
           TabIndicatorProps={{ style: { backgroundColor: '#1CAC70' } }}
@@ -66,13 +67,12 @@ const TradingInformation = () => {
             />
           ))}
         </Tabs>
-      </Box>
-
-      <Box sx={{  display: "flex",justifyContent:"center",gap:6  }}>
-        <Box sx={{width:'auto'}}>
+        </Grid>
+        <Grid item xs={7}>
           {items.find(item => item.key === activeTab)?.component}
-        </Box>
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+        </Grid>
+        <Grid item xs={4} >
+          <Box sx={{   display: "flex", flexDirection: "column", gap: 2 }}>
           {descriptions.map((description, index) => (
             <Stack key={index} direction="row" justifyContent={"space-between"} sx={{ width: '100%' }}>
               <Typography sx={{ fontSize: "12px", color: "#848E9C" }}>{description.label}</Typography>
@@ -89,10 +89,21 @@ const TradingInformation = () => {
               style={{ height: '48px', display: "flex", flexDirection: "column", borderRadius: '8px', backgroundColor: "#B22E0C", color: "#fff", border: "none" }}
             />
           </Stack>
-        </Box>
-      </Box>
-    </Stack>
-  );
+          </Box>
+        </Grid>
+        
+      { activeTab === '1' ?
+      ( <Grid item xs={12}>
+          <TablesTabs/>
+        </Grid>):
+        (<Grid item xs={12}>
+          <TradingHours/>
+        </Grid>)
+        
+        }
+      </Grid>
+
+);
 };
 
 export default TradingInformation;

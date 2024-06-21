@@ -254,12 +254,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       display: "show",
       url: "/settings",
     },
-    {key: "11",
-      icon: <SettingOutlined />,
-      children: [],
-      label: "Terminal",
-      display: "show",
-      url: "/terminal",}
+   
   ];
 
   const handleMenuSelect = ({ key }) => {

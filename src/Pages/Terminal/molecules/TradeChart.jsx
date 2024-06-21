@@ -6,11 +6,10 @@ import TablesTabs from './TablesTabs'
 
 const TradeChart = () => {
   return (
-    <Stack sx={{gap:4}}>
-        <Box sx={{display:"flex",backgroundColor:"red",width:"550px"}}>
+    <Stack sx={{ direction:"column",gap:4 }}>
+        <Box sx={{display:"flex",width:'100%'}}>
         <img src="/src/assets/images/Terminal-Chart.svg" alt="chart" style={{width:'100%',objectFit:"cover"}} />
         </Box> 
-        <TablesTabs/>
        </Stack>
   )
 }

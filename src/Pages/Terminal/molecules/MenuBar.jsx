@@ -55,7 +55,7 @@ function ResponsiveDrawer(props) {
   const terminalArrays = [{title:'Market Watch',path:'/terminal/market-watch'},{title:'Economic Calender',path:'/terminal/economic-calender'},{title:'Market News',path:'/terminal/market-news'}]
 
   const drawer = (
-    <Box sx={{  backgroundColor:"#fff",height:"auto",boxShadow: '24px 0px 80px 0px rgba(49, 79, 124, 0.1)',borderRight:"2px solid #ECEFF9" }}>
+    <Box sx={{ width:"100%",height:"100%", backgroundColor:"#fff",boxShadow: '24px 0px 80px 0px rgba(49, 79, 124, 0.1)',borderRight:"2px solid #ECEFF9" }}>
      
     <Typography sx={{p:3,color:"#90B78F"}}>Menu</Typography>
       <List >
