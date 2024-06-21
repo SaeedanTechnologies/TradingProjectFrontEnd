@@ -66,7 +66,6 @@ import BrandActivityLogin from '../Pages/Brand/BrandActivityLogin';
 import BrandActivityLoginEntry from '../Pages/Brand/BrandActivityLoginEntry'
 import Active_IP_List from '../Pages/Settings/Active_IP_List';
 import Active_IP_List_Entry from '../Pages/TradingAccount/Active_IP_List_Entry';
-import Terminal from '../Pages/Terminal'
 import CSVStepper from '../Pages/DnDTable/CSVStepper'
 import Terminal, { MarketNews,EconomicCalender,WatchMarket,Journal,ActiveOrders,OrderHistory,PendingOrders } from '../Pages/Terminal'
 
