@@ -261,7 +261,7 @@ export const balanceCheck = (currentTradingAccountData) => {
 }
 
 export const conditionalLeverage = (trading_account, symbol_setting) => {
-  debugger
+  // debugger  
   let leverage;
   const symbol_group_id = symbol_setting?.group?.id;
   const trading_account_symbol_leverage = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x => x?.id == symbol_setting?.group?.id)?.settings?.find((x) => x.id === symbol_setting?.id)?.selectedLeverage?.title) || { value: '', title: '' }
