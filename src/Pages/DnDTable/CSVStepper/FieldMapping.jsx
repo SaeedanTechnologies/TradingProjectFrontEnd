@@ -2,8 +2,9 @@ import { Stack, Table, TableContainer, TableCell, TableHead, TableRow, TableBody
 import CustomAutocomplete from '../../../components/CustomAutocomplete';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
-const FieldMapping = ({ setDataArray, csvData }) => {
+const FieldMapping = ({ setRows, csvData }) => {
   const { state } = useLocation();
   const headers = localStorage.getItem("headers");
   const formatted = headers ? headers.split(",") : [];
@@ -13,29 +14,19 @@ const FieldMapping = ({ setDataArray, csvData }) => {
   }));
 
   const [selectedFields, setSelectedFields] = useState([]);
+  console.log(selectedFields)
+  const [modified, setmodified] = useState([]);
 
-  const handleAutocompleteChange = (index, value) => {
-    const updatedFields = [...selectedFields];
-    const existingIndex = updatedFields.findIndex(item => item.header === headersObjects[index].label);
-
-    if (existingIndex !== -1) {
-      updatedFields[existingIndex] = {
-        ...updatedFields[existingIndex],
-        crm_fields: value ? value.dataIndex : null,
-        crm_label: value ? value.label : null
-      };
-    } else {
-      updatedFields.push({
-        header: headersObjects[index].label,
-        crm_fields: value ? value.dataIndex : null,
-        crm_label: value ? value.label : null,
-        default_value: ""
-      });
-    }
-
-    setSelectedFields(updatedFields);
-    updateDataArray(updatedFields);
+  const handleAutocompleteChange = (state, csvkey) => {
+    const modifiedExercises = csvData.map((value, index) => {
+      const modifiedExercise = {};
+      modifiedExercise[state.value] = value[csvkey];
+      return { ...modified[index], ...modifiedExercise };
+    });
+    setmodified(modifiedExercises);
+    setSelectedFields({ ...selectedFields, [csvkey]: state })
   };
+
 
   const handleDefaultValueChange = (index, value) => {
     const updatedFields = [...selectedFields];
@@ -50,29 +41,18 @@ const FieldMapping = ({ setDataArray, csvData }) => {
       updatedFields.push({
         header: headersObjects[index].label,
         crm_fields: null,
-        crm_label: null,
         default_value: value
       });
     }
 
     setSelectedFields(updatedFields);
-    updateDataArray(updatedFields);
+    setRows(updatedFields);
   };
 
-  const updateDataArray = (fieldsMapping) => {
-    const mappedData = csvData.map(row => {
-      const newRow = {};
-      fieldsMapping.forEach(mapping => {
-        const header = mapping.header;
-        const crmField = mapping.crm_fields || header;
-        const value = row[header] !== undefined ? row[header] : mapping.default_value;
-        newRow[crmField] = value;
-      });
-      return newRow;
-    });
+  useEffect(() => {
+    setRows(modified)
+  }, [modified])
 
-    setDataArray(mappedData);
-  };
 
   return (
     <Stack sx={{ py: 3 }}>
@@ -100,11 +80,9 @@ const FieldMapping = ({ setDataArray, csvData }) => {
                       label="Select an option"
                       variant="standard"
                       options={state.backendColumns}
-                      value={
-                        state.backendColumns.find(option => option.label === selectedFields.find(item => item.header === val.label)?.crm_label) || null
-                      }
+                      // value={selectedFields.find((item, key) => key === index) || null}
                       getOptionLabel={(option) => option.label ? option.label : ""}
-                      onChange={(event, value) => handleAutocompleteChange(index, value)}
+                      onChange={(event, state) => handleAutocompleteChange(state, index)}
                     />
                   </TableCell>
                   <TableCell align="left">
@@ -112,10 +90,11 @@ const FieldMapping = ({ setDataArray, csvData }) => {
                       fullWidth
                       size="small"
                       placeholder='Provide Any default value (Optional)'
-                      value={
-                        selectedFields.find(item => item.header === val.label)?.default_value || ""
-                      }
+                      // value={
+                      //   selectedFields.find(item => item.header === val.label)?.default_value || ""
+                      // }
                       onChange={(event) => handleDefaultValueChange(index, event.target.value)}
+
                     />
                   </TableCell>
                 </TableRow>

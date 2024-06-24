@@ -8,6 +8,7 @@ import { ColumnSorter, ColumnSpaceSorter, CustomDeleteDeleteHandler, calculateNi
 import { setLiveOrdersSelectedIds, setLiveOrdersData, } from '../../store/TradeOrders';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
+import { values } from 'lodash';
 
 const LiveOrders = () => {
   const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
@@ -282,18 +283,17 @@ const LiveOrders = () => {
   ];
 
   const backend_columns = [
-
-    { id: 3, dataIndex: "id", label: "OrderId" },
-    { id: 5, dataIndex: "type", label: "Type" },
-    { id: 6, dataIndex: "volume", label: "Volume" },
-    { id: 7, dataIndex: "open_price", label: "Open Price" },
-    { id: 8, dataIndex: "open_time", label: "Open Time" },
-    { id: 9, dataIndex: "currentPrice", label: "Current Price" },
-    { id: 10, dataIndex: "profit", label: "Profit" },
-    { id: 11, dataIndex: "stopLoss", label: "Stop Loss" },
-    { id: 12, dataIndex: "comment", label: "Comment" },
-    { id: 13, dataIndex: "swap", label: "Swap" },
-    { id: 14, dataIndex: "commission", label: "Commission" },
+    { value: "id", label: "OrderId" },
+    { value: "type", label: "Type" },
+    { value: "volume", label: "Volume" },
+    { value: "open_price", label: "Open Price" },
+    { value: "open_time", label: "Open Time" },
+    { value: "currentPrice", label: "Current Price" },
+    { value: "profit", label: "Profit" },
+    { value: "stopLoss", label: "Stop Loss" },
+    { value: "comment", label: "Comment" },
+    { value: "swap", label: "Swap" },
+    { value: "commission", label: "Commission" },
   ]
 
   const defaultCheckedList = columns.map((item) => item.key);

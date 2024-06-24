@@ -46,11 +46,11 @@ export const DashboardCardData = [
 ]
 
 export const OperationsList = [
-    { label: "balance", value: "balance" },
-    { label: "commission", value: "commission" },
-    { label: "tax", value: "tax" },
-    { label: "Credit", value: "Credit" },
-    { label: "bonus", value: "bonus" }
+  { label: "balance", value: "balance" },
+  { label: "commission", value: "commission" },
+  { label: "tax", value: "tax" },
+  { label: "Credit", value: "Credit" },
+  { label: "bonus", value: "bonus" }
 ]
 
 export const Countries = [
@@ -517,7 +517,7 @@ export const GrowthChartFilter = [
   },
 ]
 
-export const TradeTimeChips = ['1m','5m','30m','1h']
+export const TradeTimeChips = ['1m', '5m', '30m', '1h']
 
 export const BarChartConfig = {
   chart: {
@@ -668,13 +668,13 @@ export const TradeOrderTypes = [
 
   { label: 'Pending Order', value: 'pending' },
   { label: 'Market Order', value: 'market' },
-  {label:'Close Order', value:'close'}
+  { label: 'Close Order', value: 'close' }
 
 ]
 
 export const LiveOrderTypes = [
-    { label: 'buy', value: "buy" },
-    { label: 'sell', value: "sell" },
+  { label: 'buy', value: "buy" },
+  { label: 'sell', value: "sell" },
 
 ]
 
@@ -695,10 +695,10 @@ export const MarketOrderTypes = [
 ]
 
 export const TransactionTypes =
-[
-  {label:'deposit',value:'deposit'},
-  {label:'withdraw',value:'withdraw'}
-]
+  [
+    { label: 'deposit', value: 'deposit' },
+    { label: 'withdraw', value: 'withdraw' }
+  ]
 
 export const GetCurrentDate = () => {
   var date = new Date();
@@ -722,24 +722,23 @@ export const LeverageList = [
 ]
 
 export const CurrenciesList = [
-    {label: 'Dollar ($)', value: '$', title: 'USD'},
-    {label:'Euro (€)',value:'€', title: 'EUR'},
-    {label: 'Pound (£)',value:'£', title: 'GBP'}
+  { label: 'Dollar ($)', value: '$', title: 'USD' },
+  { label: 'Euro (€)', value: '€', title: 'EUR' },
+  { label: 'Pound (£)', value: '£', title: 'GBP' }
 ]
 
 export const PipsValues = [
-      {label:"0",value:0},
-      {label:"1",value:1},
-      {label:"2",value:2},
-      {label:"3",value:3},
-      {label:"4",value:4},
-      {label:"5",value:5},
-      {label:"6",value:6},
-      {label:"7",value:7},
-      {label:"8",value:8},
-      {label:"9",value:9},
+  { label: "0", value: 0 },
+  { label: "1", value: 1 },
+  { label: "2", value: 2 },
+  { label: "3", value: 3 },
+  { label: "4", value: 4 },
+  { label: "5", value: 5 },
+  { label: "6", value: 6 },
+  { label: "7", value: 7 },
+  { label: "8", value: 8 },
+  { label: "9", value: 9 },
 
-    ]
+]
 
-    export const DuplicateRecords = [{label:"Skip",value:"skip"},{label:"Merge",value:"merge"}]
-    export const CRMFields = [{label:"Skip",value:"skip"},{label:"Merge",value:"merge"}]
+export const DuplicateRecords = [{ label: "Skip", value: "skip" }, { label: "Merge", value: "marge" }]

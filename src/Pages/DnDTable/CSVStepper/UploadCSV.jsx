@@ -1,51 +1,38 @@
 import { useState, useRef } from 'react';
 import { Button, FormControlLabel, Radio, RadioGroup, Stack, Typography } from '@mui/material';
-import Papa from 'papaparse';
-import Computer_Icon from '../../../assets/images/computer.svg';
-import { result } from 'lodash';
+import { readCSVFile } from '../../../utils/helpers';
+import CustomNotification from '../../../components/CustomNotification';
 
-const UploadCSV = ({ setCsv, setCSVdata }) => {
+const UploadCSV = ({ setCsv, setCSVdata, setDelimiter, delimiter }) => {
   const [csvFile, setCsvFile] = useState(null);
-  const [delimiter, setDelimiter] = useState(',');
-  const [csvHeaders, setCsvHeaders] = useState([]);
-
+  // const [delimiter, setDelimiter] = useState(',');
   const csvRef = useRef(null);
+
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
+
     if (file && file.type === 'text/csv') {
       setCsvFile(file);
-      setCsv(file)
-      // Parse CSV headers using Papaparse
-      Papa.parse(file, {
-        complete: (results) => {
-          if (results.data.length) {
-            setCsvHeaders(results.data[0]);
-            // console.log(results, 'result')
-            setCSVdata(results)
-            localStorage.setItem("headers", results.data[0])
-            // localStorage.setItem("headers2", results.data)
-          } else {
-            alert('CSV file is empty.');
-            setCsvFile(null);
-            setCsvHeaders([]);
-          }
-        },
-        header: false, // Don't treat the first row as headers
-        delimiter: delimiter,
-      });
+      setCsv(file);
     } else {
-      alert('Please upload a valid CSV file.');
-      setCsvFile(null); // Clear the file if it's not valid
-      setCsvHeaders([]);
+      CustomNotification({
+        type: "error",
+        title: "CSV Import",
+        description: "Please upload a valid CSV file.",
+        key: 1
+      });
     }
   };
+
+
 
   const handleButtonClick = () => {
     csvRef.current.click();
   };
 
   const handleDelimiterChange = (event) => {
-    setDelimiter(event.target.value);
+    const newDelimiter = event.target.value;
+    setDelimiter(newDelimiter);
   };
 
   return (
@@ -95,14 +82,9 @@ const UploadCSV = ({ setCsv, setCSVdata }) => {
             <FormControlLabel value="^" control={<Radio />} label="caret" />
           </RadioGroup>
         </Stack>
-        {/* {csvHeaders.length > 0 && (
-          <Typography sx={{ fontSize: "18px", fontFamily: "poppins", color: "#616365", pt: 3 }}>
-            CSV Headers: {csvHeaders.join(', ')}
-          </Typography>
-        )} */}
       </Stack>
     </Stack>
   );
-}
+};
 
 export default UploadCSV;

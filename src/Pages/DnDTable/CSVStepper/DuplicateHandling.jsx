@@ -6,73 +6,44 @@ import CustomCheckbox from '../../../components/CustomCheckbox';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useLocation } from 'react-router-dom';
+import { getCheckedRightItems, updateCheckedStatus } from '../../../utils/helpers';
 
-const DuplicateHandling = ({ setSelectedValues, setSkip }) => {
+const DuplicateHandling = ({ setMarge_col, setSkip }) => {
     const { state } = useLocation();
-    console.log(state.backendColumns[0].label, 'ddddd')
     const skipOption = { label: 'Skip', value: 'skip' };
     const [selectDuplicateRecord, setSelectedDuplicateRecord] = useState(skipOption);
-    // const headers = localStorage.getItem("headers");
-    // console.log(headers, 'headers')
-    // const formatted = headers.split(",");
-    const headersObjects = state.backendColumns.map((state) => ({
-        id: state.dataIndex,
-        label: state.label,
-        value: false,
-    }));
 
-    const [chkBoxesControlLeft, setChkBoxesControlLeft] = useState(headersObjects);
+
+    const [chkBoxesControlLeft, setChkBoxesControlLeft] = useState(state.backendColumns);
     const [chkBoxesControlRight, setChkBoxesControlRight] = useState([]);
 
-    // Helper function to update the selected values in the parent component
-    const updateSelectedValues = () => {
-        const selectedLeftValues = chkBoxesControlLeft.filter(item => item.value).map(item => item.label);
-        const selectedRightValues = chkBoxesControlRight.filter(item => item.value).map(item => item.label);
-        // setSelectedValues({ left: selectedLeftValues, right: selectedRightValues });
-    };
-
-    const handleInputChange = (key, checked, source) => {
-        if (source === 'left') {
-            const updatedLeftBoxes = chkBoxesControlLeft.map(item =>
-                item.id === key ? { ...item, value: checked } : item
-            );
-            setChkBoxesControlLeft(updatedLeftBoxes);
-        } else if (source === 'right') {
-            const updatedRightBoxes = chkBoxesControlRight.map(item =>
-                item.id === key ? { ...item, value: checked } : item
-            );
-            setChkBoxesControlRight(updatedRightBoxes);
+    const handleInputChange = (event, item, side) => {
+        const updatedArray = updateCheckedStatus(event, item, side, chkBoxesControlLeft, chkBoxesControlRight,);
+        if (side === 'left') {
+            setChkBoxesControlLeft(updatedArray);
+        } else {
+            setChkBoxesControlRight(updatedArray);
         }
-        // Update selected values after any change
-        updateSelectedValues();
     };
 
     const handleForward = () => {
-        const checkedLeftItems = chkBoxesControlLeft.filter(item => item.value);
-        const updatedLeftArray = chkBoxesControlLeft.filter(item => !item.value);
+        const checkedLeftItems = getCheckedRightItems(chkBoxesControlLeft);
+        const updatedLeftArray = chkBoxesControlLeft.filter(item => !item.checked);
         const updatedRightArray = [...chkBoxesControlRight, ...checkedLeftItems];
-        setSelectedValues(updatedRightArray)
         setChkBoxesControlLeft(updatedLeftArray);
         setChkBoxesControlRight(updatedRightArray);
-        // Update selected values after moving items forward
-        updateSelectedValues();
     };
 
     const handleBack = () => {
-        const checkedRightItems = chkBoxesControlRight.filter(item => item.value);
-        const updatedRightArray = chkBoxesControlRight.filter(item => !item.value);
+        const checkedRightItems = getCheckedRightItems(chkBoxesControlRight);
+        const updatedRightArray = chkBoxesControlRight.filter(item => !item.checked);
         const updatedLeftArray = [...chkBoxesControlLeft, ...checkedRightItems];
-        setSelectedValues(updatedRightArray)
         setChkBoxesControlLeft(updatedLeftArray);
         setChkBoxesControlRight(updatedRightArray);
-        // Update selected values after moving items back
-        updateSelectedValues();
     };
-
-    // Initial update of selected values
     useEffect(() => {
-        updateSelectedValues();
-    }, []);
+        setMarge_col(chkBoxesControlRight.map((item) => item.value))
+    }, [chkBoxesControlRight])
 
     return (
         <Stack sx={{ py: 3 }}>
@@ -106,10 +77,10 @@ const DuplicateHandling = ({ setSelectedValues, setSkip }) => {
                         <div className='bg-white shadow-md w-[300px] py-6 px-4'>
                             {chkBoxesControlLeft.map(item => (
                                 <CustomCheckbox
-                                    key={item.id}
+                                    key={item.value}
                                     label={item.label}
-                                    checked={item.value}
-                                    onChange={(event) => handleInputChange(item.id, event.target.checked, 'left')}
+                                    checked={item.checked || false}
+                                    onChange={(event) => handleInputChange(event, item, 'left')}
                                 />
                             ))}
                         </div>
@@ -126,10 +97,10 @@ const DuplicateHandling = ({ setSelectedValues, setSkip }) => {
                         <div className='bg-white shadow-md w-[300px] py-6 px-4'>
                             {chkBoxesControlRight.map(item => (
                                 <CustomCheckbox
-                                    key={item.id}
+                                    key={item.value}
                                     label={item.label}
-                                    checked={item.value}
-                                    onChange={(event) => handleInputChange(item.id, event.target.checked, 'right')}
+                                    checked={item.checked || false}
+                                    onChange={(event) => handleInputChange(event, item, 'right')}
                                 />
                             ))}
                         </div>

@@ -12,78 +12,120 @@ import { useLocation } from 'react-router-dom';
 import CustomNotification from '../../../components/CustomNotification';
 import { massImport } from '../../../utils/_MassImport';
 import { useSelector } from 'react-redux';
+import Papa from 'papaparse';
+import { readCSVFile, validateDelimiter } from '../../../utils/helpers';
 
 const steps = ['Upload CSV', 'Duplicate Handling', 'Field Mapping'];
+
 export default function CSVStepper() {
-  const { state } = useLocation()
-  const [csv_file, setCsvFile] = React.useState("")
-  const [csvData, setCSVdata] = React.useState("")
-  const [selected_values, setSelectedValues] = React.useState("")
-  const [skip, setSkip] = React.useState("skip")
-  const [data_array, setDataArray] = React.useState([])
+  const { state } = useLocation();
+  const [csv_file, setCsvFile] = React.useState(null);
+  const [csvData, setCSVdata] = React.useState("");
+  const [marge_col, setMarge_col] = React.useState([]);
+  const [skip, setSkip] = React.useState("skip");
+  const [rows, setRows] = React.useState([]);
+  const [delimiter, setDelimiter] = React.useState(',');
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
-  const token = useSelector(({ user }) => user?.user?.token)
-  const [loading, setIsLoading] = React.useState(false)
-  const steps = ['Upload CSV', 'Duplicate Handling', 'Field Mapping'];
-  const totalSteps = () => {
-    return steps.length;
-  };
+  const token = useSelector(({ user }) => user?.user?.token);
+  const [loading, setIsLoading] = React.useState(false);
 
-  const completedSteps = () => {
-    return Object.keys(completed).length;
-  };
+  const totalSteps = () => steps.length;
+  const completedSteps = () => Object.keys(completed).length;
+  const isLastStep = () => activeStep === totalSteps() - 1;
+  const allStepsCompleted = () => completedSteps() === totalSteps();
 
-  const isLastStep = () => {
-    return activeStep === totalSteps() - 1;
-  };
-
-  const allStepsCompleted = () => {
-    return completedSteps() === totalSteps();
-  };
   const handleNext = () => {
-    if (!csv_file) {
-      CustomNotification({ type: "error", title: "Opps", description: `Please upload csv file first`, key: 1 })
-
+    if (!csv_file && activeStep === 0) {
+      CustomNotification({ type: "error", title: "Oops", description: "Please upload CSV file first", key: 1 });
+      return;
     }
-    else
-      if (activeStep === steps.length - 1 && !allStepsCompleted()) {
-        return;
-      }
-      else {
-        const newActiveStep = activeStep + 1;
-        setActiveStep(newActiveStep);
-      }
+    if (csv_file && activeStep === 0) {
+      readAndParseCSV(csv_file)
+    } else {
+      moveStepForward();
+    }
+  };
 
+  const readAndParseCSV = (file) => {
+    readCSVFile(file)
+      .then((contents) => {
+
+        if (validateDelimiter(contents, delimiter)) {
+          Papa.parse(csv_file, {
+            complete: (results) => {
+              if (results.data.length > 1) {
+                setCSVdata(results.data.slice(1));
+                localStorage.setItem("headers", results.data[0]);
+                moveStepForward();
+              } else {
+                CustomNotification({
+                  type: "error",
+                  title: "CSV Import",
+                  description: `CSV file is empty.`,
+                  key: 1
+                });
+                setCsvFile(null);
+              }
+            },
+            header: false,
+            delimiter: delimiter,
+          });
+        } else {
+          CustomNotification({
+            type: "error",
+            title: "CSV Import",
+            description: `The selected CSV file does not use '${delimiter}' as delimiter.`,
+            key: 1
+          });
+        }
+      })
+      .catch((error) => {
+
+        CustomNotification({
+          type: "error",
+          title: "CSV Import",
+          description: "Error reading CSV file. Please try again.",
+          key: 1
+        });
+      });
+  };
+
+  const moveStepForward = () => {
+    if (activeStep === steps.length - 1 && !allStepsCompleted()) return;
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
   const handleBack = () => {
-    if (activeStep === 0) {
-      // If active step is already the first step, don't move back
-      return;
-    }
+    if (activeStep === 0) return;
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleStep = (step) => () => {
-    setActiveStep(step);
-  };
+  const handleStep = (step) => () => setActiveStep(step);
 
   const handleComplete = async () => {
-    const merge = []
-    const merge_cols = merge
-    const params = {
-      table_name: state?.tableName,
-      rows: data_array,
-      marge_col: merge_cols,
-      skip: skip
+    if (rows.length) {
+      const params = {
+        table_name: state?.tableName,
+        rows,
+        marge_col,
+        skip,
+      };
+      console.log(marge_col, 'this is merge column')
+      const res = await massImport(params, token);
+      console.log(res, "THIS IS RESPONSE");
+      const newCompleted = { ...completed, [activeStep]: true };
+      setCompleted(newCompleted);
+      handleNext();
+    } else {
+      CustomNotification({
+        type: "error",
+        title: "CSV Import",
+        description: "Must be Select one off them.",
+        key: 1
+      });
     }
-    const res = await massImport(params, token)
-    console.log(res, "THIS IS REPSONSE")
-    const newCompleted = completed;
-    newCompleted[activeStep] = true;
-    setCompleted(newCompleted);
-    handleNext();
+
   };
 
   const handleReset = () => {
@@ -94,11 +136,11 @@ export default function CSVStepper() {
   const renderStepContent = (step) => {
     switch (step) {
       case 0:
-        return <UploadCSV setCsv={setCsvFile} setCSVdata={setCSVdata} />;
+        return <UploadCSV setCsv={setCsvFile} setCSVdata={setCSVdata} delimiter={delimiter} setDelimiter={setDelimiter} />;
       case 1:
-        return <DuplicateHandling setSelectedValues={setSelectedValues} setSkip={setSkip} />;
+        return <DuplicateHandling setMarge_col={setMarge_col} setSkip={setSkip} />;
       case 2:
-        return <FieldMapping setDataArray={setDataArray} csvData={csvData} />;
+        return <FieldMapping setRows={setRows} csvData={csvData} />;
       default:
         return 'Unknown step';
     }
@@ -110,7 +152,6 @@ export default function CSVStepper() {
         '.MuiStepIcon-root': {
           '&.Mui-active': {
             color: '#1CAC70',
-            // Set background color to green for the active step
           },
         },
       }} >
@@ -140,7 +181,6 @@ export default function CSVStepper() {
               {activeStep > 0 &&
                 <Button
                   color="inherit"
-                  disabled={activeStep === 0}
                   onClick={handleBack}
                   sx={{ mr: 1, color: '#1CAC70', }}
                 >
@@ -148,9 +188,7 @@ export default function CSVStepper() {
                 </Button>
               }
               <Box sx={{ flex: '1 1 auto' }} />
-
               {activeStep === steps.length - 1 ?
-
                 <Button onClick={handleComplete} sx={{ color: '#fff', backgroundColor: "#1CAC70", '&:hover': { backgroundColor: '#0fb600' } }}>
                   Import
                 </Button>
@@ -158,7 +196,6 @@ export default function CSVStepper() {
                 <Button onClick={handleNext} sx={{ color: '#fff', backgroundColor: "#1CAC70", '&:hover': { backgroundColor: '#0fb600' } }}>
                   Next
                 </Button>
-
               }
             </Box>
           </React.Fragment>
@@ -167,4 +204,3 @@ export default function CSVStepper() {
     </Box>
   );
 }
-
