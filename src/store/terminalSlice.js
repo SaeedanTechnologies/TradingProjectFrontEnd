@@ -10,14 +10,24 @@ export const loginTerminalUser = createAsyncThunk('user/loginUser',async(loginDa
   })
 
 
+
 const terminalSlice = createSlice({
   name: 'user',
   initialState:{
    loading : false,
    user: null, 
-   error: null
+   error: null,
+   selectedWatchMarket:null,
+   selectedWatchMarketHours:[]
   }, 
- 
+  reducers:{
+    setSelectedWatchMarket:(state,action)=>{
+      state.selectedWatchMarket = action.payload
+    },
+     setSelectedWatchMarketHours:(state,action)=>{
+      state.selectedWatchMarketHours = action.payload
+    }
+  },
   extraReducers:(builder)=>{
     builder.addCase(loginTerminalUser.pending, (state)=>{
       state.loading = true,
@@ -38,4 +48,7 @@ const terminalSlice = createSlice({
   }
 })
 
+export const {setSelectedWatchMarket,setSelectedWatchMarketHours} = terminalSlice.actions
+
 export default terminalSlice.reducer
+

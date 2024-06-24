@@ -9,7 +9,8 @@ import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import PlusIcon from '../../../assets/images/plus-icon.svg'
 import QuestionIcon from '../../../assets/images/question-icon.svg'
 import { GetTerminalSymbolsList } from '../../../utils/_Terminal';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedWatchMarket,setSelectedWatchMarketHours } from '../../../store/terminalSlice';
 
 
 const Accordion = styled((props) => (
@@ -51,19 +52,29 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 const WatchMarket = () => {
 
+   const dispatch = useDispatch()
    const [expanded, setExpanded] = React.useState('panel1');
    const [terminalSymbols,setTerminalSymbols] =  React.useState([])
-     const token = useSelector(({ terminal }) => terminal?.user?.token)
+  const token = useSelector(({ terminal }) => terminal?.user?.token)
 
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
   };
 
+  const handleClick = (setting,)=>{
+    dispatch(setSelectedWatchMarket(setting))
+    const parsedObject = JSON.parse(setting?.group?.trading_interval)
+        const datesArray = Object.keys(parsedObject).map(day => ({
+      day,
+      ...parsedObject[day]
+}));
+
+    dispatch(setSelectedWatchMarketHours(datesArray))
+  }
 
   const fetchTerminalSymbols = async () => {
     try {
-      // debugger
       const res = await GetTerminalSymbolsList(token);
       const { data: { message, success, payload } } = res
         setTerminalSymbols(payload)
@@ -84,10 +95,10 @@ const WatchMarket = () => {
     <Typography sx={{fontWeight:600,fontSize:"18px" ,p:3}}>Market Watch</Typography>
 
     <Stack sx={{px:1.5}}>
-        {terminalSymbols?.map((terminal)=>(
+        {terminalSymbols?.map((terminal,index)=>(
 
-          <Accordion key={terminal.id} expanded={expanded === 'panel1'} onChange={handleChange('panel1')} >
-        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header" >
+          <Accordion key={terminal.id} expanded={expanded === 'panel1'}  onChange={handleChange(`panel${index+1}`)} >
+        <AccordionSummary aria-controls={`panel${index+1}d-content`} id={`panel${index+1}d-header`} >
           <Stack direction="row" sx={{width:"100%",justifyContent:"space-between"}}>
             <Typography>{terminal?.name} </Typography>
             <Typography pr={1}>{terminal?.lot_size}</Typography>
@@ -98,7 +109,7 @@ const WatchMarket = () => {
         <AccordionDetails sx={{px:0}}>
           <Stack alignItems={'center'} justifyContent="center" gap={2}>
           {terminal?.settings?.map((setting)=>(
-            <Stack key={setting.id} direction="row" alignItems={'center'} justifyContent="center" gap={0.8}>
+            <Stack key={setting.id} onClick={()=>handleClick(setting)} direction="row" alignItems={'center'} justifyContent="center" gap={0.8} sx={{cursor:"pointer"}}>
                <Typography  sx={{p:0,color:"#6E7499",fontSize:"10px"}}>
                 {setting?.name}
               </Typography>
