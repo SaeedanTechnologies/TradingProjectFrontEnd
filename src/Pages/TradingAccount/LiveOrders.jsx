@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
-import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, checkNaN, ColumnSorter, getCurrentDateTime } from '../../utils/helpers';
+import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, checkNaN, ColumnSorter, getCurrentDateTime, getValidationMsg } from '../../utils/helpers';
 import { GenericDelete, UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds, setLiveOrdersData } from '../../store/TradingAccountListSlice';
@@ -99,7 +99,6 @@ const LiveOrders = ({ grandCommsion, setManipulatedData, isLoading, setIsLoading
       },
 
     },
-
     {
       title: <span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
