@@ -1,5 +1,5 @@
-import React, { useEffect,useRef, useState } from 'react';
-import { SearchOutlined,PlusCircleOutlined, CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { SearchOutlined, PlusCircleOutlined, CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
 
@@ -8,14 +8,15 @@ import ARROW_UP_DOWN from '../../../assets/images/arrow-up-down.png'
 import FIND_IMAGE from '../../../assets/images/find.svg'
 import CustomTable from '../../../components/CustomTable';
 import CustomButton from '../../../components/CustomButton';
-import { AddnewSettingsStyle} from '../../Brand/style';
-import {useNavigate } from 'react-router-dom';
-import { All_Setting_Data} from '../../../utils/_SymbolSettingAPICalls';
+import { AddnewSettingsStyle } from '../../Brand/style';
+import { useNavigate } from 'react-router-dom';
+import { All_Setting_Data } from '../../../utils/_SymbolSettingAPICalls';
 import { useDispatch, useSelector } from 'react-redux';
-import  "../../DnDTable/index.css";
+import "../../DnDTable/index.css";
 import { setSymbolSettingsData, setSymbolSettingsSelecetdIDs } from '../../../store/symbolSettingsSlice';
 import './index.css'
 import { ColumnSorter } from '../../../utils/helpers';
+import { Symbol_Setting } from '../../../utils/BackendColumns';
 
 const Index = () => {
   const dispatch = useDispatch()
@@ -42,9 +43,9 @@ const Index = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
 
   const searchInput = useRef(null);
- 
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    
+
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
@@ -56,33 +57,33 @@ const Index = () => {
 
   const columns = [
     {
-      title:<span className="dragHandler">Name</span>,
+      title: <span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '1',
-      sorter:(a, b) =>  ColumnSorter(a.name,b.name),
+      sorter: (a, b) => ColumnSorter(a.name, b.name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      
-      title:<span className="dragHandler">Data Feed</span>,
+
+      title: <span className="dragHandler">Data Feed</span>,
       dataIndex: 'data_feed_name',
       key: '2',
-      sorter:(a, b) =>  ColumnSorter(a.data_feed_name,b.data_feed_name),
+      sorter: (a, b) => ColumnSorter(a.data_feed_name, b.data_feed_name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      
-      title:<span className="dragHandler">Symbol Group</span>,
+
+      title: <span className="dragHandler">Symbol Group</span>,
       dataIndex: 'group_name',
       key: '3',
       sorter: (a, b) => a.group_name.length - b.group_name.length,
@@ -90,18 +91,18 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Leverage</span>,
+      title: <span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '4',
-      sorter:(a, b) => {
+      sorter: (a, b) => {
         // Split the ratio values and parse them as numbers
         const ratioA = a.leverage.split(':').map(Number);
         const ratioB = b.leverage.split(':').map(Number);
-        
+
         // Compare the ratio values
         if (ratioA[0] === ratioB[0]) {
           return ratioA[1] - ratioB[1];
@@ -112,25 +113,25 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />;  // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;  // Return null if no sorting direction is set
       },
-     
+
     },
     {
-      title:<span className="dragHandler">Swap</span>,
+      title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '5',
-      sorter:(a, b) => a?.swap - b?.swap,
+      sorter: (a, b) => a?.swap - b?.swap,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-     
+
     },
     {
-      title:<span className="dragHandler">Lot Size</span>,
+      title: <span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
       key: '6',
       sorter: (a, b) => a.lot_size - b.lot_size,
@@ -138,12 +139,12 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-     
+
     },
     {
-      title:<span className="dragHandler">Lot Steps</span>,
+      title: <span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
       key: '7',
       sorter: (a, b) => a.lot_step - b.lot_step,
@@ -151,12 +152,12 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-     
+
     },
     {
-      title:<span className="dragHandler">Minimum Value</span>,
+      title: <span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
       key: '8',
       sorter: (a, b) => a.vol_min - b.vol_min,
@@ -164,12 +165,12 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-     
+
     },
     {
-      title:<span className="dragHandler">Maximum Value</span>,
+      title: <span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
       key: '9',
       sorter: (a, b) => a.vol_max - b.vol_max,
@@ -177,12 +178,12 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-     
+
     },
     {
-      title:<span className="dragHandler">Pip</span>,
+      title: <span className="dragHandler">Pip</span>,
       dataIndex: 'pip',
       key: '10',
       sorter: (a, b) => a.pip - b.pip,
@@ -190,12 +191,12 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-     
+
     },
     {
-      title:<span className="dragHandler">Commission</span>,
+      title: <span className="dragHandler">Commission</span>,
       dataIndex: 'commission',
       key: '11',
       sorter: (a, b) => a.commission - b.commission,
@@ -203,30 +204,30 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Enabled</span>,
+      title: <span className="dragHandler">Enabled</span>,
       dataIndex: 'enabled',
       key: '12',
-      sorter: (a, b) => ColumnSorter(a.enabled,b.enabled),
+      sorter: (a, b) => ColumnSorter(a.enabled, b.enabled),
       // render:(text)=><span>{text ==1 ? "Yes" : "No"}</span>, 
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
 
   ];
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
-  const [newColumns , setNewColumns] = useState(columns)
-  
+  const [newColumns, setNewColumns] = useState(columns)
 
-  
+
+
   const fetchAllSetting = async (page) => {
     try {
       setIsLoading(true)
@@ -252,17 +253,17 @@ const Index = () => {
     fetchAllSetting(CurrentPage)
   }, [perPage])
 
-  const onPageChange = (page) =>{
+  const onPageChange = (page) => {
     fetchAllSetting(page)
   }
   useEffect(() => {
-  const newCols = columns.filter(x => checkedList.includes(x.key));
-  setNewColumns(newCols)
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
   }, [checkedList]);
 
-  const LoadingHandler = React.useCallback((isLoading)=>{
+  const LoadingHandler = React.useCallback((isLoading) => {
     setIsLoading(isLoading)
-  },[])
+  }, [])
 
 
   return (
@@ -275,39 +276,40 @@ const Index = () => {
               Text='Add New Symbol Settings'
               style={AddnewSettingsStyle}
               icon={<PlusCircleOutlined />}
-              onClickHandler={() =>{
+              onClickHandler={() => {
                 dispatch(setSymbolSettingsSelecetdIDs([0]))
                 navigate('/symbol-settings-entry')
               }}
             />
           </div>
         </div>
-      
-        <CustomTable 
+
+        <CustomTable
           direction="/symbol-settings-entry"
-          formName = "Symbol Settings" 
+          formName="Symbol Settings"
           columns={newColumns}
-          data={allSetting} 
+          data={allSetting}
           headerStyle={headerStyle}
           total={totalRecords}
-          onPageChange = {onPageChange}
+          onPageChange={onPageChange}
           current_page={CurrentPage}
-          token = {token}
+          token={token}
           setTotalRecords={setTotalRecords}
           isUpated={isUpdated}
           setSelecetdIDs={setSymbolSettingsSelecetdIDs}
-          setTableData = {setSymbolSettingsData}
-          table_name= "symbel_settings"
-          setSortDirection = {setSortDirection}
+          setTableData={setSymbolSettingsData}
+          table_name="symbel_settings"
+          setSortDirection={setSortDirection}
           perPage={perPage}
           setPerPage={setPerPage}
-          SearchQuery = {All_Setting_Data}
+          SearchQuery={All_Setting_Data}
           LoadingHandler={LoadingHandler}
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
+          backendColumns={Symbol_Setting}
         />
       </div>
-     </Spin>
+    </Spin>
   )
 }
 

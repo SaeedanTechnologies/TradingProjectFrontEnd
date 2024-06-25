@@ -1,22 +1,22 @@
 import { Space, Tag, theme, Spin } from 'antd';
 import React, { useState, useEffect } from 'react'
-import { CaretUpOutlined, CaretDownOutlined  } from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import CustomTable from '../../components/CustomTable';
 
 import { useSelector } from 'react-redux';
 import moment from 'moment'
-import {  ColumnSorter, getCurrentIP } from "../../utils/helpers";
+import { ColumnSorter, getCurrentIP } from "../../utils/helpers";
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import { UserLoginActivities } from '../../utils/_APICalls';
-import { setBrandLoginActivitySelectedRowsIds,setBrandActivityLoginData } from '../../store/BrandsSlice.js'
+import { setBrandLoginActivitySelectedRowsIds, setBrandActivityLoginData } from '../../store/BrandsSlice.js'
 
 
 const BrandActivityLogin = () => {
 
 
-  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0]:0);
+  const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0] : 0);
 
-  const user_id = useSelector(({brands})=> brands?.user?.user_id)
+  const user_id = useSelector(({ brands }) => brands?.user?.user_id)
   const token = useSelector(({ user }) => user?.user?.token)
   const {
     token: { colorBG, TableHeaderColor, colorPrimary },
@@ -25,28 +25,28 @@ const BrandActivityLogin = () => {
   const [current_ip, setCurrent_IP] = useState("")
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
-  const [SearchQueryList,SetSearchQueryList]= useState({})
- 
+  const [SearchQueryList, SetSearchQueryList] = useState({})
+
   const [isLoading, setIsLoading] = useState(false)
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [isUpdated, setIsUpdated] = useState(true)
   const [totalRecords, setTotalRecords] = useState(0)
-  const [activitiesData,setActivitiesData] = useState([])
+  const [activitiesData, setActivitiesData] = useState([])
 
-  
+
   const columns = [
-    
+
     {
       title: <span className="dragHandler">Ip Address</span>,
       dataIndex: 'ip_address',
       key: '1',
       sorter: (a, b) => ColumnSorter(a.ip_address, b.ip_address),
-       sortDirections: ['ascend', 'descend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
 
     },
@@ -55,11 +55,11 @@ const BrandActivityLogin = () => {
       dataIndex: 'mac_address',
       key: '2',
       sorter: (a, b) => ColumnSorter(a.mac_address, b.mac_address),
-       sortDirections: ['ascend', 'descend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
 
     },
@@ -68,11 +68,11 @@ const BrandActivityLogin = () => {
       dataIndex: 'login_time',
       key: '3',
       sorter: (a, b) => ColumnSorter(a.login_time, b.login_time),
-       sortDirections: ['ascend', 'descend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
 
     },
@@ -81,30 +81,30 @@ const BrandActivityLogin = () => {
       dataIndex: 'logout_time',
       key: '4',
       sorter: (a, b) => ColumnSorter(a.logout_time, b.logout_time),
-       sortDirections: ['ascend', 'descend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
 
-    },  
+    },
 
   ];
 
-    const fetchActivityLogins = async (page) => {
-      // debugger
+  const fetchActivityLogins = async (page) => {
+    // debugger
     setIsLoading(true)
-      
-    const mData = await UserLoginActivities(token,page)
+
+    const mData = await UserLoginActivities(token, page)
     const { data: { message, payload, success } } = mData
-    
+
     if (success) {
       setActivitiesData(payload?.data)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
-      
+
       setIsLoading(false)
       setIsUpdated(false)
     }
@@ -112,30 +112,30 @@ const BrandActivityLogin = () => {
 
 
   useEffect(() => {
-    (async ()=> {
-        // setIsLoading(true)
-        // const ip = await getCurrentIP()
-        // setCurrent_IP(ip.ip)
-        // setIsLoading(false)
-        SetSearchQueryList({
-          user_id
-        })
+    (async () => {
+      // setIsLoading(true)
+      // const ip = await getCurrentIP()
+      // setCurrent_IP(ip.ip)
+      // setIsLoading(false)
+      SetSearchQueryList({
+        user_id
+      })
 
     })()
   }, [])
 
 
-    useEffect(() => {
+  useEffect(() => {
     setIsUpdated(true)
     // fetchActivityLogins(CurrentPage)
   }, [perPage])
 
-   const [newColumns , setNewColumns] = useState(columns)
+  const [newColumns, setNewColumns] = useState(columns)
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
-  
 
- 
+
+
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
     color: 'black', // Set the text color of the header
@@ -145,22 +145,22 @@ const BrandActivityLogin = () => {
 
 
 
-   useEffect(() => {
-        const newCols = columns.filter(x => checkedList.includes(x.key));
-        setNewColumns(newCols)
-        }, [checkedList]);
+  useEffect(() => {
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
+  }, [checkedList]);
 
-  const LoadingHandler = React.useCallback((isLoading)=>{
+  const LoadingHandler = React.useCallback((isLoading) => {
     setIsLoading(isLoading)
-  },[])
+  }, [])
 
 
 
-  
+
 
   return (
 
-       
+
 
     <Spin spinning={isLoading} size="large">
       <div className='p-8 w-full rounded-lg' style={{ backgroundColor: colorBG }}>
@@ -174,7 +174,7 @@ const BrandActivityLogin = () => {
             hideDeleteEdit={true}
             formName="Login Activities"
             columns={newColumns}
-            data = {activitiesData}
+            data={activitiesData}
             headerStyle={headerStyle}
             total={totalRecords}
             setTotalRecords={setTotalRecords}
@@ -182,18 +182,18 @@ const BrandActivityLogin = () => {
             token={token}
             isUpated={isUpdated}
             setSelecetdIDs={setBrandLoginActivitySelectedRowsIds}
-            setTableData = {setBrandActivityLoginData}
-            table_name= "user_login_activities"
-            setSortDirection = {setSortDirection}
+            setTableData={setBrandActivityLoginData}
+            table_name="user_login_activities"
+            setSortDirection={setSortDirection}
             perPage={perPage}
             setPerPage={setPerPage}
-            SearchQuery = {UserLoginActivities}
+            SearchQuery={UserLoginActivities}
             SearchQueryList={SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
-            // editPermissionName="transaction_orders_update"
-            // deletePermissionName="transaction_orders_delete"
+          // editPermissionName="transaction_orders_update"
+          // deletePermissionName="transaction_orders_delete"
           />
 
 

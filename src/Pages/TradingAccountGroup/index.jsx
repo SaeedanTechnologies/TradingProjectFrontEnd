@@ -18,16 +18,17 @@ import { CheckBrandPermission, ColumnSorter, CustomDeleteDeleteHandler } from '.
 import { setTradingGroupData } from '../../store/TradingGroupData';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 // import { setTradeSettingsData, setTradeSettingsSelecetdIDs } from '../../store/tradeGroupsSlice';
-import {setTradeGroupsData, setTradeGroupsSelectedIDs} from '../../store/tradeGroupsSlice'
+import { setTradeGroupsData, setTradeGroupsSelectedIDs } from '../../store/tradeGroupsSlice'
 import { setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
 import { All_TradingAccountList } from '../../utils/_TradingAPICalls';
+import { Trading_Groups } from '../../utils/BackendColumns';
 
 
 
 const Index = () => {
-  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
-  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-  const userBrand = useSelector((state)=> state?.user?.user?.brand)
+  const userPermissions = useSelector((state) => state?.user?.user?.user?.permissions)
+  const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state) => state?.user?.user?.brand)
   const token = useSelector(({ user }) => user?.user?.token)
   const { token: { colorBG, TableHeaderColor, colorPrimary } } = theme.useToken();
   const [TradingGroupID, setTradingGroupID] = useState(null);
@@ -41,32 +42,32 @@ const Index = () => {
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
-  const [SearchQueryList,SetSearchQueryList]= useState({})
+  const [SearchQueryList, SetSearchQueryList] = useState({})
 
   const columns = [
     {
-      title:<span className="dragHandler">Group Name</span>,
+      title: <span className="dragHandler">Group Name</span>,
       dataIndex: 'name',
       key: '1',
-      sorter:(a, b) =>  ColumnSorter(a.name,b.name),
+      sorter: (a, b) => ColumnSorter(a.name, b.name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
       visible: true,
     },
     {
-      title:<span className="dragHandler">Brand Name</span>,
+      title: <span className="dragHandler">Brand Name</span>,
       dataIndex: 'brands_name',
       key: '2',
-      sorter:(a, b) =>  ColumnSorter(a.brands_name,b.brands_name),
+      sorter: (a, b) => ColumnSorter(a.brands_name, b.brands_name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
       visible: userRole === 'admin' ? true : false,
 
@@ -86,7 +87,7 @@ const Index = () => {
 
     // },
     {
-      title:<span className="dragHandler">Symbol Group</span>,
+      title: <span className="dragHandler">Symbol Group</span>,
       dataIndex: 'symbel_group',
       key: '4',
       // sorter:(a, b) =>  ColumnSorter(a.symbel_groups,b.symbel_groups),
@@ -94,9 +95,9 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
-       render: (_, { symbel_groups }) => (
+      render: (_, { symbel_groups }) => (
         <>
           {symbel_groups?.map((tag) => {
             return (
@@ -111,14 +112,14 @@ const Index = () => {
 
     },
     {
-      title:<span className="dragHandler">Mass Laverage</span>,
+      title: <span className="dragHandler">Mass Laverage</span>,
       dataIndex: 'mass_leverage',
       key: '7',
-      sorter:(a, b) => {
+      sorter: (a, b) => {
         // Split the ratio values and parse them as numbers
         const ratioA = a.mass_leverage.split(':').map(Number);
         const ratioB = b.mass_leverage.split(':').map(Number);
-        
+
         // Compare the ratio values
         if (ratioA[0] === ratioB[0]) {
           return ratioA[1] - ratioB[1];
@@ -129,13 +130,13 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
       visible: true,
 
     },
-     {
-      title:<span className="dragHandler">Mass Swap</span>,
+    {
+      title: <span className="dragHandler">Mass Swap</span>,
       dataIndex: 'mass_swap',
       key: '8',
       sorter: (a, b) => a?.mass_swap - b?.mass_swap,
@@ -143,43 +144,43 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
       visible: true,
 
     },
     {
-      title:<span className="dragHandler">Mass Buy/Sell Trading Order</span>,
+      title: <span className="dragHandler">Mass Buy/Sell Trading Order</span>,
       dataIndex: 'MBS',
       key: '5',
-      render: (text, record) => <span onClick={()=>{
+      render: (text, record) => <span onClick={() => {
         dispatch(setTradeGroupsSelectedIDs([record.id]))
         navigate('/trading-group/mb-to')
-      }}  style={{ color: colorPrimary, fontWeight: '600' }}>View Details</span>,
+      }} style={{ color: colorPrimary, fontWeight: '600' }}>View Details</span>,
       // sorter:(a, b) =>  ColumnSorter(a.MBS,b.MBS),
-     sortDirections: ['ascend', 'descend'],
+      sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
       visible: true,
 
-    
+
     },
     {
-      title:<span className="dragHandler">Mass deposit/widthdraw</span>,
+      title: <span className="dragHandler">Mass deposit/widthdraw</span>,
       dataIndex: 'MDW',
       key: '6',
       render: (_, record) => (
         <span
-        onClick={()=>{
-          dispatch(setTradeGroupsSelectedIDs([record.id]))
-          navigate('/trading-group/mass-deposit')
-        }}
+          onClick={() => {
+            dispatch(setTradeGroupsSelectedIDs([record.id]))
+            navigate('/trading-group/mass-deposit')
+          }}
           // to={`/trading-group/mass-deposit/${record.id}`}
           style={{ color: colorPrimary, fontWeight: '600' }}
-          // onClick={() => handleMassDepositWithdrawClick(record.id, record.name)}
+        // onClick={() => handleMassDepositWithdrawClick(record.id, record.name)}
         >
           View Details
         </span>
@@ -189,16 +190,16 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
       visible: true,
 
     },
 
-    
-   
+
+
     {
-      title:<span className="dragHandler">Trading Accounts</span>,
+      title: <span className="dragHandler">Trading Accounts</span>,
       dataIndex: 'trading_accounts',
       key: '9',
       render: (text, record) => {
@@ -212,7 +213,7 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
       visible: true,
 
@@ -230,13 +231,13 @@ const Index = () => {
   ];
 
   const filteredColumns = columns.filter((column) => column.visible !== false);
-//   const defaultCheckedList = columns.map((item) => item.key);
-// const [checkedList, setCheckedList] = useState(defaultCheckedList);
-// const [newColumns , setNewColumns] = useState(columns)
+  //   const defaultCheckedList = columns.map((item) => item.key);
+  // const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  // const [newColumns , setNewColumns] = useState(columns)
 
- const defaultCheckedList = columns.map((item) => item.key);
+  const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
-  const [newColumns , setNewColumns] = useState(columns)
+  const [newColumns, setNewColumns] = useState(columns)
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -245,7 +246,7 @@ const Index = () => {
     dispatch(setTradingGroupData({ id, name },));
   };
 
- 
+
   const showAccountModal = (trading_accounts) => {
     setIsAccountModalOpen(true)
     if (trading_accounts?.length > 0) {
@@ -263,7 +264,7 @@ const Index = () => {
 
   const fetchData = async (brandId) => {
     setIsLoading(true)
-    const res = await Trading_Account_Group_List(token,brandId)
+    const res = await Trading_Account_Group_List(token, brandId)
     const { data: { message, payload, success } } = res
     setIsLoading(false)
     if (success) {
@@ -289,22 +290,22 @@ const Index = () => {
   useEffect(() => {
     const newCols = columns.filter(x => checkedList.includes(x.key));
     setNewColumns(newCols)
-    }, [checkedList]);
-    
+  }, [checkedList]);
+
   useEffect(() => {
     setIsUpdated(true)
-    if(userRole === 'brand' ){
-      SetSearchQueryList({brand_id:userBrand.public_key})
+    if (userRole === 'brand') {
+      SetSearchQueryList({ brand_id: userBrand.public_key })
     }
   }, [])
 
- 
-  const viewAccounts = async(record)=>{
+
+  const viewAccounts = async (record) => {
     const searchValues = {
-      trading_group_id:record.id
+      trading_group_id: record.id
     }
     try {
-      const res = await All_TradingAccountList(token,searchValues);
+      const res = await All_TradingAccountList(token, searchValues);
       const { data: { message, success, payload } } = res
       showAccountModal(payload)
     } catch (error) {
@@ -317,15 +318,15 @@ const Index = () => {
   //   setNewColumns(newCols)
   //   }, [checkedList]);
 
-  const onPageChange = () =>{
-    if(userRole === 'brand' ){
+  const onPageChange = () => {
+    if (userRole === 'brand') {
       fetchData(userBrand?.public_key)
     }
-    else{
+    else {
       fetchData(null)
     }
   }
-  useEffect(()=> {
+  useEffect(() => {
     onPageChange()
   }, [perPage])
 
@@ -370,52 +371,53 @@ const Index = () => {
     color: 'black',
   };
 
-  const LoadingHandler = React.useCallback((isLoading)=>{
+  const LoadingHandler = React.useCallback((isLoading) => {
     setIsLoading(isLoading)
-  },[])
+  }, [])
 
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>Trading Account Group</h1>
-          {CheckBrandPermission(userPermissions,userRole,'trading_account_group_create') && <CustomButton
+          {CheckBrandPermission(userPermissions, userRole, 'trading_account_group_create') && <CustomButton
             Text='Add New Trading Group'
             style={{ height: '48px', ...AddnewStyle }}
             icon={<PlusCircleOutlined />}
-            onClickHandler={() =>{
+            onClickHandler={() => {
               dispatch(setTradeGroupsSelectedIDs([0]))
               navigate('/trading-group-entry')
             }}
           />
-         }
+          }
         </div>
         <CustomTable
-            direction="/trading-group-entry"
-            columns={filteredColumns} 
-            data={TradingAccounGroupList} 
-            headerStyle={headerStyle}
-            formName={'Trading Account Group'}
-            total={totalRecords}
-            onPageChange = {onPageChange}
-            current_page={CurrentPage}
-            token={token}
-            setSelecetdIDs={setTradeGroupsSelectedIDs}
-            setTableData = {setTradeGroupsData}
-            isUpated={isUpdated}
-            editPermissionName="active_account_group_update"
-            deletePermissionName="active_account_group_delete"
-            setTotalRecords={setTotalRecords}
-            table_name= "trading_groups"
-            setSortDirection = {setSortDirection}
-            perPage={parseInt(perPage)}
-            setPerPage={setPerPage}
-            SearchQuery = {Search_Trading_Account_Group_List}
-            SearchQueryList={SearchQueryList}
-            LoadingHandler={LoadingHandler}
-            setCurrentPage={setCurrentPage}
-            setLastPage={setLastPage}
-           />
+          direction="/trading-group-entry"
+          columns={filteredColumns}
+          data={TradingAccounGroupList}
+          headerStyle={headerStyle}
+          formName={'Trading Account Group'}
+          total={totalRecords}
+          onPageChange={onPageChange}
+          current_page={CurrentPage}
+          token={token}
+          setSelecetdIDs={setTradeGroupsSelectedIDs}
+          setTableData={setTradeGroupsData}
+          isUpated={isUpdated}
+          editPermissionName="active_account_group_update"
+          deletePermissionName="active_account_group_delete"
+          setTotalRecords={setTotalRecords}
+          table_name="trading_groups"
+          setSortDirection={setSortDirection}
+          perPage={parseInt(perPage)}
+          setPerPage={setPerPage}
+          SearchQuery={Search_Trading_Account_Group_List}
+          SearchQueryList={SearchQueryList}
+          LoadingHandler={LoadingHandler}
+          setCurrentPage={setCurrentPage}
+          setLastPage={setLastPage}
+          backendColumns={Trading_Groups}
+        />
         {/* <CustomModalp
           isModalOpen={isModalOpen}
           handleOk={handleOk}

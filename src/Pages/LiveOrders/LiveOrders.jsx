@@ -9,6 +9,7 @@ import { setLiveOrdersSelectedIds, setLiveOrdersData, } from '../../store/TradeO
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { values } from 'lodash';
+import { Live_Order } from '../../utils/BackendColumns';
 
 const LiveOrders = () => {
   const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
@@ -350,7 +351,7 @@ const LiveOrders = () => {
           setLastPage={setLastPage}
           editPermissionName="live_orders_update"
           deletePermissionName="live_orders_delete"
-          backendColumns={backend_columns}
+          backendColumns={Live_Order}
         />
       </div>
     </Spin>

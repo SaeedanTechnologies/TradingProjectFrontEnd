@@ -1,4 +1,4 @@
-import { theme, Spin,Dropdown } from 'antd';
+import { theme, Spin, Dropdown } from 'antd';
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -39,7 +39,7 @@ const NewFeedDaata = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [selectedFeed, setSelectedFeed] = useState(null)
     const [isEnabled, setIsEnabled] = useState(true)
-      const [isDisabled, setIsDisabled] = useState(parseInt(id) === 0? false: true)
+    const [isDisabled, setIsDisabled] = useState(parseInt(id) === 0 ? false : true)
 
 
     const handleInputChange = (fieldName, value) => {
@@ -62,9 +62,9 @@ const NewFeedDaata = () => {
         }
     };
 
-    const fetchData =  () => {
-    navigate('/data-feed')
-  }
+    const fetchData = () => {
+        navigate('/data-feed')
+    }
 
     const fetchServerData = async () => {
         setIsLoading(true)
@@ -193,18 +193,18 @@ const NewFeedDaata = () => {
     };
 
 
-  
+
 
 
 
 
     return (
-        <Spin spinning={isLoading} size="large">``
+        <Spin spinning={isLoading} size="large">
             <div className='p-8' style={{ backgroundColor: colorBG }}>
                 <div className="flex justify-between">
                     <div className='flex gap-3 items-center '>
 
-                
+
                         <img
                             src={ARROW_BACK_CDN}
                             alt='back icon'
@@ -213,14 +213,14 @@ const NewFeedDaata = () => {
                         />
                         <h1 className='text-2xl font-semibold'>{parseInt(id) === 0 ? 'Add New Data Feed' : 'Edit Data Feed'}</h1>
 
-                    </div> 
-                    { isDisabled && (
-                    <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
-                        <EditOutlined style={{ fontSize: "24px", color: colorPrimary, cursor: 'pointer' }}  onClick={()=>setIsDisabled(false)}/>
-                    </div>  )}
+                    </div>
+                    {isDisabled && (
+                        <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
+                            <EditOutlined style={{ fontSize: "24px", color: colorPrimary, cursor: 'pointer' }} onClick={() => setIsDisabled(false)} />
+                        </div>)}
                 </div>
-                
-               
+
+
 
                 <div className='border rounded-lg p-4'>
 
@@ -265,8 +265,8 @@ const NewFeedDaata = () => {
                                 <div key={index}>
                                     <CustomTextField
                                         name={item.name}
-                                        label={item.label}
-                                         disabled={isDisabled}
+                                        label={"Secret Key"}
+                                        disabled={isDisabled}
                                         varient="standard"
                                         onChange={(e) => handleInputChange(item.name, e.target.value)}
                                     />
@@ -275,15 +275,15 @@ const NewFeedDaata = () => {
                             ))}
                         </div>
 
-                        <FormControlLabel 
+                        <FormControlLabel
                             control={
-                            <Switch 
-                            checked={isEnabled} 
-                             disabled={isDisabled}
-                            onChange={(e)=> setIsEnabled(e.target.checked)} />
+                                <Switch
+                                    checked={isEnabled}
+                                    disabled={isDisabled}
+                                    onChange={(e) => setIsEnabled(e.target.checked)} />
                             }
-                            label="Is Enabled"  
-                            sx={{mt:3}}
+                            label="Is Enabled"
+                            sx={{ mt: 3 }}
                         />
 
                     </div>
@@ -301,7 +301,7 @@ const NewFeedDaata = () => {
                             }}
                             onClick={() => navigate(-1)}
                         />
-                        { !isDisabled && <CustomButton
+                        {!isDisabled && <CustomButton
 
                             Text={parseInt(id) === 0 ? 'Submit' : 'Update'}
                             style={{
@@ -314,22 +314,22 @@ const NewFeedDaata = () => {
                             onClickHandler={handleSubmit}
                         />}
 
-                        { parseInt(id) !== 0 &&
-                        <CustomButton
+                        {parseInt(id) !== 0 &&
+                            <CustomButton
 
-                            Text={'Delete'}
-                            style={{
-                                padding: '16px',
-                                height: '48px',
-                                width: '200px',
-                                borderRadius: '8px',
-                                zIndex: '100',
-                                backgroundColor: "#D52B1E",
-                                borderColor:"#D52B1E"
-                            }}
-                            onClickHandler={()=> CustomDeleteDeleteHandler(id, token, DeleteSymbolData, setIsLoading, fetchData)}
-                        />    
-                    } 
+                                Text={'Delete'}
+                                style={{
+                                    padding: '16px',
+                                    height: '48px',
+                                    width: '200px',
+                                    borderRadius: '8px',
+                                    zIndex: '100',
+                                    backgroundColor: "#D52B1E",
+                                    borderColor: "#D52B1E"
+                                }}
+                                onClickHandler={() => CustomDeleteDeleteHandler(id, token, DeleteSymbolData, setIsLoading, fetchData)}
+                            />
+                        }
                     </div>
                 </div>
             </div>

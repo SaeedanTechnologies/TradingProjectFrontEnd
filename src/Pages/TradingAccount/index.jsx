@@ -9,25 +9,26 @@ import pusher from '../../pusher';
 import { Trading_Accounts_List, Delete_Trading_Account, Save_Trading_Account, Search_Trading_Accounts_List } from '../../utils/_TradingAPICalls';
 import CustomModal from '../../components/CustomModal';
 import { useSelector, useDispatch } from 'react-redux';
-import {CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import TradingModal from './TradingModal'
-import { setAccountID, setTradingAccountsData,setSelectedTradingAccountsIDs } from '../../store/TradeSlice';
+import { setAccountID, setTradingAccountsData, setSelectedTradingAccountsIDs } from '../../store/TradeSlice';
 import { Trading_Active_Group, Trading_Margin_Calls } from '../../utils/_SymbolSettingAPICalls';
 import Swal from 'sweetalert2';
-import { CheckBrandPermission, ColumnSorter,ColumnSpaceSorter } from '../../utils/helpers';
+import { CheckBrandPermission, ColumnSorter, ColumnSpaceSorter } from '../../utils/helpers';
 import CustomNotification from '../../components/CustomNotification';
 import { setTradingAccountGroupData } from '../../store/tradingAccountGroupSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import { setMarginCallsData, setMarginCallsSelecetdIDs } from '../../store/marginCallsSlice';
 import { setActiveAccountData, setActiveAccountSelecetdIDs } from '../../store/activeAccountSlice';
+import { Trading_Accounts } from '../../utils/BackendColumns';
 
 
 const Index = ({ title, direction }) => {
-  const userPermissions = useSelector((state)=>state?.user?.user?.user?.permissions)
-  const userRole = useSelector((state)=>state?.user?.user?.user?.roles[0]?.name);
-  const userBrand = useSelector((state)=> state?.user?.user?.brand)
+  const userPermissions = useSelector((state) => state?.user?.user?.user?.permissions)
+  const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
+  const userBrand = useSelector((state) => state?.user?.user?.brand)
 
-  
+
   const [tradingAccountsList, setTradingAccountsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,9 +40,9 @@ const Index = ({ title, direction }) => {
   const [isUpdated, setIsUpdated] = useState(true)
   const [sortDirection, setSortDirection] = useState("")
   const [perPage, setPerPage] = useState(10)
-//
+  //
 
-  const [SearchQueryList,SetSearchQueryList]= useState({})
+  const [SearchQueryList, SetSearchQueryList] = useState({})
 
   const token = useSelector(({ user }) => user?.user?.token)
   const {
@@ -54,58 +55,58 @@ const Index = ({ title, direction }) => {
 
   const renderColumns = [
     {
-      title:<span className="dragHandler">LoginID</span>,
+      title: <span className="dragHandler">LoginID</span>,
       dataIndex: 'login_id',
       key: '1',
-      sorter: (a, b) => ColumnSorter(a.login_id , b.login_id),
+      sorter: (a, b) => ColumnSorter(a.login_id, b.login_id),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
-      
+
     },
     {
-      title:<span className="dragHandler">Trading Group </span>,
+      title: <span className="dragHandler">Trading Group </span>,
       dataIndex: 'group_name',
       key: '2',
-      sorter: (a, b) => ColumnSpaceSorter(a.group_name, b.group_name ),
+      sorter: (a, b) => ColumnSpaceSorter(a.group_name, b.group_name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
-    
+
     },
     {
-      title:<span className="dragHandler">{userRole === 'admin' ? 'Brand' : 'Customer'}</span>,
+      title: <span className="dragHandler">{userRole === 'admin' ? 'Brand' : 'Customer'}</span>,
       dataIndex: `${userRole === 'admin' ? 'brand_name' : 'brand_customer_name'}`,
       key: '3',
-      sorter:(a, b) =>  (userRole === 'admin' ? ColumnSorter(a.brand_name, b.brand_name) : ColumnSorter(a.brand_customer_name, b.brand_customer_name)),
+      sorter: (a, b) => (userRole === 'admin' ? ColumnSorter(a.brand_name, b.brand_name) : ColumnSorter(a.brand_customer_name, b.brand_customer_name)),
       // sorter: (a, b) => {userRole === 'admin' ? a.brand?.length - b.brand?.length : a.customer?.length - b.customer?.length},
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Country</span>,
+      title: <span className="dragHandler">Country</span>,
       dataIndex: 'country',
       key: '4',
-      sorter:(a, b) =>  ColumnSorter(a.country,b.country),
+      sorter: (a, b) => ColumnSorter(a.country, b.country),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Phone No.</span>,
+      title: <span className="dragHandler">Phone No.</span>,
       dataIndex: 'phone',
       key: '5',
       sorter: (a, b) => a.phone - b.phone,
@@ -113,30 +114,30 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Email</span>,
+      title: <span className="dragHandler">Email</span>,
       dataIndex: 'email',
       key: '6',
-      sorter:(a, b) =>  ColumnSorter(a.email,b.email),
+      sorter: (a, b) => ColumnSorter(a.email, b.email),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Leverage</span>,
+      title: <span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '7',
-      sorter:(a, b) => {
+      sorter: (a, b) => {
         // Split the ratio values and parse them as numbers
         const ratioA = a.leverage.split(':').map(Number);
         const ratioB = b.leverage.split(':').map(Number);
-        
+
         // Compare the ratio values
         if (ratioA[0] === ratioB[0]) {
           return ratioA[1] - ratioB[1];
@@ -147,11 +148,11 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Balance</span>,
+      title: <span className="dragHandler">Balance</span>,
       dataIndex: 'balance',
       key: '8',
       sorter: (a, b) => a.balance - b.balance,
@@ -159,11 +160,11 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Credit</span>,
+      title: <span className="dragHandler">Credit</span>,
       dataIndex: 'credit',
       key: '9',
       sorter: (a, b) => a.credit - b.credit,
@@ -171,11 +172,11 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Equity</span>,
+      title: <span className="dragHandler">Equity</span>,
       dataIndex: 'equity',
       key: '10',
       sorter: (a, b) => a.equity - b.equity,
@@ -183,12 +184,12 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
 
-      title:<span className="dragHandler">Margin Level</span>,
+      title: <span className="dragHandler">Margin Level</span>,
       dataIndex: 'margin_level_percentage',
       key: '11',
       sorter: (a, b) => a.margin_level_percentage - b.margin_level_percentage,
@@ -196,11 +197,11 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Profit</span>,
+      title: <span className="dragHandler">Profit</span>,
       dataIndex: 'profit',
       key: '12',
       sorter: (a, b) => a.profit - b.profit,
@@ -208,11 +209,11 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Swap</span>,
+      title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '13',
       sorter: (a, b) => a.swap - b.swap,
@@ -220,11 +221,11 @@ const Index = ({ title, direction }) => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-     title:<span className="dragHandler">Currency</span>,
+      title: <span className="dragHandler">Currency</span>,
       dataIndex: 'currency',
       key: '14',
       // sorter:(a, b) =>  ColumnSorter(a.currency,b.currency),
@@ -237,39 +238,39 @@ const Index = ({ title, direction }) => {
     },
     {
 
-     title:<span className="dragHandler">Registration Time</span>,
+      title: <span className="dragHandler">Registration Time</span>,
       dataIndex: 'registration_time',
       key: '15',
-      sorter: (a, b) => ColumnSorter(a.registration_time , b.registration_time),
+      sorter: (a, b) => ColumnSorter(a.registration_time, b.registration_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Last Access Time</span>,
+      title: <span className="dragHandler">Last Access Time</span>,
       dataIndex: 'last_access_time',
       key: '16',
-      sorter: (a, b) =>   ColumnSorter(a.last_access_time , b.last_access_time),
+      sorter: (a, b) => ColumnSorter(a.last_access_time, b.last_access_time),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Last Access IP</span>,
+      title: <span className="dragHandler">Last Access IP</span>,
       dataIndex: 'last_access_address_IP',
       key: '17',
-      sorter: (a, b) =>  ColumnSorter(a.last_access_address_IP , b.last_access_address_IP),
+      sorter: (a, b) => ColumnSorter(a.last_access_address_IP, b.last_access_address_IP),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     // {
@@ -302,20 +303,20 @@ const Index = ({ title, direction }) => {
 
   }
 
-    const LoadingHandler = React.useCallback((isLoading)=>{
+  const LoadingHandler = React.useCallback((isLoading) => {
     setIsLoading(isLoading)
-  },[])
-  
+  }, [])
 
- 
 
-  const fetchTradingAccounts = async (brandId,page) => {
+
+
+  const fetchTradingAccounts = async (brandId, page) => {
     // debugger
     setIsLoading(true)
-    const mData = await Trading_Accounts_List(token,brandId,page,parseInt(perPage))
+    const mData = await Trading_Accounts_List(token, brandId, page, parseInt(perPage))
 
     const { data: { message, payload, success } } = mData
-  
+
 
     setIsLoading(false)
     if (success) {
@@ -370,85 +371,85 @@ const Index = ({ title, direction }) => {
     setIsModalOpen(false);
   };
 
- 
-    const DeleteHandler = async (id)=>{
-  
-      setIsLoading(true)
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#1CAC70",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-      }).then(async(result) => {
-        if (result.isConfirmed) {
-          const res = await Delete_Trading_Account(id, token)
-          const {data:{success, message, payload}} = res
-          setIsLoading(false)
-          if(success){
-            Swal.fire({
-              title: "Deleted!",
-              text: message,
-              icon: "success"
-            });
 
-        
-      //  if( userRole === 'brand' ){
-      //   switch(direction){
-      //     case 1:
-      //       fetchTradingAccounts(userBrand.public_key,CurrentPage);
-      //       break;
-      //     case 2:
-      //        fetchActiveGroups(userBrand.public_key,CurrentPage);
-      //       break;
-      //     case 3: 
-      //       fetchMarginCalls(userBrand.public_key,CurrentPage) 
-      //       break;
-      //   }
-      //   } 
-      //   else{
-      //     switch(direction){
-      //     case 1:
-      //       fetchTradingAccounts(null,CurrentPage);
-      //       break;
-      //     case 2:
-      //        fetchActiveGroups(null,CurrentPage);
-      //       break;
-      //     case 3: 
-      //       fetchMarginCalls(null,CurrentPage) 
-      //       break;
-      //   }
+  const DeleteHandler = async (id) => {
 
-        // }
-           
-          }else{
-            Swal.fire({
-              title: "Opps!",
-              text: {message},
-              icon: "error"
-            });
-          }
-        
+    setIsLoading(true)
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1CAC70",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await Delete_Trading_Account(id, token)
+        const { data: { success, message, payload } } = res
+        setIsLoading(false)
+        if (success) {
+          Swal.fire({
+            title: "Deleted!",
+            text: message,
+            icon: "success"
+          });
+
+
+          //  if( userRole === 'brand' ){
+          //   switch(direction){
+          //     case 1:
+          //       fetchTradingAccounts(userBrand.public_key,CurrentPage);
+          //       break;
+          //     case 2:
+          //        fetchActiveGroups(userBrand.public_key,CurrentPage);
+          //       break;
+          //     case 3: 
+          //       fetchMarginCalls(userBrand.public_key,CurrentPage) 
+          //       break;
+          //   }
+          //   } 
+          //   else{
+          //     switch(direction){
+          //     case 1:
+          //       fetchTradingAccounts(null,CurrentPage);
+          //       break;
+          //     case 2:
+          //        fetchActiveGroups(null,CurrentPage);
+          //       break;
+          //     case 3: 
+          //       fetchMarginCalls(null,CurrentPage) 
+          //       break;
+          //   }
+
+          // }
+
+        } else {
+          Swal.fire({
+            title: "Opps!",
+            text: { message },
+            icon: "error"
+          });
         }
-      });
-    
-  setIsLoading(false)
- 
-}
 
-const [marginCall, setMarginCall] = useState([])
-const [activeGroup, setActiveGroup] = useState([])
+      }
+    });
 
-const defaultCheckedList = renderColumns.map((item) => item.key);
-const [checkedList, setCheckedList] = useState(defaultCheckedList);
-const [newColumns , setNewColumns] = useState(renderColumns)
+    setIsLoading(false)
 
-  const fetchActiveGroups = async (brandId,page) => {
+  }
+
+  const [marginCall, setMarginCall] = useState([])
+  const [activeGroup, setActiveGroup] = useState([])
+
+  const defaultCheckedList = renderColumns.map((item) => item.key);
+  const [checkedList, setCheckedList] = useState(defaultCheckedList);
+  const [newColumns, setNewColumns] = useState(renderColumns)
+
+  const fetchActiveGroups = async (brandId, page) => {
     try {
       setIsLoading(true)
-      const res = await Trading_Active_Group(token, 'active',brandId,page);
+      const res = await Trading_Active_Group(token, 'active', brandId, page);
       const { data: { message, success, payload } } = res
       const tradingAccounts = payload?.data?.map((item) => ({
 
@@ -484,13 +485,13 @@ const [newColumns , setNewColumns] = useState(renderColumns)
   };
 
 
-  const fetchMarginCalls = async (brandId,page) => {
-    
+  const fetchMarginCalls = async (brandId, page) => {
+
     try {
       setIsLoading(true)
-      const res = await Trading_Margin_Calls(token, 'margin_call',brandId,page);
+      const res = await Trading_Margin_Calls(token, 'margin_call', brandId, page);
       const { data: { message, success, payload } } = res
-      
+
       const tradingAccounts = payload?.data?.map((item) => ({
         id: item.id,
         loginId: item.login_id,
@@ -508,7 +509,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
         currency: item.currency,
         registration_time: item.registration_time,
         last_access_time: item.last_access_time ? item.last_access_time : '...',
-        last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
+        last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...',
       }))
       setIsLoading(false)
       setMarginCall(tradingAccounts);
@@ -523,63 +524,63 @@ const [newColumns , setNewColumns] = useState(renderColumns)
   };
 
 
-  const onPageChange = (page) =>{
-      if(userRole === 'brand' ){
-      fetchTradingAccounts(userBrand.public_key,page)
+  const onPageChange = (page) => {
+    if (userRole === 'brand') {
+      fetchTradingAccounts(userBrand.public_key, page)
     }
-    else{
-      fetchTradingAccounts(null,page)
+    else {
+      fetchTradingAccounts(null, page)
     }
   }
 
   useEffect(() => {
     const newCols = renderColumns.filter(x => checkedList.includes(x.key));
     setNewColumns(newCols)
-    }, [checkedList]);
+  }, [checkedList]);
 
   useEffect(() => {
     setIsUpdated(true)
-      if (userRole === 'brand') {
-        SetSearchQueryList({brand_id:userBrand.public_key,CurrentPage})
-      } else {
-        SetSearchQueryList({CurrentPage})
-        }
-     
-      const channel = pusher.subscribe('trading_accounts');
-        channel.bind('update', (data) => {
-                const mData = [data]
-                const isExist = !!marginCall.find(x => x.id === data.id);
-                // debugger
-                if(data.status === 'margin_call' && !isExist ){
-                  const tradingAccounts = mData?.map((item) => ({
-                    id: item.id,
-                    loginId: item.login_id,
-                    trading_group_id: item.trading_group_id,
-                    country: item.country,
-                    phone: item.phone,
-                    email: item.email,
-                    leverage: item.leverage,
-                    balance: item.balance,
-                    credit: item.credit,
-                    equity: item.equity,
-                    margin_level_percentage: item.margin_level_percentage,
-                    profit: item.profit,
-                    swap: item.swap,
-                    currency: item.currency,
-                    registration_time: item.registration_time,
-                    last_access_time: item.last_access_time ? item.last_access_time : '...',
-                    last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...' ,
-                  }))
-                  setMarginCall(tradingAccounts)
-                }
-                
-        });
-  
-      return () => {
-        channel.unbind('update');
-        pusher.unsubscribe('trading_accounts');
-      };
-}, [direction]);
+    if (userRole === 'brand') {
+      SetSearchQueryList({ brand_id: userBrand.public_key, CurrentPage })
+    } else {
+      SetSearchQueryList({ CurrentPage })
+    }
+
+    const channel = pusher.subscribe('trading_accounts');
+    channel.bind('update', (data) => {
+      const mData = [data]
+      const isExist = !!marginCall.find(x => x.id === data.id);
+      // debugger
+      if (data.status === 'margin_call' && !isExist) {
+        const tradingAccounts = mData?.map((item) => ({
+          id: item.id,
+          loginId: item.login_id,
+          trading_group_id: item.trading_group_id,
+          country: item.country,
+          phone: item.phone,
+          email: item.email,
+          leverage: item.leverage,
+          balance: item.balance,
+          credit: item.credit,
+          equity: item.equity,
+          margin_level_percentage: item.margin_level_percentage,
+          profit: item.profit,
+          swap: item.swap,
+          currency: item.currency,
+          registration_time: item.registration_time,
+          last_access_time: item.last_access_time ? item.last_access_time : '...',
+          last_access_address_IP: item.last_access_address_IP ? item.last_access_address_IP : '...',
+        }))
+        setMarginCall(tradingAccounts)
+      }
+
+    });
+
+    return () => {
+      channel.unbind('update');
+      pusher.unsubscribe('trading_accounts');
+    };
+  }, [direction]);
 
 
   // useEffect(() => {
@@ -589,7 +590,7 @@ const [newColumns , setNewColumns] = useState(renderColumns)
   return (
     <Spin spinning={isLoading} size="large">
       <div className='p-8' style={{ backgroundColor: colorBG }}>
-       
+
 
         <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
           <h1 className='text-2xl font-semibold'>{title}</h1>
@@ -598,107 +599,112 @@ const [newColumns , setNewColumns] = useState(renderColumns)
             sx={{ width: '300px' }}
 
           /> */}
-          
-    
-            
-       {(CheckBrandPermission(userPermissions,userRole,'trading_account_list_create') && direction === 1 )&&(<CustomButton
+
+
+
+          {(CheckBrandPermission(userPermissions, userRole, 'trading_account_list_create') && direction === 1) && (<CustomButton
             Text='Add New Trading Account'
             style={{ height: '48px', }}
             icon={<PlusCircleOutlined />}
             onClickHandler={() => setIsModalOpen(true)}
           />)}
 
-           
-         
+
+
         </div>
         {direction === 1 && (
           <div className='mb-6'>
+            <CustomTable
+              direction="/single-trading-accounts/details/live-order"
+              formName="Trading Accounts"
+              columns={newColumns}
+              data={tradingAccountsList}
+              headerStyle={headerStyle}
+              total={totalRecords}
+              onPageChange={onPageChange}
+              current_page={CurrentPage}
+              token={token}
+              isUpated={isUpdated}
+              setSelecetdIDs={setSelectedTradingAccountsIDs}
+              setTableData={setTradingAccountGroupData}
+              table_name="trading_accounts"
+              setSortDirection={setSortDirection}
+              setTotalRecords={setTotalRecords}
+              perPage={parseInt(perPage)}
+              setPerPage={setPerPage}
+              SearchQuery={Search_Trading_Accounts_List}
+              SearchQueryList={SearchQueryList}
+              LoadingHandler={LoadingHandler}
+              setCurrentPage={setCurrentPage}
+              setLastPage={setLastPage}
+              editPermissionName="trading_account_list_update"
+              deletePermissionName="trading_account_list_delete"
+              backendColumns={Trading_Accounts}
+            />
+          </div>
+        )}
+        {direction === 2 && (
           <CustomTable
+            // direction="/active-accounts"
             direction="/single-trading-accounts/details/live-order"
-            formName = "Trading Accounts" 
+            formName="Active Accounts"
             columns={newColumns}
-            data={tradingAccountsList} 
+            data={activeGroup}
             headerStyle={headerStyle}
             total={totalRecords}
-            onPageChange = {onPageChange}
+            onPageChange={onPageChange}
             current_page={CurrentPage}
-            token = {token}
+            token={token}
             isUpated={isUpdated}
             setSelecetdIDs={setSelectedTradingAccountsIDs}
-            setTableData = {setTradingAccountGroupData}
-            table_name= "trading_accounts"
-            setSortDirection = {setSortDirection}
+            setTableData={setActiveAccountData}
+            editPermissionName="active_account_group_update"
+            deletePermissionName="active_account_group_delete"
+            table_name="trading_accounts"
+            setSortDirection={setSortDirection}
             setTotalRecords={setTotalRecords}
             perPage={parseInt(perPage)}
             setPerPage={setPerPage}
-            SearchQuery = {Search_Trading_Accounts_List}
-            SearchQueryList = {SearchQueryList}
+            SearchQuery={Search_Trading_Accounts_List}
+            SearchQueryList={SearchQueryList}
             LoadingHandler={LoadingHandler}
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
-            editPermissionName="trading_account_list_update"
-            deletePermissionName="trading_account_list_delete"
-        />
-        </div>
+            backendColumns={Trading_Accounts}
+
+          />
+
         )}
-        {direction === 2 && (
-        <CustomTable
-          // direction="/active-accounts"
-          direction="/single-trading-accounts/details/live-order"
-          formName = "Active Accounts" 
-          columns={newColumns}
-          data={activeGroup} 
-          headerStyle={headerStyle}
-          total={totalRecords}
-          onPageChange = {onPageChange}
-          current_page={CurrentPage}
-          token = {token}
-          isUpated={isUpdated}
-          setSelecetdIDs={setSelectedTradingAccountsIDs}
-          setTableData = {setActiveAccountData}
-          editPermissionName="active_account_group_update"
-          deletePermissionName="active_account_group_delete"
-          table_name= "trading_accounts"
-          setSortDirection = {setSortDirection}
-          setTotalRecords={setTotalRecords}
-          perPage={parseInt(perPage)}
-          setPerPage={setPerPage}
-          SearchQuery = {Search_Trading_Accounts_List}
-          SearchQueryList = {SearchQueryList}
-          LoadingHandler={LoadingHandler}
-          setCurrentPage={setCurrentPage}
-          setLastPage={setLastPage}
-        />
-       
-       )}
         {direction === 3 && (
-        <CustomTable
-          // direction="/margin-calls"
-          direction="/single-trading-accounts/details/live-order"
-          formName = "Margin Calls" 
-          columns={newColumns}
-          data={marginCall} 
-          headerStyle={headerStyle}
-          total={totalRecords}
-          onPageChange = {onPageChange}
-          current_page={CurrentPage}
-          token = {token}
-          isUpated={isUpdated}
-          setSelecetdIDs={setSelectedTradingAccountsIDs}
-          setTableData = {setMarginCallsData}
-          editPermissionName="margin_call_trading_update"
-          deletePermissionName="margin_call_trading_delete"
-          table_name= "trading_accounts"
-          setSortDirection = {setSortDirection}
-          setTotalRecords={setTotalRecords}
-          perPage={parseInt(perPage)}
-          setPerPage={setPerPage}
-          SearchQuery = {Search_Trading_Accounts_List}
-          SearchQueryList = {SearchQueryList}
-          LoadingHandler={LoadingHandler}
-          setCurrentPage={setCurrentPage}
-          setLastPage={setLastPage}
-        />
+          <CustomTable
+            // direction="/margin-calls"
+            direction="/single-trading-accounts/details/live-order"
+            formName="Margin Calls"
+            columns={newColumns}
+            data={marginCall}
+            headerStyle={headerStyle}
+            total={totalRecords}
+            onPageChange={onPageChange}
+            current_page={CurrentPage}
+            token={token}
+            isUpated={isUpdated}
+            setSelecetdIDs={setSelectedTradingAccountsIDs}
+            setTableData={setMarginCallsData}
+            editPermissionName="margin_call_trading_update"
+            deletePermissionName="margin_call_trading_delete"
+            table_name="trading_accounts"
+            setSortDirection={setSortDirection}
+            setTotalRecords={setTotalRecords}
+            perPage={parseInt(perPage)}
+            setPerPage={setPerPage}
+            SearchQuery={Search_Trading_Accounts_List}
+            SearchQueryList={SearchQueryList}
+            LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
+            backendColumns={Trading_Accounts}
+
+          />
         )}
 
         <CustomModal
@@ -717,11 +723,11 @@ const [newColumns , setNewColumns] = useState(renderColumns)
           />
         </CustomModal>
 
-          
-        
+
+
       </div>
     </Spin>
   )
 }
 
-export default Index
+export default Index        

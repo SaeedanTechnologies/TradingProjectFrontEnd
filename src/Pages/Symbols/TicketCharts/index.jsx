@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { theme } from 'antd';
 import CustomTable from '../../../components/CustomTable';
 import { useSelector } from 'react-redux';
+import { Ticket_Chart } from '../../../utils/BackendColumns';
 
 const columns = [
   {
@@ -29,7 +30,7 @@ const columns = [
     dataIndex: 'Volumn',
     key: '5',
   },
-  
+
 ];
 const data = [
   {
@@ -53,7 +54,7 @@ const data = [
 
 
 const Index = () => {
-   const token = useSelector(({ user }) => user?.user?.token)
+  const token = useSelector(({ user }) => user?.user?.token)
   const { token: { colorBG, TableHeaderColor } } = theme.useToken();
   const headerStyle = {
     background: TableHeaderColor, // Set the background color of the header
@@ -64,8 +65,9 @@ const Index = () => {
       <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
         <h1 className='text-2xl font-semibold'>Tickets & Charts</h1>
       </div>
-      <CustomTable columns={columns} data={data} headerStyle={headerStyle} />
-    {/* <CustomTable
+      <CustomTable columns={columns} data={data} headerStyle={headerStyle} backendColumns={Ticket_Chart }
+      />
+      {/* <CustomTable
           direction="/ticket-charts"
           formName = "Tickets & Charts" 
           columns={columns}

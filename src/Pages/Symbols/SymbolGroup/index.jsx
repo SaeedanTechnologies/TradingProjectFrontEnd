@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import {  Spin, theme,Input } from 'antd';
-import {PlusCircleOutlined, EditOutlined, DeleteOutlined,CaretUpOutlined, CaretDownOutlined} from '@ant-design/icons';
+import { Spin, theme, Input } from 'antd';
+import { PlusCircleOutlined, EditOutlined, DeleteOutlined, CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../../assets/images/arrow-up-down.png'
 import CustomTable from '../../../components/CustomTable';
 import CustomButton from '../../../components/CustomButton';
@@ -10,15 +10,16 @@ import { Symbol_Group_List, DeleteSymbolsGroup } from '../../../utils/_SymbolGro
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-import { setSymbolGroupsSelectedIDs,setSymbolGroupsData } from '../../../store/symbolGroupsSlice';
+import { setSymbolGroupsSelectedIDs, setSymbolGroupsData } from '../../../store/symbolGroupsSlice';
 import { ColumnSorter } from '../../../utils/helpers';
+import { Symbol_Group } from '../../../utils/BackendColumns';
 
 const Index = () => {
   const dispatch = useDispatch()
   const {
-    token: { colorBG, TableHeaderColor, Gray2, colorPrimary  },
+    token: { colorBG, TableHeaderColor, Gray2, colorPrimary },
   } = theme.useToken();
-  const token = useSelector(({user})=> user?.user?.token )
+  const token = useSelector(({ user }) => user?.user?.token)
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [SymbolList, setSymbolList] = useState([])
@@ -35,26 +36,26 @@ const Index = () => {
   };
   const columns = [
     {
-      title:<span className="dragHandler">Name</span>,
+      title: <span className="dragHandler">Name</span>,
       dataIndex: 'name',
       key: '1',
-      sorter:(a, b) =>  ColumnSorter(a.name,b.name),
+      sorter: (a, b) => ColumnSorter(a.name, b.name),
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; 
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;
       },
     },
     {
-      title:<span className="dragHandler">Leverage</span>,
+      title: <span className="dragHandler">Leverage</span>,
       dataIndex: 'leverage',
       key: '2',
-      sorter:(a, b) => {
+      sorter: (a, b) => {
         // Split the ratio values and parse them as numbers
         const ratioA = a.leverage.split(':').map(Number);
         const ratioB = b.leverage.split(':').map(Number);
-        
+
         // Compare the ratio values
         if (ratioA[0] === ratioB[0]) {
           return ratioA[1] - ratioB[1];
@@ -65,67 +66,67 @@ const Index = () => {
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />;  // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />;  // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Swap</span>,
+      title: <span className="dragHandler">Swap</span>,
       dataIndex: 'swap',
       key: '3',
-      sorter:(a, b) => a?.swap - b?.swap,
+      sorter: (a, b) => a?.swap - b?.swap,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Lot Size</span>,
+      title: <span className="dragHandler">Lot Size</span>,
       dataIndex: 'lot_size',
       key: '4',
-      sorter:(a, b) =>  a?.lot_size - b?.lot_size,
+      sorter: (a, b) => a?.lot_size - b?.lot_size,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Lot Steps</span>,
+      title: <span className="dragHandler">Lot Steps</span>,
       dataIndex: 'lot_step',
       key: '5',
-      sorter:(a, b) => a?.lot_step - b?.lot_step,
+      sorter: (a, b) => a?.lot_step - b?.lot_step,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Minimum Value</span>,
+      title: <span className="dragHandler">Minimum Value</span>,
       dataIndex: 'vol_min',
       key: '6',
-      sorter:(a, b) => a?.vol_min - b?.vol_min,
+      sorter: (a, b) => a?.vol_min - b?.vol_min,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     {
-      title:<span className="dragHandler">Maximum Value</span>,
+      title: <span className="dragHandler">Maximum Value</span>,
       dataIndex: 'vol_max',
       key: '7',
-      sorter:(a, b) => a?.vol_max - b?.vol_max,
+      sorter: (a, b) => a?.vol_max - b?.vol_max,
       sortDirections: ['ascend', 'descend'],
       sortIcon: (sortDir) => {
         if (sortDir.sortOrder === 'ascend') return <CaretUpOutlined />;
         if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
-        return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
+        return <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
     // {
@@ -174,7 +175,7 @@ const Index = () => {
     //     if (sortDir.sortOrder === 'descend') return <CaretDownOutlined />;
     //     return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
     //   },
-      
+
     // },
     // {
     //   title: 'Action',
@@ -188,129 +189,130 @@ const Index = () => {
     // },
   ];
 
-  const [newColumns , setNewColumns] = useState(columns)
+  const [newColumns, setNewColumns] = useState(columns)
   const defaultCheckedList = columns.map((item) => item.key);
   const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
-  
 
-const FetchData = async (page) =>{
+
+  const FetchData = async (page) => {
     setIsLoading(true)
-    const res = await Symbol_Group_List(token,page,parseInt(perPage))
-    const {data:{message, payload, success}} = res
+    const res = await Symbol_Group_List(token, page, parseInt(perPage))
+    const { data: { message, payload, success } } = res
     setIsLoading(false)
-    if(success){
+    if (success) {
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
       setSymbolList(payload.data)
       setIsUpdated(false)
     }
-}
-// const DeleteHandler = async (id)=>{
-//   setIsLoading(true)
-//   Swal.fire({
-//     title: "Are you sure?",
-//     text: "You won't be able to revert this!",
-//     icon: "warning",
-//     showCancelButton: true,
-//     confirmButtonColor: "#1CAC70",
-//     cancelButtonColor: "#d33",
-//     confirmButtonText: "Yes, delete it!"
-//   }).then(async(result) => {
-//     if (result.isConfirmed) {
-//       const res = await DeleteSymbolsGroup(id, token)
-//       const {data:{success, message, payload}} = res
-//       setIsLoading(false)
-//       if(success){
-//         Swal.fire({
-//           title: "Deleted!",
-//           text: message,
-//           icon: "success"
-//         });
-//         // FetchData(page)
-//       }else{
-//         Swal.fire({
-//           title: "Opps!",
-//           text: {message},
-//           icon: "error"
-//         });
-//       }
-     
-//     }
-//   });
- 
-//   setIsLoading(false)
- 
-// }
+  }
+  // const DeleteHandler = async (id)=>{
+  //   setIsLoading(true)
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "You won't be able to revert this!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#1CAC70",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, delete it!"
+  //   }).then(async(result) => {
+  //     if (result.isConfirmed) {
+  //       const res = await DeleteSymbolsGroup(id, token)
+  //       const {data:{success, message, payload}} = res
+  //       setIsLoading(false)
+  //       if(success){
+  //         Swal.fire({
+  //           title: "Deleted!",
+  //           text: message,
+  //           icon: "success"
+  //         });
+  //         // FetchData(page)
+  //       }else{
+  //         Swal.fire({
+  //           title: "Opps!",
+  //           text: {message},
+  //           icon: "error"
+  //         });
+  //       }
 
- const onPageChange = (page) =>{
+  //     }
+  //   });
+
+  //   setIsLoading(false)
+
+  // }
+
+  const onPageChange = (page) => {
     FetchData(page)
   }
 
-useEffect(() => {
-  setIsUpdated(true)
-  FetchData(CurrentPage)
-}, [perPage])
+  useEffect(() => {
+    setIsUpdated(true)
+    FetchData(CurrentPage)
+  }, [perPage])
 
 
- useEffect(() => {
-  const newCols = columns.filter(x => checkedList.includes(x.key));
-  setNewColumns(newCols)
+  useEffect(() => {
+    const newCols = columns.filter(x => checkedList.includes(x.key));
+    setNewColumns(newCols)
   }, [checkedList]);
 
-  const LoadingHandler = React.useCallback((isLoading)=>{
+  const LoadingHandler = React.useCallback((isLoading) => {
     setIsLoading(isLoading)
-  },[])
-  
+  }, [])
+
   return (
     <Spin spinning={isLoading} size="large">
-    <div className='p-8' style={{ backgroundColor: colorBG }}>
-    <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
-      <h1 className='text-2xl font-semibold'>Symbol Group</h1>
-      <div className='flex items-center gap-4'>
-        <CustomButton
-          Text='Add New Symbol Group'
-          style={AddnewStyle}
-          icon={<PlusCircleOutlined />}
-          onClickHandler={()=> { 
-            dispatch(setSymbolGroupsSelectedIDs([0]))
-            navigate('/symbol-groups-entry')
-          }}
-        />
-       
-      </div>
-    </div>
+      <div className='p-8' style={{ backgroundColor: colorBG }}>
+        <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
+          <h1 className='text-2xl font-semibold'>Symbol Group</h1>
+          <div className='flex items-center gap-4'>
+            <CustomButton
+              Text='Add New Symbol Group'
+              style={AddnewStyle}
+              icon={<PlusCircleOutlined />}
+              onClickHandler={() => {
+                dispatch(setSymbolGroupsSelectedIDs([0]))
+                navigate('/symbol-groups-entry')
+              }}
+            />
 
-    <div className='mb-5'>
-      {/* #reigon Custom Table*/}
-      <CustomTable
-          direction="/symbol-groups-entry"
-          formName = "Symbol Groups" 
-          columns={newColumns}
-          data={SymbolList} 
-          headerStyle={headerStyle}
-          total={totalRecords}
-          onPageChange = {onPageChange}
-          current_page={CurrentPage}
-          token = {token}
-          setTotalRecords={setTotalRecords}
-          isUpated={isUpdated}
-          setSelecetdIDs={setSymbolGroupsSelectedIDs}
-          setTableData = {setSymbolGroupsData}
-          table_name= "symbel_groups"
-          setSortDirection = {setSortDirection}
-          perPage={perPage}
-          setPerPage={setPerPage}
-          SearchQuery = {Symbol_Group_List}
-          LoadingHandler={LoadingHandler}
-          setCurrentPage={setCurrentPage}
-          setLastPage={setLastPage}
-        />
+          </div>
+        </div>
+
+        <div className='mb-5'>
+          {/* #reigon Custom Table*/}
+          <CustomTable
+            direction="/symbol-groups-entry"
+            formName="Symbol Groups"
+            columns={newColumns}
+            data={SymbolList}
+            headerStyle={headerStyle}
+            total={totalRecords}
+            onPageChange={onPageChange}
+            current_page={CurrentPage}
+            token={token}
+            setTotalRecords={setTotalRecords}
+            isUpated={isUpdated}
+            setSelecetdIDs={setSymbolGroupsSelectedIDs}
+            setTableData={setSymbolGroupsData}
+            table_name="symbel_groups"
+            setSortDirection={setSortDirection}
+            perPage={perPage}
+            setPerPage={setPerPage}
+            SearchQuery={Symbol_Group_List}
+            LoadingHandler={LoadingHandler}
+            setCurrentPage={setCurrentPage}
+            setLastPage={setLastPage}
+            backendColumns={Symbol_Group}
+          />
+        </div>
+
       </div>
-       
-  </div>
-  </Spin>
+    </Spin>
   )
 }
 
