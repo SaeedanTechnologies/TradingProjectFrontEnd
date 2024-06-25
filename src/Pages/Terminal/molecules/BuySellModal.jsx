@@ -66,17 +66,6 @@ const BuySellModal = ({ setIsModalOpen,pricing,setPricing,fetchData,trade_type})
   };
 
   const handleVolumeChange = (newValue) => {
-    setLotSize(selectedWatchMarket?.lot_size * newValue)
-
-    setD_lot(newValue)
-    const pipValue = addZeroBeforeOne(selectedWatchMarket?.pip) * parseFloat(newValue) * parseFloat(selectedWatchMarket?.lot_size)
-    setPipVal(pipValue)
-                   
-
-    const res  = parseFloat(selectedWatchMarket?.lot_size) * parseFloat(pricing?.openPrice) / conditionalLeverage(trading_account,selectedWatchMarket)
-    const margin_val = res * parseFloat(newValue)
-    setMargin(margin_val)
-    // const margin_level =  calculateMarginCallPer(equity, margin)
     setVolume(newValue)
   }
 
@@ -265,10 +254,10 @@ const BuySellModal = ({ setIsModalOpen,pricing,setPricing,fetchData,trade_type})
     setPipVal(selectedWatchMarket?.pip)
     
     setVolumeRange({ 
-    min_vol: selectedWatchMarket?.group?.vol_max,
-    max_vol: selectedWatchMarket?.group?.vol_min
+    min_vol: selectedWatchMarket?.vol_min,
+    max_vol: selectedWatchMarket?.vol_max
     }) 
-    setLotStep(selectedWatchMarket?.group?.lot_step)
+    setLotStep(selectedWatchMarket?.lot_step)
 }
 
   useEffect(()=>{

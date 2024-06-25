@@ -19,7 +19,7 @@ import axios from 'axios';
 import TradePrice from './TradePrice';
 import CustomNumberTextField from '../../components/CustomNumberTextField';
 import CustomStopLossTextField from '../../components/CustomStopLossTextField';
-import {addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage, calculateMarginCallPer } from '../../utils/helpers';
+import {addZeroBeforeOne, calculateLotSize, calculateMargin, requiredMargin,conditionalLeverage, calculateMarginCallPer, checkCurrencyPosition } from '../../utils/helpers';
 import moment from 'moment';
 import CandleStickChart from '../../components/CandleStickChart';
 import CustomModal from '../../components/CustomModal';
@@ -30,6 +30,8 @@ const Trade = ({ trade_type}) => {
   const {
     token: { colorBG, TableHeaderColor, colorPrimary, colorTransparentPrimary },
   } = theme.useToken();
+
+  const account_currency = useSelector(({user})=>user?.user?.user?.currency)
   const trading_account_id = useSelector((state) => state?.trade?.selectedRowsIds ? state?.trade?.selectedRowsIds[0] : 0)
   const trading_group_id = useSelector((state) => state?.tradeGroups?.selectedRowsIds ? state?.tradeGroups?.selectedRowsIds[0] : 0)
   const stop_out = useSelector((state)=>state?.tradingAccountGroup?.tradingAccountGroupData?.brand?.stop_out)
@@ -485,7 +487,6 @@ useEffect(() => {
               fetchBinancehData(symbol?.feed_fetch_name, pip)
             }
             else{
-
               fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pip)
             }
           }
@@ -579,10 +580,10 @@ useEffect(() => {
                   getOptionLabel={(option) => option?.name ? option?.name : ""}
                   value={symbol}
                   onChange={(e, value) => {
-                    
                     setLotSize(value?.lot_size)
                     setD_lot(value?.vol_min)
-                    const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
+                    checkCurrencyPosition(value,pricing,account_currency)
+                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
                     setPipVal(pipValue)
                     setCommission(value?.commission)
                     setVolumeRange({

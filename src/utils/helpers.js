@@ -184,6 +184,31 @@ export const isIncrement = (old_value, new_value) => {
   return old_value < new_value ? true : false
 }
 
+export const checkCurrencyPosition = (symbol,pricing,currency) =>{
+  
+    const currencies = [];
+    currencies.push(currency)
+    const unit = parseFloat(symbol?.vol_min) * parseFloat(symbol?.lot_size)
+  // Check for USD, EUR, or GBP at the beginning
+  
+  if (currencies.some(currency => symbol?.name.startsWith(currency))) {
+    const pipValue = unit * parseFloat(symbol?.pip)
+    return pipValue
+  }
+  
+  // Check for USD, EUR, or GBP at the end
+
+  const lastThree = symbol?.name.slice(-3);
+  if (currencies.includes(lastThree)) {
+    const pipValue = unit * parseFloat(symbol?.pip)/parseFloat(pricing.askPrice)
+    return pipValue
+  }
+
+  // Not found
+    const pipValue = unit * parseFloat(symbol?.pip)/parseFloat(pricing.openPrice)
+    return pipValue;
+}
+
 export function addZeroBeforeOne(num) {
   let resultStr = '0.';
   for (let i = 0; i < num - 1; i++) {

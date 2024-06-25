@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import CustomNotification from '../../components/CustomNotification';
 import { CurrenciesList, LeverageList } from '../../utils/constants';
-import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, checkNaN, ColumnSorter, getCurrentDateTime } from '../../utils/helpers';
+import { calculateEquity, calculateFreeMargin, calculateMargin, calculateMarginCallPer, checkNaN, ColumnSorter, getCurrentDateTime, getValidationMsg } from '../../utils/helpers';
 import { GenericDelete, UpdateMultiTradeOrder } from '../../utils/_APICalls';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { setLiveOrdersSelectedIds,setLiveOrdersData } from '../../store/TradingAccountListSlice';
@@ -83,7 +83,6 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
         return  <img src={ARROW_UP_DOWN} width={12} height={12} />; // Return null if no sorting direction is set
       },
     },
-    
     {  
       title:<span className="dragHandler">Type</span>,
       dataIndex: 'type',
@@ -98,7 +97,6 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       },
     
     },
-   
     {
       title: <span className="dragHandler">Volume</span>,
       dataIndex: 'volume',
@@ -304,7 +302,7 @@ const   LiveOrders = ({grandCommsion, setManipulatedData, isLoading, setIsLoadin
       const { data: { success, message, payload } } = res
       setIsLoading(false)
       if (success) {
-        // const res = await Search_Live_Order(token,CurrentPage,totalRecords, SearchQueryList  )
+        // const res = await (token,CurrentPage,totalRecords, SearchQueryList  )
         // dispatch(setLiveOrdersData(res?.data?.payload?.data))
         const updated_balance = Number(balance) + Number(record.profit)
         dispatch(updateTradingAccountGroupBalance(updated_balance))
