@@ -89,19 +89,20 @@ const Trade = ({ trade_type}) => {
   };
 
   const handleVolumeChange = (newValue) => {
+    
     setLotSize(symbol?.lot_size * newValue)
-
-                    setD_lot(newValue)
-                    const pipValue = addZeroBeforeOne(symbol?.pip) * parseFloat(newValue) * parseFloat(symbol?.lot_size)
-                    setPipVal(pipValue)
+    checkCurrencyPosition(symbol,pricing,account_currency)
+    setD_lot(newValue)
+    const pipValue = addZeroBeforeOne(symbol?.pip) * parseFloat(newValue) * parseFloat(symbol?.lot_size)
+    setPipVal(pipValue)
                    
 
-                    const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice) / conditionalLeverage(trading_account,symbol)
-                    const margin_val = res * parseFloat(newValue)
+    const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice) / conditionalLeverage(trading_account,symbol)
+    const margin_val = res * parseFloat(newValue)
 
-                    setMargin(margin_val)
-                    // const margin_level =  calculateMarginCallPer(equity, margin)
-                    setVolume(newValue)
+    setMargin(margin_val)
+    // const margin_level =  calculateMarginCallPer(equity, margin)
+    setVolume(newValue)
   }
   //#region inputChange
   const handleInputChange = (fieldName, value) => {
@@ -703,7 +704,6 @@ useEffect(() => {
                           setOpen_price(e.target.value)
                           const res  = parseFloat(symbol?.lot_size) * parseFloat(pricing?.openPrice) / conditionalLeverage(trading_account,symbol)
                           const margin_val = res * parseFloat(volume)
-      
                           setMargin(margin_val)
                         }}
                       />
