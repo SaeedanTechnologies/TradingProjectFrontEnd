@@ -110,9 +110,6 @@ export const ColumnSpaceSorter = (a, b) => {
 };
 
 
-
-
-
 export const CheckBrandPermission = (permissions, userRole, permissionName) => {
   if (userRole === 'brand') {
     const res = permissions?.find((permission) => permission?.name === permissionName);
@@ -120,8 +117,6 @@ export const CheckBrandPermission = (permissions, userRole, permissionName) => {
   }
   return true;
 }
-
-
 
 export const getOpenPrice = (symbol) => {
   return new Promise((resolve, reject) => {
@@ -173,6 +168,7 @@ export function numberFormat(number, decimals) {
   const fixedNumber = number.toFixed(decimals);
   return parseFloat(fixedNumber).toLocaleString('en-US', { minimumFractionDigits: decimals });
 }
+
 export function addZeroAfterOne(num) {
   let resultStr = '1';
   for (let i = 0; i < num; i++) {
@@ -180,12 +176,12 @@ export function addZeroAfterOne(num) {
   }
   return parseInt(resultStr);
 }
+
 export const isIncrement = (old_value, new_value) => {
   return old_value < new_value ? true : false
 }
 
-export const checkCurrencyPosition = (symbol,pricing,currency) =>{
-  
+export const checkCurrencyPosition = (symbol,pricing,currency) =>{ 
     const currencies = [];
     currencies.push(currency)
     const unit = parseFloat(symbol?.vol_min) * parseFloat(symbol?.lot_size)
@@ -254,15 +250,19 @@ export const requiredMargin = (volume, accountLeverage) => {
 export const calculateMarginCallPer = (equity, margin) => {
   return parseFloat((equity / margin) * 100).toFixed(2)
 }
+
 export const checkNaN = (val) => {
   return (isNaN(val) || !isFinite(val)) ? 0 : parseFloat(val).toFixed(2)
 }
+
 export const calculateFreeMargin = (equity, margin) => {
   return parseFloat((parseFloat(equity) - parseFloat(margin)))
 }
+
 export const calculateMargin = (lotSize, accountLeverage) => {
   return parseFloat(parseFloat(lotSize) / parseFloat(accountLeverage))
 }
+
 export const calculateEquity = (balance, grandProfit, credit, bonus) => {
   const equity = (parseFloat(balance) + parseFloat(grandProfit) + parseFloat(credit) + parseFloat(bonus)).toFixed(2);
   localStorage.setItem("equity_g", equity)

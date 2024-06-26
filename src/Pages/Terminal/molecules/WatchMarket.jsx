@@ -97,7 +97,7 @@ const WatchMarket = () => {
     <Stack sx={{px:1.5}}>
         {terminalSymbols?.map((terminal,index)=>(
 
-          <Accordion key={terminal.id} expanded={expanded === 'panel1'}  onChange={handleChange(`panel${index+1}`)} >
+        <Accordion key={terminal.id} expanded={expanded === `panel${index+1}`}  onChange={handleChange(`panel${index+1}`)} >
         <AccordionSummary aria-controls={`panel${index+1}d-content`} id={`panel${index+1}d-header`} >
           <Stack direction="row" sx={{width:"100%",justifyContent:"space-between"}}>
             <Typography>{terminal?.name} </Typography>

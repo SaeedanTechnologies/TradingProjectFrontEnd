@@ -1,9 +1,8 @@
 import { theme, Spin, Table, Space } from 'antd';
 import React, { useState, useEffect } from 'react'
-
 import CustomTable from '../../components/CustomTable';
 import { MinusCircleOutlined, CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-import { useLocation, } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Put_Trade_Order, Put_Trading_Account, Search_Live_Order } from '../../utils/_TradingAPICalls';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';

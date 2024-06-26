@@ -101,8 +101,6 @@ const LiveOrders = () => {
       const currentPrice = x.type === "sell" ? parseFloat(askPrice).toFixed(pipVal) ?? 0 : parseFloat(bidPrice).toFixed(pipVal) ?? 0;
       const profit = calculateProfitLoss(parseFloat(calculateNumOfPip(currentPrice, parseFloat(x?.open_price), x?.type, parseInt(pipVal))).toFixed(2), parseFloat(x?.volume));
 
-
-
       const totalNights = calculateNights(x.created_at, currentDateTime);
       const Calswap = parseFloat(x.volume) * totalNights * parseFloat(x.symbol_setting?.swap ?? 0);
       const swap = Calswap > 0 ? -Calswap : Calswap;

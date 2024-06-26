@@ -8,7 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box,IconButton } from '@mui/material';
-import {  DeleteOutlined } from '@mui/icons-material';
+import {  EditOutlined,DeleteOutlined } from '@mui/icons-material';
 import { Search_Pending_Order } from '../../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
@@ -17,6 +17,8 @@ import Swal from 'sweetalert2';
 import CustomNotification from '../../../components/CustomNotification';
 import { getValidationMsg } from '../../../utils/helpers';
 import { GenericDelete } from '../../../utils/_APICalls';
+import CustomModal from '../../../components/CustomModal';
+import EditPendingOrder from './EditPendingOrder';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -55,11 +57,14 @@ const StyledLastTableRow = styled(TableRow)(({ theme }) => ({
 export default function PendingOrders() {
   
    const [rows,setRows] = React.useState([])
+   const [isModalOpen, setIsModalOpen] = React.useState(false);
+   const [pendingOrder,setPendingOrder] = React.useState(null)
    const token = useSelector(({ terminal }) => terminal?.user?.token)
    const trading_account_id = useSelector((state) => state?.terminal?.user?.trading_account?.id)
      const {
     token: { colorPrimary },
   } = theme.useToken();
+
 
   const fetchPendingOrders = async()=>{
      const res = await Search_Pending_Order(token,1,10,{trading_account_id,order_types:['pending']})
@@ -117,15 +122,30 @@ export default function PendingOrders() {
   }
 
 
+  const editHandler = (order)=>{
+    setPendingOrder(order)
+    setIsModalOpen(true)
+  }
 
-  
+   const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+
   React.useEffect(()=>{
   fetchPendingOrders()
+
 },[])
 
 
   return (
-    <TableContainer component={Paper}>
+    <>
+     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <StyledTableRow>
@@ -143,24 +163,31 @@ export default function PendingOrders() {
           </StyledTableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={row.id}>
-              <StyledTableCell  align="center"> {moment(row.open_time).format('MM/DD/YYYY HH:mm')}</StyledTableCell>
-              <StyledTableCell align="center">{row.id}</StyledTableCell>
-              <StyledTableCell align="center">{row.type ? row.type :"-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.volume ? row.volume : "-" }</StyledTableCell>
-              <StyledTableCell align="center">{row.symbol ? row.symbol : "-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.open_price ? row.open_price :"-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.stopLoss? row.stopLoss: "-" }</StyledTableCell>
-              <StyledTableCell align="center">{row.takeProfit ? row.takeProfit : "-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.reason ? row.reason : "-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.swap ? row.swap : "-"}</StyledTableCell>
+          {rows?.map((row) => (
+            <StyledTableRow key={row?.id}>
+              <StyledTableCell  align="center"> {moment(row?.open_time).format('MM/DD/YYYY HH:mm')}</StyledTableCell>
+              <StyledTableCell align="center">{row?.id}</StyledTableCell>
+              <StyledTableCell align="center">{row?.type ? row?.type :"-"}</StyledTableCell>
+              <StyledTableCell align="center">{row?.volume ? row?.volume : "-" }</StyledTableCell>
+              <StyledTableCell align="center">{row?.symbol ? row?.symbol : "-"}</StyledTableCell>
+              <StyledTableCell align="center">{row?.open_price ? row?.open_price :"-"}</StyledTableCell>
+              <StyledTableCell align="center">{row?.stopLoss? row?.stopLoss: "-" }</StyledTableCell>
+              <StyledTableCell align="center">{row?.takeProfit ? row?.takeProfit : "-"}</StyledTableCell>
+              <StyledTableCell align="center">{row?.reason ? row?.reason : "-"}</StyledTableCell>
+              <StyledTableCell align="center">{row?.swap ? row?.swap : "-"}</StyledTableCell>
               <TableCell align="center" colSpan={2}>
                 <Space size="middle" className='cursor-pointer'>
+                  <EditOutlined 
+                   style={{fontSize:"20px", color: colorPrimary }}
+                   onClick={(e)=>{
+                    e.stopPropagation();
+                    editHandler(row)
+                   }}
+                   />
                 <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} 
                   onClick={(e) => {
                     e.stopPropagation();
-                    deleteHandler(row.id);
+                    deleteHandler(row?.id);
                   }}
                   />
                 </Space >
@@ -177,6 +204,24 @@ export default function PendingOrders() {
           </StyledTableRow> */}
         </TableBody>
       </Table>
-    </TableContainer>
+     </TableContainer>
+     <CustomModal
+          isModalOpen={isModalOpen}
+          handleOk={handleOk}
+          handleCancel={handleCancel}
+          title={''}
+          width={800}
+          footer={null}
+        >
+          <EditPendingOrder
+          setIsModalOpen={setIsModalOpen}
+          pendingOrder={pendingOrder}
+          fetchPendingOrders={fetchPendingOrders}
+        
+        />
+     </CustomModal>
+    
+    </>
+   
   );
 }

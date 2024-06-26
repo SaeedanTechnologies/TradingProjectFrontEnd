@@ -19,7 +19,7 @@ const TradingInformation = () => {
   const [pricing, setPricing] = useState({ openPrice: '', askPrice: '' });
   const selectedWatchMarket= useSelector(({terminal})=>terminal?.selectedWatchMarket)
   const [open_price,setOpen_price] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const token = useSelector(({ terminal }) => terminal?.user?.token)
 
@@ -156,7 +156,7 @@ const TradingInformation = () => {
 
   return (
     <>
-    <Grid container columnGap={4} rowGap={4}> 
+    <Grid container columnGap={4} rowGap={4} sx={{pb:4}}> 
         <Grid item xs={12} >
             <Tabs
           value={activeTab}

@@ -220,7 +220,7 @@ const TradingAccountLiveOrderEntry = () => {
   },[])
 
   const handleSubmit = async () => {
-     const SymbolData = {
+      const SymbolData = {
         symbol: symbol?.feed_fetch_name || '',
         feed_name: symbol?.feed_name||'',
         order_type: order_type?.value||'',

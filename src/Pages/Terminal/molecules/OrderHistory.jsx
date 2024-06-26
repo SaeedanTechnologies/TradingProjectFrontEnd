@@ -136,7 +136,7 @@ export default function OrdersHistory() {
         <TableBody>
           {rows.map((row) => (
             <StyledTableRow key={row.name}>
-              <StyledTableCell  scope="row">
+              <StyledTableCell  align="center">
                 {row.symbol}
               </StyledTableCell>
               <StyledTableCell align="center">{row.id}</StyledTableCell>

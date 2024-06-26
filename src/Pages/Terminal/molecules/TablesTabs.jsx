@@ -37,12 +37,12 @@ const TablesTabs = () => {
           component: <PendingOrders/>,
           path: "/terminal/pending-orders",
         },
-        {
-          key: '4',
-          label: 'Journal',
-          component: <Journal/>,
-          path: "/terminal/journal",
-        },
+        // {
+        //   key: '4',
+        //   label: 'Journal',
+        //   component: <Journal/>,
+        //   path: "/terminal/journal",
+        // },
         
       
       ];
