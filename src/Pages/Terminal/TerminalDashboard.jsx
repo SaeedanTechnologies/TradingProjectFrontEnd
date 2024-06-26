@@ -19,7 +19,7 @@ function TerminalDashboard(props) {
      <Grid container columnGap={2}>
 
          
-        <Grid item xs={2}>
+        <Grid item xs={2} sx={{boxShadow: '24px 0px 80px 0px rgba(49, 79, 124, 0.1)'}}>
            <SidebarMenu/> 
         </Grid>
         <Grid item xs={2} sx={{boxShadow: '24px 0px 80px 0px rgba(49, 79, 124, 0.1)'}}>
