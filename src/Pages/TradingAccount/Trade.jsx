@@ -91,9 +91,8 @@ const Trade = ({ trade_type}) => {
   const handleVolumeChange = (newValue) => {
     
     setLotSize(symbol?.lot_size * newValue)
-    checkCurrencyPosition(symbol,pricing,account_currency)
     setD_lot(newValue)
-    const pipValue = addZeroBeforeOne(symbol?.pip) * parseFloat(newValue) * parseFloat(symbol?.lot_size)
+    const pipValue =  checkCurrencyPosition(symbol,pricing,account_currency)
     setPipVal(pipValue)
                    
 
@@ -583,8 +582,7 @@ useEffect(() => {
                   onChange={(e, value) => {
                     setLotSize(value?.lot_size)
                     setD_lot(value?.vol_min)
-                    checkCurrencyPosition(value,pricing,account_currency)
-                     const pipValue = addZeroBeforeOne(value?.pip) * parseFloat(value?.vol_min) * parseFloat(value?.lot_size)
+                    const pipValue = checkCurrencyPosition(value,pricing,account_currency)
                     setPipVal(pipValue)
                     setCommission(value?.commission)
                     setVolumeRange({
