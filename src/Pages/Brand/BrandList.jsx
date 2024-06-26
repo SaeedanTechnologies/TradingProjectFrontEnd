@@ -18,6 +18,7 @@ import { ColumnSorter, CustomDeleteDeleteHandler } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
 import { setBrandData, setBrandSelectedIDs, setBrandUser } from '../../store/BrandsSlice';
 import { Brands } from '../../utils/BackendColumns';
+import { ExpoBrands } from '../../utils/ExportColumns';
 
 const BrandList = () => {
   const token = useSelector(({ user }) => user?.user?.token)
@@ -249,7 +250,6 @@ const BrandList = () => {
 
 
       setBrandsList(brandData)
-      // debugger
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
       setTotalRecords(payload.total)
@@ -353,6 +353,7 @@ const BrandList = () => {
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
           backendColumns={Brands}
+          exportColumns={ExpoBrands}
         />
         {/* <CustomModal
           isModalOpen={isModalOpen}

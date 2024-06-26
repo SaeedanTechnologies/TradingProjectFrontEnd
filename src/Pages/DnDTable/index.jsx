@@ -13,7 +13,8 @@ import Swal from "sweetalert2";
 import { GetSettings, SetSettings } from "../../utils/_SettingsAPI";
 import { setTradingAccountGroupData } from "../../store/tradingAccountGroupSlice";
 import { setAccountID } from "../../store/TradeSlice";
-import { getValidationMsg } from "../../utils/helpers";
+import { downloadFile, getValidationMsg } from "../../utils/helpers";
+import { massExport } from "../../utils/_ExportApi";
 
 const ResizableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
@@ -65,9 +66,11 @@ class DnDTable extends Component {
       buttonCreated: false,
       isSearching: true,
       isClear: false,
+      exportDelimiter: ','
 
     };
     this.setIsRearangments = this.setIsRearangments.bind(this);
+    this.MassExportHandler = this.MassExportHandler.bind(this);
     this.setIsExportModal = this.setIsExportModal.bind(this);
     this.setIsMassEdit = this.setIsMassEdit.bind(this);
     this.setIsMassDelete = this.setIsMassDelete.bind(this);
@@ -116,7 +119,6 @@ class DnDTable extends Component {
     this.SearchHandler(this.props.current)
   }
   async SearchHandler(currentPage) {
-    // debugger;
     //  this.setState({isLoading: true})
     const queryParams = {
       ...this.state.searchValues,
@@ -422,6 +424,17 @@ class DnDTable extends Component {
       isCompleteSelect: false,
     });
   }
+
+  MassExportHandler(newValue) {
+    this.setState({
+      exportSelected: newValue,
+      isMassEdit: false,
+      isMassDelete: false,
+      isAddRemove: false,
+      isSelectAll: false,
+      isCompleteSelect: false,
+    });
+  }
   handleSaveChanges() {
     if (this.state.isRearangments) {
       const ColumnsData = this.state.columns?.map(x => {
@@ -450,6 +463,9 @@ class DnDTable extends Component {
   onSelectAllChange(checked, selectedRows) {
     this.setState({ isSelectAll: checked });
   }
+  handleDelimiterChange = (event) => {
+    this.setState({ exportDelimiter: event.target.value });
+  };
   toggleCompleteSelect() {
     this.setState((prevState) => ({ isCompleteSelect: !prevState.isCompleteSelect }),
       () => {
@@ -553,6 +569,65 @@ class DnDTable extends Component {
       })
     }
   }
+  async MassExportHandler() {
+    if (this.state.selectedRowKeys.length > 0) {
+      const Params = {
+        table_name: this.props.table_name,
+        table_ids: this.state.isCompleteSelect ? [] : this.state.selectedRowKeys,
+        delimiter: this.state.exportDelimiter,
+        export_columns: this.props.exportColumns,
+      };
+      if (this.props.column_name) {
+        Params.column_name = this.props.column_name;
+      }
+      this.setState({ isLoading: true });
+
+      try {
+        const res = await massExport(Params, this.props.token);
+        const { data: { success, message, payload } } = res;
+        this.setState({ isLoading: false });
+        console.log(res, 'this is response');
+        if (success) {
+          CustomNotification({
+            type: "success",
+            title: "Exported",
+            description: message,
+            key: "a4",
+          });
+          downloadFile(payload.url, 'exported_file.csv');
+        } else {
+          const errorMsg = getValidationMsg(message, payload);
+          if (errorMsg) {
+            CustomNotification({
+              type: "error",
+              title: "Oppssss..",
+              description: errorMsg,
+              key: "b4",
+            });
+          }
+        }
+      } catch (error) {
+        this.setState({ isLoading: false });
+        CustomNotification({
+          type: "error",
+          title: "Error",
+          description: "An error occurred while exporting",
+          key: "c4",
+        });
+      }
+
+    } else {
+      CustomNotification({
+        type: "error",
+        title: "Validation",
+        description: "Please select any record first",
+        key: "6",
+      });
+    }
+  }
+
+
+
   getCurrentFormattedTime() {
     const now = new Date();
     const options = {
@@ -770,6 +845,7 @@ class DnDTable extends Component {
                       hideDeleteEdit={this.props.hideDeleteEdit}
                       backendColumns={this.props.backendColumns}
                       tableName={this.props.table_name}
+                      exportColumns={this.props.exportColumns}
                     />
                   ) : (
                     <CustomButton
@@ -907,8 +983,8 @@ class DnDTable extends Component {
               row
               aria-labelledby="delimiter-radio-buttons-group-label"
               name="delimiter-radio-buttons-group"
-            // value={delimiter}
-            // onChange={handleDelimiterChange}
+              value={this.state.exportDelimiter}
+              onChange={this.handleDelimiterChange}
             >
               <FormControlLabel value="," control={<Radio />} label="comma" />
               <FormControlLabel value=";" control={<Radio />} label="semicolon" />
@@ -926,7 +1002,7 @@ class DnDTable extends Component {
                 borderRadius: '8px',
                 zIndex: '100'
               }}
-            // onClickHandler={() => this.setColumnsSetting(this.state.selectedColumns, "Columns Settings updated successfully")}
+              onClickHandler={this.MassExportHandler}
             // loading={this.state.isLoading}
             />
             <CustomButton

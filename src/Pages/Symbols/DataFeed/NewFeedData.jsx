@@ -126,7 +126,6 @@ const NewFeedDaata = () => {
                 feed_server: selectedFeed && selectedFeed.feed_server ? selectedFeed.feed_server : '',
                 enabled: isEnabled ? 1 : 0
             };
-            debugger
             if (parseInt(id) === 0) {
                 if (!feed_login) {
                     setErrors(prevErrors => ({ ...prevErrors, feed_login: 'Feed login is required' }));
@@ -162,7 +161,6 @@ const NewFeedDaata = () => {
                 }
             } else {
                 setIsLoading(true)
-                // debugger
                 const res = await UpdateDataFeed(id, allFeedData, token);
 
                 const { data: { message, success, payload } } = res;

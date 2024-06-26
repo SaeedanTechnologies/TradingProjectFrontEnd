@@ -61,7 +61,6 @@ const PersonalData = () => {
  
   
 const fetchSingleTradeAccount= async()=>{
-      // debugger
       setIsLoading(true)
       const res = await Get_Single_Trading_Account(trading_account_id, token)
       const {data: {message, payload, success}} = res

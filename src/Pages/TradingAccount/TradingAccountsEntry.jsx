@@ -317,7 +317,6 @@ const TradingAccountsEntry = () => {
 
  
   const setStatesForEditMode = async (payload, success)=>{
-          // debugger;
       if (success) {
          setIsLoading(true)
 
@@ -414,7 +413,6 @@ const TradingAccountsEntry = () => {
 
   const handleSubmit = async () => {
     
-    // debugger
     try {
       const selectedBrand =  brandList?.find((brand)=>brand?.public_key === tradingAccount?.brand_id)
 

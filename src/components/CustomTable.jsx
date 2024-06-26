@@ -1,23 +1,23 @@
-import React, { useEffect,useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
 import DnDTable from '../Pages/DnDTable';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-const CustomTable = ({backendColumns=[],setRefreshData,refreshData, searchQueryManipulation, columns, data, current_page, total, headerStyle, onPageChange, 
-  direction, formName, token ,updateHandler,isUpated, setSelecetdIDs, setTableData,setCurrentData, setTotalRecords,setCurrentPage, setLastPage,
+const CustomTable = ({ exportColumns = [], backendColumns = [], setRefreshData, refreshData, searchQueryManipulation, columns, data, current_page, total, headerStyle, onPageChange,
+  direction, formName, token, updateHandler, isUpated, setSelecetdIDs, setTableData, setCurrentData, setTotalRecords, setCurrentPage, setLastPage,
   table_name, setSortDirection, perPage, setPerPage, editPermissionName,
-  hideDeleteEdit=false,
-   deletePermissionName, SearchQuery,SearchQueryList,LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId}) => {
+  hideDeleteEdit = false,
+  deletePermissionName, SearchQuery, SearchQueryList, LoadingHandler, footer, column_name, summary, isPagination, addButton, brandId }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const childRef = useRef(null);
-  useEffect(()=> {
-    if(refreshData) {
+  useEffect(() => {
+    if (refreshData) {
       callChildFunction()
-      return(
+      return (
         setRefreshData(false)
       )
     }
@@ -25,44 +25,43 @@ const CustomTable = ({backendColumns=[],setRefreshData,refreshData, searchQueryM
   const callChildFunction = () => {
     childRef.current.callSearchHandler()
   };
-    const user = useSelector((state)=>state?.user?.user?.user)
+  const user = useSelector((state) => state?.user?.user?.user)
 
 
 
   const handlePageChange = (page) => {
     onPageChange(page);
   };
-  useEffect(()=>{
-    if(setTableData){
-      // debugger
-      if(data?.length > 0){
+  useEffect(() => {
+    if (setTableData) {
+      if (data?.length > 0) {
         dispatch(setTableData(data))
       }
     }
-   
+
   }, [data, dispatch])
-  useEffect(()=> {
+  useEffect(() => {
     localStorage.setItem("page", current_page)
-  },[onPageChange])
+  }, [onPageChange])
   return (
     <>
       <div style={{ overflowX: 'auto' }}>
         <DnDTable
-          formName  ={formName}
-          direction ={direction}
-          columns   ={columns}
-          data      ={data}
-          current   ={current_page}
+          formName={formName}
+          direction={direction}
+          columns={columns}
+          data={data}
+          current={current_page}
           perPage={perPage}
           total={total}
           handlePageChange={handlePageChange}
           navigate={navigate}
-          token = {token}
+          token={token}
           dispatch={dispatch}
           updateHandler={updateHandler}
           isUpated={isUpated}
           setSelecetdIDs={setSelecetdIDs}
-          table_name= {table_name}
+          table_name={table_name}
           setSortDirection={setSortDirection}
           setPerPage={setPerPage}
           editPermissionName={editPermissionName}
@@ -76,7 +75,7 @@ const CustomTable = ({backendColumns=[],setRefreshData,refreshData, searchQueryM
           setCurrentData={setCurrentData}
           setTotalRecords={setTotalRecords}
           column_name={column_name}
-          summary = {summary}
+          summary={summary}
           addButton={addButton}
           brandId={brandId}
           setCurrentPage={setCurrentPage}
@@ -86,6 +85,7 @@ const CustomTable = ({backendColumns=[],setRefreshData,refreshData, searchQueryM
           ref={childRef}
           hideDeleteEdit={hideDeleteEdit}
           backendColumns={backendColumns}
+          exportColumns={exportColumns}
         />
         {/* {
           direction !== "/single-trading-accounts/details/live-orders" &&  <div style={{ textAlign: 'right', marginTop: 16 }}>
@@ -110,7 +110,7 @@ const CustomTable = ({backendColumns=[],setRefreshData,refreshData, searchQueryM
           </span>
         </div>
         } */}
-      
+
       </div>
     </>
   );

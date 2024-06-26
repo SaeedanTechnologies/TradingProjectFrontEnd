@@ -84,7 +84,6 @@ export const ColumnSorter = (a, b) => {
 
 
 export const ColumnSpaceSorter = (a, b) => {
-  // debugger
   //  const valueA = a === null || a === undefined || a === '' ? Infinity : a;
   // const valueB = b === null || b === undefined || b === '' ? Infinity : b;
 
@@ -181,28 +180,29 @@ export const isIncrement = (old_value, new_value) => {
   return old_value < new_value ? true : false
 }
 
-export const checkCurrencyPosition = (symbol,pricing,currency) =>{ 
-    const currencies = [];
-    currencies.push(currency)
-    const unit = parseFloat(symbol?.vol_min) * parseFloat(symbol?.lot_size)
+export const checkCurrencyPosition = (symbol, pricing, currency) => {
+
+  const currencies = [];
+  currencies.push(currency)
+  const unit = parseFloat(symbol?.vol_min) * parseFloat(symbol?.lot_size)
   // Check for USD, EUR, or GBP at the beginning
-  
+
   if (currencies.some(currency => symbol?.name.startsWith(currency))) {
     const pipValue = unit * parseFloat(symbol?.pip)
     return pipValue
   }
-  
+
   // Check for USD, EUR, or GBP at the end
 
   const lastThree = symbol?.name.slice(-3);
   if (currencies.includes(lastThree)) {
-    const pipValue = unit * parseFloat(symbol?.pip)/parseFloat(pricing.askPrice)
+    const pipValue = unit * parseFloat(symbol?.pip) / parseFloat(pricing.askPrice)
     return pipValue
   }
 
   // Not found
-    const pipValue = unit * parseFloat(symbol?.pip)/parseFloat(pricing.openPrice)
-    return pipValue;
+  const pipValue = unit * parseFloat(symbol?.pip) / parseFloat(pricing.openPrice)
+  return pipValue;
 }
 
 export function addZeroBeforeOne(num) {
@@ -286,7 +286,6 @@ export const balanceCheck = (currentTradingAccountData) => {
 }
 
 export const conditionalLeverage = (trading_account, symbol_setting) => {
-  // debugger  
   let leverage;
   const symbol_group_id = symbol_setting?.group?.id;
   const trading_account_symbol_leverage = LeverageList?.find(x => x?.title === trading_account?.symbols_leverage?.find(x => x?.id == symbol_setting?.group?.id)?.settings?.find((x) => x.id === symbol_setting?.id)?.selectedLeverage?.title) || { value: '', title: '' }
@@ -401,4 +400,14 @@ export function updateCheckedStatus(event, item, side, chkBoxesControlLeft, chkB
   return (side === 'left' ? chkBoxesControlLeft : chkBoxesControlRight).map(checkbox =>
     checkbox.value === item.value ? { ...checkbox, checked: event.target.checked } : checkbox
   );
+}
+
+export function downloadFile(url, fileName = 'exported_file.csv') {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  link.target = "_blank"
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

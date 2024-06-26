@@ -9,6 +9,7 @@ import { FormControlLabel, Radio, RadioGroup, Stack, Typography } from '@mui/mat
 
 const TableActions = ({
   setIsExportModal,
+  exportColumns,
   tableName,
   backendColumns,
   setIsRearangments,
@@ -16,6 +17,7 @@ const TableActions = ({
   selectedRows,
   MassEditHandler,
   MassDeleteHandler,
+
   setPerPage,
   editPermissionName,
   deletePermissionName,

@@ -294,7 +294,6 @@ const Trade = ({ trade_type}) => {
       setIsLoading(true)
       // const res = await All_Setting_Data(token);
       const res = await AllSymbelSettingList(token);
-      // debugger;
       const { data: { message, success, payload } } = res
       // setSymbolsList(payload).data
       

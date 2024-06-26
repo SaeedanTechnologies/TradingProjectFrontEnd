@@ -3,6 +3,7 @@ import { theme } from 'antd';
 import CustomTable from '../../../components/CustomTable';
 import { useSelector } from 'react-redux';
 import { Ticket_Chart } from '../../../utils/BackendColumns';
+import { Export_Ticket_Chart } from '../../../utils/ExportColumns';
 
 const columns = [
   {
@@ -65,7 +66,7 @@ const Index = () => {
       <div className='flex flex-col sm:flex-row items-center gap-2 justify-between'>
         <h1 className='text-2xl font-semibold'>Tickets & Charts</h1>
       </div>
-      <CustomTable columns={columns} data={data} headerStyle={headerStyle} backendColumns={Ticket_Chart }
+      <CustomTable columns={columns} data={data} headerStyle={headerStyle} backendColumns={Ticket_Chart} exportColumns={Export_Ticket_Chart}
       />
       {/* <CustomTable
           direction="/ticket-charts"

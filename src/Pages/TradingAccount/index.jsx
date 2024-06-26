@@ -21,6 +21,7 @@ import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import { setMarginCallsData, setMarginCallsSelecetdIDs } from '../../store/marginCallsSlice';
 import { setActiveAccountData, setActiveAccountSelecetdIDs } from '../../store/activeAccountSlice';
 import { Trading_Accounts } from '../../utils/BackendColumns';
+import { Export_Trading_Accounts } from '../../utils/ExportColumns';
 
 
 const Index = ({ title, direction }) => {
@@ -311,7 +312,6 @@ const Index = ({ title, direction }) => {
 
 
   const fetchTradingAccounts = async (brandId, page) => {
-    // debugger
     setIsLoading(true)
     const mData = await Trading_Accounts_List(token, brandId, page, parseInt(perPage))
 
@@ -348,7 +348,6 @@ const Index = ({ title, direction }) => {
       //   brand_margin_call: item?.brand?.margin_call,
 
       // }))
-      // debugger
       setTradingAccountsList(payload)
       setCurrentPage(payload.current_page)
       setLastPage(payload.last_page)
@@ -550,7 +549,6 @@ const Index = ({ title, direction }) => {
     channel.bind('update', (data) => {
       const mData = [data]
       const isExist = !!marginCall.find(x => x.id === data.id);
-      // debugger
       if (data.status === 'margin_call' && !isExist) {
         const tradingAccounts = mData?.map((item) => ({
           id: item.id,
@@ -640,6 +638,7 @@ const Index = ({ title, direction }) => {
               editPermissionName="trading_account_list_update"
               deletePermissionName="trading_account_list_delete"
               backendColumns={Trading_Accounts}
+              exportColumns={Export_Trading_Accounts}
             />
           </div>
         )}
@@ -671,7 +670,7 @@ const Index = ({ title, direction }) => {
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
             backendColumns={Trading_Accounts}
-
+            exportColumns={Export_Trading_Accounts}
           />
 
         )}
@@ -703,6 +702,7 @@ const Index = ({ title, direction }) => {
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
             backendColumns={Trading_Accounts}
+            exportColumns={Export_Trading_Accounts}
 
           />
         )}

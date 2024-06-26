@@ -17,6 +17,7 @@ import { setSymbolSettingsData, setSymbolSettingsSelecetdIDs } from '../../../st
 import './index.css'
 import { ColumnSorter } from '../../../utils/helpers';
 import { Symbol_Setting } from '../../../utils/BackendColumns';
+import { Export_Symbol_Setting } from '../../../utils/ExportColumns';
 
 const Index = () => {
   const dispatch = useDispatch()
@@ -307,6 +308,7 @@ const Index = () => {
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
           backendColumns={Symbol_Setting}
+          exportColumns={Export_Symbol_Setting}
         />
       </div>
     </Spin>

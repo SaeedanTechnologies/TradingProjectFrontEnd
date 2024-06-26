@@ -22,6 +22,7 @@ import { setTradeGroupsData, setTradeGroupsSelectedIDs } from '../../store/trade
 import { setTradeWithdrawGroupsSelectedIDs } from '../../store/tradeGroupsWithdrawSlice';
 import { All_TradingAccountList } from '../../utils/_TradingAPICalls';
 import { Trading_Groups } from '../../utils/BackendColumns';
+import { Export_Trading_Groups } from '../../utils/ExportColumns';
 
 
 
@@ -417,6 +418,7 @@ const Index = () => {
           setCurrentPage={setCurrentPage}
           setLastPage={setLastPage}
           backendColumns={Trading_Groups}
+          exportColumns={Export_Trading_Groups}
         />
         {/* <CustomModalp
           isModalOpen={isModalOpen}

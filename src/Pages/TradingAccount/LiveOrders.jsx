@@ -17,6 +17,7 @@ import { EyeOutlined } from '@ant-design/icons';
 import Swal from 'sweetalert2';
 import { updateMultipleFields, updateTradingAccountGroupBalance } from '../../store/tradingAccountGroupSlice';
 import { Trading_Accounts_Live_Order } from '../../utils/BackendColumns';
+import { Export_Live_Order, Export_Trading_Accounts_Live_Order } from '../../utils/ExportColumns';
 
 const LiveOrders = ({ grandCommsion, setManipulatedData, isLoading, setIsLoading, grandProfit, lotSize, margin, totalSwap }) => {
 
@@ -382,7 +383,6 @@ const LiveOrders = ({ grandCommsion, setManipulatedData, isLoading, setIsLoading
   }, [checkedList]);
 
   useEffect(() => {
-    // debugger;
     // fetchLiveOrder(CurrentPage)
     SetSearchQueryList({ trading_account_id, order_types: ['market'] })
   }, [])
@@ -489,6 +489,7 @@ const LiveOrders = ({ grandCommsion, setManipulatedData, isLoading, setIsLoading
           deletePermissionName="live_orders_delete"
           setRefreshData={setRefreshData}
           backendColumns={Trading_Accounts_Live_Order}
+          exportColumns={Export_Trading_Accounts_Live_Order}
 
         />
       </div>

@@ -13,6 +13,7 @@ import { setPendingOrdersData, setPendingOrdersSelectedIds } from '../../store/T
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { CurrenciesList } from '../../utils/constants';
 import { Trading_Accounts_Pending_Order } from '../../utils/BackendColumns';
+import { Export_Pending_Order, Export_Trading_Accounts_Pending_Order } from '../../utils/ExportColumns';
 
 
 const PendingOrder = ({ setManipulatedData, grandProfit, totalSwap }) => {
@@ -240,6 +241,7 @@ const PendingOrder = ({ setManipulatedData, grandProfit, totalSwap }) => {
           editPermissionName="pending_orders_update"
           deletePermissionName="pending_orders_delete"
           backendColumns={Trading_Accounts_Pending_Order}
+          exportColumns={Export_Trading_Accounts_Pending_Order}
 
         />
       </div>
