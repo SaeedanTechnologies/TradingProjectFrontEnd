@@ -365,7 +365,6 @@ const TradingModal = ({ setIsModalOpen, fetchTradingAccounts, TradingAccountID, 
 
 
   const handleSubmission = async () => {
-    // debugger
     try {
 
        await TradingAccountValidationSchema.validate({

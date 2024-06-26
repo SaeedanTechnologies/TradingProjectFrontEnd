@@ -137,7 +137,6 @@ const TradingAccountModal = ({ setIsModalOpen, fetchData, TradingGroupID }) => {
     setIsLoading(true)
     const res = await GetBrandsList(token)
     const { data: { success, message, payload } } = res
-    // debugger
     setIsLoading(false)
     if (success) {
       setBrandList(payload)

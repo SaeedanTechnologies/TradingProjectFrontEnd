@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import { setSymbolGroupsSelectedIDs, setSymbolGroupsData } from '../../../store/symbolGroupsSlice';
 import { ColumnSorter } from '../../../utils/helpers';
 import { Symbol_Group } from '../../../utils/BackendColumns';
+import { Export_Symbol_Group } from '../../../utils/ExportColumns';
 
 const Index = () => {
   const dispatch = useDispatch()
@@ -308,6 +309,7 @@ const Index = () => {
             setCurrentPage={setCurrentPage}
             setLastPage={setLastPage}
             backendColumns={Symbol_Group}
+            exportColumns={Export_Symbol_Group}
           />
         </div>
 

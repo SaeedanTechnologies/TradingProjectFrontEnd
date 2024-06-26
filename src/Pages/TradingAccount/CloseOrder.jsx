@@ -13,6 +13,7 @@ import { ColumnSorter } from '../../utils/helpers';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import { CurrenciesList } from '../../utils/constants';
 import { Trading_Accounts_Close_Order } from '../../utils/BackendColumns';
+import { Export_Close_Order, Export_Trading_Accounts_Close_Order } from '../../utils/ExportColumns';
 
 
 const CloseOrder = ({ setManipulatedData, totalSwap, grandProfit, grandCommsion }) => {
@@ -330,6 +331,7 @@ const CloseOrder = ({ setManipulatedData, totalSwap, grandProfit, grandCommsion 
           editPermissionName="close_orders_update"
           deletePermissionName="close_orders_delete"
           backendColumns={Trading_Accounts_Close_Order}
+          exportColumns={Export_Trading_Accounts_Close_Order}
 
         />
       </div>

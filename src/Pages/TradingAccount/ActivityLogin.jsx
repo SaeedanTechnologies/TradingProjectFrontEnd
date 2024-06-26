@@ -91,7 +91,6 @@ const ActivityLogin = () => {
   ];
 
     const fetchActivityLogins = async (page) => {
-      // debugger
     setIsLoading(true)
       
     const mData = await TradingAccountLoginActivities(token,page)

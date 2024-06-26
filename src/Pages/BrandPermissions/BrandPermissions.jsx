@@ -114,7 +114,6 @@ const BrandPermissions = () => {
       if(success)
       {
         setIsLoading(false)
-        // debugger
         const storePayload = {user_id:brand.user_id,permissions:payload}
         dispatch(setBrandUser(storePayload))
         

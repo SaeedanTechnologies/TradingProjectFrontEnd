@@ -89,13 +89,11 @@ const TradingGroupEntry = () => {
     setSelectedBrand(null)
   }
   const deleteHandler = async()=>{
-    // debugger;
     const Params = {
       table_name:'trading_groups',
       table_ids: [ArrangedTradingGroupData[currentIndex]?.id]
     }
     const onSuccessCallBack = (message) => {
-      // debugger;
       CustomNotification({
         type: "success",
         title: "Deleted",

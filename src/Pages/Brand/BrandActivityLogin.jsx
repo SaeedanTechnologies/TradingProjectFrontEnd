@@ -93,7 +93,6 @@ const BrandActivityLogin = () => {
   ];
 
   const fetchActivityLogins = async (page) => {
-    // debugger
     setIsLoading(true)
 
     const mData = await UserLoginActivities(token, page)

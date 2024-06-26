@@ -40,7 +40,6 @@ const LiveOrders = () => {
     const params = { OrderTypes: ['market'], token, brandId, page }
     const mData = await Get_Trade_Order(params, page)
     const { data: { message, payload, success } } = mData
-    // debugger
     const allLiveOrders = payload?.data?.map((order) => ({
       id: order.id,
       trading_account_loginId: order.trading_account_loginId,

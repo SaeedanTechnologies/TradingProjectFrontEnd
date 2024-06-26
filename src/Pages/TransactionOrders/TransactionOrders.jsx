@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setTransactionsOrdersSelectedIDs, setTransactionOrdersData, deleteTransactionOrderById } from '../../store/transactionOrdersSlice';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png'
 import { Transaction_Order } from '../../utils/BackendColumns';
+import { Export_Transaction_Order } from '../../utils/ExportColumns';
 
 const TransactionOrders = () => {
 
@@ -270,7 +271,6 @@ const TransactionOrders = () => {
 
   const fetchTransactionOrder = async (brandId, page) => {
     setIsLoading(true)
-    //  debugger
     const res = await Trading_Transaction_Order(token, brandId, page, parseInt(perPage))
     const { data: { message, payload, success } } = res
     setIsLoading(false)
@@ -365,6 +365,7 @@ const TransactionOrders = () => {
             editPermissionName="transaction_orders_update"
             deletePermissionName="transaction_orders_delete"
             backendColumns={Transaction_Order}
+            exportColumns={Export_Transaction_Order}
 
           />
         </div>
