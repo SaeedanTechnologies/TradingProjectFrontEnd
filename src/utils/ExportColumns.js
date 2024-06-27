@@ -1,16 +1,16 @@
 export const Export_Live_Order = [
-    "order_type",
     "symbol",
     "type",
     "volume",
-    "stopLoss",
-    "takeProfit",
-    "open_time",
     "open_price",
-    "swap",
-    "commission",
-    "profit",
+    "open_time",
+    "stopLoss",
     "comment",
+    "swap",
+    "profit",
+    "commission",
+    // "order_type",
+    // "takeProfit",
 ]
 
 export const Export_Close_Order = [

@@ -14,7 +14,7 @@ import { ALL_Symbol_Group_List, All_Setting_Data, Feed_Data_List, SelectSymbolSe
 import { GetAskBidData, GetCryptoData, GetFasciData, SeparateSymbols } from '../../../utils/_ExchangeAPI'
 import { useDispatch, useSelector } from 'react-redux';
 import CustomNotification from '../../../components/CustomNotification';
-import { Autocomplete, TextField,Input,InputAdornment } from '@mui/material'
+import { Autocomplete, TextField, Input, InputAdornment } from '@mui/material'
 import { GenericEdit, GenericDelete } from '../../../utils/_APICalls';
 import { CustomBulkDeleteHandler, CustomDeleteDeleteHandler } from '../../../utils/helpers';
 import { deleteSymbolSettingsById, setSymbolSettingsData, setSymbolSettingsSelecetdIDs, updateSymbolSettings } from '../../../store/symbolSettingsSlice';
@@ -34,7 +34,7 @@ const SymbolSettingsEntry = () => {
   const isCompleteSelect = localStorage.getItem("isCompleteSelect")
   const token = useSelector(({ user }) => user?.user?.token)
   const SymbolSettingIds = useSelector(({ symbolSettings }) => symbolSettings.selectedRowsIds)
-  const SymbolSettingsData = useSelector(({symbolSettings})=> symbolSettings.symbolSettingsData)
+  const SymbolSettingsData = useSelector(({ symbolSettings }) => symbolSettings.symbolSettingsData)
   const ArrangedSymbolSettingsData = SymbolSettingsData;
   const fetchAllSetting = async (page) => {
     try {
@@ -47,13 +47,13 @@ const SymbolSettingsEntry = () => {
   }
   //
   const {
-    token: { colorBG },} = theme.useToken();
+    token: { colorBG }, } = theme.useToken();
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [feedNameFetchList, setFeedNameFetchList] = useState([])
   const [selectedFeedNameFetch, setSelectedFeedNameFetch] = useState(null)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [created_id , setCreatedId] = useState("")
+  const [created_id, setCreatedId] = useState("")
   const [symbolName, setSymbolName] = useState('')
   const [SelectedLeverage, setSelectedLeverage] = useState(null)
   const [errors, setErrors] = useState({});
@@ -74,7 +74,7 @@ const SymbolSettingsEntry = () => {
     { id: 1, title: 'Yes' },
     { id: 2, title: 'No' },
   ])
-  const [selectedPip,setSelectedPip] = useState(null)
+  const [selectedPip, setSelectedPip] = useState(null)
   const initialSelectedEnable = EnabledList.find(option => option.title === 'Yes');
   const [Selectedenable, setSelectedEnable] = useState(initialSelectedEnable)
   const [isLoading, setIsLoading] = useState(false)
@@ -83,7 +83,6 @@ const SymbolSettingsEntry = () => {
   const [isDisabled, setIsDisabled] = useState(false)
   const [connected, setConnected] = useState(false);
   const [holdSwap, setHoldSwap] = useState(0)
-
 
   const validationSchema = Yup.object().shape({
     SymbolGroup: Yup.array().required('Symbol Group is required'),
@@ -150,22 +149,22 @@ const SymbolSettingsEntry = () => {
     }
   };
 
-    const handleCheckboxClick = (e) => {
+  const handleCheckboxClick = (e) => {
     setConnected(e.target.checked)
-    if(!e.target.checked){
+    if (!e.target.checked) {
       setSwap('')
       setConnected(false)
-    }else{
-       setSwap(holdSwap)
+    } else {
+      setSwap(holdSwap)
     }
-    
+
   }
 
   const fetchFeedData = async () => {
     try {
       const res = await Feed_Data_List(token);
       const { data: { message, success, payload } } = res
-      const updatedFeeds = payload?.data?.filter(x=> x.enabled === "1")
+      const updatedFeeds = payload?.data?.filter(x => x.enabled === "1")
       setFeedNameList(updatedFeeds);
     } catch (error) {
       console.error('Error fetching symbol groups:', error);
@@ -178,8 +177,8 @@ const SymbolSettingsEntry = () => {
     setIsLoading(false)
     setStatesForEditMode(payload, success)
   }
-  const setStatesForEditMode = async (payload, success)=>{
-    try{
+  const setStatesForEditMode = async (payload, success) => {
+    try {
       if (success) {
         setIsLoading(true)
         setSymbolName(payload.name)
@@ -188,7 +187,7 @@ const SymbolSettingsEntry = () => {
         const selectedGroup = data?.payload?.find(x => x?.id === payload.symbel_group_id)
         setSelectedSymbol(selectedGroup)
         const resp = await Feed_Data_List(token);
-        const { data : FeedList } = resp
+        const { data: FeedList } = resp
         const SelectedFeedNameOption = FeedList?.payload?.data?.find(x => x?.id === payload.data_feed.id)
         if (payload.feed_name === 'binance') {
           const res = await GetCryptoData()
@@ -198,12 +197,12 @@ const SymbolSettingsEntry = () => {
           setFeedNameFetchList(updatedData)
           const selectedSymb = updatedData.find(x => x.symbol === payload.feed_fetch_name)
           setSelectedFeedNameFetch(selectedSymb)
-          
-        }else if(payload.feed_name === 'fcsapi'){
+
+        } else if (payload.feed_name === 'fcsapi') {
           const fasciResp = await GetFasciData(payload?.data_feed?.feed_login)
           setFeedNameFetchList(fasciResp)
-          const selectedSymb = fasciResp.find(x => x.id === payload.feed_fetch_name)
-          setSelectedFeedNameFetch(selectedSymb) 
+          const selectedSymb = fasciResp.find(x => x.name === payload.feed_fetch_name)
+          setSelectedFeedNameFetch(selectedSymb)
         }
         const selectedLeverageOpt = LeverageList.find(x => x.title === payload.leverage)
         setSelectedLeverage(selectedLeverageOpt)
@@ -224,9 +223,9 @@ const SymbolSettingsEntry = () => {
         setCommission(payload.commission);
         setIsLoading(false)
       }
-    }catch(err){
-       alert(err.message)
-    }finally{
+    } catch (err) {
+      alert(err.message)
+    } finally {
       setIsLoading(false)
     }
   }
@@ -241,10 +240,10 @@ const SymbolSettingsEntry = () => {
       console.error('Error fetching symbol groups:', error);
     }
   };
-   const FetchData = async (page, token, perPage=10) =>{
-    const res = await All_Setting_Data(token,page,parseInt(perPage))
+  const FetchData = async (page, token, perPage = 10) => {
+    const res = await All_Setting_Data(token, page, parseInt(perPage))
     return res;
-}
+  }
   //#region HandleNext 
   const handleNext = async () => {
     if (currentIndex < ArrangedSymbolSettingsData.length - 1) {
@@ -252,11 +251,11 @@ const SymbolSettingsEntry = () => {
       const payload = ArrangedSymbolSettingsData[currentIndex + 1];
       dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
       setIsLoading(true)
-      setTimeout(()=>{
+      setTimeout(() => {
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
-    }else{
+    } else {
       const page_num = Number(page) + 1;
       setIsLoading(true);
       const res = await FetchData(page_num, token);
@@ -272,7 +271,7 @@ const SymbolSettingsEntry = () => {
           setStatesForEditMode(payload, true, LeverageList);
         }, 3000);
         localStorage.setItem("page", page_num);
-        
+
       }
       else {
         setIsLoading(false);
@@ -287,59 +286,59 @@ const SymbolSettingsEntry = () => {
   };
   //#region HandlePrevious
 
-  const handlePrevious = async() => {
-    
+  const handlePrevious = async () => {
+
     if (currentIndex > 0) {
       setCurrentIndex(prevIndex => prevIndex - 1);
       const payload = ArrangedSymbolSettingsData[currentIndex - 1];
       dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
       setIsLoading(true)
-      setTimeout(()=>{
+      setTimeout(() => {
         setIsLoading(false)
         setStatesForEditMode(payload, true)
       }, 3000)
-      
-    }
-    else{
-    const page_num = Number(page) - 1;
 
-    if (page_num < 1) {
-      CustomNotification({
-        type: 'warning',
-        title: 'warning',
-        description: 'No Previous record found',
-        key: 2
-      });
-      return;
-    }
-    setIsLoading(true);
-    const res = await FetchData(page_num, token);
-    const newSymbolGroupsData = res?.data?.payload?.data;
-    if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
-      dispatch(setSymbolSettingsData(newSymbolGroupsData))
-      const newArrangedSymbolGroupsData = newSymbolGroupsData;
-      const payload = newArrangedSymbolGroupsData[0];
-      dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
-      setCurrentIndex(0);
-      setTimeout(() => {
-        setIsLoading(false);
-        setStatesForEditMode(payload, true, LeverageList);
-      }, 3000);
-      localStorage.setItem("page", page_num);
     }
     else {
-      
-      CustomNotification({
-        type: 'warning',
-        title: 'warning',
-        description: 'No Previous record found',
-        key: 2
-      });
+      const page_num = Number(page) - 1;
+
+      if (page_num < 1) {
+        CustomNotification({
+          type: 'warning',
+          title: 'warning',
+          description: 'No Previous record found',
+          key: 2
+        });
+        return;
+      }
+      setIsLoading(true);
+      const res = await FetchData(page_num, token);
+      const newSymbolGroupsData = res?.data?.payload?.data;
+      if (newSymbolGroupsData && newSymbolGroupsData.length > 0) {
+        dispatch(setSymbolSettingsData(newSymbolGroupsData))
+        const newArrangedSymbolGroupsData = newSymbolGroupsData;
+        const payload = newArrangedSymbolGroupsData[0];
+        dispatch(setSymbolSettingsSelecetdIDs([payload.id]))
+        setCurrentIndex(0);
+        setTimeout(() => {
+          setIsLoading(false);
+          setStatesForEditMode(payload, true, LeverageList);
+        }, 3000);
+        localStorage.setItem("page", page_num);
+      }
+      else {
+
+        CustomNotification({
+          type: 'warning',
+          title: 'warning',
+          description: 'No Previous record found',
+          key: 2
+        });
+      }
     }
-    }
-    
+
   };
-  
+
   useEffect(() => {
     fetchSymbolGroups();
     fetchFeedData();
@@ -356,11 +355,11 @@ const SymbolSettingsEntry = () => {
   }, []);
   const handleSubmit = async () => {
     try {
-     
+
       const SymbolGroupData = {
         name: symbolName || '',
         symbel_group_id: SelectedSymbol?.id || '',
-        feed_fetch_name: selectedFeedNameFetch?.id || '',
+        feed_fetch_name: selectedFeedNameFetch?.name || '',
         feed_fetch_key: selectedFeedNameFetch?.group?.toLowerCase() || '',
         speed_max: 'abc',
         lot_size: lotSize || '',
@@ -375,9 +374,9 @@ const SymbolSettingsEntry = () => {
         vol_min: volMin || '',
         vol_max: volMax || ''
       };
-      
-      if (SymbolSettingIds?.length === 1 && (parseInt(SymbolSettingIds[0]) === 0 || SymbolSettingIds[0] === undefined))  { // save 
-          await validationSchema.validate({
+
+      if (SymbolSettingIds?.length === 1 && (parseInt(SymbolSettingIds[0]) === 0 || SymbolSettingIds[0] === undefined)) { // save 
+        await validationSchema.validate({
           SymbolGroup: selectedGroup,
           symbolName: symbolName,
           feed_name: selectedFeedName,
@@ -393,7 +392,7 @@ const SymbolSettingsEntry = () => {
         }, { abortEarly: false });
 
         setErrors({});
-        
+
         setIsLoading(true)
         const res = await SymbolSettingPost(SymbolGroupData, token);
         const { data: { message, success, payload } } = res;
@@ -431,7 +430,7 @@ const SymbolSettingsEntry = () => {
           }
         }
 
-      } 
+      }
       else {
         setIsLoading(true)
         const Params = {
@@ -444,7 +443,7 @@ const SymbolSettingsEntry = () => {
         setIsLoading(false)
         if (res !== undefined) {
           if (success) {
-              dispatch(updateSymbolSettings(payload))
+            dispatch(updateSymbolSettings(payload))
             // clearFields();
             CustomNotification({
               type: 'success',
@@ -466,7 +465,7 @@ const SymbolSettingsEntry = () => {
           }
         }
       }
-        
+
     } catch (err) {
       const validationErrors = {};
       err.inner?.forEach(error => {
@@ -492,41 +491,41 @@ const SymbolSettingsEntry = () => {
     setAskValue(askPrice)
     setBidValue(bidPrice)
   }
-  const deleteHandler = async()=>{
+  const deleteHandler = async () => {
     const Params = {
-      table_name:'symbel_settings',
+      table_name: 'symbel_settings',
       table_ids: [ArrangedSymbolSettingsData[currentIndex].id]
     }
 
-    const onSuccessCallBack = (message)=>{
-           CustomNotification({
-            type: "success",
-            title: "Deleted",
-            description: message,
-            key: "a4",
-          })
-          dispatch(deleteSymbolSettingsById(ArrangedSymbolSettingsData[currentIndex].id))
-        if(ArrangedSymbolSettingsData.length === 0 || ArrangedSymbolSettingsData === undefined || ArrangedSymbolSettingsData === null){
-          navigate("/symbol-settings")
-        }else{
-          if(currentIndex < ArrangedSymbolSettingsData.length - 1)
+    const onSuccessCallBack = (message) => {
+      CustomNotification({
+        type: "success",
+        title: "Deleted",
+        description: message,
+        key: "a4",
+      })
+      dispatch(deleteSymbolSettingsById(ArrangedSymbolSettingsData[currentIndex].id))
+      if (ArrangedSymbolSettingsData.length === 0 || ArrangedSymbolSettingsData === undefined || ArrangedSymbolSettingsData === null) {
+        navigate("/symbol-settings")
+      } else {
+        if (currentIndex < ArrangedSymbolSettingsData.length - 1)
           handleNext()
-          else
+        else
           handlePrevious()
-        }
+      }
     }
-    
-   await CustomBulkDeleteHandler(Params,token,GenericDelete, setIsLoading,onSuccessCallBack )
-    
+
+    await CustomBulkDeleteHandler(Params, token, GenericDelete, setIsLoading, onSuccessCallBack)
+
   }
 
 
   const items = [
-    
+
     {
       key: '1',
       label: (
-        <button className='w-full text-left' rel="noopener noreferrer" onClick={()=>{
+        <button className='w-full text-left' rel="noopener noreferrer" onClick={() => {
           setIsDisabled(false)
         }}>   Edit </button>
       ),
@@ -534,16 +533,16 @@ const SymbolSettingsEntry = () => {
     {
       key: '2',
       label: (
-        <button  className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
+        <button className='w-full text-left' rel="noopener noreferrer" onClick={deleteHandler} >   Delete  </button>
       ),
     },
-   
+
   ];
-  const cancleHandler= ()=>{
-    if(isDisabled){
+  const cancleHandler = () => {
+    if (isDisabled) {
       navigate('/symbol-settings')
 
-    }else{
+    } else {
       setIsDisabled(true)
     }
   }
@@ -564,25 +563,25 @@ const SymbolSettingsEntry = () => {
             }
           </div>
           {/* toolbar */}
-          {(isDisabled && SymbolSettingIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={()=> setIsDisabled(false)} />}
-          {(SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 && isDisabled)  &&
+          {(isDisabled && SymbolSettingIds?.length > 1) && <EditOutlined className='cursor-pointer' onClick={() => setIsDisabled(false)} />}
+          {(SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) !== 0 && isDisabled) &&
             <div className='flex gap-4 bg-gray-100 py-2 px-4 rounded-md mb-4' >
-           <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
-            <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
-            <Dropdown
-              menu={{
-                items,
-              }}
-              placement="bottom"
-              arrow
-              trigger={['click']}
-              
-            >
-              <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
-          </Dropdown>
-          </div>
+              <LeftOutlined className='text-[24px] cursor-pointer' onClick={handlePrevious} />
+              <RightOutlined className='text-[24px] cursor-pointer' onClick={handleNext} />
+              <Dropdown
+                menu={{
+                  items,
+                }}
+                placement="bottom"
+                arrow
+                trigger={['click']}
+
+              >
+                <div className='bg-gray-200 p-2 px-4 rounded-md cursor-pointer'> More <CaretDownOutlined /> </div>
+              </Dropdown>
+            </div>
           }
-        
+
         </div>
         <div className='border rounded-lg p-4'>
 
@@ -744,14 +743,14 @@ const SymbolSettingsEntry = () => {
                 onChange={(e) => handleInputChange("swap", e.target.value)}
                 InputProps={{
                   readOnly: connected,
-                  startAdornment:(
-                        <InputAdornment position="start">
-                            <CustomCheckbox  checked={connected} onChange={handleCheckboxClick} disabled={isDisabled} />
-                        </InputAdornment>
-                    )
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CustomCheckbox checked={connected} onChange={handleCheckboxClick} disabled={isDisabled} />
+                    </InputAdornment>
+                  )
                 }}
-              /> 
-                {/* <Input
+              />
+              {/* <Input
                     id="input-with-icon-adornment"
                     placeholder='Swap'
                     startAdornment={
@@ -864,7 +863,7 @@ const SymbolSettingsEntry = () => {
               {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
             </div>
 
-              <div>
+            <div>
               <CustomAutocomplete
                 label="Pips"
                 variant="standard"
@@ -874,49 +873,49 @@ const SymbolSettingsEntry = () => {
                 getOptionLabel={(option) => option.label ? option.label : ""}
                 required
                 onChange={(event, value) => {
-                 
+
                   setSelectedPip(value);
                   setErrors(prevErrors => ({ ...prevErrors, enabled: "" }))
                 }}
 
               />
               {errors.enabled && <span style={{ color: 'red' }}>{errors.enabled}</span>}
-            </div>   
+            </div>
 
             {askValue > 0 && <span className='text-sm text-green-500 font-semibold'>Ask Price is {askValue} and Bid Price is {bidValue}</span>}
 
 
           </div>
           {
-            !isDisabled &&  <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
-            <CustomButton
-              Text={ SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Submit' : 'Update'}
-              style={{
-                padding: '16px',
-                height: '48px',
-                width: '200px',
-                borderRadius: '8px',
-                zIndex: '100'
-              }}
-              disabled={isDisabled}
-              onClickHandler={handleSubmit}
-            />
-            <CustomButton
-              Text='Cancel'
-              style={{
-                padding: '16px',
-                height: '48px',
-                width: '200px',
-                borderRadius: '8px',
-                backgroundColor: '#c5c5c5',
-                borderColor: '#c5c5c5',
-                color: '#fff'
-              }}
-              onClickHandler={cancleHandler}
-            />
-          </div>
+            !isDisabled && <div className='flex justify-center items-center sm:justify-end flex-wrap gap-4 mt-6'>
+              <CustomButton
+                Text={SymbolSettingIds?.length === 1 && parseInt(SymbolSettingIds[0]) === 0 ? 'Submit' : 'Update'}
+                style={{
+                  padding: '16px',
+                  height: '48px',
+                  width: '200px',
+                  borderRadius: '8px',
+                  zIndex: '100'
+                }}
+                disabled={isDisabled}
+                onClickHandler={handleSubmit}
+              />
+              <CustomButton
+                Text='Cancel'
+                style={{
+                  padding: '16px',
+                  height: '48px',
+                  width: '200px',
+                  borderRadius: '8px',
+                  backgroundColor: '#c5c5c5',
+                  borderColor: '#c5c5c5',
+                  color: '#fff'
+                }}
+                onClickHandler={cancleHandler}
+              />
+            </div>
           }
-         
+
         </div>
       </div>
     </Spin>

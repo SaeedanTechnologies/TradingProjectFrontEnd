@@ -10,6 +10,7 @@ import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { values } from 'lodash';
 import { Live_Order } from '../../utils/BackendColumns';
+import { Export_Live_Order } from '../../utils/ExportColumns';
 
 const LiveOrders = () => {
   const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
@@ -349,6 +350,7 @@ const LiveOrders = () => {
           editPermissionName="live_orders_update"
           deletePermissionName="live_orders_delete"
           backendColumns={Live_Order}
+          exportColumns={Export_Live_Order}
         />
       </div>
     </Spin>
