@@ -10,6 +10,7 @@ import { setPendingOrdersData, setPendingOrdersSelectedIds } from '../../store/T
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { ColumnSorter } from '../../utils/helpers';
 import { Pending_Order } from '../../utils/BackendColumns';
+import { Export_Pending_Order } from '../../utils/ExportColumns';
 
 const PendingOrder = () => {
   const userRole = useSelector((state) => state?.user?.user?.user?.roles[0]?.name);
@@ -449,6 +450,7 @@ const PendingOrder = () => {
           editPermissionName="pending_orders_update"
           deletePermissionName="pending_orders_delete"
           backendColumns={Pending_Order}
+          exportColumns={Export_Pending_Order}
         />
       </div>
     </Spin>

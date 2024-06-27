@@ -10,6 +10,7 @@ import { setCloseOrdersSelectedIds, setCloseOrdersData } from '../../store/Trade
 import ARROW_UP_DOWN from '../../assets/images/arrow-up-down.png';
 import { ColumnSorter } from '../../utils/helpers';
 import { Close_Order } from '../../utils/BackendColumns';
+import { Export_Close_Order } from '../../utils/ExportColumns';
 
 
 const CloseOrder = () => {
@@ -422,6 +423,7 @@ const CloseOrder = () => {
           editPermissionName="close_orders_update"
           deletePermissionName="close_orders_delete"
           backendColumns={Close_Order}
+          exportColumns={Export_Close_Order}
         />
       </div>
     </Spin>

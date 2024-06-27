@@ -7,70 +7,87 @@ const CandleStickChart = ({ symbol, connected, pricing, interval = "1m", setLoad
   const [ohlcData, setOhlcData] = useState([]);
   const tickInterval = getTickInterval(interval);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get('https://api.binance.com/api/v3/klines', {
+  const fetchData = async (isUpdate = false) => {
+    try {
+      setLoading(true);
+      let response;
+
+      if (symbol?.feed_name === 'binance') {
+        response = await axios.get('https://api.binance.com/api/v3/klines', {
           params: {
-            symbol: symbol ? symbol : "",
+            symbol: symbol?.feed_fetch_name,
             interval: interval,
-            limit: 500,
+            limit: isUpdate ? 1 : 500,
           }
         });
+
         const data = response.data;
-        setLoading(false);
-
         const ohlcList = data.map(item => [
-          item[0], // Timestamp
-          parseFloat(item[1]), // Open
-          parseFloat(item[2]), // High
-          parseFloat(item[3]), // Low
-          parseFloat(item[4]), // Close
+          item[0], 
+          parseFloat(item[1]), 
+          parseFloat(item[2]),  
+          parseFloat(item[3]),  
+          parseFloat(item[4]),  
         ]);
-        setOhlcData(ohlcList);
-      } catch (err) {
-        setLoading(false);
-        console.log(err);
-      }
-    };
 
-    fetchData();
-  }, [symbol, interval]);
-
-  useEffect(() => {
-    if (pricing) {
-      const updateData = async () => {
-        try {
-          const response = await axios.get('https://api.binance.com/api/v3/klines', {
-            params: {
-              symbol: symbol ? symbol : "",
-              interval: interval,
-              limit: 1,
-            }
-          });
-          const data = response.data;
-          const newPoint = data.map(item => [
-            item[0], // Timestamp
-            parseFloat(item[1]), // Open
-            parseFloat(item[2]), // High
-            parseFloat(item[3]), // Low
-            parseFloat(item[4]), // Close
-          ])[0];
-
+        if (isUpdate) {
           setOhlcData(prevOhlcData => {
-            const updatedData = [...prevOhlcData, newPoint];
+            const updatedData = [...prevOhlcData, ...ohlcList];
             if (updatedData.length > 500) {
               updatedData.shift();
             }
             return updatedData;
           });
-        } catch (err) {
-          console.log(err);
+        } else {
+          setOhlcData(ohlcList);
         }
-      };
+      } else if (symbol?.feed_name === 'fcsapi') {
+        response = await axios.get(`https://fcsapi.com/api-v3/${symbol?.feed_fetch_key}/history`, {
+          params: {
+            symbol: symbol?.feed_fetch_name,
+            period: interval,
+            access_key: symbol?.data_feed?.feed_login,
+          }
+        });
 
-      updateData();
+        const data = response.data.response;
+        const dataArray = Object.values(data);
+
+        const ohlcList = dataArray.map(item => [
+          new Date(item.tm).getTime(),  
+          parseFloat(item.o),  
+          parseFloat(item.h),  
+          parseFloat(item.l),  
+          parseFloat(item.c), 
+        ]);
+
+        setLoading(false);
+
+        if (isUpdate) {
+          setOhlcData(prevOhlcData => {
+            const updatedData = [...prevOhlcData, ...ohlcList];
+            if (updatedData.length > 500) {
+              updatedData.shift();
+            }
+            return updatedData;
+          });
+        } else {
+          setOhlcData(ohlcList);
+        }
+      }
+    } catch (err) {
+      setLoading(false);
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [symbol, interval]);
+
+  useEffect(() => {
+    if (pricing) {
+      fetchData(true);
     }
   }, [pricing]);
 
@@ -81,7 +98,7 @@ const CandleStickChart = ({ symbol, connected, pricing, interval = "1m", setLoad
     series: [
       {
         type: 'candlestick',
-        name: symbol,
+        name: symbol?.feed_name,
         data: ohlcData,
       }
     ],
@@ -95,7 +112,7 @@ const CandleStickChart = ({ symbol, connected, pricing, interval = "1m", setLoad
       }
     },
     rangeSelector: {
-      enabled: false 
+      enabled: false
     },
     navigator: {
       enabled: false
@@ -108,7 +125,7 @@ const CandleStickChart = ({ symbol, connected, pricing, interval = "1m", setLoad
 const getTickInterval = (interval) => {
   switch (interval) {
     case "1m":
-      return 60 * 1000; 
+      return 60 * 1000;
     case "5m":
       return 5 * 60 * 1000;
     case "30m":
