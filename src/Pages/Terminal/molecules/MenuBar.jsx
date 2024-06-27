@@ -22,6 +22,7 @@ import MarketNews from '../../../assets/images/MarketNews.svg';
 import ActiveMarketNews from '../../../assets/images/ActiveMarketNews.svg'
 import EconomicCalender from '../../../assets/images/EconomicCalender.svg';
 import ActiveEconomicCalender from '../../../assets/images/ActiveEconomicCalender.svg'
+import Indicator from '../../../assets/images/indicator.svg'
 import { useLocation, useNavigate } from 'react-router-dom';
 
 
@@ -84,14 +85,14 @@ function ResponsiveDrawer(props) {
             <ListItemButton 
                  selected={selectedIndex === index}
                  onClick={() => handleListItemClick(index,terminal.path)}
-                sx={{  backgroundColor: selectedIndex === index ? '#9FA8C7' : 'transparent',  }}>
+                sx={{  backgroundColor: selectedIndex === index ? '#9FA8C7' : 'transparent', pr:0 }}>
               <ListItemIcon>
                {index === 0 ? (
-                <img src={WatchMarket} alt="Watch Market" />
+                <img src={selectedIndex === index ? ActiveMarketNews: WatchMarket} alt="Watch Market" />
               ) : index === 1 ? (
-                <img src={EconomicCalender} alt="Economic Calendar" />
+                <img src={selectedIndex === index ? ActiveEconomicCalender : EconomicCalender} alt="Economic Calendar" />
               ) : (
-                <img src={MarketNews} alt="Market News" />
+                <img src={selectedIndex === index ? ActiveMarketNews : MarketNews} alt="Market News" />
               )}
               </ListItemIcon>
               <ListItemText  primary={ 
@@ -99,7 +100,10 @@ function ResponsiveDrawer(props) {
                   {terminal.title}
                 </Typography>
                 } />
+
+                {selectedIndex === index &&  <img src={Indicator} alt="indicator" />}
             </ListItemButton>
+          
           </ListItem>
         ))}
       </List>
