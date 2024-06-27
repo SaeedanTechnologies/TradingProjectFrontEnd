@@ -56,57 +56,6 @@ export default function OrdersHistory() {
      setRows(res?.data?.payload?.data)
   }
 
-
-  const deleteHandler = async (id) => {
-    const params = {
-      table_name:"trade_orders",
-      table_ids : [id]
-    }
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#1CAC70",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then(async( result )=> {
-      if (result.isConfirmed) {
-        const res = await GenericDelete(params, token)
-        const { data: { success, message, payload } } = res
-        if(success) {
-          CustomNotification({
-            type: "success",
-            title: "Deleted",
-            description: message,
-            key: "a4",
-          })
-          fetchOrdersHistory()
-        }
-        else {
-          const errorMsg = getValidationMsg(message, payload)
-          if(errorMsg) 
-            CustomNotification({
-              type: "error",
-              title: "Oppssss..",
-              description: errorMsg,
-              key: "b4",
-            })
-          else
-          CustomNotification({
-            type: "error",
-            title: "Oppssss..",
-            description: message,
-            key: "b4",
-          })
-        }
-      }
-    })
-    
-
-  }
-
-
   React.useEffect(()=>{
   fetchOrdersHistory()
 },[])
@@ -128,7 +77,6 @@ export default function OrdersHistory() {
             <StyledTableCell align="center">Price</StyledTableCell>
             <StyledTableCell align="center">Commission</StyledTableCell>
             <StyledTableCell align="center">Swap</StyledTableCell>
-            <StyledTableCell align="center" colSpan={2}>Actions</StyledTableCell>
 
             
           </StyledTableRow>
@@ -149,18 +97,7 @@ export default function OrdersHistory() {
               <StyledTableCell align="center">{row.price ? row.price:"-"}</StyledTableCell>
               <StyledTableCell align="center">{row.commission ? row.commission:"-"}</StyledTableCell>
               <StyledTableCell align="center">{row.swap ? row.swap:"-"}</StyledTableCell>
-              <TableCell align="center" colSpan={2}>
-                
-                 <Space size="middle" className='cursor-pointer'>
-                
-                  <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteHandler(row.id);
-                  }}
-                  />
-                </Space >
-              </TableCell>
+             
             </StyledTableRow>
                         ))}
         </TableBody>

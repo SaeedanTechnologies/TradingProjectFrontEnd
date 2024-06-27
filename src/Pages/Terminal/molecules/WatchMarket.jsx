@@ -101,7 +101,7 @@ const WatchMarket = () => {
         <AccordionSummary aria-controls={`panel${index+1}d-content`} id={`panel${index+1}d-header`} >
           <Stack direction="row" sx={{width:"100%",justifyContent:"space-between"}}>
             <Typography>{terminal?.name} </Typography>
-            <Typography pr={1}>{terminal?.lot_size}</Typography>
+            <Typography pr={1}>{terminal?.settings?.length}</Typography>
 
           </Stack>
           
@@ -117,10 +117,10 @@ const WatchMarket = () => {
                 0.7623
               </Typography>
               <Typography  sx={{p:0,color:"#D52B1E",fontSize:"10px"}}>
-                -0.04%
+                0.7623
               </Typography>
 
-              <Stack direction="row" gap={0.5}>
+              {/* <Stack direction="row" gap={0.5}>
                 <IconButton sx={{p:0}}>
                 <img src={QuestionIcon} alt="details"  styles={{height:"13px",weight:"13px",objectFit:"cover"}}/>
 
@@ -129,7 +129,7 @@ const WatchMarket = () => {
                 <img src={PlusIcon} alt="details"  styles={{height:"13px",weight:"13px",objectFit:"cover"}}/>
 
               </IconButton>
-              </Stack>
+              </Stack> */}
               
             </Stack>
           ))}

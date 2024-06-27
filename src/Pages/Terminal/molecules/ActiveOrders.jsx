@@ -146,54 +146,6 @@ export default function ActiveOrders() {
   
   }
 
-   const deleteHandler = async (id) => {
-    const params = {
-      table_name:"trade_orders",
-      table_ids : [id]
-    }
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#1CAC70",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then(async( result )=> {
-      if (result.isConfirmed) {
-        const res = await GenericDelete(params, token)
-        const { data: { success, message, payload } } = res
-        if(success) {
-          CustomNotification({
-            type: "success",
-            title: "Deleted",
-            description: message,
-            key: "a4",
-          })
-          fetchActiveOrders()
-        }
-        else {
-          const errorMsg = getValidationMsg(message, payload)
-          if(errorMsg) 
-            CustomNotification({
-              type: "error",
-              title: "Oppssss..",
-              description: errorMsg,
-              key: "b4",
-            })
-          else
-          CustomNotification({
-            type: "error",
-            title: "Oppssss..",
-            description: message,
-            key: "b4",
-          })
-        }
-      }
-    })
-    
-
-  }
 
   const editHandler = (order)=>{
     setActiveOrder(order)
@@ -263,12 +215,7 @@ export default function ActiveOrders() {
                     editHandler(row)
                    }}
                    />
-                  <DeleteOutlined style={{fontSize:"24px", color: colorPrimary }} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteHandler(row.id);
-                  }}
-                  />
+                 
                 </Space >
                
               </TableCell>
