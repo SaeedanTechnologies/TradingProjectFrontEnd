@@ -377,7 +377,6 @@ const Trade = ({ trade_type }) => {
       const data = response?.data;
 
       setPricing({
-
         openPrice: parseFloat(data?.response[0]?.o).toFixed(pip),
         askPrice: parseFloat(data?.response[0]?.c).toFixed(pip)
       })

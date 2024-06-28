@@ -55,7 +55,8 @@ const TradingAccountDetails = () => {
       let t_commission = 0;
       const currentDateTime = getCurrentDateTime();
       const updatedData = await Promise.all(data.map(async (x) => {
-        const { askPrice, bidPrice } = await getOpenPriceFromAPI(x.symbol, x.feed_name);
+        const { askPrice, bidPrice } = await getOpenPriceFromAPI(x?.symbol_setting, x.feed_name);
+        
         const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
         const open_price = parseFloat(x?.open_price).toFixed(pipVal);
         const currentPrice = x.type === "sell" ? parseFloat(askPrice).toFixed(pipVal) ?? 0 : parseFloat(bidPrice).toFixed(pipVal) ?? 0;

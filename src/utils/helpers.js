@@ -149,13 +149,18 @@ export const getOpenPriceFromAPI = async (symbol, feedName) => {
   try {
     if (feedName === 'binance') {
 
-      const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+      const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol?.feed_fetch_name}`);
       const data = await response.json();
       const { askPrice, bidPrice } = data
-      // const openPrice = parseFloat(data.openPrice);
+
       return { askPrice, bidPrice };
     } else {
-      return null
+    
+      const response = await fetch(`https://fcsapi.com/api-v3/${symbol?.feed_fetch_key}/latest?symbol=${symbol?.feed_fetch_name}&access_key=${symbol?.data_feed?.feed_login}`);
+      const data = await response.json();
+      const { o , c } = data?.response[0]
+
+      return { askPrice:o , bidPrice:c };
     }
   } catch (error) {
     console.error('Error fetching open price:', error);
