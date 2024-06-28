@@ -15,10 +15,9 @@ const BinanceBidAsk = (symbol, connected) => {
 
   let WS_URL;
 
-  if(symbol?.feed_name === 'binance'){
+  if (symbol?.feed_name === 'binance') {
     WS_URL = `wss://fstream.binance.com/stream?streams=${symbol?.feed_fetch_name?.toLowerCase()}@bookTicker`;
-  }
-  else{
+  } else {
     WS_URL = `wss://fcsapi.com/`;
   }
 
@@ -46,47 +45,39 @@ const BinanceBidAsk = (symbol, connected) => {
 
   client = new W3CWebSocket(WS_URL);
   currentSymbol = symbol?.feed_name === 'binance' ? symbol?.feed_fetch_name : symbol?.feed_fetch_key;
-  console.log('Creating new WebSocket connection for symbol:', symbol?.feed_name === 'binance' ? symbol?.feed_fetch_name : symbol?.feed_fetch_key);
+  console.log('Creating new WebSocket connection for symbol:', currentSymbol);
 
   const onDataReceived = (callback) => {
-    if(symbol?.feed_name === 'binance'){
-      if (!client.onmessage) {
-      callback({ bidPrice: null, askPrice: null });
-    }
-    client.onmessage = (message) => {
-      try {
-        const parsedMessage = JSON.parse(message.data);
-
-        const { b, a } = parsedMessage.data;
-        // console.table([a,b])
-        callback({ bidPrice:b, askPrice: a });
-      } catch (error) {
-        console.error('Error parsing message:', error);
-      }
-    };
-    }
-    else{
+    if (symbol?.feed_name === 'binance') {
       if (!client.onmessage) {
         callback({ bidPrice: null, askPrice: null });
       }
       client.onmessage = (message) => {
         try {
           const parsedMessage = JSON.parse(message.data);
-          // const { b, a } = parsedMessage.data;
-          console.log(parsedMessage)
-          // callback({ bidPrice:b, askPrice: a });
+          const { b, a } = parsedMessage.data;
+          callback({ bidPrice: b, askPrice: a });
         } catch (error) {
           console.error('Error parsing message:', error);
         }
-        // const data = JSON.parse(e.data);
-        // if (data.type === 'data_received') {
-        //     // Data contains: Price, ASK price, BID price
-        //     console.log(data);
-        //     // Add your logic to handle the received data
-        // }
-    };
+      };
+    } else if (symbol?.feed_name === 'fcsapi') {
+
+      if (!client.onmessage) {
+        callback({ bidPrice: null, askPrice: null });
+      }
+      client.onmessage = (message) => {
+        try {
+          const parsedMessage = JSON.parse(message.data);
+          if (parsedMessage.type === 'data_received') {
+            const { ASK, BID } = parsedMessage.data;
+            callback({ bidPrice: BID, askPrice: ASK });
+          }
+        } catch (error) {
+          console.error('Error parsing message:', error);
+        }
+      };
     }
-    
   };
 
   const onError = (callback) => {
@@ -98,36 +89,32 @@ const BinanceBidAsk = (symbol, connected) => {
 
   const onClose = (callback) => {
     client.onclose = () => {
-      console.log(`Disconnected from previous Binance stream`);
+      console.log(`Disconnected from previous ${symbol?.feed_name} stream`);
       callback();
     };
   };
 
   const onStop = (callback) => {
     client.onclose = () => {
-      console.log(`Stopped from previous Binance stream`);
+      console.log(`Stopped from previous ${symbol?.feed_name} stream`);
       callback();
     };
   };
 
   const connect = () => {
-    if(symbol?.feed_name === 'binance'){
-      client.onopen = () => {
-            console.log(`Connected to new Binance stream for symbol: ${currentSymbol}`);
-          };
-    }
-    else{
-      client.onopen = () => {
+    client.onopen = () => {
+      if (symbol?.feed_name === 'binance') {
+        console.log(`Connected to new Binance stream for symbol: ${currentSymbol}`);
+      } else if (symbol?.feed_name === 'fcsapi') {
         console.log(`WebSocket connection established for ${symbol?.feed_name}.`);
-        // Verify Your API key on server
-        client.send(JSON.stringify({ type: 'heartbeat', api_key: 'lg8vMu3Zi5mq8YOMQiXYgV' }));
-  
+        // Verify Your API key on the server
+        client.send(JSON.stringify({ type: 'heartbeat', api_key: symbol?.data_feed?.feed_login }));
+
         // Connect Ids on server
-        client.send(JSON.stringify({ type: 'real_time_join', currency_ids: symbol?.feed_fetch_key }));
+        client.send(JSON.stringify({ type: 'real_time_join', currencyPair: symbol?.feed_fetch_name }));
+      }
     };
-    }
   };
-  
 
   const start = (dataCallback, errorCallback, closeCallback) => {
     connect();
