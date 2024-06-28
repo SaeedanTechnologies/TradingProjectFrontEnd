@@ -9,7 +9,9 @@ export const loginTerminalUser = createAsyncThunk('user/loginUser',async(loginDa
     return [payload, message, success]
   })
 
-
+export const logoutTerminalUser = createAsyncThunk('user/logoutUser',async()=>{
+    return new Promise((resolve) => setTimeout(() => resolve('Logout Successfully'), 1000))
+   })
 
 const terminalSlice = createSlice({
   name: 'user',
@@ -26,6 +28,9 @@ const terminalSlice = createSlice({
     },
      setSelectedWatchMarketHours:(state,action)=>{
       state.selectedWatchMarketHours = action.payload
+    },
+    setLogoutUser:(state,action)=>{
+      state.user=null
     }
   },
   extraReducers:(builder)=>{
@@ -43,12 +48,26 @@ const terminalSlice = createSlice({
       state.loading = false,
       state.user = null, 
       state.error=  null
+    }).addCase(logoutTerminalUser.pending, (state)=>{
+      state.loading = true,
+      state.user = null, 
+      state.error=  null
+    })
+    .addCase(logoutTerminalUser.fulfilled, (state, action)=>{
+      state.loading = false,
+      state.user = null, 
+      state.error=  null
+    })
+    .addCase(logoutTerminalUser.rejected, (state)=>{
+      state.loading = false,
+      state.user = null, 
+      state.error=  null
     })
     
   }
 })
 
-export const {setSelectedWatchMarket,setSelectedWatchMarketHours} = terminalSlice.actions
+export const {setSelectedWatchMarket,setSelectedWatchMarketHours,setLogoutUser} = terminalSlice.actions
 
 export default terminalSlice.reducer
 

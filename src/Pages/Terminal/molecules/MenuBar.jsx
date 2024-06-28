@@ -24,7 +24,9 @@ import EconomicCalender from '../../../assets/images/EconomicCalender.svg';
 import ActiveEconomicCalender from '../../../assets/images/ActiveEconomicCalender.svg'
 import Indicator from '../../../assets/images/indicator.svg'
 import { useLocation, useNavigate } from 'react-router-dom';
-
+import CustomNotification from '../../../components/CustomNotification';
+import { useDispatch } from 'react-redux';
+import {  setLogoutUser } from '../../../store/terminalSlice';
 
 
 function ResponsiveDrawer(props) {
@@ -33,31 +35,34 @@ function ResponsiveDrawer(props) {
   const [isClosing, setIsClosing] = React.useState(false);
   const navigate =  useNavigate()
   const location = useLocation()
+  const dispatch = useDispatch()
 
   const [selectedIndex, setSelectedIndex] = React.useState(null);
 
-  const handleListItemClick = (index,path) => {
 
+  const Logout_Handler = async () => {
+    dispatch(setLogoutUser());
+    CustomNotification({
+          type: "success",
+          title: "Logout",
+          description: "Logout Successfully",
+          key: 1,
+        });
+        navigate("/terminal");
+      
+  };
+
+
+  const handleListItemClick = (index,path) => {
+    if(path === '/terminal'){
+      Logout_Handler()
+    } 
     setSelectedIndex(index);
     navigate(path)
 };
 
-  const handleDrawerClose = () => {
-    setIsClosing(true);
-    setMobileOpen(false);
-  };
 
-  const handleDrawerTransitionEnd = () => {
-    setIsClosing(false);
-  };
-
-  const handleDrawerToggle = () => {
-    if (!isClosing) {
-      setMobileOpen(!mobileOpen);
-    }
-  };
-
-  const terminalArrays = [{title:'Market Watch',path:'/terminal/market-watch',image:WatchMarket,activeImage:ActiveWatchMarket},{title:'Economic Calender',path:'/terminal/economic-calender'},{title:'Market News',path:'/terminal/market-news'}]
+  const terminalArrays = [{title:'Market Watch',path:'/terminal/market-watch',image:WatchMarket,activeImage:ActiveWatchMarket},{title:'Economic Calender',path:'/terminal/economic-calender',image:EconomicCalender,activeImage:ActiveEconomicCalender},{title:'Market News',path:'/terminal/market-news',image:MarketNews,activeImage:ActiveMarketNews},{title:'Logout',path:'/terminal',image:WatchMarket,activeImage:ActiveWatchMarket}]
 
   React.useEffect(()=>{
    
@@ -87,13 +92,9 @@ function ResponsiveDrawer(props) {
                  onClick={() => handleListItemClick(index,terminal.path)}
                 sx={{  backgroundColor: selectedIndex === index ? '#9FA8C7' : 'transparent', pr:0 }}>
               <ListItemIcon>
-               {index === 0 ? (
-                <img src={selectedIndex === index ? ActiveMarketNews: WatchMarket} alt="Watch Market" />
-              ) : index === 1 ? (
-                <img src={selectedIndex === index ? ActiveEconomicCalender : EconomicCalender} alt="Economic Calendar" />
-              ) : (
-                <img src={selectedIndex === index ? ActiveMarketNews : MarketNews} alt="Market News" />
-              )}
+               
+                <img src={selectedIndex === index ? terminal.activeImage :terminal.image } alt="Image" />
+             
               </ListItemIcon>
               <ListItemText  primary={ 
                 <Typography variant="body2" fontFamily={'Roboto'} fontSize="15px" color={'#9FA8C7'}>
@@ -103,9 +104,13 @@ function ResponsiveDrawer(props) {
 
                 {selectedIndex === index &&  <img src={Indicator} alt="indicator" />}
             </ListItemButton>
+
           
           </ListItem>
         ))}
+
+        
+
       </List>
       
     </Box>

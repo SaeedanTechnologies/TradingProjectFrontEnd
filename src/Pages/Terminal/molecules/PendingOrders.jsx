@@ -194,14 +194,7 @@ export default function PendingOrders() {
               </TableCell>
             </StyledTableRow>
                         ))}
-          {/* <StyledTableRow>
-            <TableCell>-</TableCell>
-            <TableCell  align="center">Profit: -0.20</TableCell>
-            <StyledTableCell align="center">Deposit: 1,000.00</StyledTableCell>
-            <TableCell colSpan={3} align="center">WidthDraw: 0.0</TableCell>
-            <TableCell colSpan={2} align="center">Credit: 0.0</TableCell>
-            <TableCell colSpan={3} align="center">Balance: 894.49</TableCell>
-          </StyledTableRow> */}
+          
         </TableBody>
       </Table>
      </TableContainer>

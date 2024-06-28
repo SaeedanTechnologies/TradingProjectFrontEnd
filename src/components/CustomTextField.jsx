@@ -17,6 +17,7 @@ const CustomTextField = ({ label, required=false, varient, multiline, rows, type
       sx={sx}
       disabled={disabled}
       onChange={onChange}
+       inputMode="off"
       // InputLabelProps={{ shrink: s_value }} // Use InputLabelProps to pass shrink prop
       // shrink = {true}
       fullWidth

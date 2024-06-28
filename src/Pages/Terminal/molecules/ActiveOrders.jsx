@@ -12,11 +12,12 @@ import { Search_Live_Order } from '../../../utils/_TradingAPICalls';
 import { useSelector } from 'react-redux';
 import { theme,Space } from 'antd';
 import { CloseOutlined,EditOutlined,DeleteOutlined } from '@mui/icons-material';
+import { MinusCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import CustomNotification from '../../../components/CustomNotification';
 import Swal from 'sweetalert2';
 import { GenericDelete, UpdateMultiTradeOrder } from '../../../utils/_APICalls';
-import { calculateNights, calculateNumOfPip, calculateProfitLoss, getCurrentDateTime, getOpenPriceFromAPI, getValidationMsg } from '../../../utils/helpers';
+import { calculateMargin, calculateNights, calculateNumOfPip, calculateProfitLoss, checkNaN, conditionalLeverage, getCurrentDateTime, getOpenPriceFromAPI, getValidationMsg } from '../../../utils/helpers';
 import CustomModal from '../../../components/CustomModal';
 import EditActiveOrders from './EditActiveOrders';
 
@@ -40,6 +41,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
     padding:3
   },
+
+  '&:last-child td, &:last-child th': {
+    border: 0,
+    backgroundColor: theme.palette.action.hover,
+  },
 }));
 
 
@@ -55,8 +61,17 @@ export default function ActiveOrders() {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const token = useSelector(({ terminal }) => terminal?.user?.token)
     const trading_account_id = useSelector((state) => state?.terminal?.user?.trading_account?.id)
+    const user = useSelector((state)=>state?.terminal?.user?.trading_account)
     const { token: { colorPrimary }} = theme.useToken();
     const [activeOrder,setActiveOrder] = React.useState(null);
+    const [grandProfit, setGrandProfit] = React.useState(0);
+    const [grandVolumn, setGrandVolumn] = React.useState(0); 
+    const [grandMargin, setGrandMargin] = React.useState(0);
+    const [totalRecords, setTotalRecords] = React.useState(0);
+    const [totalCommission, setTotalCommission] = React.useState(0)
+    const [totalSwap, setTotalSwap] = React.useState(0);
+    let margin_level;
+    let equity_g;
 
 
   const handleOk = () => {
@@ -70,18 +85,27 @@ export default function ActiveOrders() {
 
   const setLiveManipulatedData = async (data) => {
 
+      let totalProfit = 0;
+      let totalVolumn = 0;
+      let totalMargin = 0;
     const currentDateTime = getCurrentDateTime();
     const updatedData = await Promise.all(data.map(async (x) => {
       const response = await getOpenPriceFromAPI(x?.symbol, x?.feed_name);
       if (response && typeof response === 'object' && 'askPrice' in response && 'bidPrice' in response) {
          const { askPrice, bidPrice } = response;
         const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
+        const res = (parseFloat(parseFloat(x?.volume) * parseFloat(x?.symbol_setting?.lot_size) * x?.open_price).toFixed(2));
+        const margin = calculateMargin(res, conditionalLeverage(x?.trading_account,x?.symbol_setting));
         const open_price = parseFloat(x?.open_price).toFixed(pipVal);
         const currentPrice = x?.type === "sell" ? parseFloat(askPrice).toFixed(pipVal) ?? 0 : parseFloat(bidPrice).toFixed(pipVal) ?? 0;
         const profit = calculateProfitLoss(parseFloat(calculateNumOfPip(currentPrice, parseFloat(x?.open_price), x?.type, parseInt(pipVal))).toFixed(2), parseFloat(x?.volume));
+        totalProfit += parseFloat(profit);
         const totalNights = calculateNights(x?.created_at, currentDateTime);
         const Calswap = parseFloat(x?.volume) * totalNights * parseFloat(x?.symbol_setting?.swap ?? 0);
         const swap = Calswap > 0 ? -Calswap : Calswap;
+        margin_level = calculateMarginCallPer(user?.equity, margin)
+        equity_g = calculateEquity(user?.balance, grandProfit, user?.credit, user?.bonus)
+
         return { ...x, swap, profit, currentPrice, open_price };
       } else {
         // Handle cases where properties are missing or response is invalid
@@ -90,6 +114,11 @@ export default function ActiveOrders() {
         return { ...x, swap: 0, profit: 0, currentPrice: 0, open_price: x?.open_price };
       }
     }));
+
+      setGrandVolumn(totalVolumn.toFixed(2));
+      setGrandMargin(totalMargin.toFixed(2));
+      setTotalSwap(_totalSwap.toFixed(2));
+      setTotalCommission(t_commission.toFixed(2));
     setRows(updatedData)
     return updatedData;
   }
@@ -176,7 +205,7 @@ export default function ActiveOrders() {
             <StyledTableCell align="center">Commission</StyledTableCell>
             <StyledTableCell align="center">Swap</StyledTableCell>
             <StyledTableCell align="center">Profit</StyledTableCell>
-            <StyledTableCell align="start" colSpan={2}>Actions</StyledTableCell>
+            <StyledTableCell align="left" colSpan={2}>Actions</StyledTableCell>
 
             
           </StyledTableRow>
@@ -221,6 +250,21 @@ export default function ActiveOrders() {
               </TableCell>
             </StyledTableRow>
                         ))}
+              <StyledTableRow>
+                  <TableCell colSpan={14} >
+                    <span className='text-xs font-bold text-arial'>
+                    <MinusCircleOutlined /> {" "}
+                    Balance: {checkNaN(user?.balance)} {user?.currency} &nbsp;
+                    Equity: {checkNaN(equity_g)} &nbsp;
+                    Credit: {checkNaN(user?.credit)}  &nbsp;
+                    Bonus: {checkNaN(user?.bonus)}  &nbsp;
+                    <span> Margin: {checkNaN(grandMargin)}</span>&nbsp;
+                    Free Margin: {checkNaN(user?.free_margin)} &nbsp;
+                    <span>Margin Level: {checkNaN(margin_level)} %</span> &nbsp;
+                    Total Withdraw: {checkNaN(user?.total_withdraw)}  &nbsp;
+                  </span>
+                </TableCell>
+            </StyledTableRow> 
         </TableBody>
       </Table>
     </TableContainer>

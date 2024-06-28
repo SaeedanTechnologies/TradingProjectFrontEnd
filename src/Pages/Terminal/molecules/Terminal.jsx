@@ -71,14 +71,14 @@ export default function Terminal() {
     setOpen(false);
   };
 
-  React.useEffect(()=>{
-    if(local_login_id && local_password)
-        {
-          TerminalLogin_Handler({ login_id:local_login_id , password:local_password })
-        }
+  // React.useEffect(()=>{
+  //   if(local_login_id && local_password)
+  //       {
+  //         TerminalLogin_Handler({ login_id:local_login_id , password:local_password })
+  //       }
 
 
-  },[])
+  // },[])
 
   return (
     <div className='flex flex-col items-center justify-center h-screen'>
@@ -90,6 +90,7 @@ export default function Terminal() {
         varient={'standard'}
         sx={{  marginTop: '10px' }}
         onChange={(e) => setLogin_id(e.target.value)}
+        auto  
       />
       <CustomPassowordField
         label={'Password'}

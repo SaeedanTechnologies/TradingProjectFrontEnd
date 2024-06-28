@@ -68,7 +68,7 @@ const TablesTabs = () => {
       >
         {items.map(item => (
          
-          <Tab sx={{ fontSize: "14px", textTransform: "none", mb: -2, fontWeight:'bold' }} label={item.label} key={item.key} value={item.key} /> 
+          <Tab key={item.key} sx={{ fontSize: "14px", textTransform: "none", mb: -2, fontWeight:'bold' }} label={item.label}  value={item.key} /> 
         ))}
       </Tabs>
       <Divider sx={{mb:5}}/>

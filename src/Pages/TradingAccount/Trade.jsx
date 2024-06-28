@@ -389,8 +389,9 @@ useEffect(() => {
     }
   };
   const fetchFcsapiData = async (symbol, key, pip) => {
-    try {
-      const endPoint1= `https://fcsapi.com/api-v3/${key}/latest?id=${symbol?.toLowerCase()}&access_key=lg8vMu3Zi5mq8YOMQiXYgV`
+    
+    // try {
+      const endPoint1= `https://fcsapi.com/api-v3/${key}/latest?symbol=${symbol?.feed_fetch_name}&access_key=${symbol?.data_feed?.feed_login}`
 
       // if(feed_name === 'binance') {
         const response = await axios.get(endPoint1);
@@ -407,10 +408,10 @@ useEffect(() => {
       //   CustomNotification({ type: "error", title: "Opps", description: `${feed_name} not configured yet`, key: 1 })
       // }
      
-    } catch (error) {
-      // setError('Error fetching data');
-      console.error(error);
-    }
+    // } catch (error) {
+    //   // setError('Error fetching data');
+    //   console.error(error);
+    // }
   };
 
   const handleCheckboxClick = (e) => {
@@ -453,6 +454,9 @@ useEffect(() => {
 
 
   const fetchData = (symbol, connected, pip) => {
+    if(symbol?.feed_name === 'fcsapi'){
+      fetchFcsapiData(symbol, symbol?.feed_fetch_key, pip)
+    }
 
     // if(symbol?.feed_name === 'binance') {
 
@@ -486,7 +490,7 @@ useEffect(() => {
               fetchBinancehData(symbol?.feed_fetch_name, pip)
             }
             else{
-              fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pip)
+              // fetchFcsapiData(symbol, symbol?.feed_fetch_key, pip)
             }
           }
           else {

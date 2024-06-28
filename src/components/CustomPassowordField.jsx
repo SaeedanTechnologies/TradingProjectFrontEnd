@@ -22,6 +22,7 @@ const CustomPassowordField = ({ label, disabled, name, onChange,value,showClicka
         type={showPassword ? 'text' : 'password'}
         onChange={onChange}
         fullWidth
+        inputMode="off"
         value ={value}
         readOnly ={readOnly}
         disabled={disabled}
