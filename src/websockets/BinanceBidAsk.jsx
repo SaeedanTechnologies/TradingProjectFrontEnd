@@ -4,6 +4,7 @@ let client;
 let currentSymbol;
 
 const BinanceBidAsk = (symbol, connected) => {
+  
   if (symbol == null) {
     // Stop the WebSocket connection if it's active
     if (client && client.readyState === WebSocket.OPEN) {

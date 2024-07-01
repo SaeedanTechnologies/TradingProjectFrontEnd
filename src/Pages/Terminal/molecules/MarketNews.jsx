@@ -1,7 +1,11 @@
 import React,{useEffect} from 'react'
 import { Stack,Typography } from '@mui/material'
+import { useParams } from 'react-router-dom';
+
 
 const MarketNews = () => {
+  
+  const {brand_id } = useParams()
 
     useEffect(() => {
     const container = document.getElementById('tradingview-widget-container__widget');

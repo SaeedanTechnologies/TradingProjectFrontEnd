@@ -23,10 +23,11 @@ import ActiveMarketNews from '../../../assets/images/ActiveMarketNews.svg'
 import EconomicCalender from '../../../assets/images/EconomicCalender.svg';
 import ActiveEconomicCalender from '../../../assets/images/ActiveEconomicCalender.svg'
 import Indicator from '../../../assets/images/indicator.svg'
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import CustomNotification from '../../../components/CustomNotification';
-import { useDispatch } from 'react-redux';
-import {  setLogoutUser } from '../../../store/terminalSlice';
+import { useDispatch,useSelector } from 'react-redux';
+import { logoutTerminalUser } from '../../../store/terminalSlice';
+
 
 
 function ResponsiveDrawer(props) {
@@ -38,23 +39,44 @@ function ResponsiveDrawer(props) {
   const dispatch = useDispatch()
 
   const [selectedIndex, setSelectedIndex] = React.useState(null);
+  const  params_brand_id  =  useParams()?.brand_id
+
 
 
   const Logout_Handler = async () => {
-    dispatch(setLogoutUser());
-    CustomNotification({
+    try {
+      const res = await dispatch(logoutTerminalUser());
+      if (res.payload) {
+        CustomNotification({
           type: "success",
           title: "Logout",
-          description: "Logout Successfully",
+          description: res.payload,
           key: 1,
         });
-        navigate("/terminal");
-      
+        navigate(`/terminal/${params_brand_id}`);
+      } else {
+        CustomNotification({
+          type: "error",
+          title: "Invalid",
+          description: 'Terminal Logout Failed Successfully.',
+          key: 2,
+        });
+      }
+    } catch (error) {
+      CustomNotification({
+        type: "error",
+        title: "Invalid",
+        description: error.message,
+        key: 2,
+      });
+    }
   };
 
 
+
+
   const handleListItemClick = (index,path) => {
-    if(path === '/terminal'){
+    if(path === `/terminal/${params_brand_id}`){
       Logout_Handler()
     } 
     setSelectedIndex(index);
@@ -62,18 +84,18 @@ function ResponsiveDrawer(props) {
 };
 
 
-  const terminalArrays = [{title:'Market Watch',path:'/terminal/market-watch',image:WatchMarket,activeImage:ActiveWatchMarket},{title:'Economic Calender',path:'/terminal/economic-calender',image:EconomicCalender,activeImage:ActiveEconomicCalender},{title:'Market News',path:'/terminal/market-news',image:MarketNews,activeImage:ActiveMarketNews},{title:'Logout',path:'/terminal',image:WatchMarket,activeImage:ActiveWatchMarket}]
+  const terminalArrays = [{title:'Market Watch',path:`/terminal-market-watch/${params_brand_id}`,image:WatchMarket,activeImage:ActiveWatchMarket},{title:'Economic Calender',path:`/terminal-economic-calender/${params_brand_id}`,image:EconomicCalender,activeImage:ActiveEconomicCalender},{title:'Market News',path:`/terminal-market-news/${params_brand_id}`,image:MarketNews,activeImage:ActiveMarketNews},{title:'Logout',path:`/terminal/${params_brand_id}`,image:WatchMarket,activeImage:ActiveWatchMarket}]
 
   React.useEffect(()=>{
    
      switch(location?.pathname){
-          case '/terminal/market-watch':
+          case `/terminal-market-watch/${params_brand_id}`:
             setSelectedIndex(0);
             break;
-          case '/terminal/economic-calender':
+          case `/terminal-economic-calender/${params_brand_id}` :
              setSelectedIndex(1);
             break;
-          case '/terminal/market-news': 
+          case `/terminal-market-news/${params_brand_id}`: 
             setSelectedIndex(2)
             break;
         }

@@ -65,7 +65,7 @@ import Active_IP_List from '../Pages/Settings/Active_IP_List';
 import Active_IP_List_Entry from '../Pages/TradingAccount/Active_IP_List_Entry';
 import CSVStepper from '../Pages/DnDTable/CSVStepper'
 import TerminalDashboard, { Terminal,MarketNews,EconomicCalender,WatchMarket,Journal,ActiveOrders,OrderHistory,PendingOrders } from '../Pages/Terminal'
-
+import ErrorPage from '../components/ErrorPage';
 
 export const router = createBrowserRouter([
   {
@@ -76,12 +76,17 @@ export const router = createBrowserRouter([
       { path: "/", element: <Navigate to="sign-in" replace /> }
     ],
   },
-    {path:"/terminal",element:<Terminal/>},
-   { path:"/terminal" ,element:<TerminalDashboard/>,
+  {
+  path: "/terminal/:brand_id",
+ element: <Terminal/> // Pass brandId as prop
+  
+},
+   { path:"/" ,
+   element:<TerminalDashboard  />,
     children: [
-      { path: "market-watch", element: <WatchMarket /> },
-      { path: "economic-calender", element: <EconomicCalender /> },
-      { path: "market-news", element: <MarketNews /> },
+      { path: "terminal-market-watch/:brand_id", element: <WatchMarket /> },
+      { path: "terminal-economic-calender/:brand_id", element: <EconomicCalender /> },
+      { path: "terminal-market-news/:brand_id", element: <MarketNews /> },
 
 ]}, 
   {

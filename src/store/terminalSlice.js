@@ -7,10 +7,17 @@ export const loginTerminalUser = createAsyncThunk('user/loginUser',async(loginDa
     const res = await TerminalLogin(loginData)
     const {data:{message, payload, success}} = res
     return [payload, message, success]
+    
   })
 
 export const logoutTerminalUser = createAsyncThunk('user/logoutUser',async()=>{
-    return new Promise((resolve) => setTimeout(() => resolve('Logout Successfully'), 1000))
+    try {
+      // Perform any local operations you might have here
+      return 'Logout Successfully';
+    } catch (error) {
+      console.error('Error during logout:', error);
+      throw error; // Re-throw error for the reducer to handle rejection
+    }
    })
 
 const terminalSlice = createSlice({
@@ -20,7 +27,9 @@ const terminalSlice = createSlice({
    user: null, 
    error: null,
    selectedWatchMarket:null,
-   selectedWatchMarketHours:[]
+   selectedWatchMarketHours:[],
+   selectedTerminalSymbolIndex: -1,
+   selectedTerminalSymbolSettingIndex:-1
   }, 
   reducers:{
     setSelectedWatchMarket:(state,action)=>{
@@ -31,6 +40,12 @@ const terminalSlice = createSlice({
     },
     setLogoutUser:(state,action)=>{
       state.user=null
+    },
+    setSelectedTerminalSymbolIndex:(state,action)=>{
+      state.selectedTerminalSymbolIndex = action.payload
+    },
+    setSelectedTerminalSymbolSettingIndex:(state,action)=>{
+      state.selectedTerminalSymbolSettingIndex = action.payload
     }
   },
   extraReducers:(builder)=>{
@@ -56,7 +71,12 @@ const terminalSlice = createSlice({
     .addCase(logoutTerminalUser.fulfilled, (state, action)=>{
       state.loading = false,
       state.user = null, 
-      state.error=  null
+      state.error=  null,
+      state.selectedWatchMarket =null,
+      state.selectedWatchMarketHours =[],
+      state.selectedTerminalSymbolIndex = -1,
+      state.selectedTerminalSymbolSettingIndex =-1
+
     })
     .addCase(logoutTerminalUser.rejected, (state)=>{
       state.loading = false,
@@ -67,7 +87,7 @@ const terminalSlice = createSlice({
   }
 })
 
-export const {setSelectedWatchMarket,setSelectedWatchMarketHours,setLogoutUser} = terminalSlice.actions
+export const {setSelectedWatchMarket,setSelectedWatchMarketHours,setLogoutUser, setSelectedTerminalSymbolIndex, setSelectedTerminalSymbolSettingIndex } = terminalSlice.actions
 
 export default terminalSlice.reducer
 

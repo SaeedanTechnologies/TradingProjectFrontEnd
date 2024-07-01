@@ -4,16 +4,18 @@ import Box from '@mui/material/Box';
 import ResponsiveAppbar from './molecules/ResponsiveAppbar'
 import SidebarMenu from './molecules/MenuBar'
 import { Stack,Grid } from '@mui/material';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import TradingInformation from './molecules/TradingInformation';
+import ErrorPage from '../../components/ErrorPage';
 
 function TerminalDashboard(props) {
 
 
-
+const {brand_id} = useParams()
 
 
   return (
+    brand_id?(
     <Box sx={{ display: 'flex',flexDirection:"column" }}>
      <ResponsiveAppbar/>
      <Grid container columnGap={2}>
@@ -34,7 +36,8 @@ function TerminalDashboard(props) {
    
      
     
-    </Box>
+    </Box>):(
+      <ErrorPage/>)
   );
 }
 

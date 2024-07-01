@@ -11,6 +11,7 @@ import { ALL_Symbol_Group_List } from '../../../utils/_SymbolSettingAPICalls';
 import axios from 'axios';
 import BuySellModal from './BuySellModal';
 import CustomModal from '../../../components/CustomModal';
+import CustomNotification from '../../../components/CustomNotification';
 
 
 const TradingInformation = () => {
@@ -25,6 +26,9 @@ const TradingInformation = () => {
 
 
   const trading_account = useSelector(({terminal})=>terminal?.user?.trading_account)
+  const selectedTerminalSymbolIndex = useSelector(({terminal})=>terminal?.selectedTerminalSymbolIndex)
+  const selectedTerminalSymbolSettingIndex = useSelector(({terminal})=>terminal?.selectedTerminalSymbolSettingIndex)
+
 
    const fetchBinanceData = async (symbol, pip) => {
     try {
@@ -145,6 +149,21 @@ const TradingInformation = () => {
     }
   };
 
+  const openModal=()=>{
+    if(selectedTerminalSymbolIndex>=0  && selectedTerminalSymbolSettingIndex>=0)
+      {
+        setIsModalOpen(true)
+      }
+      else{
+         CustomNotification({
+        type: 'error',
+        title: 'Error',
+        description: 'Please Select Symbol Settings....',
+        key: 1
+      });
+      }
+  }
+
   const descriptions = [
     { label: 'Balance:', value: trading_account?.balance },
     { label: 'Credit:', value: trading_account?.credit },
@@ -199,13 +218,13 @@ const TradingInformation = () => {
             <CustomButton
               Text={`Sell ${pricing.askPrice ? `(${pricing.askPrice})` : ''}`}
               style={{ height: '48px', display: "flex", flexDirection: "column", borderRadius: '8px', backgroundColor: "#B22E0C", color: "#fff", border: "none" }}
-              onClickHandler={() => setIsModalOpen(true)}
+              onClickHandler={openModal}
            />
 
             <CustomButton
               Text={`Buy ${pricing.openPrice ? `(${pricing.openPrice})` : ''}`}
               style={{ height: '48px', display: "flex", flexDirection: "column", borderRadius: '8px', backgroundColor: "#1CAC70", color: "#fff" }}
-              onClickHandler={() => setIsModalOpen(true)}
+              onClickHandler={openModal}
             />
             
           </Stack>

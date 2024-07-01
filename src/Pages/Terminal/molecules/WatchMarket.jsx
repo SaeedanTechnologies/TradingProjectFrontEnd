@@ -1,5 +1,5 @@
 
-import { IconButton, Stack,Typography } from '@mui/material'
+import { Box, IconButton, Skeleton, Stack,Typography } from '@mui/material'
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
@@ -10,8 +10,10 @@ import PlusIcon from '../../../assets/images/plus-icon.svg'
 import QuestionIcon from '../../../assets/images/question-icon.svg'
 import { GetTerminalSymbolsList } from '../../../utils/_Terminal';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedWatchMarket,setSelectedWatchMarketHours } from '../../../store/terminalSlice';
-
+import { setSelectedWatchMarket,setSelectedWatchMarketHours,setSelectedTerminalSymbolIndex, setSelectedTerminalSymbolSettingIndex } from '../../../store/terminalSlice';
+import { useParams } from 'react-router-dom';
+import WatchMarketAskBidPricing from './WatchMarketAskBidPricing';
+import { Spin } from 'antd';
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -51,18 +53,27 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const WatchMarket = () => {
-
+  
+   const {brand_id } = useParams()
    const dispatch = useDispatch()
    const [expanded, setExpanded] = React.useState('panel1');
    const [terminalSymbols,setTerminalSymbols] =  React.useState([])
   const token = useSelector(({ terminal }) => terminal?.user?.token)
+
+  const selectedTerminalSymbolIndex = useSelector(({terminal})=>terminal?.selectedTerminalSymbolIndex)
+  const selectedTerminalSymbolSettingIndex = useSelector(({terminal})=>terminal?.selectedTerminalSymbolSettingIndex)
+
 
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
   };
 
-  const handleClick = (setting,)=>{
+  const handleClick = (setting,index,subIndex)=>{
+
+  
+    dispatch(setSelectedTerminalSymbolIndex(index))
+    dispatch(setSelectedTerminalSymbolSettingIndex(subIndex))
     dispatch(setSelectedWatchMarket(setting))
     const parsedObject = JSON.parse(setting?.group?.trading_interval)
         const datesArray = Object.keys(parsedObject).map(day => ({
@@ -85,65 +96,63 @@ const WatchMarket = () => {
     }
   }
 
+ 
+
+ 
+
   React.useEffect(() => {
     fetchTerminalSymbols()
   }, [])
 
 
   return (
-    <Stack sx={{width:"100%",boxSizing:"border-box",gap:4}}>
-    <Typography sx={{fontWeight:600,fontSize:"18px" ,p:3}}>Market Watch</Typography>
 
-    <Stack sx={{px:1.5}}>
-        {terminalSymbols?.map((terminal,index)=>(
+      <Stack sx={{width:"100%",boxSizing:"border-box",gap:4}}>
+      <Typography sx={{fontWeight:600,fontSize:"18px" ,p:3}}>Market Watch</Typography>
 
-        <Accordion key={terminal.id} expanded={expanded === `panel${index+1}`}  onChange={handleChange(`panel${index+1}`)} >
-        <AccordionSummary aria-controls={`panel${index+1}d-content`} id={`panel${index+1}d-header`} >
-          <Stack direction="row" sx={{width:"100%",justifyContent:"space-between"}}>
-            <Typography>{terminal?.name} </Typography>
-            <Typography pr={1}>{terminal?.settings?.length}</Typography>
-
-          </Stack>
+      <Stack sx={{px:1.5}}>
+          { terminalSymbols?.length ?  terminalSymbols?.map((terminal,index)=>(
           
-        </AccordionSummary>
-        <AccordionDetails sx={{px:0}}>
-          <Stack alignItems={'center'} justifyContent="center" gap={2}>
-          {terminal?.settings?.map((setting)=>(
-            <Stack key={setting.id} onClick={()=>handleClick(setting)} direction="row" alignItems={'center'} justifyContent="center" gap={0.8} sx={{cursor:"pointer"}}>
-               <Typography  sx={{p:0,color:"#6E7499",fontSize:"10px"}}>
-                {setting?.name}
-              </Typography>
-              <Typography  sx={{p:0,color:"#0ECB81",fontSize:"10px"}}>
-                0.7623
-              </Typography>
-              <Typography  sx={{p:0,color:"#D52B1E",fontSize:"10px"}}>
-                0.7623
-              </Typography>
+          
+         <Accordion key={terminal.id} expanded={expanded === `panel${index+1}`}  onChange={handleChange(`panel${index+1}`)} >
+          <AccordionSummary aria-controls={`panel${index+1}d-content`} id={`panel${index+1}d-header`} >
+            <Stack direction="row" sx={{width:"100%",justifyContent:"space-between"}}>
+              <Typography>{terminal?.name} </Typography>
+              <Typography pr={1}>{terminal?.settings?.length}</Typography>
 
-              {/* <Stack direction="row" gap={0.5}>
-                <IconButton sx={{p:0}}>
-                <img src={QuestionIcon} alt="details"  styles={{height:"13px",weight:"13px",objectFit:"cover"}}/>
-
-              </IconButton>
-              <IconButton sx={{p:0}}>
-                <img src={PlusIcon} alt="details"  styles={{height:"13px",weight:"13px",objectFit:"cover"}}/>
-
-              </IconButton>
-              </Stack> */}
-              
             </Stack>
-          ))}
-        </Stack>
             
-         
-        </AccordionDetails>
-      </Accordion>
-        ))}
-      
-      
-    </Stack>
+          </AccordionSummary>
+          <AccordionDetails sx={{px:0}}>
+            <Stack alignItems={'center'} justifyContent="center" gap={2}>
+            {terminal?.settings?.map((setting,subIndex)=>(
+              <Stack key={setting.id} onClick={()=>handleClick(setting,index,subIndex)} direction="row" alignItems={'center'} justifyContent="center" gap={0.8} sx={{cursor:"pointer",backgroundColor:selectedTerminalSymbolIndex === index && selectedTerminalSymbolSettingIndex ===  subIndex ? '#e2e2e2': 'transparent',px:1.5,py:0.7, borderRadius:2}}>
+                  <Typography  sx={{p:0,color:"#6E7499",fontSize:"10px"}}>
+                  {setting?.name}
+                </Typography>
+                  <WatchMarketAskBidPricing symbol = {setting} pip = {setting?.pip} />
+              </Stack>
+            ))}
+          </Stack>
+              
+            
+          </AccordionDetails>
+        </Accordion>)):
+       ( 
+         <Box sx={{ width: '100%' }}>
+          <Skeleton p={1.5}  />
+          <Skeleton animation="wave" p={1.5} />
+          <Skeleton animation="wave" p={1.5}  />
+          <Skeleton animation="wave" p={1.5}  />
+          <Skeleton animation="wave"  p={1.5} />
+          <Skeleton animation="wave" p={1.5}  />
+        </Box>
+      )}
+        
+        
+      </Stack>
 
-    </Stack>
+      </Stack>
   )
 }
 

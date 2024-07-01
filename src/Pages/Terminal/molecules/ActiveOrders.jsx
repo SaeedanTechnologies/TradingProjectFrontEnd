@@ -67,7 +67,6 @@ export default function ActiveOrders() {
     const [grandProfit, setGrandProfit] = React.useState(0);
     const [grandVolumn, setGrandVolumn] = React.useState(0); 
     const [grandMargin, setGrandMargin] = React.useState(0);
-    const [totalRecords, setTotalRecords] = React.useState(0);
     const [totalCommission, setTotalCommission] = React.useState(0)
     const [totalSwap, setTotalSwap] = React.useState(0);
     let margin_level;
@@ -88,6 +87,7 @@ export default function ActiveOrders() {
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
+
     const currentDateTime = getCurrentDateTime();
     const updatedData = await Promise.all(data.map(async (x) => {
       const response = await getOpenPriceFromAPI(x?.symbol, x?.feed_name);

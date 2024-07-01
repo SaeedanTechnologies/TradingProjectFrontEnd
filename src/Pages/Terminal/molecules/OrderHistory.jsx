@@ -7,15 +7,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Box } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { Search_Close_Order } from '../../../utils/_TradingAPICalls';
 import moment from 'moment';
-import { theme,Space } from 'antd';
-import { getValidationMsg } from '../../../utils/helpers';
-import { GenericDelete } from '../../../utils/_APICalls';
-import {  DeleteOutlined } from '@mui/icons-material';
-import Swal from 'sweetalert2';
+import { theme, } from 'antd';
+import {  checkNaN} from '../../../utils/helpers';
+
+
 
 
 
@@ -36,6 +34,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
     padding:3
   },
+   '&:last-child td, &:last-child th': {
+    border: 0,
+    backgroundColor: theme.palette.action.hover,
+  },
 }));
 
 
@@ -44,10 +46,14 @@ export default function OrdersHistory() {
 
    const [rows,setRows] = React.useState([])
    const token = useSelector(({ terminal }) => terminal?.user?.token)
+   const user = useSelector((state)=>state?.terminal?.user?.trading_account)
    const trading_account_id = useSelector((state) => state?.terminal?.user?.trading_account?.id)
    const {
     token: { colorPrimary },
   } = theme.useToken();
+  
+
+
 
   const fetchOrdersHistory = async()=>{
 
@@ -82,24 +88,34 @@ export default function OrdersHistory() {
           </StyledTableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {rows?.map((row) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell  align="center">
                 {row.symbol}
               </StyledTableCell>
-              <StyledTableCell align="center">{row.id}</StyledTableCell>
+              <StyledTableCell align="center">{row?.id}</StyledTableCell>
               <TableCell sx={{color:"#0ECB81"}} align="center">{row.type}</TableCell>
-              <StyledTableCell align="center">{row.volume}</StyledTableCell>
-              <StyledTableCell align="center">{row.open_price}</StyledTableCell>
-              <StyledTableCell align="center">{ moment(row.open_time).format('MM/DD/YYYY HH:mm')}</StyledTableCell>
-              <StyledTableCell align="center">{ row.stop_loss ? row.stop_loss:"-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.take_profit ? row.take_profit:"-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.price ? row.price:"-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.commission ? row.commission:"-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.swap ? row.swap:"-"}</StyledTableCell>
+              <StyledTableCell align="center">{row?.volume}</StyledTableCell>
+              <StyledTableCell align="center">{row?.open_price}</StyledTableCell>
+              <StyledTableCell align="center">{ moment(row?.open_time).format('MM/DD/YYYY HH:mm')}</StyledTableCell>
+              <StyledTableCell align="center">{ row?.stop_loss ? row?.stop_loss:"-"}</StyledTableCell>
+              <StyledTableCell align="center">{ row?.take_profit ? row?.take_profit:"-"}</StyledTableCell>
+              <StyledTableCell align="center"> { row?.price ? row?.price:"-"}</StyledTableCell>
+              <StyledTableCell align="center">{ row?.commission ? row?.commission:"-"}</StyledTableCell>
+              <StyledTableCell align="center">{ row?.swap ? row?.swap:"-"}</StyledTableCell>
              
             </StyledTableRow>
                         ))}
+            <StyledTableRow>
+                  <TableCell colSpan={14} >
+                    <span className='text-xs font-bold text-arial'>
+                    <MinusCircleOutlined /> {" "}
+                    Balance: {checkNaN(user?.balance)} {user?.currency} &nbsp;
+                    Credit: {checkNaN(user?.credit)}  &nbsp;
+                    Bonus: {checkNaN(user?.bonus)}  &nbsp;
+                  </span>
+                </TableCell>
+            </StyledTableRow>             
         </TableBody>
       </Table>
     </TableContainer>

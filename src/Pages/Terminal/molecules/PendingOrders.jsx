@@ -19,6 +19,8 @@ import { getValidationMsg } from '../../../utils/helpers';
 import { GenericDelete } from '../../../utils/_APICalls';
 import CustomModal from '../../../components/CustomModal';
 import EditPendingOrder from './EditPendingOrder';
+import {  checkNaN } from '../../../utils/helpers';
+
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -38,19 +40,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
     padding:3
   },
-}));
-
-const StyledLastTableRow = styled(TableRow)(({ theme }) => ({
- 
-  // hide last border
-  'td,th': {
-    backgroundColor: '#E3E3E3',
-    color: theme.palette.common.black,
-    fontWeight:600
+'&:last-child td, &:last-child th': {
+    border: 0,
+    backgroundColor: theme.palette.action.hover,
   },
 }));
-
-
 
 
 
@@ -60,7 +54,9 @@ export default function PendingOrders() {
    const [isModalOpen, setIsModalOpen] = React.useState(false);
    const [pendingOrder,setPendingOrder] = React.useState(null)
    const token = useSelector(({ terminal }) => terminal?.user?.token)
+   const user = useSelector((state)=>state?.terminal?.user?.trading_account)
    const trading_account_id = useSelector((state) => state?.terminal?.user?.trading_account?.id)
+
      const {
     token: { colorPrimary },
   } = theme.useToken();
@@ -194,6 +190,17 @@ export default function PendingOrders() {
               </TableCell>
             </StyledTableRow>
                         ))}
+            <StyledTableRow>
+                  <TableCell colSpan={14} >
+                    <span className='text-xs font-bold text-arial'>
+                    <MinusCircleOutlined /> {" "}
+                    Balance: {checkNaN(user?.balance)} {user?.currency} &nbsp;
+                    Credit: {checkNaN(user?.credit)}  &nbsp;
+                    Bonus: {checkNaN(user?.bonus)}  &nbsp;
+                  </span>
+                </TableCell>
+            </StyledTableRow>                
+
           
         </TableBody>
       </Table>

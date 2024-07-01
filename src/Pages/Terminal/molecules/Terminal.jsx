@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { loginTerminalUser } from '../../../store/terminalSlice';
 import CustomNotification from '../../../components/CustomNotification';
@@ -8,12 +8,14 @@ import CustomButton from '../../../components/CustomButton';
 import CustomTextField from '../../../components/CustomTextField';
 import CustomPassowordField from '../../../components/CustomPassowordField';
 import { ToastContainer, toast } from 'react-toastify';
+import ErrorPage from '../../../components/ErrorPage';
 
 
 export default function Terminal() {
   const [open, setOpen] = React.useState(true);
   const navigate = useNavigate()
   const dispatch = useDispatch()
+   const { brand_id } = useParams();
 
   const local_login_id = localStorage.getItem('login_id')
   const local_password = localStorage.getItem('password')
@@ -47,7 +49,8 @@ export default function Terminal() {
         description: payload[1],
         key: 1
       });
-       navigate('/terminal/market-watch')
+      
+       navigate(`/terminal-market-watch/${brand_id}`)
 
     } else {
       CustomNotification({
@@ -81,6 +84,7 @@ export default function Terminal() {
   },[])
 
   return (
+    brand_id ? (
     <div className='flex flex-col items-center justify-center h-screen'>
       
      <div className='flex flex-col  gap-8 shadow-lg p-8 w-1/3' onKeyPress={handleKeyPress}>
@@ -108,6 +112,10 @@ export default function Terminal() {
      
       <ToastContainer />
     </div>
-    </div>
+    </div>)
+    : (
+      <ErrorPage/>
+    )
+    
   );
 }
