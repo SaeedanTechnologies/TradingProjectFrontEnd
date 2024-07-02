@@ -20,7 +20,7 @@ import { GenericDelete } from '../../../utils/_APICalls';
 import CustomModal from '../../../components/CustomModal';
 import EditPendingOrder from './EditPendingOrder';
 import {  checkNaN } from '../../../utils/helpers';
-
+import { MinusCircleOutlined } from '@ant-design/icons';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -56,10 +56,7 @@ export default function PendingOrders() {
    const token = useSelector(({ terminal }) => terminal?.user?.token)
    const user = useSelector((state)=>state?.terminal?.user?.trading_account)
    const trading_account_id = useSelector((state) => state?.terminal?.user?.trading_account?.id)
-
-     const {
-    token: { colorPrimary },
-  } = theme.useToken();
+   const {token: { colorPrimary }} = theme.useToken();
 
 
   const fetchPendingOrders = async()=>{

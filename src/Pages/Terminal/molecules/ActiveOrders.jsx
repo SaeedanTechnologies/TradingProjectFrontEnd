@@ -17,9 +17,10 @@ import moment from 'moment';
 import CustomNotification from '../../../components/CustomNotification';
 import Swal from 'sweetalert2';
 import { GenericDelete, UpdateMultiTradeOrder } from '../../../utils/_APICalls';
-import { calculateMargin, calculateNights, calculateNumOfPip, calculateProfitLoss, checkNaN, conditionalLeverage, getCurrentDateTime, getOpenPriceFromAPI, getValidationMsg } from '../../../utils/helpers';
+import { calculateEquity, calculateMargin, calculateMarginCallPer, calculateNights, calculateNumOfPip, calculateProfitLoss, checkNaN, conditionalLeverage, getCurrentDateTime, getOpenPriceFromAPI, getValidationMsg } from '../../../utils/helpers';
 import CustomModal from '../../../components/CustomModal';
 import EditActiveOrders from './EditActiveOrders';
+import BinanceBidAsk from '../../../websockets/BinanceBidAsk';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -61,6 +62,7 @@ export default function ActiveOrders() {
     const [isModalOpen, setIsModalOpen] = React.useState(false);
     const token = useSelector(({ terminal }) => terminal?.user?.token)
     const trading_account_id = useSelector((state) => state?.terminal?.user?.trading_account?.id)
+
     const user = useSelector((state)=>state?.terminal?.user?.trading_account)
     const { token: { colorPrimary }} = theme.useToken();
     const [activeOrder,setActiveOrder] = React.useState(null);
@@ -71,6 +73,107 @@ export default function ActiveOrders() {
     const [totalSwap, setTotalSwap] = React.useState(0);
     let margin_level;
     let equity_g;
+
+      const [pricing, setPricing] = React.useState({
+          bidPrice: null,
+          askPrice: null,
+        });
+      const [open_price,setOpen_price] = React.useState('');
+  
+
+    const fetchBinanceData = async (feed_fetch_name, pip) => {
+    try {
+      const endPoint= `https://api.binance.com/api/v3/ticker/bookTicker?symbol=${feed_fetch_name}`
+        const response = await axios.get(endPoint);
+        const data = response?.data;
+       
+        setPricing({
+          ...pricing,
+          bidPrice: parseFloat(data?.bidPrice).toFixed(pip),
+          askPrice: parseFloat(data?.askPrice).toFixed(pip)
+        })
+        console.log(parseFloat(data?.askPrice).toFixed(pip), "INSIDE SOCKET HELO")
+        setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
+        return data;
+      
+     
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchFcsapiData = async (symbol, key, pip) => {
+    
+    try {
+     
+      const endPoint1= `https://fcsapi.com/api-v3/${key}/latest?symbol=${symbol?.feed_fetch_name}&access_key=${symbol?.data_feed?.feed_login}`
+
+      
+        const response = await axios.get(endPoint1);
+        const data = response?.data;
+
+        setPricing({
+          ...pricing,
+          bidPrice: parseFloat(data?.response[0]?.o).toFixed(pip),
+          askPrice: parseFloat(data?.response[0]?.c).toFixed(pip)
+        })
+        setOpen_price(parseFloat(data?.response[0]?.c).toFixed(pip))
+     
+    } catch (error) {
+      // setError('Error fetching data');
+      console.error(error);
+    }
+  };
+
+   const fetchDataForSymbol = async (symbol, pip) => {
+          debugger
+
+      if(symbol?.feed_name === 'fcsapi'){
+      fetchFcsapiData(symbol, symbol?.feed_fetch_key, pip)
+    }
+
+    const onError = (error) => {
+        console.error('WebSocket error:', error);
+      };
+  
+      const onClose = () => {
+        console.log('Previous WebSocket connection closed');
+      };
+
+      const binanceStream = BinanceBidAsk(symbol, true);
+
+      if (binanceStream) {
+        
+        const onDataReceived = (data) => {
+          if(!data?.bidPrice){
+            if(symbol?.feed_name === 'binance'){
+              fetchBinanceData(symbol?.feed_fetch_name, pip)
+            }
+            else{
+
+              // fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pip)
+            }
+          }
+          else {
+          if(symbol?.feed_name === 'binance'){
+            setPricing({
+            ...pricing,
+            bidPrice: parseFloat(data?.bidPrice).toFixed(pip),
+            askPrice: parseFloat(data?.askPrice).toFixed(pip)
+          })
+          }
+          else {
+            console.log('Fcsapi Data here')
+          }
+          }
+        };
+  
+        binanceStream.start(onDataReceived, onError, onClose);
+        // Optionally, stop the WebSocket connection when it's no longer needed  
+        // binanceStream.stop();
+      };
+    
+
+    };
 
 
   const handleOk = () => {
@@ -83,21 +186,20 @@ export default function ActiveOrders() {
   };
 
   const setLiveManipulatedData = async (data) => {
-
+    
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
-
+    
     const currentDateTime = getCurrentDateTime();
     const updatedData = await Promise.all(data.map(async (x) => {
-      const response = await getOpenPriceFromAPI(x?.symbol, x?.feed_name);
-      if (response && typeof response === 'object' && 'askPrice' in response && 'bidPrice' in response) {
-         const { askPrice, bidPrice } = response;
+        // const  { askPrice, bidPrice } = await getOpenPriceFromAPI(x?.symbol, x?.feed_name);
         const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
+        fetchDataForSymbol(x?.symbol,pipVal)
         const res = (parseFloat(parseFloat(x?.volume) * parseFloat(x?.symbol_setting?.lot_size) * x?.open_price).toFixed(2));
         const margin = calculateMargin(res, conditionalLeverage(x?.trading_account,x?.symbol_setting));
         const open_price = parseFloat(x?.open_price).toFixed(pipVal);
-        const currentPrice = x?.type === "sell" ? parseFloat(askPrice).toFixed(pipVal) ?? 0 : parseFloat(bidPrice).toFixed(pipVal) ?? 0;
+        const currentPrice = x?.type === "sell" ? parseFloat(pricing.askPrice).toFixed(pipVal) ?? 0 : parseFloat(pricing.bidPrice).toFixed(pipVal) ?? 0;
         const profit = calculateProfitLoss(parseFloat(calculateNumOfPip(currentPrice, parseFloat(x?.open_price), x?.type, parseInt(pipVal))).toFixed(2), parseFloat(x?.volume));
         totalProfit += parseFloat(profit);
         const totalNights = calculateNights(x?.created_at, currentDateTime);
@@ -107,20 +209,14 @@ export default function ActiveOrders() {
         equity_g = calculateEquity(user?.balance, grandProfit, user?.credit, user?.bonus)
 
         return { ...x, swap, profit, currentPrice, open_price };
-      } else {
-        // Handle cases where properties are missing or response is invalid
-        console.error('Missing askPrice or bidPrice in response:', response);
-        // You can return a default value or handle the error differently
-        return { ...x, swap: 0, profit: 0, currentPrice: 0, open_price: x?.open_price };
-      }
+     
     }));
-
+      
       setGrandVolumn(totalVolumn.toFixed(2));
       setGrandMargin(totalMargin.toFixed(2));
-      setTotalSwap(_totalSwap.toFixed(2));
-      setTotalCommission(t_commission.toFixed(2));
-    setRows(updatedData)
-    return updatedData;
+      setRows(updatedData)
+      return updatedData;
+    
   }
 
 
@@ -129,6 +225,7 @@ export default function ActiveOrders() {
  
     const res = await Search_Live_Order(token,1,10,{trading_account_id,order_types:['market']})
     // setRows(res?.data?.payload?.data)
+ 
     setLiveManipulatedData(res?.data?.payload?.data)
 
   }

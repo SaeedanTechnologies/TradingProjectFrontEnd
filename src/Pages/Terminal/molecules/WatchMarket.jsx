@@ -63,8 +63,6 @@ const WatchMarket = () => {
   const selectedTerminalSymbolIndex = useSelector(({terminal})=>terminal?.selectedTerminalSymbolIndex)
   const selectedTerminalSymbolSettingIndex = useSelector(({terminal})=>terminal?.selectedTerminalSymbolSettingIndex)
 
-
-
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
   };
@@ -142,10 +140,10 @@ const WatchMarket = () => {
          <Box sx={{ width: '100%' }}>
           <Skeleton p={1.5}  />
           <Skeleton animation="wave" p={1.5} />
-          <Skeleton animation="wave" p={1.5}  />
-          <Skeleton animation="wave" p={1.5}  />
-          <Skeleton animation="wave"  p={1.5} />
-          <Skeleton animation="wave" p={1.5}  />
+          <Skeleton animation="wave" p={1.5} />
+          <Skeleton animation="wave" p={1.5} />
+          <Skeleton animation="wave"  p={1.5}/>
+          <Skeleton animation="wave" p={1.5} />
         </Box>
       )}
         

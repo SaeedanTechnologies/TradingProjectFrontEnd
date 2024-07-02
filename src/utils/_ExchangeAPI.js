@@ -20,9 +20,9 @@ export const SeparateSymbols = async () => {
     
     const groupedSymbols = symbols.map(item => {
         if (fiatQuoteAssets.includes(item.quoteAsset)) {
-            return { ...item, group: 'forex' ,id: item.symbol};
+            return { ...item, group: 'forex' ,name: item.symbol};
         } else {
-            return { ...item, group: 'crypto',id: item.symbol };
+            return { ...item, group: 'crypto',name: item.symbol };
         }
     });
   return  groupedSymbols ;

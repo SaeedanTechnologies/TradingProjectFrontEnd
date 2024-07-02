@@ -11,7 +11,8 @@ import { useSelector } from 'react-redux';
 import { Search_Close_Order } from '../../../utils/_TradingAPICalls';
 import moment from 'moment';
 import { theme, } from 'antd';
-import {  checkNaN} from '../../../utils/helpers';
+import {checkNaN} from '../../../utils/helpers';
+import { MinusCircleOutlined } from '@ant-design/icons';
 
 
 

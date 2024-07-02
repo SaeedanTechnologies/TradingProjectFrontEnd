@@ -164,7 +164,7 @@ export const getOpenPriceFromAPI = async (symbol, feedName) => {
     }
   } catch (error) {
     console.error('Error fetching open price:', error);
-    return null;
+    return { askPrice:null, bidPrice:null };
   }
 }
 
