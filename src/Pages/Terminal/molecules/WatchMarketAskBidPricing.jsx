@@ -12,7 +12,6 @@ const WatchMarketAskBidPricing = ({ symbol, pip,setIsLoading }) => {
     openPrice: null,
     askPrice: null,
   });
-    const [open_price,setOpen_price] = useState('');
   
 
     const fetchBinanceData = async (feed_fetch_name, pip) => {
@@ -25,8 +24,7 @@ const WatchMarketAskBidPricing = ({ symbol, pip,setIsLoading }) => {
           openPrice: parseFloat(data?.bidPrice).toFixed(pip),
           askPrice: parseFloat(data?.askPrice).toFixed(pip)
         })
-        console.log(parseFloat(data?.askPrice).toFixed(pip), "INSIDE SOCKET HELO")
-        setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
+    
         return data;
       
      
@@ -49,7 +47,6 @@ const WatchMarketAskBidPricing = ({ symbol, pip,setIsLoading }) => {
           openPrice: parseFloat(data?.response[0]?.o).toFixed(pip),
           askPrice: parseFloat(data?.response[0]?.c).toFixed(pip)
         })
-        setOpen_price(parseFloat(data?.response[0]?.c).toFixed(pip))
      
     } catch (error) {
       // setError('Error fetching data');

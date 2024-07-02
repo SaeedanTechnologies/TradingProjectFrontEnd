@@ -34,6 +34,7 @@ const LiveOrders = ({ grandCommsion, setManipulatedData, isLoading, setIsLoading
   const equity_g = calculateEquity(balance, grandProfit, credit, bonus)
   const free_margin = calculateFreeMargin(equity_g, margin)
   const margin_level = calculateMarginCallPer(equity_g, margin)
+  
   //check
   const [CurrentPage, setCurrentPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -449,7 +450,7 @@ const LiveOrders = ({ grandCommsion, setManipulatedData, isLoading, setIsLoading
           summary={() => (
             <Table.Summary fixed>
               <Table.Summary.Row className='bg-gray-300'>
-                <Table.Summary.Cell index={0} colSpan={11}>
+                <Table.Summary.Cell index={0} colSpan={12}>
                   <span className='text-sm font-bold text-arial'>
                     <MinusCircleOutlined />
                     Balance: {checkNaN(balance)} {CurrencyName} &nbsp;

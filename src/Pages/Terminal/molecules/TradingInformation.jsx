@@ -22,6 +22,9 @@ const TradingInformation = () => {
   const [open_price,setOpen_price] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+ const totalProfit = useSelector(({terminal})=>terminal?.active_profit);
+ const free_margin = useSelector(({terminal})=>terminal?.active_free_margin)
+ const equity =  useSelector(({terminal})=>terminal?.active_equity);
   const token = useSelector(({ terminal }) => terminal?.user?.token)
 
 
@@ -40,8 +43,7 @@ const TradingInformation = () => {
           openPrice: parseFloat(data?.bidPrice).toFixed(pip),
           askPrice: parseFloat(data?.askPrice).toFixed(pip)
         })
-        console.log(parseFloat(data?.askPrice).toFixed(pip), "INSIDE SOCKET HELO")
-        setOpen_price(parseFloat(data?.askPrice).toFixed(pip))
+
         return data;
       
      
@@ -57,11 +59,10 @@ const TradingInformation = () => {
         const data = response?.data;
 
         setPricing({
-          // ...pricing,
           openPrice: parseFloat(data?.response[0]?.o).toFixed(pip),
           askPrice: parseFloat(data?.response[0]?.c).toFixed(pip)
         })
-        setOpen_price(parseFloat(data?.response[0]?.c).toFixed(pip))
+
      
     } catch (error) {
       // setError('Error fetching data');
@@ -167,9 +168,9 @@ const TradingInformation = () => {
   const descriptions = [
     { label: 'Balance:', value: trading_account?.balance },
     { label: 'Credit:', value: trading_account?.credit },
-    { label: 'Profit:', value: trading_account?.profit },
-    { label: 'Equity:', value: trading_account?.equity },
-    { label: 'Free Margin:', value: trading_account?.free_margin },
+    { label: 'Profit:', value: totalProfit },
+    { label: 'Equity:', value: equity },
+    { label: 'Free Margin:', value: free_margin },
     { label: 'Leverage:', value: trading_account?.leverage }
   ];
 

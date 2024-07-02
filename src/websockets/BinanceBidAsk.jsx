@@ -4,7 +4,7 @@ let client;
 let currentSymbol;
 
 const BinanceBidAsk = (symbol, connected) => {
-  
+ 
   if (symbol == null) {
     // Stop the WebSocket connection if it's active
     if (client && client.readyState === WebSocket.OPEN) {
@@ -45,7 +45,7 @@ const BinanceBidAsk = (symbol, connected) => {
   }
 
   client = new W3CWebSocket(WS_URL);
-  currentSymbol = symbol?.feed_name === 'binance' ? symbol?.feed_fetch_name : symbol?.feed_fetch_key;
+  currentSymbol =  symbol?.feed_fetch_name ;
   console.log('Creating new WebSocket connection for symbol:', currentSymbol);
 
   const onDataReceived = (callback) => {

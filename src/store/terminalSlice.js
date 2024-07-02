@@ -29,7 +29,11 @@ const terminalSlice = createSlice({
    selectedWatchMarket:null,
    selectedWatchMarketHours:[],
    selectedTerminalSymbolIndex: -1,
-   selectedTerminalSymbolSettingIndex:-1
+   selectedTerminalSymbolSettingIndex:-1,
+   active_equity:0.00,
+   active_profit:0.00,
+   active_free_margin:0.00
+
   }, 
   reducers:{
     setSelectedWatchMarket:(state,action)=>{
@@ -38,15 +42,22 @@ const terminalSlice = createSlice({
      setSelectedWatchMarketHours:(state,action)=>{
       state.selectedWatchMarketHours = action.payload
     },
-    setLogoutUser:(state,action)=>{
-      state.user=null
-    },
     setSelectedTerminalSymbolIndex:(state,action)=>{
       state.selectedTerminalSymbolIndex = action.payload
     },
     setSelectedTerminalSymbolSettingIndex:(state,action)=>{
       state.selectedTerminalSymbolSettingIndex = action.payload
-    }
+    },
+    setActiveEquity:(state,action)=>{
+      state.active_equity = action.payload
+    },
+    setActiveProfit:(state,action)=>{
+      state.active_profit = action.payload
+    },
+    setActiveFreeMargin:(state,action)=>{
+      state.active_free_margin = action.payload
+    },
+   
   },
   extraReducers:(builder)=>{
     builder.addCase(loginTerminalUser.pending, (state)=>{
@@ -75,7 +86,10 @@ const terminalSlice = createSlice({
       state.selectedWatchMarket =null,
       state.selectedWatchMarketHours =[],
       state.selectedTerminalSymbolIndex = -1,
-      state.selectedTerminalSymbolSettingIndex =-1
+      state.selectedTerminalSymbolSettingIndex =-1,
+      state.active_equity=0.00,
+      state.active_profit=0.00,
+      state.active_free_margin=0.00
 
     })
     .addCase(logoutTerminalUser.rejected, (state)=>{
@@ -87,7 +101,7 @@ const terminalSlice = createSlice({
   }
 })
 
-export const {setSelectedWatchMarket,setSelectedWatchMarketHours,setLogoutUser, setSelectedTerminalSymbolIndex, setSelectedTerminalSymbolSettingIndex } = terminalSlice.actions
+export const {setSelectedWatchMarket,setSelectedWatchMarketHours, setSelectedTerminalSymbolIndex, setSelectedTerminalSymbolSettingIndex,setActiveEquity, setActiveProfit,setActiveFreeMargin } = terminalSlice.actions
 
 export default terminalSlice.reducer
 
