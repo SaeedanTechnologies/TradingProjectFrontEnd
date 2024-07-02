@@ -21,6 +21,7 @@ import { calculateEquity, calculateMargin, calculateMarginCallPer, calculateNigh
 import CustomModal from '../../../components/CustomModal';
 import EditActiveOrders from './EditActiveOrders';
 import BinanceBidAsk from '../../../websockets/BinanceBidAsk';
+import axios from 'axios';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -125,11 +126,8 @@ export default function ActiveOrders() {
   };
 
    const fetchDataForSymbol = async (symbol, pip) => {
-          debugger
-
-      if(symbol?.feed_name === 'fcsapi'){
-      fetchFcsapiData(symbol, symbol?.feed_fetch_key, pip)
-    }
+      
+ 
 
     const onError = (error) => {
         console.error('WebSocket error:', error);
@@ -146,11 +144,10 @@ export default function ActiveOrders() {
         const onDataReceived = (data) => {
           if(!data?.bidPrice){
             if(symbol?.feed_name === 'binance'){
-              fetchBinanceData(symbol?.feed_fetch_name, pip)
+              fetchBinanceData(symbol?.symbol_setting?.feed_fetch_name, pip)
             }
             else{
-
-              // fetchFcsapiData(symbol?.feed_fetch_name, symbol?.feed_fetch_key, pip)
+                  fetchFcsapiData(symbol, symbol?.symbol_setting?.feed_fetch_key, pip)
             }
           }
           else {
@@ -190,12 +187,14 @@ export default function ActiveOrders() {
       let totalProfit = 0;
       let totalVolumn = 0;
       let totalMargin = 0;
+       let _totalSwap = 0;
+      let t_commission = 0;
     
     const currentDateTime = getCurrentDateTime();
-    const updatedData = await Promise.all(data.map(async (x) => {
+    const updatedData = await Promise.all(data.map(async (x) => { 
         // const  { askPrice, bidPrice } = await getOpenPriceFromAPI(x?.symbol, x?.feed_name);
         const pipVal = x?.symbol_setting?.pip ? x?.symbol_setting?.pip : 5;
-        fetchDataForSymbol(x?.symbol,pipVal)
+        fetchDataForSymbol(x,pipVal)
         const res = (parseFloat(parseFloat(x?.volume) * parseFloat(x?.symbol_setting?.lot_size) * x?.open_price).toFixed(2));
         const margin = calculateMargin(res, conditionalLeverage(x?.trading_account,x?.symbol_setting));
         const open_price = parseFloat(x?.open_price).toFixed(pipVal);
@@ -283,6 +282,11 @@ export default function ActiveOrders() {
 },[])
 
 
+React.useEffect(()=>{
+   fetchDataForSymbol()
+},[])
+
+
   return (
     <>
     <TableContainer component={Paper}>
@@ -298,7 +302,6 @@ export default function ActiveOrders() {
              <StyledTableCell align="center">Current Price</StyledTableCell>
             <StyledTableCell align="center">SL</StyledTableCell>
             <StyledTableCell align="center">TP</StyledTableCell>
-            <StyledTableCell align="center">Price</StyledTableCell>
             <StyledTableCell align="center">Commission</StyledTableCell>
             <StyledTableCell align="center">Swap</StyledTableCell>
             <StyledTableCell align="center">Profit</StyledTableCell>
@@ -321,7 +324,6 @@ export default function ActiveOrders() {
               <StyledTableCell align="center">{row.currentPrice ? row.currentPrice:"-"}</StyledTableCell>
               <StyledTableCell align="center">{row.stopLoss ? row.stopLoss:"-"}</StyledTableCell>
               <StyledTableCell align="center">{row.takeProfit ? row.takeProfit:"-"}</StyledTableCell>
-              <StyledTableCell align="center">{row.price ? row.price: "-"}</StyledTableCell>
               <StyledTableCell align="center">{row.commission ? row.commission: "-" }</StyledTableCell>
               <StyledTableCell align="center">{row.swap? row.swap: "-" }</StyledTableCell>
               <StyledTableCell align="center">{row.profit? row.profit: "-" }</StyledTableCell>
